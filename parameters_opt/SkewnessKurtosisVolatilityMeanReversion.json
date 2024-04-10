@@ -1,0 +1,9 @@
+{
+    "frequency": "1d",
+    "cash_size": 1000,
+    "window_size": 5.0,
+    "stop_loss_level": 0.03,
+    "take_profit_level": 0.02,
+    "kurtosis_threshold": 1.5,
+    "volatility_multiplier": 1.0
+}

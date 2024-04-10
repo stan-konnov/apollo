@@ -1,0 +1,11 @@
+{
+    "editor.tabSize": 4,
+
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/venv": true
+    },
+
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "standard",
+}
