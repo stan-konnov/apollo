@@ -37,7 +37,7 @@ class SwingMomentsCalculator(BaseCalculator):
     def calculate_swing_moments(self) -> None:
         """Calculate rolling swing moments."""
 
-        # Record the low of the first bar (before rolling window) as the swing low
+        # Record the low of the first bar (before rolling window) as swing low
         self.swing_l = self.dataframe.iloc[self.window_size - 2]["low"]
 
         # Record the high of the first bar (before rolling window) as swing high
