@@ -4,7 +4,8 @@
     "files.exclude": {
         "**/.pytest_cache": true,
         "**/__pycache__": true,
-        "**/venv": true
+        "**/.coverage": true,
+        "**/venv": true,
     },
 
     "python.analysis.autoImportCompletions": true,
