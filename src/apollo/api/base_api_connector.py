@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from pandas import DataFrame
+
+from apollo.settings import DEFAULT_DATE_FORMAT
 
 
 class BaseApiConnector(ABC):
@@ -25,10 +28,22 @@ class BaseApiConnector(ABC):
         :param start_date: Start point to request prices from (inclusive).
         :param end_date: End point until which to request prices (exclusive).
         :param frequency: Frequency of requested prices.
+
+        :raises ValueError: If start_date or end_date are not in the correct format.
+        :raises ValueError: If start_date is greater than end_date.
         """
 
+        try:
+            datetime.strptime(end_date, DEFAULT_DATE_FORMAT)
+            datetime.strptime(start_date, DEFAULT_DATE_FORMAT)
+
+        except ValueError as error:
+            raise ValueError(
+                f"Start and end date format must be {DEFAULT_DATE_FORMAT}.",
+            ) from error
+
         # In our case a simple string compare is enough
-        # since we are using the same YYYY-MM-DD format everywhere
+        # since at this point we adhere to YYYY-MM-DD format
         if start_date > end_date:
             raise ValueError("Start date must be before end date.")
 

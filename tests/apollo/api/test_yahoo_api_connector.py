@@ -7,7 +7,13 @@ from unittest.mock import patch
 import pytest
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.settings import END_DATE, START_DATE, TICKER, ValidYahooApiFrequencies
+from apollo.settings import (
+    DEFAULT_DATE_FORMAT,
+    END_DATE,
+    START_DATE,
+    TICKER,
+    ValidYahooApiFrequencies,
+)
 from tests.mocks.api_response import yahoo_api_response
 
 TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/data")
@@ -73,6 +79,29 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert price_dataframe.index.dtype == "datetime64[ns]"
+
+
+def test__request_or_read_prices__with_invalid_date_format() -> None:
+    """
+    Test request_or_read_prices method with invalid date format.
+
+    API Connector must raise a ValueError when dates are not in the correct format.
+    """
+
+    with pytest.raises(
+        ValueError,
+        match=f"Start and end date format must be {DEFAULT_DATE_FORMAT}.",
+    ) as exception:
+
+        YahooApiConnector(
+            ticker=str(TICKER),
+            start_date=str(START_DATE),
+            end_date="01-01-2020",
+        )
+
+    assert str(exception.value) == (
+        f"Start and end date format must be {DEFAULT_DATE_FORMAT}."
+    )
 
 
 def test__request_or_read_prices__with_invalid_dates() -> None:
