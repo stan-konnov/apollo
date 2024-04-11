@@ -1,28 +1,5 @@
-# NOTE: I am located here instead of the root
-# since ruff's isort requires root of the project to be a python module
-# and, therefore, have __init__.py file. This messes up pytest path resolution.
-
-[lint]
-
-# All rules at: https://docs.astral.sh/ruff/rules/
-
-select = ["ALL"]
-
-ignore = [
-    "D104", # Missing docstring in public package.
-    "D100", # Missing docstring in public module.
-    "ANN101", # Missing type annotation for {self} in method.
-    "D212", # Multi-line docstring summary should start at the first line.
-    "D202", # No blank lines allowed after function docstring.
-    "EM101", # Exception must not use a string literal, assign to variable first.
-    "EM102", # Exception must not use an f-string literal, assign to variable first.
-    "TRY003", # Avoid specifying long messages outside the exception class.
-    "PD002", # Pandas' inplace=True should be avoided; it has inconsistent behavior.
-    "FA100", # Missing from __future__ import annotations.
-    "FA102", # Missing from __future__ import annotations, but uses {<built-in type (e.g., tuple not Tuple)>}
-    "G004", # Logging statement uses f-string.
-    "FBT001", # Boolean-typed positional argument in function definition.
-    "FBT002", # Boolean default positional argument in function definition.
-    "PLR0913", # Too many arguments in function definition.
-    "PD010", # .pivot_table is preferred to .pivot or .unstack.
-]
+# I am here since ruff's isort of imports requires directory with ruff.toml
+# to be a python package and, therefore, contain __init__.py
+# This conflicts with pytest path resolution in case of src layout project structure
+# Therefore, we extent root ruff.toml with this to allow for proper test execution and import resolution
+extend = "../ruff.toml"
