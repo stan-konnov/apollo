@@ -73,3 +73,24 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert price_dataframe.index.dtype == "datetime64[ns]"
+
+
+def test__request_or_read_prices__with_invalid_dates() -> None:
+    """
+    Test request_or_read_prices method with invalid dates.
+
+    API Connector must raise a ValueError when start_date is greater than end_date.
+    """
+
+    with pytest.raises(
+        ValueError,
+        match="Start date must be before end date.",
+    ) as exception:
+
+        YahooApiConnector(
+            ticker=str(TICKER),
+            start_date="3333-01-01",
+            end_date=str(END_DATE),
+        )
+
+    assert str(exception.value) == "Start date must be before end date."
