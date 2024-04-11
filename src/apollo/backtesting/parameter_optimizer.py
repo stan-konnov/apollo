@@ -176,7 +176,7 @@ class ParameterOptimizer:
         Construct parameter sets for each combination of parameters.
 
         :param parameters: TypedDict with parameter specifications.
-        :return: Iterable of tuples where each tuple contains a set of parameters.
+        :returns: Iterable of tuples where each tuple contains a set of parameters.
         """
 
         # Extract the parameter ranges
@@ -205,7 +205,7 @@ class ParameterOptimizer:
         :param range_min: The start of the range.
         :param range_max: The end of the range.
         :param step: The step size.
-        :return: Series of rounded floating-point numbers.
+        :returns: Series of rounded floating-point numbers.
         """
 
         # NOTE: we round the values to avoid floating-point arithmetic errors
