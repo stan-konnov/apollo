@@ -20,3 +20,5 @@ Nice to haves:
 Meta steps:
 
 Equities --> ETF Options --> Crypto Options
+
+https://stackoverflow.com/questions/50155464/using-pytest-with-a-src-layer
