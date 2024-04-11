@@ -60,8 +60,6 @@ class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self._config_name = "skew_kurt_vol"
-
         self.kurtosis_threshold = kurtosis_threshold
         self.volatility_multiplier = volatility_multiplier
 
