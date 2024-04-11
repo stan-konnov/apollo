@@ -1,5 +1,5 @@
 # I am here since ruff's isort of imports requires directory with ruff.toml
 # to be a python package and, therefore, contain __init__.py
 # This conflicts with pytest path resolution in case of src layout project structure
-# Therefore, we extent root ruff.toml with this to allow for proper test execution and import resolution
+# Therefore, we extent root ruff.toml to allow for proper test execution and import resolution
 extend = "../ruff.toml"
