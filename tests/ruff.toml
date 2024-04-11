@@ -1,3 +1,7 @@
+# NOTE: I am located here instead of the root
+# since ruff requires root of the project to be a python module
+# and, therefore, have __init__.py file. This messes up pytest path resolution.
+
 [lint]
 
 # All rules at: https://docs.astral.sh/ruff/rules/

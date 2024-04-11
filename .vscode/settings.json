@@ -2,6 +2,7 @@
     "editor.tabSize": 4,
 
     "files.exclude": {
+        "**/.pytest_cache": true,
         "**/__pycache__": true,
         "**/venv": true
     },
