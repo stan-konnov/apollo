@@ -52,7 +52,7 @@ class PriceChannelsCalculator(BaseCalculator):
         self.bf_line = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
         # Calculate bounds and slope by using linear regression
-        self.dataframe["close"].rolling(self.window_size).apply(
+        self.dataframe["adj close"].rolling(self.window_size).apply(
             self.__calc_lin_reg,
         )
 

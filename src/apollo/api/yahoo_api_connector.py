@@ -90,16 +90,15 @@ class YahooApiConnector(BaseApiConnector):
         Reset indices,
         Cast columns to lowercase.
         Reset indices back to date column.
-        Remove adj close column, add ticker column.
+        Add ticker column.
 
         :param dataframe: Requested Dataframe.
         """
 
         dataframe.reset_index(inplace=True)
         dataframe.columns = dataframe.columns.str.lower()
-        dataframe.set_index("date", inplace=True)
 
-        dataframe.drop("adj close", axis=1, inplace=True)
+        dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", self.ticker)
 
 
