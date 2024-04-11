@@ -27,8 +27,14 @@ asyncio = "^3.4.3"
 backtesting = "^0.3.3"
 yfinance = "^0.2.37"
 tqdm = "^4.66.2"
+pytest = "^8.1.1"
 
 [tool.poetry.dev-dependencies]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
