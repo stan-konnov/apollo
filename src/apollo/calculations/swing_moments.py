@@ -54,7 +54,7 @@ class SwingMomentsCalculator(BaseCalculator):
         ).flatten().tolist()
 
         # Calculate swings
-        self.dataframe["close"].rolling(self.window_size).apply(
+        self.dataframe["adj close"].rolling(self.window_size).apply(
             self.__calc_sm, args=(self.dataframe, ),
         )
 
@@ -81,7 +81,7 @@ class SwingMomentsCalculator(BaseCalculator):
         current_high = rolling_df.iloc[-1]["high"]
 
         # Calculate current swing filter
-        current_swing_filter = rolling_df.iloc[-1]["close"] * self.swing_filter
+        current_swing_filter = rolling_df.iloc[-1]["adj close"] * self.swing_filter
 
         # If we are in downswing
         if self.in_downswing:
