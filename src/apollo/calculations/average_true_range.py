@@ -26,7 +26,9 @@ class AverageTrueRangeCalculator(BaseCalculator):
         """Calculate rolling ATR via rolling TR and EMA."""
 
         # Calculate rolling True Range
-        self.dataframe["tr"] = self.dataframe["adj close"].rolling(self.window_size).apply(
+        self.dataframe["tr"] = self.dataframe["adj close"].rolling(
+            self.window_size,
+        ).apply(
             self.__calc_tr, args=(self.dataframe, ),
         )
 
