@@ -13,12 +13,10 @@ def __calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     rolling_df = dataframe.loc[series.index]
 
-    # Get high, low, and previous close
     high = rolling_df["high"]
     low = rolling_df["low"]
     prev_close = rolling_df["adj close"].shift()
 
-    # True Range = max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)
     true_range = pd.concat(
         [
             tr.abs() for tr in [
@@ -95,9 +93,6 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     Test calculate_average_true_range method for correct TR calculation.
 
     Resulting TR column must have correct values for each row.
-
-    Where TR is calculated as:
-    max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|).
     """
 
     control_dataframe = dataframe.copy()
@@ -128,9 +123,6 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     Test calculate_average_true_range method for correct ATR calculation.
 
     Resulting ATR column must have correct values for each row.
-
-    Where ATR is calculated as: TRt * K + (1 - K) * ATRt-1
-    Where K = 1 / N
     """
 
     control_dataframe = dataframe.copy()
