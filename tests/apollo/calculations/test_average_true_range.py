@@ -95,6 +95,9 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     Test calculate_average_true_range method for correct TR calculation.
 
     Resulting TR column must have correct values for each row.
+
+    Where TR is calculated as:
+    max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|).
     """
 
     control_dataframe = dataframe.copy()
@@ -125,6 +128,9 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     Test calculate_average_true_range method for correct ATR calculation.
 
     Resulting ATR column must have correct values for each row.
+
+    Where ATR is calculated as: TRt * K + (1 - K) * ATRt-1
+    Where K = 1 / N
     """
 
     control_dataframe = dataframe.copy()
