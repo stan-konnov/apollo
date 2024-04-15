@@ -1,31 +1,14 @@
-from os import curdir
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 
-WINDOW_SIZE = 5
 
-
-@pytest.fixture(name="test_dataframe")
-def get_price_dataframe() -> pd.DataFrame:
-    """Fixture to get test dataframe from file system."""
-
-    test_dataframe = pd.read_csv(
-        Path(f"{Path(curdir).resolve()}/tests/data/test.csv"),
-        index_col=0,
-    )
-
-    test_dataframe.index = pd.to_datetime(test_dataframe.index)
-
-    return test_dataframe
-
-
-@pytest.mark.usefixtures("test_dataframe")
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("window_size")
 def test__calculate_average_true_range__for_correct_columns(
-    test_dataframe: pd.DataFrame,
+    dataframe: pd.DataFrame,
+    window_size: int,
 ) -> None:
     """
     Test calculate_average_true_range method for correct columns.
@@ -34,8 +17,8 @@ def test__calculate_average_true_range__for_correct_columns(
     """
 
     atr_calculator = AverageTrueRangeCalculator(
-        dataframe=test_dataframe,
-        window_size=WINDOW_SIZE,
+        dataframe=dataframe,
+        window_size=window_size,
     )
 
     atr_calculator.calculate_average_true_range()
@@ -44,9 +27,11 @@ def test__calculate_average_true_range__for_correct_columns(
     assert "atr" in atr_calculator.dataframe.columns
 
 
-@pytest.mark.usefixtures("test_dataframe")
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("window_size")
 def test__calculate_average_true_range__for_correct_rolling_window(
-    test_dataframe: pd.DataFrame,
+    dataframe: pd.DataFrame,
+    window_size: int,
 ) -> None:
     """
     Test calculate_average_true_range method for correct rolling window.
@@ -61,12 +46,12 @@ def test__calculate_average_true_range__for_correct_rolling_window(
     """
 
     atr_calculator = AverageTrueRangeCalculator(
-        dataframe=test_dataframe,
-        window_size=WINDOW_SIZE,
+        dataframe=dataframe,
+        window_size=window_size,
     )
 
     atr_calculator.calculate_average_true_range()
 
-    assert test_dataframe["tr"].isna().sum() == WINDOW_SIZE - 1
-    assert test_dataframe["atr"].isna().sum() == (WINDOW_SIZE - 1) * 2
+    assert dataframe["tr"].isna().sum() == window_size - 1
+    assert dataframe["atr"].isna().sum() == (window_size - 1) * 2
 
