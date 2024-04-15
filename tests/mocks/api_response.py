@@ -3,6 +3,25 @@ import pandas as pd
 from apollo.settings import ValidYahooApiFrequencies
 
 
+def empty_yahoo_api_response(
+        tickers: str | list[str],  # noqa: ARG001
+        start: str,  # noqa: ARG001
+        end: str,  # noqa: ARG001
+        interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
+    ) -> pd.DataFrame:
+    """
+    Simulate empty Yahoo API OHLCV response.
+
+    :param tickers: Ticker to request prices for.
+    :param start: Start point to request prices from (inclusive).
+    :param end: End point until which to request prices (exclusive).
+    :param interval: Frequency of requested prices.
+    :returns: Empty dataframe.
+    """
+
+    return pd.DataFrame()
+
+
 def yahoo_api_response(
         tickers: str | list[str],  # noqa: ARG001
         start: str,

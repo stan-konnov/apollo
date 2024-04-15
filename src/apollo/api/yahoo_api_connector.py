@@ -5,6 +5,7 @@ import pandas as pd
 from yfinance import download
 
 from apollo.api.base_api_connector import BaseApiConnector
+from apollo.errors import EmptyApiResponseError
 from apollo.settings import DATA_DIR, ValidYahooApiFrequencies
 
 logger = getLogger(__name__)
@@ -74,6 +75,12 @@ class YahooApiConnector(BaseApiConnector):
                 end=self.end_date,
                 interval=self.frequency,
             )
+
+            # Make sure we have data to work with
+            if price_data.empty:
+                raise EmptyApiResponseError(
+                    "API response returned empty dataframe.",
+                ) from None
 
             self._prep_dataframe(price_data)
             self._save_dataframe(price_data)

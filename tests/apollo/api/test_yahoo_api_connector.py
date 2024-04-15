@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
+from apollo.errors import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
@@ -14,13 +15,13 @@ from apollo.settings import (
     TICKER,
     ValidYahooApiFrequencies,
 )
-from tests.mocks.api_response import yahoo_api_response
+from tests.mocks.api_response import empty_yahoo_api_response, yahoo_api_response
 
 TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/data")
 
 
 @pytest.fixture(scope="session", autouse=True)
-def _clean_test_data() -> Generator[None, None, None]:
+def _() -> Generator[None, None, None]:
     """Clean test data directory after tests."""
     yield
     rmtree(TEST_DATA_DIR)
@@ -79,6 +80,30 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert price_dataframe.index.dtype == "datetime64[ns]"
+
+
+@patch("apollo.api.yahoo_api_connector.download", empty_yahoo_api_response)
+def test__request_or_read_prices__with_empty_api_response() -> None:
+    """
+    Test request_or_read_prices method with empty yahoo API response.
+
+    API Connector must raise am EmptyApiResponseError when API response is empty.
+    """
+
+    api_connector = YahooApiConnector(
+            ticker=str(TICKER),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+        )
+
+    with pytest.raises(
+        EmptyApiResponseError,
+        match="API response returned empty dataframe.",
+    ) as exception:
+
+        api_connector.request_or_read_prices()
+
+    assert str(exception.value) == "API response returned empty dataframe."
 
 
 def test__request_or_read_prices__with_invalid_date_format() -> None:
