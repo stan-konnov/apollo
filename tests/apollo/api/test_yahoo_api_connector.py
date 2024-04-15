@@ -18,23 +18,23 @@ from apollo.settings import (
 )
 from tests.mocks.api_response import empty_yahoo_api_response, yahoo_api_response
 
-TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-TEST_DATA_FILE = str(
-    f"{TEST_DATA_DIR}/{TICKER}-"
+TEMP_TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
+TEMP_TEST_DATA_FILE = str(
+    f"{TEMP_TEST_DATA_DIR}/{TICKER}-"
     f"{ValidYahooApiFrequencies.ONE_DAY.value}-"
     f"{START_DATE}-{END_DATE}.csv",
 )
 
 
 @pytest.fixture(scope="session", autouse=True)
-def _clean_test_data() -> Generator[None, None, None]:
-    """Clean test data directory after tests."""
+def _clean_temp_test_data() -> Generator[None, None, None]:
+    """Clean temp test data directory after tests."""
     yield
-    rmtree(TEST_DATA_DIR)
+    rmtree(TEMP_TEST_DATA_DIR)
 
 
 @patch("apollo.api.yahoo_api_connector.download", empty_yahoo_api_response)
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DATA_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -59,7 +59,7 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
 
 
 @patch("apollo.api.yahoo_api_connector.download", yahoo_api_response)
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DATA_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__with_valid_parameters() -> None:
     """
     Test request_or_read_prices method with valid parameters.
@@ -81,10 +81,10 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert all(column.islower() for column in price_dataframe.columns)
-    assert Path.exists(Path(TEST_DATA_FILE))
+    assert Path.exists(Path(TEMP_TEST_DATA_FILE))
 
 
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DATA_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__when_prices_already_requested_before() -> None:
     """
     Test request_or_read_prices when prices have already been requested before.
@@ -102,7 +102,7 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    price_data_file = pd.read_csv(TEST_DATA_FILE, index_col=0)
+    price_data_file = pd.read_csv(TEMP_TEST_DATA_FILE, index_col=0)
     price_data_file.index = pd.to_datetime(price_data_file.index)
 
     assert pd.testing.assert_frame_equal(price_data_file, price_dataframe) is None
