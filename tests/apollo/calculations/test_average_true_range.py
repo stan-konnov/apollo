@@ -13,12 +13,20 @@ def __calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     rolling_df = dataframe.loc[series.index]
 
+    # Get high, low, and previous close
     high = rolling_df["high"]
     low = rolling_df["low"]
     prev_close = rolling_df["adj close"].shift()
 
+    # True Range = max(high - low, high - prev_close, prev_close - low)
     true_range = pd.concat(
-        [tr.abs() for tr in [high - low, high - prev_close, prev_close - low]],
+        [
+            tr.abs() for tr in [
+                high - low,
+                high - prev_close,
+                prev_close - low,
+            ]
+        ],
         axis=1,
     ).max(axis=1)
 
