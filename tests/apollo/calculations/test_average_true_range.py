@@ -113,3 +113,39 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     atr_calculator.calculate_average_true_range()
 
     pd.testing.assert_series_equal(dataframe["tr"], control_dataframe["tr"])
+
+
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("window_size")
+def test__calculate_average_true_range__for_correct_atr_calculation(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test calculate_average_true_range method for correct ATR calculation.
+
+    Resulting ATR column must have correct values for each row.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_dataframe["tr"] = control_dataframe["adj close"].rolling(
+        window_size,
+    ).apply(
+        lambda series: __calc_tr(series, control_dataframe),
+    )
+
+    control_dataframe["atr"] = control_dataframe["tr"].ewm(
+            alpha=1 / window_size,
+            min_periods=window_size,
+            adjust=False,
+        ).mean()
+
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+
+    atr_calculator.calculate_average_true_range()
+
+    pd.testing.assert_series_equal(dataframe["atr"], control_dataframe["atr"])
