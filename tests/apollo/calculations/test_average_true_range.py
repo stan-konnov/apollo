@@ -4,6 +4,27 @@ import pytest
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 
 
+def __calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
+    """
+    Mimicry of TR calculation for testing purposes.
+
+    Please see AverageTrueRangeCalculator for detailed explanation of TR calculation.
+    """
+
+    rolling_df = dataframe.loc[series.index]
+
+    high = rolling_df["high"]
+    low = rolling_df["low"]
+    prev_close = rolling_df["adj close"].shift()
+
+    true_range = pd.concat(
+        [tr.abs() for tr in [high - low, high - prev_close, prev_close - low]],
+        axis=1,
+    ).max(axis=1)
+
+    return true_range.iloc[-1]
+
+
 @pytest.mark.usefixtures("dataframe")
 @pytest.mark.usefixtures("window_size")
 def test__calculate_average_true_range__for_correct_columns(
@@ -55,3 +76,32 @@ def test__calculate_average_true_range__for_correct_rolling_window(
     assert dataframe["tr"].isna().sum() == window_size - 1
     assert dataframe["atr"].isna().sum() == (window_size - 1) * 2
 
+
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("window_size")
+def test__calculate_average_true_range__for_correct_tr_calculation(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test calculate_average_true_range method for correct TR calculation.
+
+    Resulting TR column must have correct values for each row.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_dataframe["tr"] = control_dataframe["adj close"].rolling(
+        window_size,
+    ).apply(
+        lambda series: __calc_tr(series, control_dataframe),
+    )
+
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+
+    atr_calculator.calculate_average_true_range()
+
+    pd.testing.assert_series_equal(dataframe["tr"], control_dataframe["tr"])
