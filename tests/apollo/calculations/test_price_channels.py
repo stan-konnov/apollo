@@ -96,6 +96,5 @@ def test__calculate_price_channels__for_correct_indices(
 
     pc_calculator.calculate_price_channels()
 
-
     assert dataframe.index.name == "date"
     assert dataframe.index.dtype == "datetime64[ns]"
