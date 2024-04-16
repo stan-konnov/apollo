@@ -80,7 +80,8 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
         mimic_calc_sm,
         args=(
             control_dataframe,
-            swing_l, swing_h,
+            swing_l,
+            swing_h,
             in_downswing,
             swing_moments,
         ),
@@ -96,7 +97,7 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
 
     sm_calculator.calculate_swing_moments()
 
-    assert control_dataframe["sm"].equals(dataframe["sm"])
+    assert pd.testing.assert_series_equal(dataframe["sm"], control_dataframe["sm"])
 
 
 def mimic_calc_sm(
@@ -117,6 +118,7 @@ def mimic_calc_sm(
     rolling_df = dataframe.loc[series.index]
 
     current_low = rolling_df.iloc[-1]["low"]
+
     current_high = rolling_df.iloc[-1]["high"]
 
     current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
@@ -124,12 +126,15 @@ def mimic_calc_sm(
     if in_downswing:
 
         if current_low < swing_l:
+
             swing_l = current_low
 
         if current_high - swing_l > current_swing_filter:
+
             in_downswing = False
 
             swing_l = current_low
+
             swing_h = current_high
 
             swing_moments.append(1.0)
@@ -141,9 +146,11 @@ def mimic_calc_sm(
         return 0.0
 
     if current_high > swing_h:
+
         swing_h = current_high
 
     if swing_h - current_low > current_swing_filter:
+
         in_downswing = True
 
         swing_moments.append(-1.0)
