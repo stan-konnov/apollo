@@ -13,7 +13,7 @@ from apollo.settings import (
 )
 
 
-@pytest.mark.usefixtures("temp_test_data_dir", "empty_yahoo_api_response")
+@pytest.mark.usefixtures("data_dir", "empty_yahoo_api_response")
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -37,13 +37,9 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     assert str(exception.value) == "API response returned empty dataframe."
 
 
-@pytest.mark.usefixtures(
-    "temp_test_data_dir",
-    "temp_test_data_file",
-    "yahoo_api_response",
-)
+@pytest.mark.usefixtures("data_dir", "data_file", "yahoo_api_response")
 def test__request_or_read_prices__with_valid_parameters(
-    temp_test_data_file: Path,
+    data_file: Path,
 ) -> None:
     """
     Test request_or_read_prices method with valid parameters.
@@ -65,12 +61,12 @@ def test__request_or_read_prices__with_valid_parameters(
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert all(column.islower() for column in price_dataframe.columns)
-    assert Path.exists(temp_test_data_file)
+    assert Path.exists(data_file)
 
 
-@pytest.mark.usefixtures("temp_test_data_dir", "temp_test_data_file")
+@pytest.mark.usefixtures("data_dir", "data_file")
 def test__request_or_read_prices__when_prices_already_requested_before(
-    temp_test_data_file: Path,
+    data_file: Path,
 ) -> None:
     """
     Test request_or_read_prices when prices have already been requested before.
@@ -88,7 +84,7 @@ def test__request_or_read_prices__when_prices_already_requested_before(
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    price_data_file = pd.read_csv(temp_test_data_file, index_col=0)
+    price_data_file = pd.read_csv(data_file, index_col=0)
     price_data_file.index = pd.to_datetime(price_data_file.index)
 
     pd.testing.assert_frame_equal(price_data_file, price_dataframe)

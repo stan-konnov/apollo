@@ -13,32 +13,33 @@ from apollo.settings import (
     ValidYahooApiFrequencies,
 )
 
-TEMP_TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-TEMP_TEST_DATA_FILE = Path(
+DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
+DATA_FIL = Path(
     str(
-        f"{TEMP_TEST_DATA_DIR}/{TICKER}-"
+        f"{DATA_DIR}/{TICKER}-"
         f"{ValidYahooApiFrequencies.ONE_DAY.value}-"
         f"{START_DATE}-{END_DATE}.csv",
     ),
 )
 
-@pytest.fixture(name="temp_test_data_dir", scope="session")
-def _get_temp_test_data_dir() -> Generator[None, None, None]:
+@pytest.fixture(name="data_dir", scope="session")
+def _get_data_dir() -> Generator[None, None, None]:
     """Fixture to get test temp data directory."""
 
-    with patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR):
+    with patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR):
         yield
 
 
-@pytest.fixture(name="temp_test_data_file", scope="session")
-def get_temp_test_data_file() -> Path:
+@pytest.fixture(name="data_file", scope="session")
+def get_data_file() -> Path:
     """Fixture to get test temp data file."""
 
-    return TEMP_TEST_DATA_FILE
+    return DATA_FIL
 
 
 @pytest.fixture(scope="session", autouse=True)
-def _clean_temp_test_data() -> Generator[None, None, None]:
+def _clean_data() -> Generator[None, None, None]:
     """Clean temp test data directory after tests."""
+
     yield
-    rmtree(TEMP_TEST_DATA_DIR)
+    rmtree(DATA_DIR)
