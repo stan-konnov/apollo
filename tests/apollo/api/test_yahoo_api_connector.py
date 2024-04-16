@@ -1,8 +1,4 @@
-from os import curdir
 from pathlib import Path
-from shutil import rmtree
-from typing import Generator
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -14,26 +10,11 @@ from apollo.settings import (
     END_DATE,
     START_DATE,
     TICKER,
-    ValidYahooApiFrequencies,
-)
-
-TEMP_TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-TEMP_TEST_DATA_FILE = str(
-    f"{TEMP_TEST_DATA_DIR}/{TICKER}-"
-    f"{ValidYahooApiFrequencies.ONE_DAY.value}-"
-    f"{START_DATE}-{END_DATE}.csv",
 )
 
 
-@pytest.fixture(scope="session", autouse=True)
-def _clean_temp_test_data() -> Generator[None, None, None]:
-    """Clean temp test data directory after tests."""
-    yield
-    rmtree(TEMP_TEST_DATA_DIR)
-
-
+@pytest.mark.usefixtures("temp_test_data_dir")
 @pytest.mark.usefixtures("empty_yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -57,9 +38,12 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     assert str(exception.value) == "API response returned empty dataframe."
 
 
+@pytest.mark.usefixtures("temp_test_data_dir")
+@pytest.mark.usefixtures("temp_test_data_file")
 @pytest.mark.usefixtures("yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
-def test__request_or_read_prices__with_valid_parameters() -> None:
+def test__request_or_read_prices__with_valid_parameters(
+    temp_test_data_file: Path,
+) -> None:
     """
     Test request_or_read_prices method with valid parameters.
 
@@ -80,11 +64,14 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert all(column.islower() for column in price_dataframe.columns)
-    assert Path.exists(Path(TEMP_TEST_DATA_FILE))
+    assert Path.exists(temp_test_data_file)
 
 
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
-def test__request_or_read_prices__when_prices_already_requested_before() -> None:
+@pytest.mark.usefixtures("temp_test_data_dir")
+@pytest.mark.usefixtures("temp_test_data_file")
+def test__request_or_read_prices__when_prices_already_requested_before(
+    temp_test_data_file: Path,
+) -> None:
     """
     Test request_or_read_prices when prices have already been requested before.
 
@@ -101,7 +88,7 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    price_data_file = pd.read_csv(TEMP_TEST_DATA_FILE, index_col=0)
+    price_data_file = pd.read_csv(temp_test_data_file, index_col=0)
     price_data_file.index = pd.to_datetime(price_data_file.index)
 
     pd.testing.assert_frame_equal(price_data_file, price_dataframe)
