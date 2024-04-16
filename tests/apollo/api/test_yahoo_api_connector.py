@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -11,9 +12,11 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
+from tests.fixtures.directory_and_files import TEST_DIR
 
 
-@pytest.mark.usefixtures("data_dir", "empty_yahoo_api_response")
+@pytest.mark.usefixtures("empty_yahoo_api_response")
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -37,7 +40,8 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     assert str(exception.value) == "API response returned empty dataframe."
 
 
-@pytest.mark.usefixtures("data_dir", "data_file", "yahoo_api_response")
+@pytest.mark.usefixtures("data_file", "yahoo_api_response")
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
 def test__request_or_read_prices__with_valid_parameters(
     data_file: Path,
 ) -> None:
@@ -64,7 +68,8 @@ def test__request_or_read_prices__with_valid_parameters(
     assert Path.exists(data_file)
 
 
-@pytest.mark.usefixtures("data_dir", "data_file")
+@pytest.mark.usefixtures("data_file")
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
 def test__request_or_read_prices__when_prices_already_requested_before(
     data_file: Path,
 ) -> None:
