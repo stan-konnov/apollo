@@ -70,3 +70,32 @@ def test__calculate_price_channels__for_correct_rolling_window(
     assert dataframe["u_bound"].isna().sum() == ignored_rows_count
 
     assert dataframe["lbf"].isna().sum() == ignored_rows_count
+
+
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("window_size")
+def test__calculate_price_channels__for_correct_indices(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test calculate_price_channels method for correct indices.
+
+    Since price channel calculation relies on using numerical indices
+    for linear regression, dataframe must be reset before calculation;
+    and reset back to date after calculation.
+
+    Resulting dataframe must have "date" as index.
+    """
+
+    pc_calculator = PriceChannelsCalculator(
+        dataframe=dataframe,
+        window_size=window_size,
+        channel_sd_spread=CHANNEL_SD_SPREAD,
+    )
+
+    pc_calculator.calculate_price_channels()
+
+
+    assert dataframe.index.name == "date"
+    assert dataframe.index.dtype == "datetime64[ns]"
