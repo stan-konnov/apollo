@@ -1,3 +1,5 @@
+from contextvars import ContextVar
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -5,6 +7,7 @@ import pytest
 from apollo.calculations.swing_moments import SwingMomentsCalculator
 
 SWING_FILTER = 0.03
+IN_DOWNSWING: ContextVar[bool] = ContextVar("IN_DOWNSWING", default=True)
 
 
 @pytest.mark.usefixtures("dataframe")
@@ -73,7 +76,6 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
     swing_l = control_dataframe.iloc[window_size - 2]["low"]
     swing_h = control_dataframe.iloc[window_size - 2]["high"]
 
-    in_downswing = True
     swing_moments = np.full((1, window_size - 1), np.nan).flatten().tolist()
 
     control_dataframe["adj close"].rolling(window_size).apply(
@@ -82,7 +84,6 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
             control_dataframe,
             swing_l,
             swing_h,
-            in_downswing,
             swing_moments,
         ),
     )
@@ -97,7 +98,7 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
 
     sm_calculator.calculate_swing_moments()
 
-    assert pd.testing.assert_series_equal(dataframe["sm"], control_dataframe["sm"])
+    pd.testing.assert_series_equal(dataframe["sm"], control_dataframe["sm"])
 
 
 def mimic_calc_sm(
@@ -105,7 +106,6 @@ def mimic_calc_sm(
         dataframe: pd.DataFrame,
         swing_l: float,
         swing_h: float,
-        in_downswing: bool,
         swing_moments: list[float],
     ) -> float:
     """
@@ -123,7 +123,7 @@ def mimic_calc_sm(
 
     current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
 
-    if in_downswing:
+    if IN_DOWNSWING.get():
 
         if current_low < swing_l:
 
@@ -131,7 +131,7 @@ def mimic_calc_sm(
 
         if current_high - swing_l > current_swing_filter:
 
-            in_downswing = False
+            IN_DOWNSWING.set(False)  # noqa: FBT003
 
             swing_l = current_low
 
@@ -151,7 +151,7 @@ def mimic_calc_sm(
 
     if swing_h - current_low > current_swing_filter:
 
-        in_downswing = True
+        IN_DOWNSWING.set(True)  # noqa: FBT003
 
         swing_moments.append(-1.0)
 

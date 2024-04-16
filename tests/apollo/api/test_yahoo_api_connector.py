@@ -104,7 +104,7 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
     price_data_file = pd.read_csv(TEMP_TEST_DATA_FILE, index_col=0)
     price_data_file.index = pd.to_datetime(price_data_file.index)
 
-    assert pd.testing.assert_frame_equal(price_data_file, price_dataframe) is None
+    pd.testing.assert_frame_equal(price_data_file, price_dataframe)
     assert price_dataframe.index.name == price_data_file.index.name
     assert price_dataframe.index.dtype == price_data_file.index.dtype
 
