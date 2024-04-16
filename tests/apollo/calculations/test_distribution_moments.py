@@ -4,8 +4,7 @@ import pytest
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_distribution_moments__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -32,8 +31,7 @@ def test__calculate_distribution_moments__for_correct_columns(
     assert "z_score" in dataframe.columns
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_distribution_moments__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -65,8 +63,7 @@ def test__calculate_distribution_moments__for_correct_rolling_window(
     assert dataframe["z_score"].isna().sum() == ignored_rows_count
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_distribution_moments__for_correct_moments_calculation(
     dataframe: pd.DataFrame,
     window_size: int,

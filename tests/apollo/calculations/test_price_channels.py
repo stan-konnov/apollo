@@ -8,8 +8,7 @@ from apollo.calculations.price_channels import PriceChannelsCalculator
 CHANNEL_SD_SPREAD = 1.0
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_price_channels__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -38,8 +37,7 @@ def test__calculate_price_channels__for_correct_columns(
     assert "lbf" in dataframe.columns
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_price_channels__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -74,8 +72,7 @@ def test__calculate_price_channels__for_correct_rolling_window(
     assert dataframe["lbf"].isna().sum() == ignored_rows_count
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_price_channels__for_correct_indices(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -103,8 +100,7 @@ def test__calculate_price_channels__for_correct_indices(
     assert dataframe.index.dtype == "datetime64[ns]"
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_price_channels__for_correct_linear_regression_calculation(
     dataframe: pd.DataFrame,
     window_size: int,

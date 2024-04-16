@@ -13,8 +13,7 @@ from apollo.settings import (
 )
 
 
-@pytest.mark.usefixtures("temp_test_data_dir")
-@pytest.mark.usefixtures("empty_yahoo_api_response")
+@pytest.mark.usefixtures("temp_test_data_dir", "empty_yahoo_api_response")
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -38,9 +37,11 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     assert str(exception.value) == "API response returned empty dataframe."
 
 
-@pytest.mark.usefixtures("temp_test_data_dir")
-@pytest.mark.usefixtures("temp_test_data_file")
-@pytest.mark.usefixtures("yahoo_api_response")
+@pytest.mark.usefixtures(
+    "temp_test_data_dir",
+    "temp_test_data_file",
+    "yahoo_api_response",
+)
 def test__request_or_read_prices__with_valid_parameters(
     temp_test_data_file: Path,
 ) -> None:
@@ -67,8 +68,7 @@ def test__request_or_read_prices__with_valid_parameters(
     assert Path.exists(temp_test_data_file)
 
 
-@pytest.mark.usefixtures("temp_test_data_dir")
-@pytest.mark.usefixtures("temp_test_data_file")
+@pytest.mark.usefixtures("temp_test_data_dir", "temp_test_data_file")
 def test__request_or_read_prices__when_prices_already_requested_before(
     temp_test_data_file: Path,
 ) -> None:

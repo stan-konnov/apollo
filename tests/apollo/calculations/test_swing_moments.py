@@ -10,8 +10,7 @@ SWING_FILTER = 0.03
 IN_DOWNSWING: ContextVar[bool] = ContextVar("IN_DOWNSWING", default=True)
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_swing_moments__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -33,8 +32,7 @@ def test__calculate_swing_moments__for_correct_columns(
     assert "sm" in dataframe.columns
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_swing_moments__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -59,8 +57,7 @@ def test__calculate_swing_moments__for_correct_rolling_window(
     assert dataframe["sm"].isna().sum() == window_size - 1
 
 
-@pytest.mark.usefixtures("dataframe")
-@pytest.mark.usefixtures("window_size")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_swing_moments__for_correct_atr_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
