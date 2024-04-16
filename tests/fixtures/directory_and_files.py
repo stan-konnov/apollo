@@ -13,19 +13,14 @@ from apollo.settings import (
 )
 
 TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-DATA_FIL = Path(
+
+DATA_FILE = Path(
     str(
         f"{TEST_DIR}/{TICKER}-"
         f"{ValidYahooApiFrequencies.ONE_DAY.value}-"
         f"{START_DATE}-{END_DATE}.csv",
     ),
 )
-
-
-@pytest.fixture(name="data_file", scope="session")
-def get_data_file() -> Path:
-    """Fixture to get data file."""
-    return DATA_FIL
 
 
 @pytest.fixture(scope="session", autouse=True)
