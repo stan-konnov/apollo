@@ -4,33 +4,6 @@ import pytest
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 
 
-def __calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
-    """
-    Mimicry of TR calculation for testing purposes.
-
-    Please see AverageTrueRangeCalculator for detailed explanation of TR calculation.
-    """
-
-    rolling_df = dataframe.loc[series.index]
-
-    high = rolling_df["high"]
-    low = rolling_df["low"]
-    prev_close = rolling_df["adj close"].shift()
-
-    true_range = pd.concat(
-        [
-            tr.abs() for tr in [
-                high - low,
-                high - prev_close,
-                prev_close - low,
-            ]
-        ],
-        axis=1,
-    ).max(axis=1)
-
-    return true_range.iloc[-1]
-
-
 @pytest.mark.usefixtures("dataframe")
 @pytest.mark.usefixtures("window_size")
 def test__calculate_average_true_range__for_correct_columns(
@@ -100,7 +73,7 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     control_dataframe["tr"] = control_dataframe["adj close"].rolling(
         window_size,
     ).apply(
-        lambda series: __calc_tr(series, control_dataframe),
+        mimic_calc_tr, args=(control_dataframe, ),
     )
 
     atr_calculator = AverageTrueRangeCalculator(
@@ -130,7 +103,7 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     control_dataframe["tr"] = control_dataframe["adj close"].rolling(
         window_size,
     ).apply(
-        lambda series: __calc_tr(series, control_dataframe),
+        mimic_calc_tr, args=(control_dataframe, ),
     )
 
     control_dataframe["atr"] = control_dataframe["tr"].ewm(
@@ -147,3 +120,30 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     atr_calculator.calculate_average_true_range()
 
     pd.testing.assert_series_equal(dataframe["atr"], control_dataframe["atr"])
+
+
+def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
+    """
+    Mimicry of TR calculation for testing purposes.
+
+    Please see AverageTrueRangeCalculator for detailed explanation of TR calculation.
+    """
+
+    rolling_df = dataframe.loc[series.index]
+
+    high = rolling_df["high"]
+    low = rolling_df["low"]
+    prev_close = rolling_df["adj close"].shift()
+
+    true_range = pd.concat(
+        [
+            tr.abs() for tr in [
+                high - low,
+                high - prev_close,
+                prev_close - low,
+            ]
+        ],
+        axis=1,
+    ).max(axis=1)
+
+    return true_range.iloc[-1]
