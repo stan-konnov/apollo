@@ -28,6 +28,7 @@ poethepoet = "^0.25.1"
 omit = [
   "*/__init__.py",
   "*/settings.py",
+  "*/commands/*",
   "*/types.py",
   "*/tests/*",
 ]
