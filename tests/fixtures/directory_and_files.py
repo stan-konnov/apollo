@@ -8,13 +8,11 @@ import pytest
 from apollo.settings import (
     END_DATE,
     START_DATE,
-    STRATEGY,
     TICKER,
     ValidYahooApiFrequencies,
 )
 
 TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-PARM_FIL = Path(f"{TEST_DIR}/{STRATEGY}.json")
 DATA_FIL = Path(
     str(
         f"{TEST_DIR}/{TICKER}-"
@@ -28,12 +26,6 @@ DATA_FIL = Path(
 def get_data_file() -> Path:
     """Fixture to get data file."""
     return DATA_FIL
-
-
-@pytest.fixture(name="parameters_file", scope="session")
-def get_parameters_file() -> Path:
-    """Fixture to get parameters file."""
-    return PARM_FIL
 
 
 @pytest.fixture(scope="session", autouse=True)
