@@ -24,7 +24,7 @@ DATA_FIL = Path(
 
 @pytest.fixture(name="data_dir", scope="session")
 def _get_data_dir() -> Generator[None, None, None]:
-    """Fixture to get test temp data directory."""
+    """Fixture to get data directory."""
 
     with patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR):
         yield
@@ -32,7 +32,7 @@ def _get_data_dir() -> Generator[None, None, None]:
 
 @pytest.fixture(name="data_file", scope="session")
 def get_data_file() -> Path:
-    """Fixture to get test temp data file."""
+    """Fixture to get data file."""
 
     return DATA_FIL
 
