@@ -9,15 +9,7 @@ from apollo.settings import ValidYahooApiFrequencies
 
 @pytest.fixture(name="yahoo_api_response", scope="session")
 def _yahoo_api_response() -> Generator[None, None, None]:
-    """
-    Simulate raw Yahoo API OHLCV response.
-
-    :param tickers: Ticker to request prices for.
-    :param start: Start point to request prices from (inclusive).
-    :param end: End point until which to request prices (exclusive).
-    :param interval: Frequency of requested prices.
-    :returns: Dataframe with OHLCV data.
-    """
+    """Simulate raw Yahoo API OHLCV response."""
 
     def download(
         tickers: str | list[str],  # noqa: ARG001
@@ -41,15 +33,7 @@ def _yahoo_api_response() -> Generator[None, None, None]:
 
 @pytest.fixture(name="empty_yahoo_api_response", scope="session")
 def _empty_yahoo_api_response() -> Generator[None, None, None]:
-    """
-    Simulate empty Yahoo API OHLCV response.
-
-    :param tickers: Ticker to request prices for.
-    :param start: Start point to request prices from (inclusive).
-    :param end: End point until which to request prices (exclusive).
-    :param interval: Frequency of requested prices.
-    :returns: Empty dataframe.
-    """
+    """Simulate empty Yahoo API OHLCV response."""
 
     def download(
         tickers: str | list[str],  # noqa: ARG001
@@ -57,6 +41,7 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
         end: str,  # noqa: ARG001
         interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
+
         return pd.DataFrame()
 
     with patch("apollo.api.yahoo_api_connector.download", download):

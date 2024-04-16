@@ -15,7 +15,6 @@ def get_price_dataframe() -> pd.DataFrame:
         Path(f"{Path(curdir).resolve()}/tests/test_data/test.csv"),
         index_col=0,
     )
-
     test_dataframe.index = pd.to_datetime(test_dataframe.index)
 
     return test_dataframe
