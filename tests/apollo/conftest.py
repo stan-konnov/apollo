@@ -16,7 +16,7 @@ def get_price_dataframe() -> pd.DataFrame:
     """Fixture to get test dataframe from file system."""
 
     test_dataframe = pd.read_csv(
-        Path(f"{Path(curdir).resolve()}/tests/data/test.csv"),
+        Path(f"{Path(curdir).resolve()}/tests/test_data/test.csv"),
         index_col=0,
     )
 

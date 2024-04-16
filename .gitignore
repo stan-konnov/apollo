@@ -1,13 +1,11 @@
 **/.env
 **/venv
-
 **/__pycache__
 
 **/data
 **/backtesting_plots
 **/backtesting_results
 
-!tests/data
 **/.coverage
 
 **/.DS_Store
