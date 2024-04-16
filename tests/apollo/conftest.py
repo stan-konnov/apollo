@@ -78,8 +78,8 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
 
     def download(
         tickers: str | list[str],  # noqa: ARG001
-        start: str,
-        end: str,
+        start: str,  # noqa: ARG001
+        end: str,  # noqa: ARG001
         interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
         return pd.DataFrame()
