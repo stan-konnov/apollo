@@ -19,8 +19,6 @@ plotly = "^5.14.0"
 requests = "^2.31.0"
 python-dotenv = "^1.0.0"
 arrow = "^1.2.3"
-
-# Please leave me pinned
 kaleido = "0.2.1"
 pymongo = "^4.3.3"
 asyncio = "^3.4.3"
