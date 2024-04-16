@@ -51,6 +51,7 @@ def test__request_or_read_prices__with_valid_parameters(
     API Connector must return a pandas Dataframe with price data.
     API Connector must reindex the dataframe to date column.
     API Connector must cast all columns to lowercase.
+    API Connector must insert ticker column at first position.
     API Connector must save the dataframe to file.
     """
 
@@ -65,6 +66,7 @@ def test__request_or_read_prices__with_valid_parameters(
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert all(column.islower() for column in price_dataframe.columns)
+    assert price_dataframe.columns[0] == "ticker"
     assert Path.exists(data_file)
 
 
