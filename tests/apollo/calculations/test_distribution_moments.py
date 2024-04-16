@@ -25,8 +25,10 @@ def test__calculate_distribution_moments__for_correct_columns(
 
     assert "avg" in dataframe.columns
     assert "std" in dataframe.columns
+
     assert "skew" in dataframe.columns
     assert "kurt" in dataframe.columns
+
     assert "z_score" in dataframe.columns
 
 
@@ -56,8 +58,10 @@ def test__calculate_distribution_moments__for_correct_rolling_window(
 
     assert dataframe["avg"].isna().sum() == ignored_rows_count
     assert dataframe["std"].isna().sum() == ignored_rows_count
+
     assert dataframe["skew"].isna().sum() == ignored_rows_count
     assert dataframe["kurt"].isna().sum() == ignored_rows_count
+
     assert dataframe["z_score"].isna().sum() == ignored_rows_count
 
 
@@ -97,6 +101,8 @@ def test__calculate_distribution_moments__for_correct_moments_calculation(
 
     pd.testing.assert_series_equal(dataframe["avg"], control_dataframe["avg"])
     pd.testing.assert_series_equal(dataframe["std"], control_dataframe["std"])
+
     pd.testing.assert_series_equal(dataframe["skew"], control_dataframe["skew"])
     pd.testing.assert_series_equal(dataframe["kurt"], control_dataframe["kurt"])
+
     pd.testing.assert_series_equal(dataframe["z_score"], control_dataframe["z_score"])
