@@ -11,7 +11,7 @@ from apollo.settings import PLOT_DIR
 logger = logging.getLogger(__name__)
 
 # NOTE: Ignore warnings related
-# to internals arithmetics of the library
+# to internal arithmetics of the library
 # E.g., division by zero during attempts to calculate
 # Sortino ratio for a strategy that has no negative returns
 warnings.filterwarnings("ignore")
