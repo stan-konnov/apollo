@@ -176,7 +176,7 @@ def mimic_calc_lin_reg(
     """
     Mimicry of linear regression calculation for testing purposes.
 
-    Please see Price Channels calculator for
+    Please see PriceChannels calculator for
     detailed explanation of linear regression calculation.
     """
 
