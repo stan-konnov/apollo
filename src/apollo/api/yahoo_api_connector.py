@@ -5,7 +5,7 @@ import pandas as pd
 from yfinance import download
 
 from apollo.api.base_api_connector import BaseApiConnector
-from apollo.errors import EmptyApiResponseError
+from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import DATA_DIR, ValidYahooApiFrequencies
 
 logger = getLogger(__name__)

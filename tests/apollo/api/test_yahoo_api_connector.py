@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.errors import EmptyApiResponseError
+from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
