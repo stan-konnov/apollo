@@ -6,6 +6,7 @@
         "**/__pycache__": true,
         "**/.coverage": true,
         "**/venv": true,
+        "**/__init__.py": true,
     },
 
     "python.analysis.autoImportCompletions": true,

@@ -1,5 +1,3 @@
-from os import curdir
-from pathlib import Path
 from typing import Generator
 from unittest.mock import patch
 
@@ -7,29 +5,6 @@ import pandas as pd
 import pytest
 
 from apollo.settings import ValidYahooApiFrequencies
-
-WINDOW_SIZE = 5
-
-
-@pytest.fixture(name="dataframe", scope="session")
-def get_price_dataframe() -> pd.DataFrame:
-    """Fixture to get test dataframe from file system."""
-
-    test_dataframe = pd.read_csv(
-        Path(f"{Path(curdir).resolve()}/tests/test_data/test.csv"),
-        index_col=0,
-    )
-
-    test_dataframe.index = pd.to_datetime(test_dataframe.index)
-
-    return test_dataframe
-
-
-@pytest.fixture(name="window_size", scope="session")
-def get_window_size() -> int:
-    """Fixture to define window size for calculations."""
-
-    return WINDOW_SIZE
 
 
 @pytest.fixture(name="yahoo_api_response", scope="session")
