@@ -34,7 +34,7 @@ def test__configuration__with_non_existing_parameter_file(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
-    Test configuration construction with non existing parameter file.
+    Test configuration construction with non existing parameter set file.
 
     Configuration must log an exception and exit with code 1.
     """
