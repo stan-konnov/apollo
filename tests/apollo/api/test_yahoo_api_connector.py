@@ -16,7 +16,6 @@ from apollo.settings import (
     TICKER,
     ValidYahooApiFrequencies,
 )
-from tests.mocks.api_response import empty_yahoo_api_response, yahoo_api_response
 
 TEMP_TEST_DATA_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
 TEMP_TEST_DATA_FILE = str(
@@ -33,7 +32,7 @@ def _clean_temp_test_data() -> Generator[None, None, None]:
     rmtree(TEMP_TEST_DATA_DIR)
 
 
-@patch("apollo.api.yahoo_api_connector.download", empty_yahoo_api_response)
+@pytest.mark.usefixtures("empty_yahoo_api_response")
 @patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
@@ -58,7 +57,7 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     assert str(exception.value) == "API response returned empty dataframe."
 
 
-@patch("apollo.api.yahoo_api_connector.download", yahoo_api_response)
+@pytest.mark.usefixtures("yahoo_api_response")
 @patch("apollo.api.yahoo_api_connector.DATA_DIR", TEMP_TEST_DATA_DIR)
 def test__request_or_read_prices__with_valid_parameters() -> None:
     """
