@@ -1,8 +1,11 @@
+import logging
 from unittest.mock import patch
 
 import pytest
 
 from apollo.utils.configuration import Configuration
+
+logger = logging.getLogger(__name__)
 
 
 @patch("apollo.utils.configuration.TICKER", None)
@@ -25,16 +28,25 @@ def test__configuration__with_missing_environment_variables() -> None:
     )
 
 
-@patch("apollo.utils.configuration.PARM_DIR", None)
-def test__configuration__with_non_existing_parameter_file() -> None:
+@patch("apollo.utils.configuration.PARM_DIR", "parameters")
+@patch("apollo.utils.configuration.STRATEGY", "NonExistingStrategy")
+def test__configuration__with_non_existing_parameter_file(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """
     Test configuration construction with non existing parameter file.
 
     Configuration must log an exception and exit with code 1.
     """
 
-    with pytest.raises(SystemExit) as exception:
+    caplog.set_level(logging.ERROR)
 
+    with pytest.raises(SystemExit) as exception:
         Configuration()
+
+    assert str(
+        "Parameter set file not found. "
+        "Please create one at parameters/NonExistingStrategy.json",
+    ) in caplog.text
 
     assert exception.value.code == 1
