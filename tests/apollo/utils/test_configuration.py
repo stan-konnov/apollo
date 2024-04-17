@@ -84,4 +84,6 @@ def test__configuration__with_existing_parameter_set_file() -> None:
     assert configuration.strategy == "test_strategy"
     assert configuration.start_date == START_DATE
     assert configuration.end_date == END_DATE
+
     assert configuration.parameter_set == parameter_set
+    assert type(configuration.parameter_set) == type(parameter_set)
