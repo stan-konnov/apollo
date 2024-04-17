@@ -7,7 +7,7 @@ import pytest
 WINDOW_SIZE = 5
 
 
-@pytest.fixture(name="dataframe", scope="session")
+@pytest.fixture(name="dataframe", scope="module")
 def get_price_dataframe() -> pd.DataFrame:
     """Fixture to get test dataframe from file system."""
 
