@@ -12,11 +12,11 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from tests.fixtures.directory_and_files import DATA_FILE, TEST_DIR
+from tests.fixtures.api_response import DATA_DIR, DATA_FILE
 
 
 @pytest.mark.usefixtures("empty_yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
@@ -41,7 +41,7 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__with_valid_parameters() -> None:
     """
     Test request_or_read_prices method with valid parameters.
@@ -68,7 +68,7 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     assert Path.exists(DATA_FILE)
 
 
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", TEST_DIR)
+@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__when_prices_already_requested_before() -> None:
     """
     Test request_or_read_prices when prices have already been requested before.
