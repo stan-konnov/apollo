@@ -6,31 +6,32 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base import BaseStrategy
 
 
+# TODO: check if previous price was higher for long and lower for short
 class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
     """
     Skewness Kurtosis Volatility Mean Reversion.
 
     This strategy takes long positions when:
 
-    * Moving kurtosis is positive -- prices experiencing peakedness,
-    indicating strengthening of the trend.
-
     * Moving skewness is negative -- more prices fall above the mean than below,
     indicating positive trend.
 
-    * Volatility is above average -- prices are experiencing large fluctuations,
-    acting as reinforcement of the move up.
+    * Moving kurtosis is positive -- prices experiencing peakedness,
+    indicating sharp moves within the positive trend.
+
+    * Volatility is above average -- price point fluctuates significantly from the rest,
+    acting as reinforcement of the move within positive trend.
 
     This strategy takes short positions when:
-
-    * Moving kurtosis is negative -- prices experiencing flatness,
-    indicating weakening of the trend.
 
     * Moving skewness is positive -- more prices fall below the mean than above,
     indicating negative trend.
 
-    * Volatility is above average -- prices are experiencing large fluctuations,
-    acting as reinforcement of the move down.
+    * Moving kurtosis is negative -- prices experiencing flatness,
+    indicating orderly moves within the negative trend.
+
+    * Volatility is above average -- price point fluctuates significantly from the rest,
+    acting as reinforcement of the move within negative trend.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -86,15 +87,15 @@ class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self.dataframe["kurt"] > self.kurtosis_threshold) &
             (self.dataframe["skew"] < 0) &
+            (self.dataframe["kurt"] > self.kurtosis_threshold) &
             (self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier)
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self.dataframe["kurt"] < self.kurtosis_threshold) &
             (self.dataframe["skew"] > 0) &
+            (self.dataframe["kurt"] < self.kurtosis_threshold) &
             (self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier)
         )
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

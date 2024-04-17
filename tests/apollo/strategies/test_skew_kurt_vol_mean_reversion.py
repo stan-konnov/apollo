@@ -99,15 +99,15 @@ def test__skew_kurt_vol_mean_reversion__with_valid_parameters(
     at_calculator.calculate_average_true_range()
 
     long = (
-        (control_dataframe["kurt"] > kurtosis_threshold) &
         (control_dataframe["skew"] < 0) &
+        (control_dataframe["kurt"] > kurtosis_threshold) &
         (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
     )
     control_dataframe.loc[long, "signal"] = LONG_SIGNAL
 
     short = (
-        (control_dataframe["kurt"] < kurtosis_threshold) &
         (control_dataframe["skew"] > 0) &
+        (control_dataframe["kurt"] < kurtosis_threshold) &
         (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
     )
     control_dataframe.loc[short, "signal"] = SHORT_SIGNAL
