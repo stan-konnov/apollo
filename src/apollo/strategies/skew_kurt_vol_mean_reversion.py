@@ -6,7 +6,6 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base import BaseStrategy
 
 
-# TODO: check if previous price was higher for long and lower for short
 class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
     """
     Skewness Kurtosis Volatility Mean Reversion.
@@ -16,8 +15,8 @@ class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
     * Moving skewness is negative -- more prices fall above the mean than below,
     indicating positive trend.
 
-    * Moving kurtosis is positive -- prices experiencing peakedness,
-    indicating sharp moves within the positive trend.
+    * Moving kurtosis is negative -- prices experiencing flatness,
+    indicating orderly moves within the positive trend.
 
     * Volatility is above average -- price point fluctuates significantly from the rest,
     acting as reinforcement of the move within positive trend.
@@ -88,7 +87,7 @@ class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
 
         long = (
             (self.dataframe["skew"] < 0) &
-            (self.dataframe["kurt"] > self.kurtosis_threshold) &
+            (self.dataframe["kurt"] < self.kurtosis_threshold) &
             (self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier)
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
