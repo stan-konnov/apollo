@@ -11,8 +11,8 @@ from tqdm.contrib.itertools import product
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import BRES_DIR, OPTP_DIR
-from apollo.strategies.skew_kurt_vol_mean_reversion import (
-    SkewnessKurtosisVolatilityMeanReversion,
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
@@ -38,8 +38,8 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "SkewnessKurtosisVolatilityMeanReversion":
-            SkewnessKurtosisVolatilityMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing":
+            SkewnessKurtosisVolatilityTrendFollowing,
     }
 
 

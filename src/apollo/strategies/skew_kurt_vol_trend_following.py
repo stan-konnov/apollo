@@ -6,9 +6,9 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base import BaseStrategy
 
 
-class SkewnessKurtosisVolatilityMeanReversion(BaseStrategy):
+class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     """
-    Skewness Kurtosis Volatility Mean Reversion.
+    Skewness Kurtosis Volatility Trend Following.
 
     This strategy takes long positions when:
 
