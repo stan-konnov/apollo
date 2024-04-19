@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import STRATEGY
-from tests.fixtures.api_response import DATA_DIR
+from tests.fixtures.files_and_directories import PLOT_DIR
 
 LOT_SIZE_CASH = 1000
 STOP_LOSS_LEVEL = 0.01
@@ -37,7 +37,7 @@ def test__backtesting_runner__for_uppercasing_columns(
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", DATA_DIR)
+@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_running_the_process(
     dataframe: DataFrame,
 ) -> None:
@@ -66,7 +66,7 @@ def test__backtesting_runner__for_running_the_process(
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", Path("tests/temp/plots"))
+@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_creating_plots_directory(
     dataframe: DataFrame,
 ) -> None:
@@ -94,7 +94,7 @@ def test__backtesting_runner__for_creating_plots_directory(
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", DATA_DIR)
+@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_writing_result_plot(
     dataframe: DataFrame,
 ) -> None:
@@ -118,4 +118,4 @@ def test__backtesting_runner__for_writing_result_plot(
 
     backtesting_runner.run()
 
-    assert Path.exists(Path(f"{DATA_DIR}/{strategy_name}.html"))
+    assert Path.exists(Path(f"{PLOT_DIR}/{strategy_name}.html"))

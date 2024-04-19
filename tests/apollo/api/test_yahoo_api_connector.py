@@ -12,7 +12,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from tests.fixtures.api_response import DATA_DIR, DATA_FILE
+from tests.fixtures.files_and_directories import DATA_DIR, DATA_FILE
 
 
 @pytest.mark.usefixtures("empty_yahoo_api_response")
