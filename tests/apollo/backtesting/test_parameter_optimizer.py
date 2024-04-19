@@ -37,7 +37,8 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
 
-    _get_combination_ranges must return tuple of parameter keys and product of ranges.
+    _construct_parameter_combinations() must
+    return tuple of parameter keys and product of ranges.
     """
 
     parameter_optimizer = ParameterOptimizer()
@@ -66,3 +67,16 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
 
     assert keys == parameters.keys()
     assert control_combinations == list(combinations)
+
+
+def test__parameter_optimizer__for_correct_result_output() -> None:
+    """
+    Test Parameter Optimizer for correct result output.
+
+    _output_results() must output results CSV file.
+    _output_results() must output optimized parameters JSON file.
+
+    Results CSV must have clean indices.
+    Results CSV must omit unnecessary columns.
+    Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
+    """
