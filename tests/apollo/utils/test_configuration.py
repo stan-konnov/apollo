@@ -78,7 +78,7 @@ def test__configuration__with_existing_parameter_set_file() -> None:
         parameter_set = load(file)
 
     assert configuration.ticker == TICKER
-    assert configuration.strategy == "test_strategy"
+    assert configuration.strategy == STRATEGY
     assert configuration.start_date == START_DATE
     assert configuration.end_date == END_DATE
 
