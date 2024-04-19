@@ -8,13 +8,13 @@ import pytest
 
 from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.configuration import Configuration
+from tests.fixtures.files_and_directories import PARM_DIR
 
 if TYPE_CHECKING:
     from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
 
-PARM_DIR = "tests/test_data"
 STRATEGY = "test_strategy"
 PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 
@@ -39,7 +39,7 @@ def test__configuration__with_missing_environment_variables() -> None:
     )
 
 
-@patch("apollo.utils.configuration.PARM_DIR", "parameters")
+@patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
 @patch("apollo.utils.configuration.STRATEGY", "NonExistingStrategy")
 def test__configuration__with_non_existing_parameter_set_file(
     caplog: pytest.LogCaptureFixture,
@@ -57,7 +57,7 @@ def test__configuration__with_non_existing_parameter_set_file(
 
     assert str(
         "Parameter set file not found. "
-        "Please create one at parameters/NonExistingStrategy.json",
+        f"Please create one at {PARM_DIR}/NonExistingStrategy.json",
     ) in caplog.text
 
     assert exception.value.code == 1

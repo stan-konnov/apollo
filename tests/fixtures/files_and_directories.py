@@ -12,9 +12,9 @@ from apollo.settings import (
     ValidYahooApiFrequencies,
 )
 
-TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
+TEMP_TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
 
-DATA_DIR = Path(f"{TEST_DIR}/data")
+DATA_DIR = Path(f"{TEMP_TEST_DIR}/data")
 
 DATA_FILE = Path(
     str(
@@ -24,11 +24,13 @@ DATA_FILE = Path(
     ),
 )
 
-PLOT_DIR = Path(f"{TEST_DIR}/plots")
+PLOT_DIR = Path(f"{TEMP_TEST_DIR}/plots")
+
+PARM_DIR = "tests/test_data"
 
 
 @pytest.fixture(scope="session", autouse=True)
 def _clean_data() -> Generator[None, None, None]:
     """Clean temp test data directory after tests."""
     yield
-    rmtree(TEST_DIR)
+    rmtree(TEMP_TEST_DIR)
