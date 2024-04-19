@@ -8,15 +8,12 @@ import pytest
 
 from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.configuration import Configuration
-from tests.fixtures.files_and_directories import PARM_DIR
+from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH, STRATEGY
 
 if TYPE_CHECKING:
     from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
-
-STRATEGY = "test_strategy"
-PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 
 
 @patch("apollo.utils.configuration.TICKER", None)

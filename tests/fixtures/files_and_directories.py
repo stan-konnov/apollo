@@ -28,6 +28,9 @@ PLOT_DIR = Path(f"{TEMP_TEST_DIR}/plots")
 
 PARM_DIR = "tests/test_data"
 
+STRATEGY = "test_strategy"
+PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
+
 
 @pytest.fixture(scope="session", autouse=True)
 def _clean_data() -> Generator[None, None, None]:
