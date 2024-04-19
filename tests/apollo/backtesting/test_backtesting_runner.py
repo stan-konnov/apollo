@@ -66,6 +66,34 @@ def test__backtesting_runner__for_running_the_process(
 
 
 @pytest.mark.usefixtures("dataframe")
+@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", Path("tests/temp/plots"))
+def test__backtesting_runner__for_creating_plots_directory(
+    dataframe: DataFrame,
+) -> None:
+    """
+    Test Backtesting Runner for creating plots directory.
+
+    Backtesting runner must create plots directory if it doesn't exist.
+    """
+
+    dataframe["signal"] = 0
+    strategy_name = str(STRATEGY)
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=strategy_name,
+        lot_size_cash=LOT_SIZE_CASH,
+        stop_loss_level=STOP_LOSS_LEVEL,
+        take_profit_level=TAKE_PROFIT_LEVEL,
+        write_result_plot=True,
+    )
+
+    backtesting_runner.run()
+
+    assert Path.exists(Path("tests/temp/plots"))
+
+
+@pytest.mark.usefixtures("dataframe")
 @patch("apollo.backtesting.backtesting_runner.PLOT_DIR", DATA_DIR)
 def test__backtesting_runner__for_writing_result_plot(
     dataframe: DataFrame,
