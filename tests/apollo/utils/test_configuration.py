@@ -22,7 +22,7 @@ PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 @patch("apollo.utils.configuration.TICKER", None)
 def test__configuration__with_missing_environment_variables() -> None:
     """
-    Test configuration construction with missing environment variables.
+    Test Configuration construction with missing environment variables.
 
     Configuration must raise a ValueError when environment variables are missing.
     """
@@ -45,7 +45,7 @@ def test__configuration__with_non_existing_parameter_set_file(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
-    Test configuration construction with non existing parameter set file.
+    Test Configuration construction with non existing parameter set file.
 
     Configuration must log an exception and exit with code 1.
     """
@@ -67,7 +67,7 @@ def test__configuration__with_non_existing_parameter_set_file(
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 def test__configuration__with_existing_parameter_set_file() -> None:
     """
-    Test configuration construction with existing parameter set file.
+    Test Configuration construction with existing parameter set file.
 
     Configuration must properly consume environment variables.
     Configuration must parse the parameter set file into a typed object.
