@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -41,7 +42,7 @@ def test__backtesting_runner__for_running_the_process(
     dataframe: DataFrame,
 ) -> None:
     """
-    Test Backtesting Runner construction for running the backtesting process.
+    Test Backtesting Runner for running the backtesting process.
 
     Backtesting runner must run the backtesting process and return statistics.
     Statistics must have strategy name from environment variables.
@@ -62,3 +63,31 @@ def test__backtesting_runner__for_running_the_process(
 
     assert stats is not None
     assert stats["_strategy"] == strategy_name
+
+
+@pytest.mark.usefixtures("dataframe")
+@patch("apollo.backtesting.backtesting_runner.PLOT_DIR", DATA_DIR)
+def test__backtesting_runner__for_writing_result_plot(
+    dataframe: DataFrame,
+) -> None:
+    """
+    Test Backtesting Runner for writing the result plot.
+
+    Backtesting runner must write the result plot if requested.
+    """
+
+    dataframe["signal"] = 0
+    strategy_name = str(STRATEGY)
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=strategy_name,
+        lot_size_cash=LOT_SIZE_CASH,
+        stop_loss_level=STOP_LOSS_LEVEL,
+        take_profit_level=TAKE_PROFIT_LEVEL,
+        write_result_plot=True,
+    )
+
+    backtesting_runner.run()
+
+    assert Path.exists(Path(f"{DATA_DIR}/{strategy_name}.html"))
