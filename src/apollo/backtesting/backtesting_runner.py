@@ -70,8 +70,8 @@ class BacktestingRunner:
         """
 
         backtesting_process = Backtest(
-            self.dataframe,
-            self.strategy_sim_agent,
+            data=self.dataframe,
+            strategy=self.strategy_sim_agent,
             cash=self.lot_size_cash,
             trade_on_close=True,
         )
