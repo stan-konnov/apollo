@@ -3,10 +3,6 @@ from pandas import DataFrame
 
 from apollo.backtesting.strategy_simulation_agent import StrategySimulationAgent
 
-LOT_SIZE_CASH = 1000
-STOP_LOSS_LEVEL = 0.01
-TAKE_PROFIT_LEVEL = 0.01
-
 
 @pytest.mark.usefixtures("dataframe")
 def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
