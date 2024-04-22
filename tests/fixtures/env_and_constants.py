@@ -1,5 +1,5 @@
 TICKER = "SPY"
-STRATEGY = "test_strategy"
+STRATEGY = "TestStrategy"
 START_DATE = "2007-01-01"
 END_DATE = "2013-01-01"
 
