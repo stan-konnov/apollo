@@ -9,6 +9,7 @@ import pytest
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
 from tests.fixtures.env_and_constants import (
@@ -162,8 +163,8 @@ def test__parameter_optimizer__for_correct_result_output(
     random_index_1 = randint(1, dataframe.shape[0] - 1)  # noqa: S311
     random_index_2 = random_index_1 - 1
 
-    optimization_run_1_dataframe.loc[random_index_1, "signal"] = 1
-    optimization_run_2_dataframe.loc[random_index_2, "signal"] = 1
+    optimization_run_1_dataframe.loc[random_index_1, "signal"] = LONG_SIGNAL
+    optimization_run_2_dataframe.loc[random_index_2, "signal"] = SHORT_SIGNAL
 
     optimization_run_1_dataframe.set_index("date", inplace=True)
     optimization_run_2_dataframe.set_index("date", inplace=True)
