@@ -6,4 +6,6 @@
 **/backtesting_plots
 **/backtesting_results
 
+**/.coverage*
+
 **/.DS_Store

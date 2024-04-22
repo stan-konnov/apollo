@@ -36,6 +36,8 @@ class StrategySimulationAgent(Strategy):
         Calculate stop loss and take profit levels.
         Depending on whether the signal is long or short,
         close existing position (if any) and open new one.
+
+        NOTE: Backtesting.py requires this method to be implemented.
         """
 
         # Get currently iterated signal
@@ -62,8 +64,7 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # Calculate stop loss and take profit levels
-                sl = close * (1 - self.stop_loss_level)
-                tp = close * (1 + self.take_profit_level)
+                sl, tp = self._calculate_long_sl_and_tp(close)
 
                 # And open new long position
                 self.buy(sl=sl, tp=tp)
@@ -79,8 +80,27 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # Calculate stop loss and take profit levels
-                sl = close * (1 + self.stop_loss_level)
-                tp = close * (1 - self.take_profit_level)
+                sl, tp = self._calculate_short_sl_and_tp(close)
 
                 # And open new short position
                 self.sell(sl=sl, tp=tp)
+
+
+    def _calculate_long_sl_and_tp(self, close: float) -> tuple[float, float]:
+        """
+        Calculate long stop loss and take profit.
+
+        Use provided close, stop loss and take profit levels.
+        """
+
+        return close * (1 - self.stop_loss_level), close * (1 + self.take_profit_level)
+
+
+    def _calculate_short_sl_and_tp(self, close: float) -> tuple[float, float]:
+        """
+        Calculate short stop loss and take profit.
+
+        Use provided close, stop loss and take profit levels.
+        """
+
+        return close * (1 + self.stop_loss_level), close * (1 - self.take_profit_level)

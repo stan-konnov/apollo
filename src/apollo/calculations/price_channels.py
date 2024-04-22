@@ -16,11 +16,11 @@ class PriceChannelsCalculator(BaseCalculator):
     """
 
     def __init__(
-            self,
-            dataframe: pd.DataFrame,
-            window_size: int,
-            channel_sd_spread: float,
-        ) -> None:
+        self,
+        dataframe: pd.DataFrame,
+        window_size: int,
+        channel_sd_spread: float,
+    ) -> None:
         """
         Construct Price Channels calculator.
 
