@@ -19,12 +19,12 @@ class YahooApiConnector(BaseApiConnector):
     """
 
     def __init__(
-            self,
-            ticker: str,
-            start_date: str,
-            end_date: str,
-            frequency: str = ValidYahooApiFrequencies.ONE_DAY.value,
-        ) -> None:
+        self,
+        ticker: str,
+        start_date: str,
+        end_date: str,
+        frequency: str = ValidYahooApiFrequencies.ONE_DAY.value,
+    ) -> None:
         """
         Construct Yahoo API connector.
 

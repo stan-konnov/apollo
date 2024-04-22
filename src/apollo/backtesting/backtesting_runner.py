@@ -21,14 +21,14 @@ class BacktestingRunner:
     """Backtesting Runner class that facilitates the backtesting process."""
 
     def __init__(
-            self,
-            dataframe: DataFrame,
-            strategy_name: str,
-            lot_size_cash: float,
-            stop_loss_level: float,
-            take_profit_level: float,
-            write_result_plot: bool = False,
-        ) -> None:
+        self,
+        dataframe: DataFrame,
+        strategy_name: str,
+        lot_size_cash: float,
+        stop_loss_level: float,
+        take_profit_level: float,
+        write_result_plot: bool = False,
+    ) -> None:
         """
         Construct Backtesting runner.
 

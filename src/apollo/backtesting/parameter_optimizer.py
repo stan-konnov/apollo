@@ -169,9 +169,9 @@ class ParameterOptimizer:
 
 
     def _construct_parameter_combinations(
-            self,
-            parameter_set: ParameterSet,
-        ) -> ParameterKeysAndCombinations:
+        self,
+        parameter_set: ParameterSet,
+    ) -> ParameterKeysAndCombinations:
         """
         Construct parameter sets for each combination of parameters.
 
@@ -194,11 +194,11 @@ class ParameterOptimizer:
 
 
     def _get_combination_ranges(
-            self,
-            range_min: float,
-            range_max: float,
-            range_step: float,
-        ) -> pd.Series:
+        self,
+        range_min: float,
+        range_max: float,
+        range_step: float,
+    ) -> pd.Series:
         """
         Generate a range of floats for every parameter.
 

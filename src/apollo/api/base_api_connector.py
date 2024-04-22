@@ -15,12 +15,12 @@ class BaseApiConnector(ABC):
     """
 
     def __init__(
-            self,
-            ticker: str,
-            start_date: str,
-            end_date: str,
-            frequency: str,
-        ) -> None:
+        self,
+        ticker: str,
+        start_date: str,
+        end_date: str,
+        frequency: str,
+    ) -> None:
         """
         Construct Base API connector.
 

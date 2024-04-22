@@ -36,12 +36,12 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     """
 
     def __init__(
-            self,
-            dataframe: DataFrame,
-            window_size: int,
-            kurtosis_threshold: float,
-            volatility_multiplier: float,
-        ) -> None:
+        self,
+        dataframe: DataFrame,
+        window_size: int,
+        kurtosis_threshold: float,
+        volatility_multiplier: float,
+    ) -> None:
         """
         Construct Skewness Kurtosis Volatility Strategy.
 

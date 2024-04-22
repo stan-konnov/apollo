@@ -12,11 +12,11 @@ class SwingMomentsCalculator(BaseCalculator):
     """
 
     def __init__(
-            self,
-            dataframe: pd.DataFrame,
-            window_size: int,
-            swing_filter: float,
-        ) -> None:
+        self,
+        dataframe: pd.DataFrame,
+        window_size: int,
+        swing_filter: float,
+    ) -> None:
         """
         Construct Swing Moments calculator.
 
