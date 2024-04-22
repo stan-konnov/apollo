@@ -97,15 +97,19 @@ def test__parameter_optimizer__for_correct_result_output(
     Results CSV must have clean indices.
     Results CSV must omit unnecessary columns.
     Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
+
+    Optimized parameters JSON must match the best results.
     """
 
+    # Initialize ParameterOptimizer with Configuration
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration = Configuration()
-    parameter_optimizer._configuration.ticker = str(TICKER)
-    parameter_optimizer._configuration.strategy = str(STRATEGY)
-    parameter_optimizer._configuration.start_date = str(START_DATE)
-    parameter_optimizer._configuration.end_date = str(END_DATE)
+    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
+    parameter_optimizer._configuration.ticker = str(TICKER)  # noqa: SLF001
+    parameter_optimizer._configuration.strategy = str(STRATEGY)  # noqa: SLF001
+    parameter_optimizer._configuration.start_date = str(START_DATE)  # noqa: SLF001
+    parameter_optimizer._configuration.end_date = str(END_DATE)  # noqa: SLF001
 
+    # Create two optimization runs with different signals and parameters
     dataframe["signal"] = 0
     dataframe.reset_index(inplace=True)
 
@@ -121,6 +125,7 @@ def test__parameter_optimizer__for_correct_result_output(
     optimization_run_1_dataframe.set_index("date", inplace=True)
     optimization_run_2_dataframe.set_index("date", inplace=True)
 
+    # Backtest the first run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_1_dataframe,
         strategy_name=STRATEGY,
@@ -128,9 +133,9 @@ def test__parameter_optimizer__for_correct_result_output(
         stop_loss_level=STOP_LOSS_LEVEL,
         take_profit_level=TAKE_PROFIT_LEVEL,
     )
-
     optimization_run_1_stats = backtesting_runner.run()
 
+    # Backtest the second run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_2_dataframe,
         strategy_name=STRATEGY,
@@ -138,9 +143,9 @@ def test__parameter_optimizer__for_correct_result_output(
         stop_loss_level=STOP_LOSS_LEVEL,
         take_profit_level=TAKE_PROFIT_LEVEL,
     )
-
     optimization_run_2_stats = backtesting_runner.run()
 
+    # Transpose the results and add parameters
     optimized_results_1 = pd.DataFrame(optimization_run_1_stats).transpose()
     optimized_results_1["parameters"] = (
         "{'stop_loss_level': 0.01, 'take_profit_level': 0.01}"
@@ -151,18 +156,23 @@ def test__parameter_optimizer__for_correct_result_output(
         "{'stop_loss_level': 0.02, 'take_profit_level': 0.02}"
     )
 
+    # Merge the results
     optimized_results = pd.concat([optimized_results_1, optimized_results_2])
 
+    # Use the results as control dataframe
     control_dataframe = optimized_results.copy()
 
+    # Sort the control dataframe
     control_dataframe.sort_values(
         ["Return [%]", "Sharpe Ratio", "# Trades"],
         ascending=False,
         inplace=True,
     )
 
+    # Reset the indices of the control dataframe
     control_dataframe.reset_index(drop=True, inplace=True)
 
+    # Drop unnecessary columns from the control dataframe
     control_dataframe.drop(
         columns=[
             "Start",
@@ -177,8 +187,10 @@ def test__parameter_optimizer__for_correct_result_output(
         inplace=True,
     )
 
+    # Now, run the _output_results method
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
 
+    # Read back the results and optimized parameters
     results_dataframe = pd.read_csv(
         f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}.csv",
         index_col=0,
@@ -187,12 +199,22 @@ def test__parameter_optimizer__for_correct_result_output(
     with Path.open(Path(f"{OPTP_DIR}/{STRATEGY}.json")) as file:
         optimized_parameters = load(file)
 
+    # Grab the return from the results and control dataframes
+    results_return = round(results_dataframe.iloc[0]["Return [%]"], 2)
+    control_return = round(control_dataframe.iloc[0]["Return [%]"], 2)
+
+    # Directories must exist
     assert Path.exists(BRES_DIR)
     assert Path.exists(OPTP_DIR)
 
-    assert (
-        results_dataframe.iloc[0]["Return [%]"]
-        == control_dataframe.iloc[0]["Return [%]"]
-    )
+    # Results CSV must have clean indices
+    assert results_dataframe.index.equals(control_dataframe.index)
 
+    # Results CSV must omit unnecessary columns
+    assert list(results_dataframe.columns) == list(control_dataframe.columns)
+
+    # Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades"
+    assert results_return == control_return
+
+    # Optimized parameters JSON must match the best results
     assert str(optimized_parameters) == control_dataframe.iloc[0]["parameters"]
