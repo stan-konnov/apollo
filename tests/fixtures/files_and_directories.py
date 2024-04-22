@@ -29,7 +29,9 @@ DATA_FILE = Path(
 
 PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
 
-PARM_DIR = "tests/test_data"
+TEST_DIR = "tests/test_data"
+
+PARM_DIR = TEST_DIR
 
 PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 
