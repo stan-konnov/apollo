@@ -11,7 +11,7 @@ from apollo.settings import PLOT_DIR
 logger = logging.getLogger(__name__)
 
 # NOTE: Ignore warnings related
-# to internals arithmetics of the library
+# to internal arithmetics of the library
 # E.g., division by zero during attempts to calculate
 # Sortino ratio for a strategy that has no negative returns
 warnings.filterwarnings("ignore")
@@ -21,14 +21,14 @@ class BacktestingRunner:
     """Backtesting Runner class that facilitates the backtesting process."""
 
     def __init__(
-            self,
-            dataframe: DataFrame,
-            strategy_name: str,
-            lot_size_cash: float,
-            stop_loss_level: float,
-            take_profit_level: float,
-            write_result_plot: bool = False,
-        ) -> None:
+        self,
+        dataframe: DataFrame,
+        strategy_name: str,
+        lot_size_cash: float,
+        stop_loss_level: float,
+        take_profit_level: float,
+        write_result_plot: bool = False,
+    ) -> None:
         """
         Construct Backtesting runner.
 
@@ -70,8 +70,8 @@ class BacktestingRunner:
         """
 
         backtesting_process = Backtest(
-            self.dataframe,
-            self.strategy_sim_agent,
+            data=self.dataframe,
+            strategy=self.strategy_sim_agent,
             cash=self.lot_size_cash,
             trade_on_close=True,
         )

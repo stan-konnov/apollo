@@ -2,10 +2,21 @@
     "editor.tabSize": 4,
 
     "files.exclude": {
+        "**/.pytest_cache": true,
         "**/__pycache__": true,
-        "**/venv": true
+        "**/.coverage*": true,
+        "**/venv": true,
+        "**/__init__.py": true,
     },
 
     "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "standard",
+
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "always"
+        },
+    },
 }

@@ -26,7 +26,9 @@ class AverageTrueRangeCalculator(BaseCalculator):
         """Calculate rolling ATR via rolling TR and EMA."""
 
         # Calculate rolling True Range
-        self.dataframe["tr"] = self.dataframe["adj close"].rolling(self.window_size).apply(
+        self.dataframe["tr"] = self.dataframe["adj close"].rolling(
+            self.window_size,
+        ).apply(
             self.__calc_tr, args=(self.dataframe, ),
         )
 
@@ -56,7 +58,7 @@ class AverageTrueRangeCalculator(BaseCalculator):
         prev_close = rolling_df["adj close"].shift()
 
         # Calculate True Range for each row, where TR is:
-        # highest of (Ht - Lt, Ht - Ct-1, Ct-1 - Lt)
+        # max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)
         # Kaufman, Trading Systems and Methods, 2020, p.850
         true_range = [high - low, high - prev_close, prev_close - low]
 
