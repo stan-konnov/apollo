@@ -99,16 +99,16 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
 
 
 def mimic_calc_sm(
-        series: pd.Series,
-        dataframe: pd.DataFrame,
-        swing_l: float,
-        swing_h: float,
-        swing_moments: list[float],
-    ) -> float:
+    series: pd.Series,
+    dataframe: pd.DataFrame,
+    swing_l: float,
+    swing_h: float,
+    swing_moments: list[float],
+) -> float:
     """
     Mimicry of swing moments calculation for testing purposes.
 
-    Please see PriceChannels calculator for
+    Please see SwingMomentsCalculator for
     detailed explanation of swing moments calculation.
     """
 
@@ -121,13 +121,10 @@ def mimic_calc_sm(
     current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
 
     if IN_DOWNSWING.get():
-
         if current_low < swing_l:
-
             swing_l = current_low
 
         if current_high - swing_l > current_swing_filter:
-
             IN_DOWNSWING.set(False)  # noqa: FBT003
 
             swing_l = current_low
@@ -143,11 +140,9 @@ def mimic_calc_sm(
         return 0.0
 
     if current_high > swing_h:
-
         swing_h = current_high
 
     if swing_h - current_low > current_swing_filter:
-
         IN_DOWNSWING.set(True)  # noqa: FBT003
 
         swing_moments.append(-1.0)

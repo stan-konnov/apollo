@@ -67,10 +67,15 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
 
     control_dataframe = dataframe.copy()
 
-    control_dataframe["tr"] = control_dataframe["adj close"].rolling(
-        window_size,
-    ).apply(
-        mimic_calc_tr, args=(control_dataframe, ),
+    control_dataframe["tr"] = (
+        control_dataframe["adj close"]
+        .rolling(
+            window_size,
+        )
+        .apply(
+            mimic_calc_tr,
+            args=(control_dataframe,),
+        )
     )
 
     atr_calculator = AverageTrueRangeCalculator(
@@ -96,17 +101,26 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
 
     control_dataframe = dataframe.copy()
 
-    control_dataframe["tr"] = control_dataframe["adj close"].rolling(
-        window_size,
-    ).apply(
-        mimic_calc_tr, args=(control_dataframe, ),
+    control_dataframe["tr"] = (
+        control_dataframe["adj close"]
+        .rolling(
+            window_size,
+        )
+        .apply(
+            mimic_calc_tr,
+            args=(control_dataframe,),
+        )
     )
 
-    control_dataframe["atr"] = control_dataframe["tr"].ewm(
-        alpha=1 / window_size,
-        min_periods=window_size,
-        adjust=False,
-    ).mean()
+    control_dataframe["atr"] = (
+        control_dataframe["tr"]
+        .ewm(
+            alpha=1 / window_size,
+            min_periods=window_size,
+            adjust=False,
+        )
+        .mean()
+    )
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -133,7 +147,8 @@ def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     true_range = pd.concat(
         [
-            tr.abs() for tr in [
+            tr.abs()
+            for tr in [
                 high - low,
                 high - prev_close,
                 prev_close - low,

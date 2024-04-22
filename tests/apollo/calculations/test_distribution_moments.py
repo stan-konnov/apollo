@@ -85,9 +85,8 @@ def test__calculate_distribution_moments__for_correct_moments_calculation(
     control_dataframe["kurt"] = rolling_window.kurt()
 
     control_dataframe["z_score"] = (
-        (control_dataframe["adj close"] - control_dataframe["avg"]) /
-        control_dataframe["std"]
-    )
+        control_dataframe["adj close"] - control_dataframe["avg"]
+    ) / control_dataframe["std"]
 
     dm_calculator = DistributionMomentsCalculator(
         dataframe=dataframe,

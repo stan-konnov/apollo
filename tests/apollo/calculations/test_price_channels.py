@@ -162,17 +162,17 @@ def test__calculate_price_channels__for_correct_linear_regression_calculation(
 
 
 def mimic_calc_lin_reg(
-        series: pd.Series,
-        t_slope: list[float],
-        l_bound: list[float],
-        u_bound: list[float],
-        bf_line: list[float],
-        channel_sd_spread: float,
-    ) -> float:
+    series: pd.Series,
+    t_slope: list[float],
+    l_bound: list[float],
+    u_bound: list[float],
+    bf_line: list[float],
+    channel_sd_spread: float,
+) -> float:
     """
     Mimicry of linear regression calculation for testing purposes.
 
-    Please see PriceChannels calculator for
+    Please see PriceChannelsCalculator for
     detailed explanation of linear regression calculation.
     """
 
@@ -182,7 +182,7 @@ def mimic_calc_lin_reg(
     slope, intercept, _, _, _ = linregress(x, y)
     t_slope.append(slope)
 
-    lbf = (slope * x + intercept)
+    lbf = slope * x + intercept
     bf_line.append(lbf[-1])
 
     std = y.std()
