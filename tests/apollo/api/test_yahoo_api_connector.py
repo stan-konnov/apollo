@@ -8,10 +8,8 @@ from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
-    END_DATE,
-    START_DATE,
-    TICKER,
 )
+from tests.fixtures.env_and_constants import END_DATE, START_DATE, TICKER
 from tests.fixtures.files_and_directories import DATA_DIR, DATA_FILE
 
 
@@ -25,16 +23,15 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     """
 
     api_connector = YahooApiConnector(
-        ticker=str(TICKER),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
     )
 
     with pytest.raises(
         EmptyApiResponseError,
         match="API response returned empty dataframe.",
     ) as exception:
-
         api_connector.request_or_read_prices()
 
     assert str(exception.value) == "API response returned empty dataframe."
@@ -54,9 +51,9 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     """
 
     api_connector = YahooApiConnector(
-        ticker=str(TICKER),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
     )
 
     price_dataframe = api_connector.request_or_read_prices()
@@ -79,9 +76,9 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
     """
 
     api_connector = YahooApiConnector(
-        ticker=str(TICKER),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
     )
 
     price_dataframe = api_connector.request_or_read_prices()
@@ -105,10 +102,9 @@ def test__request_or_read_prices__with_invalid_date_format() -> None:
         ValueError,
         match=f"Start and end date format must be {DEFAULT_DATE_FORMAT}.",
     ) as exception:
-
         YahooApiConnector(
-            ticker=str(TICKER),
-            start_date=str(START_DATE),
+            ticker=TICKER,
+            start_date=START_DATE,
             end_date="01-01-2020",
         )
 
@@ -128,11 +124,10 @@ def test__request_or_read_prices__with_invalid_dates() -> None:
         ValueError,
         match="Start date must be before end date.",
     ) as exception:
-
         YahooApiConnector(
-            ticker=str(TICKER),
+            ticker=TICKER,
             start_date="3333-01-01",
-            end_date=str(END_DATE),
+            end_date=END_DATE,
         )
 
     assert str(exception.value) == "Start date must be before end date."
