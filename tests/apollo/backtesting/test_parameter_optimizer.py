@@ -9,14 +9,16 @@ import pytest
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
-from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
 from tests.fixtures.env_and_constants import (
+    END_DATE,
     LOT_SIZE_CASH,
+    START_DATE,
     STOP_LOSS_LEVEL,
     STRATEGY,
     TAKE_PROFIT_LEVEL,
+    TICKER,
 )
 from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR, PARM_DIR
 
@@ -145,10 +147,10 @@ def test__parameter_optimizer__for_correct_result_output(
     # Initialize ParameterOptimizer with Configuration
     parameter_optimizer = ParameterOptimizer()
     parameter_optimizer._configuration = Configuration()  # noqa: SLF001
-    parameter_optimizer._configuration.ticker = str(TICKER)  # noqa: SLF001
-    parameter_optimizer._configuration.strategy = str(STRATEGY)  # noqa: SLF001
-    parameter_optimizer._configuration.start_date = str(START_DATE)  # noqa: SLF001
-    parameter_optimizer._configuration.end_date = str(END_DATE)  # noqa: SLF001
+    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
+    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
+    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
     # Create two optimization runs with different signals and parameters
     dataframe["signal"] = 0
