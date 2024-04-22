@@ -1,3 +1,4 @@
+from json import load
 from pathlib import Path
 from random import randint
 from typing import cast
@@ -9,8 +10,9 @@ import pytest
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.settings import END_DATE, START_DATE, TICKER
+from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
-from tests.fixtures.files_and_directories import BRES_DIR, STRATEGY, OPTP_DIR
+from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR, STRATEGY
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
@@ -86,16 +88,23 @@ def test__parameter_optimizer__for_correct_result_output(
     """
     Test Parameter Optimizer for correct result output.
 
-    _output_results() must create results directory.
-    _output_results() must create optimized parameters directory.
+    Parameter Optimizer must create results directory.
+    Parameter Optimizer must create optimized parameters directory.
 
-    _output_results() must output results CSV file.
-    _output_results() must output optimized parameters JSON file.
+    Parameter Optimizer must output results CSV file.
+    Parameter Optimizer must output optimized parameters JSON file.
 
     Results CSV must have clean indices.
     Results CSV must omit unnecessary columns.
     Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
     """
+
+    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._configuration = Configuration()
+    parameter_optimizer._configuration.ticker = str(TICKER)
+    parameter_optimizer._configuration.strategy = str(STRATEGY)
+    parameter_optimizer._configuration.start_date = str(START_DATE)
+    parameter_optimizer._configuration.end_date = str(END_DATE)
 
     dataframe["signal"] = 0
     dataframe.reset_index(inplace=True)
@@ -168,15 +177,22 @@ def test__parameter_optimizer__for_correct_result_output(
         inplace=True,
     )
 
-    parameter_optimizer = ParameterOptimizer()
-
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
 
     results_dataframe = pd.read_csv(
         f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}.csv",
+        index_col=0,
     )
 
-    print(results_dataframe)
+    with Path.open(Path(f"{OPTP_DIR}/{STRATEGY}.json")) as file:
+        optimized_parameters = load(file)
 
     assert Path.exists(BRES_DIR)
     assert Path.exists(OPTP_DIR)
+
+    assert (
+        results_dataframe.iloc[0]["Return [%]"]
+        == control_dataframe.iloc[0]["Return [%]"]
+    )
+
+    assert str(optimized_parameters) == control_dataframe.iloc[0]["parameters"]
