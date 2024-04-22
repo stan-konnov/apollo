@@ -1,18 +1,23 @@
+from random import randint
 from typing import cast
 
 import pandas as pd
+import pytest
 
+from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.utils.types import ParameterSet
+from tests.fixtures.files_and_directories import STRATEGY
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
 RANGE_STEP = 1.0
 
+LOT_SIZE_CASH = 1000
+STOP_LOSS_LEVEL = 0.01
+TAKE_PROFIT_LEVEL = 0.01
 
-# @pytest.mark.usefixtures("dataframe")
-# @patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
-# @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+
 def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -69,7 +74,10 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
-def test__parameter_optimizer__for_correct_result_output() -> None:
+@pytest.mark.usefixtures("dataframe")
+def test__parameter_optimizer__for_correct_result_output(
+    dataframe: pd.DataFrame,
+) -> None:
     """
     Test Parameter Optimizer for correct result output.
 
@@ -80,3 +88,76 @@ def test__parameter_optimizer__for_correct_result_output() -> None:
     Results CSV must omit unnecessary columns.
     Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
     """
+
+    dataframe["signal"] = 0
+    dataframe.reset_index(inplace=True)
+
+    optimization_run_1_dataframe = dataframe.copy()
+    optimization_run_2_dataframe = dataframe.copy()
+
+    random_index_1 = randint(1, dataframe.shape[0] - 1)  # noqa: S311
+    random_index_2 = random_index_1 - 1
+
+    # Randomly mark signals
+    optimization_run_1_dataframe.loc[random_index_1, "signal"] = 1
+    optimization_run_2_dataframe.loc[random_index_2, "signal"] = 1
+
+    optimization_run_1_dataframe.set_index("date", inplace=True)
+    optimization_run_2_dataframe.set_index("date", inplace=True)
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=optimization_run_1_dataframe,
+        strategy_name=STRATEGY,
+        lot_size_cash=LOT_SIZE_CASH,
+        stop_loss_level=STOP_LOSS_LEVEL,
+        take_profit_level=TAKE_PROFIT_LEVEL,
+    )
+
+    optimization_run_1_stats = backtesting_runner.run()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=optimization_run_2_dataframe,
+        strategy_name=STRATEGY,
+        lot_size_cash=LOT_SIZE_CASH,
+        stop_loss_level=STOP_LOSS_LEVEL,
+        take_profit_level=TAKE_PROFIT_LEVEL,
+    )
+
+    optimization_run_2_stats = backtesting_runner.run()
+
+    optimized_results = pd.DataFrame(optimization_run_1_stats).transpose()
+    optimized_results = pd.concat(
+        [optimized_results, pd.DataFrame(optimization_run_2_stats).transpose()],
+    )
+
+    control_dataframe = optimized_results.copy()
+
+    control_dataframe.sort_values(
+        ["Return [%]", "Sharpe Ratio", "# Trades"],
+        ascending=False,
+        inplace=True,
+    )
+
+    control_dataframe.reset_index(drop=True, inplace=True)
+
+    control_dataframe.drop(
+        columns=[
+            "Start",
+            "End",
+            "Duration",
+            "Profit Factor",
+            "Expectancy [%]",
+            "_strategy",
+            "_equity_curve",
+            "_trades",
+        ],
+        inplace=True,
+    )
+
+    print(optimized_results)
+
+    # parameter_optimizer = ParameterOptimizer()
+
+    # parameter_optimizer._output_results(optimized_results)
+
+    assert 1 == 2
