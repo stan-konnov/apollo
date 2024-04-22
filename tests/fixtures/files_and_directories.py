@@ -24,12 +24,17 @@ DATA_FILE = Path(
     ),
 )
 
-PLOT_DIR = Path(f"{TEMP_TEST_DIR}/plots")
+PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
 
 PARM_DIR = "tests/test_data"
 
 STRATEGY = "test_strategy"
+
 PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
+
+BRES_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_results")
+
+OPTP_DIR = Path(f"{TEMP_TEST_DIR}/parameters_opt")
 
 
 @pytest.fixture(scope="session", autouse=True)

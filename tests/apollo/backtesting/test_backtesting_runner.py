@@ -90,7 +90,7 @@ def test__backtesting_runner__for_creating_plots_directory(
 
     backtesting_runner.run()
 
-    assert Path.exists(Path("tests/temp/plots"))
+    assert Path.exists(PLOT_DIR)
 
 
 @pytest.mark.usefixtures("dataframe")

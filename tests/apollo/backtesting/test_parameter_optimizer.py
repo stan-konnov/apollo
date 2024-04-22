@@ -1,11 +1,14 @@
+from pathlib import Path
 from random import randint
 from typing import cast
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+from apollo.settings import BRES_DIR, OPTP_DIR
 from apollo.utils.types import ParameterSet
 from tests.fixtures.files_and_directories import STRATEGY
 
@@ -75,11 +78,16 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
 
 
 @pytest.mark.usefixtures("dataframe")
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
+@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
 def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
 ) -> None:
     """
     Test Parameter Optimizer for correct result output.
+
+    _output_results() must create results directory.
+    _output_results() must create optimized parameters directory.
 
     _output_results() must output results CSV file.
     _output_results() must output optimized parameters JSON file.
@@ -98,7 +106,6 @@ def test__parameter_optimizer__for_correct_result_output(
     random_index_1 = randint(1, dataframe.shape[0] - 1)  # noqa: S311
     random_index_2 = random_index_1 - 1
 
-    # Randomly mark signals
     optimization_run_1_dataframe.loc[random_index_1, "signal"] = 1
     optimization_run_2_dataframe.loc[random_index_2, "signal"] = 1
 
@@ -125,10 +132,17 @@ def test__parameter_optimizer__for_correct_result_output(
 
     optimization_run_2_stats = backtesting_runner.run()
 
-    optimized_results = pd.DataFrame(optimization_run_1_stats).transpose()
-    optimized_results = pd.concat(
-        [optimized_results, pd.DataFrame(optimization_run_2_stats).transpose()],
+    optimized_results_1 = pd.DataFrame(optimization_run_1_stats).transpose()
+    optimized_results_1["parameters"] = (
+        "{'stop_loss_level': 0.01, 'take_profit_level': 0.01}"
     )
+
+    optimized_results_2 = pd.DataFrame(optimization_run_2_stats).transpose()
+    optimized_results_2["parameters"] = (
+        "{'stop_loss_level': 0.02, 'take_profit_level': 0.02}"
+    )
+
+    optimized_results = pd.concat([optimized_results_1, optimized_results_2])
 
     control_dataframe = optimized_results.copy()
 
@@ -154,10 +168,9 @@ def test__parameter_optimizer__for_correct_result_output(
         inplace=True,
     )
 
-    print(optimized_results)
+    parameter_optimizer = ParameterOptimizer()
 
-    # parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
 
-    # parameter_optimizer._output_results(optimized_results)
-
-    assert 1 == 2
+    assert Path.exists(BRES_DIR)
+    assert Path.exists(OPTP_DIR)
