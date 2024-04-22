@@ -8,9 +8,9 @@ import pytest
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
-from apollo.settings import BRES_DIR, OPTP_DIR
+from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.types import ParameterSet
-from tests.fixtures.files_and_directories import STRATEGY
+from tests.fixtures.files_and_directories import BRES_DIR, STRATEGY, OPTP_DIR
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
@@ -171,6 +171,12 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer = ParameterOptimizer()
 
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
+
+    results_dataframe = pd.read_csv(
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}.csv",
+    )
+
+    print(results_dataframe)
 
     assert Path.exists(BRES_DIR)
     assert Path.exists(OPTP_DIR)
