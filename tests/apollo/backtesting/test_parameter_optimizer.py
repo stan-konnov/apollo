@@ -18,7 +18,7 @@ from tests.fixtures.env_and_constants import (
     STRATEGY,
     TAKE_PROFIT_LEVEL,
 )
-from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR
+from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR, PARM_DIR
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
@@ -79,6 +79,45 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
 
     assert keys == parameters.keys()
     assert control_combinations == list(combinations)
+
+
+@pytest.mark.usefixtures("yahoo_api_response")
+@patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
+@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+def test__parameter_optimizer__for_correct_error_handling(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """
+    Test Parameter Optimizer for correct error handling.
+
+    Parameter Optimizer must catch error from strategy, log and exit with code 1.
+    """
+
+    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._configuration.parameter_set = {  # type: ignore  # noqa: PGH003, SLF001
+        "window_size": {
+            "step": 5,
+            "range": [5, 10],
+        },
+        "kurtosis_thresh": {
+            "step": 0.1,
+            "range": [1.0, 2.0],
+        },
+        "volatility_multiplier": {
+            "step": 0.1,
+            "range": [1.0, 2.0],
+        },
+        "strategy_specific_parameters": [
+            "kurtosis_thresh",
+            "volatility_multiplier",
+        ],
+    }
+
+    with pytest.raises(SystemExit) as exception:
+        parameter_optimizer.process()
+
+    assert "Parameters misconfigured, see traceback" in caplog.text
+    assert exception.value.code == 1
 
 
 @pytest.mark.usefixtures("dataframe")

@@ -1,5 +1,5 @@
 TICKER = "SPY"
-STRATEGY = "TestStrategy"
+STRATEGY = "SkewnessKurtosisVolatilityTrendFollowing"
 START_DATE = "2007-01-01"
 END_DATE = "2013-01-01"
 
