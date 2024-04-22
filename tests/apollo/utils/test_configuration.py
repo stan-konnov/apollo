@@ -6,9 +6,9 @@ from unittest.mock import patch
 
 import pytest
 
-from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.configuration import Configuration
-from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH, STRATEGY
+from tests.fixtures.env_and_constants import END_DATE, START_DATE, STRATEGY, TICKER
+from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH
 
 if TYPE_CHECKING:
     from apollo.utils.types import ParameterSet
@@ -28,7 +28,6 @@ def test__configuration__with_missing_environment_variables() -> None:
         ValueError,
         match="TICKER, STRATEGY, START_DATE, END_DATE variables must be set.",
     ) as exception:
-
         Configuration()
 
     assert str(exception.value) == (
@@ -52,10 +51,13 @@ def test__configuration__with_non_existing_parameter_set_file(
     with pytest.raises(SystemExit) as exception:
         Configuration()
 
-    assert str(
-        "Parameter set file not found. "
-        f"Please create one at {PARM_DIR}/NonExistingStrategy.json",
-    ) in caplog.text
+    assert (
+        str(
+            "Parameter set file not found. "
+            f"Please create one at {PARM_DIR}/NonExistingStrategy.json",
+        )
+        in caplog.text
+    )
 
     assert exception.value.code == 1
 

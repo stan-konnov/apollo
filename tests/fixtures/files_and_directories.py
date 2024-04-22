@@ -6,10 +6,13 @@ from typing import Generator
 import pytest
 
 from apollo.settings import (
+    ValidYahooApiFrequencies,
+)
+from tests.fixtures.env_and_constants import (
     END_DATE,
     START_DATE,
+    STRATEGY,
     TICKER,
-    ValidYahooApiFrequencies,
 )
 
 TEMP_TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
@@ -27,8 +30,6 @@ DATA_FILE = Path(
 PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
 
 PARM_DIR = "tests/test_data"
-
-STRATEGY = "test_strategy"
 
 PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 

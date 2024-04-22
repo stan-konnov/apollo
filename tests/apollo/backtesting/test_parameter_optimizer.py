@@ -12,15 +12,17 @@ from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
-from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR, STRATEGY
+from tests.fixtures.env_and_constants import (
+    LOT_SIZE_CASH,
+    STOP_LOSS_LEVEL,
+    STRATEGY,
+    TAKE_PROFIT_LEVEL,
+)
+from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
 RANGE_STEP = 1.0
-
-LOT_SIZE_CASH = 1000
-STOP_LOSS_LEVEL = 0.01
-TAKE_PROFIT_LEVEL = 0.01
 
 
 def test__parameter_optimizer__for_correct_combination_ranges() -> None:
