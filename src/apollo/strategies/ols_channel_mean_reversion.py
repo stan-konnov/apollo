@@ -6,7 +6,25 @@ from apollo.strategies.base import BaseStrategy
 
 
 class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
-    """OrdinaryLeastSquaresChannelsMeanReversion."""
+    """
+    Ordinary Least Squares Channel Mean Reversion.
+
+    This strategy takes long positions when:
+
+    * Adjusted close crosses below lower bound of the channel,
+    indicating that instrument entered oversold zone.
+
+    * Slope of the channel is decreasing,
+    indicating continued movement away from the mean.
+
+    This strategy takes short positions when:
+
+    * Adjusted close crosses above upper bound of the channel,
+    indicating that instrument entered overbought zone.
+
+    * Slope of the channel is increasing,
+    indicating continued movement up within overbought zone.
+    """
 
     def __init__(
         self,
