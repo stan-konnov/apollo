@@ -10,12 +10,12 @@
 
     "stop_loss_level": {
         "step": 0.005,
-        "range": [0.005, 0.03]
+        "range": [0.005, 0.01]
     },
 
     "take_profit_level": {
         "step": 0.01,
-        "range": [0.01, 0.05]
+        "range": [0.01, 0.1]
     },
 
     "channel_sd_spread": {

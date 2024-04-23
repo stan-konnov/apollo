@@ -2,12 +2,12 @@ import logging
 
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 
-# from apollo.api.yahoo_api_connector import YahooApiConnector
-# from apollo.backtesting.backtesting_runner import BacktestingRunner
-# from apollo.settings import END_DATE, START_DATE, TICKER
-# from apollo.strategies.ols_channel_mean_reversion import (
-#     OrdinaryLeastSquaresChannelMeanReversion,
-# )
+from apollo.api.yahoo_api_connector import YahooApiConnector
+from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.settings import END_DATE, START_DATE, TICKER
+from apollo.strategies.ols_channel_mean_reversion import (
+    OrdinaryLeastSquaresChannelMeanReversion,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,10 +41,11 @@ def main() -> None:
 
     # backtesting_runner = BacktestingRunner(
     #     dataframe=dataframe,
-    #     strategy_name="ols_channel_mean_reversion",
+    #     strategy_name="OrdinaryLeastSquaresChannelMeanReversion",
     #     lot_size_cash=1000,
     #     stop_loss_level=0.005,
-    #     take_profit_level=0.05,
+    #     take_profit_level=0.1,
+    #     write_result_plot=True,
     # )
 
     # stats = backtesting_runner.run()

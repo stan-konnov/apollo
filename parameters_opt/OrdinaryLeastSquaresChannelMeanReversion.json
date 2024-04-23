@@ -3,6 +3,6 @@
     "cash_size": 1000,
     "window_size": 15.0,
     "stop_loss_level": 0.005,
-    "take_profit_level": 0.05,
+    "take_profit_level": 0.1,
     "channel_sd_spread": 0.5
 }
