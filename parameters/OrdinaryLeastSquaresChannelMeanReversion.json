@@ -5,7 +5,7 @@
 
     "window_size": {
         "step": 5,
-        "range": [5, 10]
+        "range": [5, 40]
     },
 
     "stop_loss_level": {
