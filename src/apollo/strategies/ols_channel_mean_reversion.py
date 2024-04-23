@@ -15,7 +15,7 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
     indicating that instrument entered oversold zone.
 
     * Slope of the channel is decreasing,
-    indicating continued movement away from the mean.
+    indicating continuation of movement down and away from the mean.
 
     This strategy takes short positions when:
 
@@ -23,7 +23,7 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
     indicating that instrument entered overbought zone.
 
     * Slope of the channel is increasing,
-    indicating continued movement up within overbought zone.
+    indicating continuation of movement up and away from the mean.
     """
 
     def __init__(
