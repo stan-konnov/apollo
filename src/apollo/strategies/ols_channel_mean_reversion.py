@@ -64,5 +64,4 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
             (self.dataframe["adj close"] >= self.dataframe["u_bound"]) &
             (self.dataframe["slope"] >= self.dataframe["prev_slope"])
         )
-
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

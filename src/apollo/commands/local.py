@@ -33,7 +33,7 @@ def main() -> None:
     strategy = OrdinaryLeastSquaresChannelMeanReversion(
         dataframe=dataframe,
         window_size=10,
-        channel_sd_spread=1.0,
+        channel_sd_spread=0.5,
     )
 
     strategy.model_trading_signals()
