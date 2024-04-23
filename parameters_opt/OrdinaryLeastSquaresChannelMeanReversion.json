@@ -2,7 +2,7 @@
     "frequency": "1d",
     "cash_size": 1000,
     "window_size": 10.0,
-    "stop_loss_level": 0.01,
+    "stop_loss_level": 0.005,
     "take_profit_level": 0.03,
     "channel_sd_spread": 0.5
 }
