@@ -55,14 +55,14 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self.dataframe["slope"] <= self.dataframe["prev_slope"]) &
-            (self.dataframe["adj close"] <= self.dataframe["l_bound"])
+            (self.dataframe["adj close"] <= self.dataframe["l_bound"]) &
+            (self.dataframe["slope"] <= self.dataframe["prev_slope"])
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self.dataframe["slope"] >= self.dataframe["prev_slope"]) &
-            (self.dataframe["adj close"] >= self.dataframe["u_bound"])
+            (self.dataframe["adj close"] >= self.dataframe["u_bound"]) &
+            (self.dataframe["slope"] >= self.dataframe["prev_slope"])
         )
 
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
