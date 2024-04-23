@@ -24,6 +24,8 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
 
     * Slope of the channel is increasing,
     indicating continuation of movement up and away from the mean.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
     def __init__(
@@ -33,7 +35,7 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
         channel_sd_spread: float,
     ) -> None:
         """
-        Construct.
+        Construct Ordinary Least Squares Channel Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
