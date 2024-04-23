@@ -4,6 +4,8 @@ from scipy.stats import linregress
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+# TODO: please rename me to OrdinaryLeastSquaresChannelCalculator
+
 
 class PriceChannelsCalculator(BaseCalculator):
     """
@@ -36,6 +38,9 @@ class PriceChannelsCalculator(BaseCalculator):
         self.u_bound: list[float] = []
         self.bf_line: list[float] = []
 
+        self.t_plus_n_price: list[float] = []
+        self.f_plus_n_price: list[float] = []
+
         self.channel_sd_spread = channel_sd_spread
 
 
@@ -50,6 +55,13 @@ class PriceChannelsCalculator(BaseCalculator):
         self.l_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.u_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.bf_line = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+
+        self.t_plus_n_price = (
+            np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        )
+        self.f_plus_n_price = (
+            np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        )
 
         # Calculate bounds and slope by using linear regression
         self.dataframe["adj close"].rolling(self.window_size).apply(
@@ -68,6 +80,12 @@ class PriceChannelsCalculator(BaseCalculator):
 
         # Write line of best fit to the dataframe
         self.dataframe["lbf"] = self.bf_line
+
+        # Write projected price for t + window_size to the dataframe
+        self.dataframe["t_plus_n_price"] = self.t_plus_n_price
+
+        # Write forecasted price for t + window_size to the dataframe
+        self.dataframe["f_plus_n_price"] = self.f_plus_n_price
 
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
@@ -94,7 +112,22 @@ class PriceChannelsCalculator(BaseCalculator):
         self.t_slope.append(slope)
 
         # Calculate line of best fit
-        lbf = (slope * x + intercept)
+        lbf: pd.Series = slope * x + intercept
+
+        # Project price for t + window_size
+        projection = y + self.window_size * slope
+
+        # Preserve projected price
+        self.t_plus_n_price.append(projection[-1])
+
+        # Calculate residual
+        residual = y - lbf
+
+        # Forecast the price based on residual
+        forecast = projection + self.channel_sd_spread * residual
+
+        # Preserve forecast
+        self.f_plus_n_price.append(forecast[-1])
 
         # Preserve LBF
         self.bf_line.append(lbf[-1])
