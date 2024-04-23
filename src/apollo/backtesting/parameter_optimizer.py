@@ -10,7 +10,7 @@ from tqdm.contrib.itertools import product
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from apollo.settings import BRES_DIR, OPTP_DIR
+from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.strategies.ols_channel_mean_reversion import (
     OrdinaryLeastSquaresChannelMeanReversion,
 )
@@ -136,6 +136,11 @@ class ParameterOptimizer:
 
             # Model the trading signals
             strategy_instance.model_trading_signals()
+
+            # Skip this run if there are no signals
+            if (dataframe_to_test["signal"] == NO_SIGNAL).all():
+
+                continue
 
             # Instantiate the backtesting runner and run the backtesting process
             backtesting_runner = BacktestingRunner(

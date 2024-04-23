@@ -3,6 +3,8 @@ from typing import Any, Type
 
 from pandas import DataFrame
 
+from apollo.settings import NO_SIGNAL
+
 
 class BaseStrategy(ABC):
     """
@@ -25,7 +27,7 @@ class BaseStrategy(ABC):
         self.dataframe = dataframe
         self.window_size = window_size
 
-        self.dataframe["signal"] = 0
+        self.dataframe["signal"] = NO_SIGNAL
 
 
     @abstractmethod

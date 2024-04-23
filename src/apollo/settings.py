@@ -11,6 +11,7 @@ STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
 
+NO_SIGNAL = 0
 LONG_SIGNAL = 1
 SHORT_SIGNAL = -1
 
