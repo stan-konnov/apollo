@@ -5,7 +5,8 @@ from apollo.calculations.key_reversals import KeyReversalsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
-# I am actually mean reversion
+# I am actually mean reversion!
+
 
 class KeyReversalsTrendFollowing(BaseStrategy):
     """
@@ -15,15 +16,9 @@ class KeyReversalsTrendFollowing(BaseStrategy):
 
     * Up key reversal is detected -- price action is reversing from negative a trend.
 
-    * Volatility is above average -- price point fluctuates significantly from the rest,
-    acting as reinforcement of the reversal from negative trend.
-
     This strategy takes short positions when:
 
     * Down key reversal is detected -- price action is reversing from positive a trend.
-
-    * Volatility is above average -- price point fluctuates significantly from the rest,
-    acting as reinforcement of the reversal from positive trend.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -32,7 +27,6 @@ class KeyReversalsTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        volatility_multiplier: float,
     ) -> None:
         """
         Construct Key Reversals Strategy.
@@ -41,15 +35,7 @@ class KeyReversalsTrendFollowing(BaseStrategy):
         :param window_size: Size of the window for the strategy.
         """
 
-        self._validate_parameters(
-            [
-                ("volatility_multiplier", volatility_multiplier, float),
-            ],
-        )
-
         super().__init__(dataframe, window_size)
-
-        self.volatility_multiplier = volatility_multiplier
 
         self.kr_calculator = KeyReversalsCalculator(
             dataframe=dataframe,
@@ -77,12 +63,8 @@ class KeyReversalsTrendFollowing(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self.dataframe["kr"] == SHORT_SIGNAL) & (
-            self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier
-        )
+        long = self.dataframe["kr"] == SHORT_SIGNAL
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self.dataframe["kr"] == LONG_SIGNAL) & (
-            self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier
-        )
+        short = (self.dataframe["kr"] == LONG_SIGNAL)
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
