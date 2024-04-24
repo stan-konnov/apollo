@@ -1,10 +1,10 @@
 import logging
 
-import pandas as pd
-
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.key_reversals import KeyReversalsCalculator
+from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.settings import END_DATE, START_DATE, TICKER
+from apollo.strategies.key_reversals_trend_following import KeyReversalsTrendFollowing
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,34 +28,25 @@ def main() -> None:
 
     dataframe = api_connector.request_or_read_prices()
 
-    strategy = KeyReversalsCalculator(
+    strategy = KeyReversalsTrendFollowing(
         dataframe=dataframe,
         window_size=10,
     )
 
-    pd.options.display.max_rows = 10000
-    strategy.calculate_key_reversals()
+    strategy.model_trading_signals()
 
-    # strategy = OrdinaryLeastSquaresChannelMeanReversion(
-    #     dataframe=dataframe,
-    #     window_size=10,
-    #     channel_sd_spread=0.5,
-    # )
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name="KeyReversalsTrendFollowing",
+        lot_size_cash=1000,
+        stop_loss_level=0.005,
+        take_profit_level=0.1,
+        write_result_plot=True,
+    )
 
-    # strategy.model_trading_signals()
+    stats = backtesting_runner.run()
 
-    # backtesting_runner = BacktestingRunner(
-    #     dataframe=dataframe,
-    #     strategy_name="OrdinaryLeastSquaresChannelMeanReversion",
-    #     lot_size_cash=1000,
-    #     stop_loss_level=0.005,
-    #     take_profit_level=0.1,
-    #     write_result_plot=True,
-    # )
-
-    # stats = backtesting_runner.run()
-
-    # print(stats)
+    print(stats)
 
 
 if __name__ == "__main__":
