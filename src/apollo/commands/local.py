@@ -6,7 +6,7 @@ from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.strategies.lin_reg_chan_mean_reversion import (
-    OrdinaryLeastSquaresChannelMeanReversion,
+    LinearRegressionChannelMeanReversion,
 )
 
 logging.basicConfig(

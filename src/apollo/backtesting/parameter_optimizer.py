@@ -41,10 +41,10 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "SkewnessKurtosisVolatilityTrendFollowing":
-            SkewnessKurtosisVolatilityTrendFollowing,
         "LinearRegressionChannelMeanReversion":
             LinearRegressionChannelMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing":
+            SkewnessKurtosisVolatilityTrendFollowing,
     }
 
 
