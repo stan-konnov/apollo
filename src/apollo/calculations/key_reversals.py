@@ -4,9 +4,9 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class KeyReversalCalculator(BaseCalculator):
+class KeyReversalsCalculator(BaseCalculator):
     """
-    Key Reversal calculator.
+    Key Reversals calculator.
 
     Evans, Futures, 1985.
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
@@ -18,7 +18,7 @@ class KeyReversalCalculator(BaseCalculator):
         window_size: int,
     ) -> None:
         """
-        Construct Key Reversal calculator.
+        Construct Key Reversals calculator.
 
         :param dataframe: Dataframe to calculate key reversals for.
         :param window_size: Window size for rolling key reversal calculation.
@@ -40,7 +40,7 @@ class KeyReversalCalculator(BaseCalculator):
 
     def __calc_kr(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
-        Calculate rolling key reversal for a given window.
+        Calculate rolling key reversals for a given window.
 
         :param series: Series which is used for indexing out rolling window.
         :param dataframe: Original dataframe acting as a source of rolling window.
@@ -73,16 +73,28 @@ class KeyReversalCalculator(BaseCalculator):
         # Drop NaNs to properly calculate minimum lows
         rolling_df.dropna(inplace=True)
 
-        # Find the minimum low amongst previous lows
+        # Find the lowest low amongst previous lows
         rolling_df["min_low"] = np.minimum.accumulate(rolling_df["p_low"])
 
+        # Find the highest high amongst previous highs
+        rolling_df["max_high"] = np.maximum.accumulate(rolling_df["p_high"])
+
         # Construct and combine conditions for key reversal
-        kr = (
+        long_kr = (
             (rolling_df["p_close"] < rolling_df["p_close_avg"])
             & (rolling_df["low"] < rolling_df["min_low"])
             & (rolling_df["high"] > rolling_df["p_high"])
             & (rolling_df["close"] > rolling_df["p_close"])
         )
 
+        short_kr = (
+            (rolling_df["p_close"] > rolling_df["p_close_avg"])
+            & (rolling_df["high"] > rolling_df["max_high"])
+            & (rolling_df["low"] < rolling_df["p_low"])
+            & (rolling_df["close"] < rolling_df["p_close"])
+        )
+
+        # key_reversals = long_kr + short_kr
+
         # Return latest entry from processed window as integer
-        return int(kr.iloc[-1])
+        return int(short_kr.iloc[-1])
