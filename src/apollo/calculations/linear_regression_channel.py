@@ -5,14 +5,12 @@ from scipy.stats import linregress
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class PriceChannelsCalculator(BaseCalculator):
+class LinearRegressionChannelCalculator(BaseCalculator):
     """
-    Price Channels calculator.
+    Linear Regression Channel calculator.
 
-    Uses rolling linear regression.
-    Preserves slope and previous slope.
-    Channel bounds are expressed as +/- N
-    standard deviations from the line of best fit.
+    Uses rolling ordinary least squares regression.
+    Channel bounds are expressed as +/- N standard deviations from the line of best fit.
     """
 
     def __init__(
@@ -22,7 +20,7 @@ class PriceChannelsCalculator(BaseCalculator):
         channel_sd_spread: float,
     ) -> None:
         """
-        Construct Price Channels calculator.
+        Construct Linear Regression Channel calculator.
 
         :param dataframe: Dataframe to calculate price channels for.
         :param window_size: Window size for rolling price channels calculation.
@@ -34,24 +32,21 @@ class PriceChannelsCalculator(BaseCalculator):
         self.t_slope: list[float] = []
         self.l_bound: list[float] = []
         self.u_bound: list[float] = []
-        self.bf_line: list[float] = []
 
         self.channel_sd_spread = channel_sd_spread
 
-
-    def calculate_price_channels(self) -> None:
-        """Calculate rolling price channels."""
+    def calculate_linear_regression_channel(self) -> None:
+        """Calculate rolling linear regression channel."""
 
         # Reset indices to integer to use as x axis of linear regression
         self.dataframe.reset_index(inplace=True)
 
-        # Fill slopes, bounds and lbf arrays with N NaN, where N = window size
+        # Fill slopes and bounds arrays with N NaN, where N = window size
         self.t_slope = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.l_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.u_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
-        self.bf_line = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
-        # Calculate bounds and slope by using linear regression
+        # Calculate bounds and slope by using ordinary least squares regression
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self.__calc_lin_reg,
         )
@@ -66,12 +61,8 @@ class PriceChannelsCalculator(BaseCalculator):
         self.dataframe["l_bound"] = self.l_bound
         self.dataframe["u_bound"] = self.u_bound
 
-        # Write line of best fit to the dataframe
-        self.dataframe["lbf"] = self.bf_line
-
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
-
 
     def __calc_lin_reg(self, series: pd.Series) -> float:
         """
@@ -95,9 +86,6 @@ class PriceChannelsCalculator(BaseCalculator):
 
         # Calculate line of best fit
         lbf = slope * x + intercept
-
-        # Preserve LBF
-        self.bf_line.append(lbf[-1])
 
         # Calculate standard deviation
         std = y.std()

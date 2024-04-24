@@ -3,30 +3,31 @@ import pandas as pd
 import pytest
 from scipy.stats import linregress
 
-from apollo.calculations.price_channels import PriceChannelsCalculator
+from apollo.calculations.linear_regression_channel import (
+    LinearRegressionChannelCalculator,
+)
 
 CHANNEL_SD_SPREAD = 1.0
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_price_channels__for_correct_columns(
+def test__calculate_linear_regression_channel__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_price_channels method for correct columns.
+    Test calculate_linear_regression_channel method for correct columns.
 
-    Resulting dataframe must have columns
-    "slope", "prev_slope", "l_bound", "u_bound", "lbf".
+    Resulting dataframe must have columns "slope", "prev_slope", "l_bound", "u_bound".
     """
 
-    pc_calculator = PriceChannelsCalculator(
+    lrc_calculator = LinearRegressionChannelCalculator(
         dataframe=dataframe,
         window_size=window_size,
         channel_sd_spread=CHANNEL_SD_SPREAD,
     )
 
-    pc_calculator.calculate_price_channels()
+    lrc_calculator.calculate_linear_regression_channel()
 
     assert "slope" in dataframe.columns
     assert "prev_slope" in dataframe.columns
@@ -34,16 +35,14 @@ def test__calculate_price_channels__for_correct_columns(
     assert "l_bound" in dataframe.columns
     assert "u_bound" in dataframe.columns
 
-    assert "lbf" in dataframe.columns
-
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_price_channels__for_correct_rolling_window(
+def test__calculate_linear_regression_channel__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_price_channels method for correct rolling window.
+    Test calculate_linear_regression_channel method for correct rolling window.
 
     Where N = WINDOW_SIZE.
 
@@ -55,13 +54,13 @@ def test__calculate_price_channels__for_correct_rolling_window(
 
     ignored_rows_count = window_size - 1
 
-    pc_calculator = PriceChannelsCalculator(
+    lrc_calculator = LinearRegressionChannelCalculator(
         dataframe=dataframe,
         window_size=window_size,
         channel_sd_spread=CHANNEL_SD_SPREAD,
     )
 
-    pc_calculator.calculate_price_channels()
+    lrc_calculator.calculate_linear_regression_channel()
 
     assert dataframe["slope"].isna().sum() == ignored_rows_count
     assert dataframe["prev_slope"].isna().sum() == window_size
@@ -69,18 +68,16 @@ def test__calculate_price_channels__for_correct_rolling_window(
     assert dataframe["l_bound"].isna().sum() == ignored_rows_count
     assert dataframe["u_bound"].isna().sum() == ignored_rows_count
 
-    assert dataframe["lbf"].isna().sum() == ignored_rows_count
-
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_price_channels__for_correct_indices(
+def test__calculate_linear_regression_channel__for_correct_indices(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_price_channels method for correct indices.
+    Test calculate_linear_regression_channel method for correct indices.
 
-    Since price channel calculation relies on using numerical indices
+    Since channel calculation relies on using numerical indices
     for linear regression, dataframe must be reset before calculation;
     and reset back to date after calculation.
 
@@ -88,34 +85,32 @@ def test__calculate_price_channels__for_correct_indices(
     Resulting dataframe must have "date" as index dtype.
     """
 
-    pc_calculator = PriceChannelsCalculator(
+    lrc_calculator = LinearRegressionChannelCalculator(
         dataframe=dataframe,
         window_size=window_size,
         channel_sd_spread=CHANNEL_SD_SPREAD,
     )
 
-    pc_calculator.calculate_price_channels()
+    lrc_calculator.calculate_linear_regression_channel()
 
     assert dataframe.index.name == "date"
     assert dataframe.index.dtype == "datetime64[ns]"
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_price_channels__for_correct_linear_regression_calculation(
+def test__calculate_linear_regression_channel__for_correct_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_price_channels method for correct linear regression calculation.
+    Test calculate_linear_regression_channel method for correct calculation.
 
-    Resulting dataframe must have correct
-    values for slopes, bounds, and line of best fit.
+    Resulting dataframe must have correct values for slopes and bounds.
     """
 
     t_slope = np.full((1, window_size - 1), np.nan).flatten().tolist()
     l_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()
     u_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()
-    bf_line = np.full((1, window_size - 1), np.nan).flatten().tolist()
 
     control_dataframe = dataframe.copy()
     control_dataframe.reset_index(inplace=True)
@@ -126,7 +121,6 @@ def test__calculate_price_channels__for_correct_linear_regression_calculation(
             t_slope,
             l_bound,
             u_bound,
-            bf_line,
             CHANNEL_SD_SPREAD,
         ),
     )
@@ -139,15 +133,13 @@ def test__calculate_price_channels__for_correct_linear_regression_calculation(
     control_dataframe["l_bound"] = l_bound
     control_dataframe["u_bound"] = u_bound
 
-    control_dataframe["lbf"] = bf_line
-
-    pc_calculator = PriceChannelsCalculator(
+    lrc_calculator = LinearRegressionChannelCalculator(
         dataframe=dataframe,
         window_size=window_size,
         channel_sd_spread=CHANNEL_SD_SPREAD,
     )
 
-    pc_calculator.calculate_price_channels()
+    lrc_calculator.calculate_linear_regression_channel()
 
     pd.testing.assert_series_equal(dataframe["slope"], control_dataframe["slope"])
     pd.testing.assert_series_equal(
@@ -158,21 +150,18 @@ def test__calculate_price_channels__for_correct_linear_regression_calculation(
     pd.testing.assert_series_equal(dataframe["l_bound"], control_dataframe["l_bound"])
     pd.testing.assert_series_equal(dataframe["u_bound"], control_dataframe["u_bound"])
 
-    pd.testing.assert_series_equal(dataframe["lbf"], control_dataframe["lbf"])
-
 
 def mimic_calc_lin_reg(
     series: pd.Series,
     t_slope: list[float],
     l_bound: list[float],
     u_bound: list[float],
-    bf_line: list[float],
     channel_sd_spread: float,
 ) -> float:
     """
     Mimicry of linear regression calculation for testing purposes.
 
-    Please see PriceChannelsCalculator for
+    Please see LinearRegressionChannelCalculator for
     detailed explanation of linear regression calculation.
     """
 
@@ -180,10 +169,10 @@ def mimic_calc_lin_reg(
     y = series.to_numpy()
 
     slope, intercept, _, _, _ = linregress(x, y)
+
     t_slope.append(slope)
 
     lbf = slope * x + intercept
-    bf_line.append(lbf[-1])
 
     std = y.std()
 

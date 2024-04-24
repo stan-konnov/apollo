@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.price_channels import PriceChannelsCalculator
+from apollo.calculations.linear_regression_channel import LinearRegressionChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base import BaseStrategy
 
@@ -50,12 +50,11 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.pc_calculator = PriceChannelsCalculator(
+        self.pc_calculator = LinearRegressionChannelCalculator(
             dataframe,
             window_size,
             channel_sd_spread,
         )
-
 
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
@@ -64,24 +63,20 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
         self.__mark_trading_signals()
         self.dataframe.dropna(inplace=True)
 
-
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
         self.pc_calculator.calculate_price_channels()
 
-
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (
-            (self.dataframe["adj close"] <= self.dataframe["l_bound"]) &
-            (self.dataframe["slope"] <= self.dataframe["prev_slope"])
+        long = (self.dataframe["adj close"] <= self.dataframe["l_bound"]) & (
+            self.dataframe["slope"] <= self.dataframe["prev_slope"]
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (
-            (self.dataframe["adj close"] >= self.dataframe["u_bound"]) &
-            (self.dataframe["slope"] >= self.dataframe["prev_slope"])
+        short = (self.dataframe["adj close"] >= self.dataframe["u_bound"]) & (
+            self.dataframe["slope"] >= self.dataframe["prev_slope"]
         )
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
