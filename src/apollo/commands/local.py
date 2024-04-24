@@ -36,7 +36,7 @@ def main() -> None:
     pd.options.display.max_rows = 10000
     strategy.calculate_key_reversals()
 
-    print(dataframe.loc[dataframe["kr"] == 1].count())
+    print(dataframe.loc[dataframe["kr"] != 0].count())
 
     # strategy = OrdinaryLeastSquaresChannelMeanReversion(
     #     dataframe=dataframe,
