@@ -66,7 +66,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
 
     def __calc_lin_reg(self, series: pd.Series) -> float:
         """
-        Calculate rolling linear regression for a given window.
+        Calculate rolling ordinary least squares regression for a given window.
 
         :param series: Series to calculate rolling linear regression over.
         :returns: Dummy float to satisfy Pandas' return value.
