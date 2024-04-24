@@ -22,8 +22,8 @@ class LinearRegressionChannelCalculator(BaseCalculator):
         """
         Construct Linear Regression Channel calculator.
 
-        :param dataframe: Dataframe to calculate price channels for.
-        :param window_size: Window size for rolling price channels calculation.
+        :param dataframe: Dataframe to calculate channel for.
+        :param window_size: Window size for rolling channel calculation.
         :param channel_sd_spread: Standard deviation spread for channel bounds.
         """
 
