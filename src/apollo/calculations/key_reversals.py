@@ -81,7 +81,7 @@ class KeyReversalsCalculator(BaseCalculator):
             "kr",
         ] = LONG_SIGNAL
 
-        # Construct and combine conditions for long key reversal
+        # Construct and combine conditions for short key reversal
         rolling_df.loc[
             (rolling_df["p_close"] > rolling_df["p_close_avg"])
             & (rolling_df["high"] > rolling_df["max_high"])
