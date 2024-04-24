@@ -32,7 +32,9 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
     control_long_sl = close * (1 - stop_loss_level)
     control_long_tp = close * (1 + take_profit_level)
 
-    short_sl, short_tp = agent_instance._calculate_short_sl_and_tp(close)  # noqa: SLF001
+    short_sl, short_tp = agent_instance._calculate_short_sl_and_tp(
+        close
+    )  # noqa: SLF001
 
     control_short_sl = close * (1 + stop_loss_level)
     control_short_tp = close * (1 - take_profit_level)

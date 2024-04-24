@@ -66,7 +66,6 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
         self.at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
         self.dm_calculator = DistributionMomentsCalculator(dataframe, window_size)
 
-
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
@@ -74,27 +73,31 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
         self.__mark_trading_signals()
         self.dataframe.dropna(inplace=True)
 
-
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
         self.at_calculator.calculate_average_true_range()
         self.dm_calculator.calculate_distribution_moments()
 
-
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self.dataframe["skew"] < 0) &
-            (self.dataframe["kurt"] < self.kurtosis_threshold) &
-            (self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier)
+            (self.dataframe["skew"] < 0)
+            & (self.dataframe["kurt"] < self.kurtosis_threshold)
+            & (
+                self.dataframe["tr"]
+                > self.dataframe["atr"] * self.volatility_multiplier
+            )
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self.dataframe["skew"] > 0) &
-            (self.dataframe["kurt"] < self.kurtosis_threshold) &
-            (self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier)
+            (self.dataframe["skew"] > 0)
+            & (self.dataframe["kurt"] < self.kurtosis_threshold)
+            & (
+                self.dataframe["tr"]
+                > self.dataframe["atr"] * self.volatility_multiplier
+            )
         )
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

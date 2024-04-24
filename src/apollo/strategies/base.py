@@ -29,7 +29,6 @@ class BaseStrategy(ABC):
 
         self.dataframe["signal"] = NO_SIGNAL
 
-
     @abstractmethod
     def model_trading_signals(self) -> None:
         """
@@ -37,7 +36,6 @@ class BaseStrategy(ABC):
 
         Is required to be implemented by subclasses.
         """
-
 
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
@@ -62,7 +60,6 @@ class BaseStrategy(ABC):
         """
 
         for parameter in parameters:
-
             parameter_name, parameter_value, expected_type = parameter
 
             if parameter_value is None:

@@ -21,7 +21,6 @@ class DistributionMomentsCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-
     def calculate_distribution_moments(self) -> None:
         """Calculate rolling distribution moments."""
 
@@ -42,6 +41,5 @@ class DistributionMomentsCalculator(BaseCalculator):
 
         # Calculate rolling z-score from mean and standard deviation
         self.dataframe["z_score"] = (
-            (self.dataframe["adj close"] - self.dataframe["avg"]) /
-            self.dataframe["std"]
-        )
+            self.dataframe["adj close"] - self.dataframe["avg"]
+        ) / self.dataframe["std"]

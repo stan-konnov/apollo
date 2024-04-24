@@ -19,14 +19,12 @@ class StrategySimulationAgent(Strategy):
     # Take profit level to use for exits
     take_profit_level: ClassVar[float]
 
-
     def init(self) -> None:
         """
         Initialize the agent.
 
         NOTE: Backtesting.py requires this method to be implemented.
         """
-
 
     def next(self) -> None:
         """
@@ -85,7 +83,6 @@ class StrategySimulationAgent(Strategy):
                 # And open new short position
                 self.sell(sl=sl, tp=tp)
 
-
     def _calculate_long_sl_and_tp(self, close: float) -> tuple[float, float]:
         """
         Calculate long stop loss and take profit.
@@ -94,7 +91,6 @@ class StrategySimulationAgent(Strategy):
         """
 
         return close * (1 - self.stop_loss_level), close * (1 + self.take_profit_level)
-
 
     def _calculate_short_sl_and_tp(self, close: float) -> tuple[float, float]:
         """

@@ -41,12 +41,9 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "LinearRegressionChannelMeanReversion":
-            LinearRegressionChannelMeanReversion,
-        "SkewnessKurtosisVolatilityTrendFollowing":
-            SkewnessKurtosisVolatilityTrendFollowing,
+        "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,
     }
-
 
     def __init__(self) -> None:
         """
@@ -57,7 +54,6 @@ class ParameterOptimizer:
         """
 
         self._configuration = Configuration()
-
 
     def process(self) -> None:
         """Run the optimization process."""
@@ -81,7 +77,7 @@ class ParameterOptimizer:
         strategy_name = self._configuration.strategy
         strategy_class = type(
             strategy_name,
-            (self._strategy_name_to_class_map[strategy_name], ),
+            (self._strategy_name_to_class_map[strategy_name],),
             {},
         )
 
@@ -159,11 +155,13 @@ class ParameterOptimizer:
             this_run_results = pd.DataFrame(stats).transpose()
 
             # Preserve the parameters used for this run
-            this_run_results["parameters"] = str({
-                "frequency": parameter_set["frequency"],
-                "cash_size": parameter_set["cash_size"],
-                **combination_to_test,
-            })
+            this_run_results["parameters"] = str(
+                {
+                    "frequency": parameter_set["frequency"],
+                    "cash_size": parameter_set["cash_size"],
+                    **combination_to_test,
+                }
+            )
 
             # Append the results of this run to the backtesting results dataframe
             if backtesting_results_dataframe.empty:
@@ -176,7 +174,6 @@ class ParameterOptimizer:
 
         # Output the results to a file and create optimized parameters file
         self._output_results(backtesting_results_dataframe)
-
 
     def _construct_parameter_combinations(
         self,
@@ -195,13 +192,13 @@ class ParameterOptimizer:
                 value["range"][0],
                 value["range"][1],
                 value["step"],
-            ) for key, value in parameter_set.items() if (
-                isinstance(value, dict) and "range" in value
-            )}
+            )
+            for key, value in parameter_set.items()
+            if (isinstance(value, dict) and "range" in value)
+        }
 
         # Generate all possible combinations of parameter values
         return parameter_ranges.keys(), product(*parameter_ranges.values())
-
 
     def _get_combination_ranges(
         self,
@@ -222,7 +219,6 @@ class ParameterOptimizer:
         return pd.Series(
             arange(range_min, range_max + range_step / 2, range_step),
         ).round(10)
-
 
     def _output_results(self, results_dataframe: pd.DataFrame) -> None:
         """
@@ -279,6 +275,7 @@ class ParameterOptimizer:
             OPTP_DIR.mkdir(parents=True, exist_ok=True)
 
         with Path.open(
-            Path(f"{OPTP_DIR}/{self._configuration.strategy}.json"), "w",
+            Path(f"{OPTP_DIR}/{self._configuration.strategy}.json"),
+            "w",
         ) as file:
             dump(optimized_parameters, file, indent=4)

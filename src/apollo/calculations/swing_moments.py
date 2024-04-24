@@ -33,7 +33,6 @@ class SwingMomentsCalculator(BaseCalculator):
         self.swing_filter = swing_filter
         self.swing_moments: list[float] = []
 
-
     def calculate_swing_moments(self) -> None:
         """Calculate rolling swing moments."""
 
@@ -48,19 +47,23 @@ class SwingMomentsCalculator(BaseCalculator):
         self.in_downswing = True
 
         # Fill swing moments array with N NaN, where N = window size
-        self.swing_moments = np.full(
-            (1, self.window_size - 1),
-            np.nan,
-        ).flatten().tolist()
+        self.swing_moments = (
+            np.full(
+                (1, self.window_size - 1),
+                np.nan,
+            )
+            .flatten()
+            .tolist()
+        )
 
         # Calculate swings
         self.dataframe["adj close"].rolling(self.window_size).apply(
-            self.__calc_sm, args=(self.dataframe, ),
+            self.__calc_sm,
+            args=(self.dataframe,),
         )
 
         # Write swings to the dataframe
         self.dataframe["sm"] = self.swing_moments
-
 
     def __calc_sm(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """

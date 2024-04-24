@@ -55,8 +55,7 @@ def test__skew_kurt_vol_trend_following__with_invalid_parameters(
     }
 
     exception_message = str(
-        "Parameter kurtosis_threshold is "
-        f"not of expected type {float.__name__}",
+        "Parameter kurtosis_threshold is " f"not of expected type {float.__name__}",
     )
 
     with pytest.raises(
@@ -99,16 +98,16 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     at_calculator.calculate_average_true_range()
 
     long = (
-        (control_dataframe["skew"] < 0) &
-        (control_dataframe["kurt"] < kurtosis_threshold) &
-        (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
+        (control_dataframe["skew"] < 0)
+        & (control_dataframe["kurt"] < kurtosis_threshold)
+        & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
     )
     control_dataframe.loc[long, "signal"] = LONG_SIGNAL
 
     short = (
-        (control_dataframe["skew"] > 0) &
-        (control_dataframe["kurt"] < kurtosis_threshold) &
-        (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
+        (control_dataframe["skew"] > 0)
+        & (control_dataframe["kurt"] < kurtosis_threshold)
+        & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
     )
     control_dataframe.loc[short, "signal"] = SHORT_SIGNAL
 

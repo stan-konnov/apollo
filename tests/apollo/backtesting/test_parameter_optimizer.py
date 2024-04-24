@@ -76,8 +76,10 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
         (RANGE_MAX, RANGE_MAX),
     ]
 
-    keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
-        cast(ParameterSet, parameters),
+    keys, combinations = (
+        parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
+            cast(ParameterSet, parameters),
+        )
     )
 
     assert keys == parameters.keys()
