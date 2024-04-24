@@ -39,9 +39,6 @@ class KeyReversalsCalculator(BaseCalculator):
             )
         )
 
-        # Fill NaNs with 0
-        self.dataframe["kr"].fillna(0, inplace=True)
-
     def __calc_kr(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
         Calculate rolling key reversals for a given window.
@@ -59,8 +56,8 @@ class KeyReversalsCalculator(BaseCalculator):
         rolling_df["p_low"] = rolling_df["low"].shift(1)
         rolling_df["p_high"] = rolling_df["high"].shift(1)
 
-        # Calculate expanding average over previous closes
-        # and shift by 1 to accommodate for t-2
+        # Calculate expanding average over previous
+        # closes and shift by 1 to accommodate for t-2
         rolling_df["p_close_avg"] = rolling_df["p_close"].expanding().mean().shift(1)
 
         # Drop NaNs to properly calculate minimum lows
@@ -72,23 +69,28 @@ class KeyReversalsCalculator(BaseCalculator):
         # Find the highest high amongst previous highs
         rolling_df["max_high"] = np.maximum.accumulate(rolling_df["p_high"])
 
-        # Construct and combine conditions for long key reversal
-        rolling_df.loc[
+        # Initialize key reversal column
+        rolling_df["kr"] = 0
+
+        # Construct conditions for long key reversal and assign
+        long_key_reversal = (
             (rolling_df["p_close"] < rolling_df["p_close_avg"])
             & (rolling_df["low"] < rolling_df["min_low"])
             & (rolling_df["high"] > rolling_df["p_high"])
-            & (rolling_df["close"] > rolling_df["p_close"]),
-            "kr",
-        ] = LONG_SIGNAL
+            & (rolling_df["close"] > rolling_df["p_close"])
+        )
 
-        # Construct and combine conditions for short key reversal
-        rolling_df.loc[
+        rolling_df.loc[long_key_reversal, "kr"] = LONG_SIGNAL
+
+        # Construct conditions for short key reversal and assign
+        short_key_reversal = (
             (rolling_df["p_close"] > rolling_df["p_close_avg"])
             & (rolling_df["high"] > rolling_df["max_high"])
             & (rolling_df["low"] < rolling_df["p_low"])
-            & (rolling_df["close"] < rolling_df["p_close"]),
-            "kr",
-        ] = SHORT_SIGNAL
+            & (rolling_df["close"] < rolling_df["p_close"])
+        )
 
-        # Return latest entry from processed window as integer
+        rolling_df.loc[short_key_reversal, "kr"] = SHORT_SIGNAL
+
+        # Return latest entry from processed window
         return rolling_df["kr"].iloc[-1]
