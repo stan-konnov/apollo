@@ -1,13 +1,15 @@
 from pandas import DataFrame
 
-from apollo.calculations.linear_regression_channel import LinearRegressionChannelCalculator
+from apollo.calculations.linear_regression_channel import (
+    LinearRegressionChannelCalculator,
+)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base import BaseStrategy
 
 
-class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
+class LinearRegressionChannelMeanReversion(BaseStrategy):
     """
-    Ordinary Least Squares Channel Mean Reversion.
+    Linear Regression Channel Mean Reversion.
 
     This strategy takes long positions when:
 
@@ -50,10 +52,10 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.pc_calculator = LinearRegressionChannelCalculator(
-            dataframe,
-            window_size,
-            channel_sd_spread,
+        self.lrc_calculator = LinearRegressionChannelCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+            channel_sd_spread=channel_sd_spread,
         )
 
     def model_trading_signals(self) -> None:
@@ -66,7 +68,7 @@ class OrdinaryLeastSquaresChannelMeanReversion(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.pc_calculator.calculate_price_channels()
+        self.lrc_calculator.calculate_linear_regression_channel()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""

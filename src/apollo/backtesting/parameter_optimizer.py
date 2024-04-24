@@ -11,8 +11,8 @@ from tqdm.contrib.itertools import product
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
-from apollo.strategies.ols_channel_mean_reversion import (
-    OrdinaryLeastSquaresChannelMeanReversion,
+from apollo.strategies.lin_reg_chan_mean_reversion import (
+    LinearRegressionChannelMeanReversion,
 )
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
@@ -43,8 +43,8 @@ class ParameterOptimizer:
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
         "SkewnessKurtosisVolatilityTrendFollowing":
             SkewnessKurtosisVolatilityTrendFollowing,
-        "OrdinaryLeastSquaresChannelMeanReversion":
-            OrdinaryLeastSquaresChannelMeanReversion,
+        "LinearRegressionChannelMeanReversion":
+            LinearRegressionChannelMeanReversion,
     }
 
 
