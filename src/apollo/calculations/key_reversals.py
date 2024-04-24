@@ -51,41 +51,22 @@ class KeyReversalsCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = dataframe.loc[series.index]
 
-        # Get previous close, low, and high columns
+        # Get previous close
         rolling_df["p_close"] = rolling_df["close"].shift(1)
-        rolling_df["p_low"] = rolling_df["low"].shift(1)
-        rolling_df["p_high"] = rolling_df["high"].shift(1)
 
         # Calculate expanding average over previous
         # closes and shift by 1 to accommodate for t-2
         rolling_df["p_close_avg"] = rolling_df["p_close"].expanding().mean().shift(1)
 
-        # Drop NaNs to properly calculate minimum lows
-        rolling_df.dropna(inplace=True)
-
-        # Find the lowest low amongst previous lows
-        rolling_df["min_low"] = np.minimum.accumulate(rolling_df["p_low"])
-
-        # Find the highest high amongst previous highs
-        rolling_df["max_high"] = np.maximum.accumulate(rolling_df["p_high"])
-
         # Initialize key reversal column
         rolling_df["kr"] = 0
 
         # Construct conditions for long key reversal and assign
-        long_key_reversal = (
-            (rolling_df["p_close"] < rolling_df["p_close_avg"])
-            & (rolling_df["high"] > rolling_df["p_high"])
-        )
-
+        long_key_reversal = rolling_df["p_close"] > rolling_df["p_close_avg"]
         rolling_df.loc[long_key_reversal, "kr"] = LONG_SIGNAL
 
         # Construct conditions for short key reversal and assign
-        short_key_reversal = (
-            (rolling_df["p_close"] > rolling_df["p_close_avg"])
-            & (rolling_df["low"] < rolling_df["p_low"])
-        )
-
+        short_key_reversal = rolling_df["p_close"] < rolling_df["p_close_avg"]
         rolling_df.loc[short_key_reversal, "kr"] = SHORT_SIGNAL
 
         # Return latest entry from processed window

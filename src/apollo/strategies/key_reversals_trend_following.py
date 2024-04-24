@@ -63,8 +63,8 @@ class KeyReversalsTrendFollowing(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = self.dataframe["kr"] == SHORT_SIGNAL
+        long = self.dataframe["kr"] == LONG_SIGNAL
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self.dataframe["kr"] == LONG_SIGNAL)
+        short = self.dataframe["kr"] == SHORT_SIGNAL
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
