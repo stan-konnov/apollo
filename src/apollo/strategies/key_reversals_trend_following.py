@@ -27,6 +27,7 @@ class KeyReversalsTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
+        volatility_multiplier: float,
     ) -> None:
         """
         Construct Key Reversals Strategy.
@@ -35,7 +36,15 @@ class KeyReversalsTrendFollowing(BaseStrategy):
         :param window_size: Size of the window for the strategy.
         """
 
+        self._validate_parameters(
+            [
+                ("volatility_multiplier", volatility_multiplier, float),
+            ],
+        )
+
         super().__init__(dataframe, window_size)
+
+        self.volatility_multiplier = volatility_multiplier
 
         self.kr_calculator = KeyReversalsCalculator(
             dataframe=dataframe,
@@ -63,8 +72,12 @@ class KeyReversalsTrendFollowing(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = self.dataframe["kr"] == LONG_SIGNAL
+        long = (self.dataframe["kr"] == LONG_SIGNAL) & (
+            self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier
+        )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = self.dataframe["kr"] == SHORT_SIGNAL
+        short = (self.dataframe["kr"] == SHORT_SIGNAL) & (
+            self.dataframe["tr"] > self.dataframe["atr"] * self.volatility_multiplier
+        )
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

@@ -31,6 +31,7 @@ def main() -> None:
     strategy = KeyReversalsTrendFollowing(
         dataframe=dataframe,
         window_size=15,
+        volatility_multiplier=0.5,
     )
 
     strategy.model_trading_signals()

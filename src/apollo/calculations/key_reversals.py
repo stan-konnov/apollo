@@ -75,13 +75,13 @@ class KeyReversalsCalculator(BaseCalculator):
         # Construct conditions for long key reversal and assign
         long_key_reversal = (
             # Previous close is higher than average of previous closes
-            (rolling_df["p_close"] > rolling_df["p_close_avg"])
+            (rolling_df["p_close"] < rolling_df["p_close_avg"])
               # Current low is higher than minimum low
-            & (rolling_df["low"] > rolling_df["min_low"])
+            & (rolling_df["low"] < rolling_df["min_low"])
               # Current high is lower than maximum high
-            & (rolling_df["high"] < rolling_df["p_high"])
+            & (rolling_df["high"] > rolling_df["p_high"])
               # Current close is lower than previous close
-            & (rolling_df["close"] < rolling_df["p_close"])
+            & (rolling_df["close"] > rolling_df["p_close"])
         )
 
         rolling_df.loc[long_key_reversal, "kr"] = LONG_SIGNAL
@@ -89,13 +89,13 @@ class KeyReversalsCalculator(BaseCalculator):
         # Construct conditions for short key reversal and assign
         short_key_reversal = (
             # Previous close is lower than average of previous closes
-            (rolling_df["p_close"] < rolling_df["p_close_avg"])
+            (rolling_df["p_close"] > rolling_df["p_close_avg"])
               # Current high is lower than maximum high
-            & (rolling_df["high"] < rolling_df["max_high"])
+            & (rolling_df["high"] > rolling_df["max_high"])
               # Current low is higher than minimum low
-            & (rolling_df["low"] > rolling_df["p_low"])
+            & (rolling_df["low"] < rolling_df["p_low"])
               # Current close is higher than previous close
-            & (rolling_df["close"] > rolling_df["p_close"])
+            & (rolling_df["close"] < rolling_df["p_close"])
         )
 
         rolling_df.loc[short_key_reversal, "kr"] = SHORT_SIGNAL
