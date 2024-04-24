@@ -41,8 +41,10 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
-        "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,
+        "LinearRegressionChannelMeanReversion":
+            LinearRegressionChannelMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing":
+            SkewnessKurtosisVolatilityTrendFollowing,
     }
 
     def __init__(self) -> None:
@@ -160,7 +162,7 @@ class ParameterOptimizer:
                     "frequency": parameter_set["frequency"],
                     "cash_size": parameter_set["cash_size"],
                     **combination_to_test,
-                }
+                },
             )
 
             # Append the results of this run to the backtesting results dataframe
