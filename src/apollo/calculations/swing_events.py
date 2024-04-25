@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import numpy as np
 import pandas as pd
 
@@ -10,6 +12,12 @@ class SwingEventsCalculator(BaseCalculator):
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
+
+    # Constant to represent upswing
+    UP_SWING: ClassVar[float] = 1.0
+
+    # Constant to represent downswing
+    DOWN_SWING: ClassVar[float] = -1.0
 
     def __init__(
         self,
@@ -107,7 +115,7 @@ class SwingEventsCalculator(BaseCalculator):
                 self.swing_h = current_high
 
                 # Add positive float to the list
-                self.swing_events.append(1.0)
+                self.swing_events.append(self.UP_SWING)
 
                 # Return dummy float
                 return 0.0
@@ -131,7 +139,7 @@ class SwingEventsCalculator(BaseCalculator):
             self.in_downswing = True
 
             # Append negative float to the list
-            self.swing_events.append(-1.0)
+            self.swing_events.append(self.DOWN_SWING)
 
             # Return dummy float
             return 0.0

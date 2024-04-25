@@ -6,6 +6,8 @@ import pytest
 
 from apollo.calculations.swing_events import SwingEventsCalculator
 
+UP_SWING = 1.0
+DOWN_SWING = -1.0
 SWING_FILTER = 0.03
 IN_DOWNSWING: ContextVar[bool] = ContextVar("IN_DOWNSWING", default=True)
 
@@ -131,7 +133,7 @@ def mimic_calc_se(
 
             swing_h = current_high
 
-            swing_events.append(1.0)
+            swing_events.append(UP_SWING)
 
             return 0.0
 
@@ -145,7 +147,7 @@ def mimic_calc_se(
     if swing_h - current_low > current_swing_filter:
         IN_DOWNSWING.set(True)  # noqa: FBT003
 
-        swing_events.append(-1.0)
+        swing_events.append(DOWN_SWING)
 
         return 0.0
 

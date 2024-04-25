@@ -63,5 +63,12 @@ class SwingEventsMeanReversion(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[self.dataframe["se"] == SHORT_SIGNAL, "signal"] = LONG_SIGNAL
-        self.dataframe.loc[self.dataframe["se"] == LONG_SIGNAL, "signal"] = SHORT_SIGNAL
+        self.dataframe.loc[
+            self.dataframe["se"] == self.se_calculator.DOWN_SWING,
+            "signal",
+        ] = LONG_SIGNAL
+
+        self.dataframe.loc[
+            self.dataframe["se"] == self.se_calculator.UP_SWING,
+            "signal",
+        ] = SHORT_SIGNAL
