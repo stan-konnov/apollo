@@ -123,10 +123,13 @@ def mimic_calc_se(
     current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
 
     if IN_DOWNSWING.get():
+
         if current_low < swing_l:
+
             swing_l = current_low
 
         if current_high - swing_l > current_swing_filter:
+
             IN_DOWNSWING.set(False)  # noqa: FBT003
 
             swing_l = current_low
@@ -142,9 +145,11 @@ def mimic_calc_se(
         return 0.0
 
     if current_high > swing_h:
+
         swing_h = current_high
 
     if swing_h - current_low > current_swing_filter:
+
         IN_DOWNSWING.set(True)  # noqa: FBT003
 
         swing_events.append(DOWN_SWING)
