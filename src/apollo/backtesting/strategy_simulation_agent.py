@@ -49,21 +49,21 @@ class StrategySimulationAgent(Strategy):
         highest_price = 100
         average_true_range = 10
 
-        # Loop through open positions and set trailing stop loss
+        # Loop through open positions and calculate trailing stop loss
         for trade in self.trades:
             if trade.is_long:
-                trade.sl = self._calculate_trailing_sl(
-                    position=PositionType.LONG,
-                    price=highest_price,
-                    multiplier=multiplier,
+                trade.sl = self._calculate_trailing_stop_loss(
+                    position_type=PositionType.LONG,
+                    limit_price=highest_price,
                     average_true_range=average_true_range,
+                    volatility_multiplier=multiplier,
                 )
             else:
-                trade.sl = self._calculate_trailing_sl(
-                    position=PositionType.SHORT,
-                    price=lowest_price,
-                    multiplier=multiplier,
+                trade.sl = self._calculate_trailing_stop_loss(
+                    position_type=PositionType.SHORT,
+                    limit_price=lowest_price,
                     average_true_range=average_true_range,
+                    volatility_multiplier=multiplier,
                 )
 
         # Get currently iterated signal
@@ -88,7 +88,7 @@ class StrategySimulationAgent(Strategy):
                 sl, tp = self._calculate_long_sl_and_tp(close)
 
                 # And open new long position
-                self.buy(sl=sl, tp=tp)
+                self.buy(tp=tp)
 
             if short_signal:
                 # Skip if we already have short position
@@ -103,7 +103,7 @@ class StrategySimulationAgent(Strategy):
                 sl, tp = self._calculate_short_sl_and_tp(close)
 
                 # And open new short position
-                self.sell(sl=sl, tp=tp)
+                self.sell(tp=tp)
 
     def _calculate_long_sl_and_tp(self, close: float) -> tuple[float, float]:
         """
@@ -123,25 +123,27 @@ class StrategySimulationAgent(Strategy):
 
         return close * (1 + self.stop_loss_level), close * (1 - self.take_profit_level)
 
-    def _calculate_trailing_sl(
+    def _calculate_trailing_stop_loss(
         self,
-        position: PositionType,
-        price: float,
-        multiplier: float,
+        position_type: PositionType,
+        limit_price: float,
         average_true_range: float,
+        volatility_multiplier: float,
     ) -> float:
         """
         Calculate trailing stop loss.
 
-        Using Average True Range (ATR), multiplier
-        and the highest/lowest price within window.
-
+        Using Average True Range (ATR), multiplier and
+        highest high (for long) or lowest low (for short).
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
+
+        :param position_type: Position type
+        :param limit_price: Highest or lowest price
+        :param average_true_range: Average True Range
+        :param volatility_multiplier: Multiplier for ATR
         """
 
-        # NOTE: experiment with close instead of highest and lowest
+        if position_type == PositionType.LONG:
+            return limit_price - volatility_multiplier * average_true_range
 
-        if position == PositionType.LONG:
-            return price - multiplier * average_true_range
-
-        return price + multiplier * average_true_range
+        return limit_price + volatility_multiplier * average_true_range
