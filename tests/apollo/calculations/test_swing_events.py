@@ -4,41 +4,41 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.calculations.swing_moments import SwingMomentsCalculator
+from apollo.calculations.swing_events import SwingEventsCalculator
 
 SWING_FILTER = 0.03
 IN_DOWNSWING: ContextVar[bool] = ContextVar("IN_DOWNSWING", default=True)
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_swing_moments__for_correct_columns(
+def test__calculate_swing_events__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_swing_moments method for correct columns.
+    Test calculate_swing_events method for correct columns.
 
-    Resulting dataframe must have "sm" column.
+    Resulting dataframe must have "se" column.
     """
 
-    sm_calculator = SwingMomentsCalculator(
+    sm_calculator = SwingEventsCalculator(
         dataframe=dataframe,
         window_size=window_size,
         swing_filter=SWING_FILTER,
     )
 
-    sm_calculator.calculate_swing_moments()
+    sm_calculator.calculate_swing_events()
 
-    assert "sm" in dataframe.columns
+    assert "se" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_swing_moments__for_correct_rolling_window(
+def test__calculate_swing_events__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_swing_moments method for correct rolling window.
+    Test calculate_swing_events method for correct rolling window.
 
     Where N = WINDOW_SIZE.
 
@@ -46,24 +46,24 @@ def test__calculate_swing_moments__for_correct_rolling_window(
     Since SM calculation must have at least N rows to be calculated.
     """
 
-    sm_calculator = SwingMomentsCalculator(
+    sm_calculator = SwingEventsCalculator(
         dataframe=dataframe,
         window_size=window_size,
         swing_filter=SWING_FILTER,
     )
 
-    sm_calculator.calculate_swing_moments()
+    sm_calculator.calculate_swing_events()
 
-    assert dataframe["sm"].isna().sum() == window_size - 1
+    assert dataframe["se"].isna().sum() == window_size - 1
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_swing_moments__for_correct_atr_calculation(
+def test__calculate_swing_events__for_correct_atr_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_swing_moments method for correct swings calculation.
+    Test calculate_swing_events method for correct swings calculation.
 
     Resulting SM column must have correct values for each row.
     """
@@ -73,43 +73,43 @@ def test__calculate_swing_moments__for_correct_atr_calculation(
     swing_l = control_dataframe.iloc[window_size - 2]["low"]
     swing_h = control_dataframe.iloc[window_size - 2]["high"]
 
-    swing_moments = np.full((1, window_size - 1), np.nan).flatten().tolist()
+    swing_events = np.full((1, window_size - 1), np.nan).flatten().tolist()
 
     control_dataframe["adj close"].rolling(window_size).apply(
-        mimic_calc_sm,
+        mimic_calc_se,
         args=(
             control_dataframe,
             swing_l,
             swing_h,
-            swing_moments,
+            swing_events,
         ),
     )
 
-    control_dataframe["sm"] = swing_moments
+    control_dataframe["se"] = swing_events
 
-    sm_calculator = SwingMomentsCalculator(
+    sm_calculator = SwingEventsCalculator(
         dataframe=dataframe,
         window_size=window_size,
         swing_filter=SWING_FILTER,
     )
 
-    sm_calculator.calculate_swing_moments()
+    sm_calculator.calculate_swing_events()
 
-    pd.testing.assert_series_equal(dataframe["sm"], control_dataframe["sm"])
+    pd.testing.assert_series_equal(dataframe["se"], control_dataframe["se"])
 
 
-def mimic_calc_sm(
+def mimic_calc_se(
     series: pd.Series,
     dataframe: pd.DataFrame,
     swing_l: float,
     swing_h: float,
-    swing_moments: list[float],
+    swing_events: list[float],
 ) -> float:
     """
-    Mimicry of swing moments calculation for testing purposes.
+    Mimicry of swing events calculation for testing purposes.
 
-    Please see SwingMomentsCalculator for
-    detailed explanation of swing moments calculation.
+    Please see SwingEventsCalculator for
+    detailed explanation of swing events calculation.
     """
 
     rolling_df = dataframe.loc[series.index]
@@ -121,39 +121,34 @@ def mimic_calc_sm(
     current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
 
     if IN_DOWNSWING.get():
-
         if current_low < swing_l:
-
             swing_l = current_low
 
         if current_high - swing_l > current_swing_filter:
-
             IN_DOWNSWING.set(False)  # noqa: FBT003
 
             swing_l = current_low
 
             swing_h = current_high
 
-            swing_moments.append(1.0)
+            swing_events.append(1.0)
 
             return 0.0
 
-        swing_moments.append(0.0)
+        swing_events.append(0.0)
 
         return 0.0
 
     if current_high > swing_h:
-
         swing_h = current_high
 
     if swing_h - current_low > current_swing_filter:
-
         IN_DOWNSWING.set(True)  # noqa: FBT003
 
-        swing_moments.append(-1.0)
+        swing_events.append(-1.0)
 
         return 0.0
 
-    swing_moments.append(0.0)
+    swing_events.append(0.0)
 
     return 0.0

@@ -4,9 +4,9 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class SwingMomentsCalculator(BaseCalculator):
+class SwingEventsCalculator(BaseCalculator):
     """
-    Swings Moments Calculator.
+    Swings Events Calculator.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -18,10 +18,10 @@ class SwingMomentsCalculator(BaseCalculator):
         swing_filter: float,
     ) -> None:
         """
-        Construct Swing Moments calculator.
+        Construct Swing Events calculator.
 
         :param dataframe: Dataframe to calculate swings for.
-        :param window_size: Window size for rolling swing moment calculation.
+        :param window_size: Window size for rolling swing events calculation.
         :param swing_filter: Swing filter for determining swing highs and lows.
         """
 
@@ -29,12 +29,14 @@ class SwingMomentsCalculator(BaseCalculator):
 
         self.swing_l = 0.0
         self.swing_h = 0.0
+
         self.in_downswing = False
         self.swing_filter = swing_filter
-        self.swing_moments: list[float] = []
 
-    def calculate_swing_moments(self) -> None:
-        """Calculate rolling swing moments."""
+        self.swing_events: list[float] = []
+
+    def calculate_swing_events(self) -> None:
+        """Calculate rolling swing events."""
 
         # Record the low of the first bar (before rolling window) as swing low
         self.swing_l = self.dataframe.iloc[self.window_size - 2]["low"]
@@ -47,7 +49,7 @@ class SwingMomentsCalculator(BaseCalculator):
         self.in_downswing = True
 
         # Fill swing moments array with N NaN, where N = window size
-        self.swing_moments = (
+        self.swing_events = (
             np.full(
                 (1, self.window_size - 1),
                 np.nan,
@@ -58,14 +60,14 @@ class SwingMomentsCalculator(BaseCalculator):
 
         # Calculate swings
         self.dataframe["adj close"].rolling(self.window_size).apply(
-            self.__calc_sm,
+            self.__calc_se,
             args=(self.dataframe,),
         )
 
         # Write swings to the dataframe
-        self.dataframe["sm"] = self.swing_moments
+        self.dataframe["se"] = self.swing_events
 
-    def __calc_sm(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
+    def __calc_se(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
         Calculate rolling swings for a given window.
 
@@ -88,16 +90,13 @@ class SwingMomentsCalculator(BaseCalculator):
 
         # If we are in downswing
         if self.in_downswing:
-
             # Test if downswing continues
             if current_low < self.swing_l:
-
                 # Treat current low as new swing low
                 self.swing_l = current_low
 
             # Test if downswing reverses
             if current_high - self.swing_l > current_swing_filter:
-
                 # If so, we have an upswing
                 self.in_downswing = False
 
@@ -108,13 +107,13 @@ class SwingMomentsCalculator(BaseCalculator):
                 self.swing_h = current_high
 
                 # Add positive float to the list
-                self.swing_moments.append(1.0)
+                self.swing_events.append(1.0)
 
                 # Return dummy float
                 return 0.0
 
             # Append falsy float as it is a continuation
-            self.swing_moments.append(0.0)
+            self.swing_events.append(0.0)
 
             # Return dummy float
             return 0.0
@@ -123,24 +122,22 @@ class SwingMomentsCalculator(BaseCalculator):
 
         # Test if upswing continues
         if current_high > self.swing_h:
-
             # Treat current high as new swing high
             self.swing_h = current_high
 
         # Test if upswing reverses
         if self.swing_h - current_low > current_swing_filter:
-
             # If so, we have downswing
             self.in_downswing = True
 
             # Append negative float to the list
-            self.swing_moments.append(-1.0)
+            self.swing_events.append(-1.0)
 
             # Return dummy float
             return 0.0
 
         # Append falsy float as it is a continuation
-        self.swing_moments.append(0.0)
+        self.swing_events.append(0.0)
 
         # Return dummy float
         return 0.0
