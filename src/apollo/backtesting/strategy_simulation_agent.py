@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from backtesting import Strategy
 
-from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
+from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
 
 class StrategySimulationAgent(Strategy):
@@ -43,7 +43,9 @@ class StrategySimulationAgent(Strategy):
         # Grab close of the current row
         close = self.data["Close"][-1]
 
+        # We should come precalculated
         multiplier = 2
+        lowest_price = 50
         highest_price = 100
         average_true_range = 10
 
@@ -51,16 +53,16 @@ class StrategySimulationAgent(Strategy):
         for trade in self.trades:
             if trade.is_long:
                 trade.sl = self._calculate_trailing_sl(
-                    close=close,
+                    position=PositionType.LONG,
+                    price=highest_price,
                     multiplier=multiplier,
-                    highest_price=highest_price,
                     average_true_range=average_true_range,
                 )
             else:
                 trade.sl = self._calculate_trailing_sl(
-                    close=close,
+                    position=PositionType.SHORT,
+                    price=lowest_price,
                     multiplier=multiplier,
-                    highest_price=highest_price,
                     average_true_range=average_true_range,
                 )
 
@@ -123,15 +125,23 @@ class StrategySimulationAgent(Strategy):
 
     def _calculate_trailing_sl(
         self,
-        close: float,
+        position: PositionType,
+        price: float,
         multiplier: float,
-        highest_price: float,
         average_true_range: float,
     ) -> float:
         """
         Calculate trailing stop loss.
 
-        Using Average True Range (ATR), multiplier and the highest price within window.
+        Using Average True Range (ATR), multiplier
+        and the highest/lowest price within window.
+
+        Kaufman, Trading Systems and Methods, 2020, 6th ed.
         """
 
-        raise NotImplementedError
+        # NOTE: experiment with close instead of highest and lowest
+
+        if position == PositionType.LONG:
+            return price - multiplier * average_true_range
+
+        return price + multiplier * average_true_range

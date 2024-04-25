@@ -25,6 +25,13 @@ BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 
 
+class PositionType(Enum):
+    """Position types."""
+
+    LONG = "long"
+    SHORT = "short"
+
+
 class ValidYahooApiFrequencies(Enum):
     """Frequency values accepted by Yahoo Finance API."""
 
