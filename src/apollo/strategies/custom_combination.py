@@ -10,7 +10,7 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class SwingEventsMeanReversion(BaseStrategy):
+class CustomCombination(BaseStrategy):
     """
     Custom Combination.
 

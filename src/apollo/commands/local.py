@@ -1,10 +1,10 @@
 import logging
 
-from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+# from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
+from apollo.strategies.custom_combination import CustomCombination
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,17 +28,20 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SwingEventsMeanReversion(
+    strategy = CustomCombination(
         dataframe=dataframe,
-        window_size=10,
+        window_size=5,
         swing_filter=0.01,
+        channel_sd_spread=0.5,
+        kurtosis_threshold=0.5,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SwingEventsMeanReversion",
+        strategy_name="CustomCombination",
         lot_size_cash=1000,
         stop_loss_level=0.005,
         take_profit_level=0.1,
