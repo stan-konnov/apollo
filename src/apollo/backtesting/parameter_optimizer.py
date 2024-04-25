@@ -17,6 +17,7 @@ from apollo.strategies.lin_reg_chan_mean_reversion import (
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
+from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
     ParameterKeysAndCombinations,
@@ -41,6 +42,8 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
+        "SwingEventsMeanReversion":
+            SwingEventsMeanReversion,
         "LinearRegressionChannelMeanReversion":
             LinearRegressionChannelMeanReversion,
         "SkewnessKurtosisVolatilityTrendFollowing":
