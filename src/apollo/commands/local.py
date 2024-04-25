@@ -4,7 +4,7 @@ import logging
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.swing_events_trend_following import SwingEventsTrendFollowing
+from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,7 +28,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SwingEventsTrendFollowing(
+    strategy = SwingEventsMeanReversion(
         dataframe=dataframe,
         window_size=5,
         swing_filter=0.03,
@@ -38,7 +38,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SwingEventsTrendFollowing",
+        strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
         stop_loss_level=0.005,
         take_profit_level=0.1,

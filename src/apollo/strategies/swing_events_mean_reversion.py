@@ -5,10 +5,17 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-# MEAN REVERSION!
-class SwingEventsTrendFollowing(BaseStrategy):
+class SwingEventsMeanReversion(BaseStrategy):
     """
-    Swing Events Trend Following.
+    Swing Events Mean Reversion.
+
+    This strategy takes long positions when:
+
+    * Downward swing event is detected, indicating that instrument is in downswing.
+
+    This strategy takes short positions when:
+
+    * Upward swing event is detected, indicating that instrument is in upswing.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -20,7 +27,7 @@ class SwingEventsTrendFollowing(BaseStrategy):
         swing_filter: float,
     ) -> None:
         """
-        Construct Ordinary Least Squares Channel Strategy.
+        Construct Swing Events Mean Reversion Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
@@ -56,5 +63,5 @@ class SwingEventsTrendFollowing(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[self.dataframe["se"] == LONG_SIGNAL, "signal"] = SHORT_SIGNAL
         self.dataframe.loc[self.dataframe["se"] == SHORT_SIGNAL, "signal"] = LONG_SIGNAL
+        self.dataframe.loc[self.dataframe["se"] == LONG_SIGNAL, "signal"] = SHORT_SIGNAL
