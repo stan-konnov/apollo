@@ -135,12 +135,14 @@ class StrategySimulationAgent(Strategy):
 
         Using Average True Range (ATR), multiplier and
         highest high (for long) or lowest low (for short).
+
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
         :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
         :param volatility_multiplier: Multiplier for ATR
+        :returns: Trailing Stop Loss
         """
 
         if position_type == PositionType.LONG:
