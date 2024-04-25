@@ -55,7 +55,8 @@ def test__skew_kurt_vol_trend_following__with_invalid_parameters(
     }
 
     exception_message = str(
-        "Parameter kurtosis_threshold is " f"not of expected type {float.__name__}",
+        "Parameter kurtosis_threshold is "
+        f"not of expected type {float.__name__}",
     )
 
     with pytest.raises(
