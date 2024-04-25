@@ -37,7 +37,7 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
         channel_sd_spread: float,
     ) -> None:
         """
-        Construct Ordinary Least Squares Channel Strategy.
+        Construct Linear Regression Channel Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
