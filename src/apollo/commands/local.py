@@ -30,11 +30,13 @@ def main() -> None:
 
     strategy = CustomCombination(
         dataframe=dataframe,
-        window_size=5,
         swing_filter=0.01,
         channel_sd_spread=0.5,
         kurtosis_threshold=0.5,
         volatility_multiplier=1.0,
+        swing_events_window_size=5,
+        skew_kurt_vol_window_size=5,
+        linear_regression_channel_window_size=5,
     )
 
     strategy.model_trading_signals()

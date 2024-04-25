@@ -27,11 +27,13 @@ class CustomCombination(BaseStrategy):
     def __init__(
         self,
         dataframe: DataFrame,
-        window_size: int,
         swing_filter: float,
         channel_sd_spread: float,
         kurtosis_threshold: float,
         volatility_multiplier: float,
+        swing_events_window_size: int,
+        skew_kurt_vol_window_size: int,
+        linear_regression_channel_window_size: int,
     ) -> None:
         """
         Construct Custom Combination Strategy.
@@ -53,25 +55,31 @@ class CustomCombination(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        self.dataframe = dataframe
 
         self.kurtosis_threshold = kurtosis_threshold
         self.volatility_multiplier = volatility_multiplier
 
         self.se_calculator = SwingEventsCalculator(
             dataframe=dataframe,
-            window_size=window_size,
+            window_size=swing_events_window_size,
             swing_filter=swing_filter,
         )
 
         self.lrc_calculator = LinearRegressionChannelCalculator(
             dataframe=dataframe,
-            window_size=window_size,
+            window_size=linear_regression_channel_window_size,
             channel_sd_spread=channel_sd_spread,
         )
 
-        self.at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
-        self.dm_calculator = DistributionMomentsCalculator(dataframe, window_size)
+        self.at_calculator = AverageTrueRangeCalculator(
+            dataframe,
+            skew_kurt_vol_window_size,
+        )
+        self.dm_calculator = DistributionMomentsCalculator(
+            dataframe,
+            skew_kurt_vol_window_size,
+        )
 
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
