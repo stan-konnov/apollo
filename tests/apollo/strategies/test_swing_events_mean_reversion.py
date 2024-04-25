@@ -1,9 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.linear_regression_channel import (
-    LinearRegressionChannelCalculator,
-)
+from apollo.calculations.swing_events import SwingEventsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 
@@ -69,58 +67,52 @@ def test__swing_events_mean_reversion__with_invalid_parameters(
     assert str(exception.value) == exception_message
 
 
-# @pytest.mark.usefixtures("dataframe", "window_size")
-# def test__swing_events_mean_reversion__with_valid_parameters(
-#     dataframe: pd.DataFrame,
-#     window_size: int,
-# ) -> None:
-#     """
-#     Test Linear Regression Channel Mean Reversion with valid parameters.
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__swing_events_mean_reversion__with_valid_parameters(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Swing Events Mean Reversion with valid parameters.
 
-#     Strategy should have relevant columns:
-#     "signal", "l_bound", "u_bound", "slope", "prev_slope".
+    Strategy should have relevant columns: "signal", "se".
 
-#     Strategy should properly calculate trading signals.
-#     """
+    Strategy should properly calculate trading signals.
+    """
 
-#     channel_sd_spread = 0.5
+    swing_filter = 0.01
 
-#     control_dataframe = dataframe.copy()
-#     control_dataframe["signal"] = 0
+    control_dataframe = dataframe.copy()
+    control_dataframe["signal"] = 0
 
-#     lrc_calculator = LinearRegressionChannelCalculator(
-#         dataframe=control_dataframe,
-#         window_size=window_size,
-#         channel_sd_spread=channel_sd_spread,
-#     )
-#     lrc_calculator.calculate_linear_regression_channel()
+    se_calculator = SwingEventsCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+        swing_filter=swing_filter,
+    )
+    se_calculator.calculate_swing_events()
 
-#     long = (control_dataframe["adj close"] <= control_dataframe["l_bound"]) & (
-#         control_dataframe["slope"] <= control_dataframe["prev_slope"]
-#     )
-#     control_dataframe.loc[long, "signal"] = LONG_SIGNAL
+    control_dataframe.loc[
+        control_dataframe["se"] == se_calculator.DOWN_SWING,
+        "signal",
+    ] = LONG_SIGNAL
 
-#     short = (control_dataframe["adj close"] >= control_dataframe["u_bound"]) & (
-#         control_dataframe["slope"] >= control_dataframe["prev_slope"]
-#     )
-#     control_dataframe.loc[short, "signal"] = SHORT_SIGNAL
+    control_dataframe.loc[
+        control_dataframe["se"] == se_calculator.UP_SWING,
+        "signal",
+    ] = SHORT_SIGNAL
 
-#     control_dataframe.dropna(inplace=True)
+    control_dataframe.dropna(inplace=True)
 
-#     lin_reg_chan_mean_reversion = LinearRegressionChannelMeanReversion(
-#         dataframe=dataframe,
-#         window_size=window_size,
-#         channel_sd_spread=channel_sd_spread,
-#     )
+    swing_events_mean_reversion = SwingEventsMeanReversion(
+        dataframe=dataframe,
+        window_size=window_size,
+        swing_filter=swing_filter,
+    )
 
-#     lin_reg_chan_mean_reversion.model_trading_signals()
+    swing_events_mean_reversion.model_trading_signals()
 
-#     assert "signal" in lin_reg_chan_mean_reversion.dataframe.columns
+    assert "signal" in swing_events_mean_reversion.dataframe.columns
+    assert "se" in swing_events_mean_reversion.dataframe.columns
 
-#     assert "l_bound" in lin_reg_chan_mean_reversion.dataframe.columns
-#     assert "u_bound" in lin_reg_chan_mean_reversion.dataframe.columns
-
-#     assert "slope" in lin_reg_chan_mean_reversion.dataframe.columns
-#     assert "prev_slope" in lin_reg_chan_mean_reversion.dataframe.columns
-
-#     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
+    pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
