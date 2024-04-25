@@ -48,7 +48,7 @@ class SwingEventsCalculator(BaseCalculator):
         # Kaufman, TSM, p. 168
         self.in_downswing = True
 
-        # Fill swing moments array with N NaN, where N = window size
+        # Fill swing events array with N NaN, where N = window size
         self.swing_events = (
             np.full(
                 (1, self.window_size - 1),
