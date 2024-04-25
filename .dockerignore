@@ -1,3 +1,7 @@
 **/venv
-**/outputs
-**/inputs
+**/data
+**/backtesting_plots
+**/backtesting_results
+
+**/__pycache__
+**/.coverage*

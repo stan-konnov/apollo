@@ -1,0 +1,29 @@
+{
+    "frequency": "1d",
+
+    "cash_size": 1000,
+
+    "window_size": {
+        "step": 5,
+        "range": [5, 40]
+    },
+
+    "stop_loss_level": {
+        "step": 0.005,
+        "range": [0.005, 0.01]
+    },
+
+    "take_profit_level": {
+        "step": 0.01,
+        "range": [0.01, 0.1]
+    },
+
+    "channel_sd_spread": {
+        "step": 0.5,
+        "range": [0.5, 3.0]
+    },
+
+    "strategy_specific_parameters": [
+        "channel_sd_spread"
+    ]
+}

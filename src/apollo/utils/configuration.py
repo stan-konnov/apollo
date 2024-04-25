@@ -44,7 +44,6 @@ class Configuration:
             f"{dumps(self.parameter_set, indent=4)}",
         )
 
-
     def _get_parameter_set(self) -> ParameterSet:
         """
         Parse parameters file from file system into typed object.

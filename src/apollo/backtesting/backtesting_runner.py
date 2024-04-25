@@ -60,7 +60,6 @@ class BacktestingRunner:
         self.strategy_sim_agent.stop_loss_level = stop_loss_level
         self.strategy_sim_agent.take_profit_level = take_profit_level
 
-
     def run(self) -> Series:
         """
         Run the backtesting process.

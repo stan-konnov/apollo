@@ -11,6 +11,7 @@ STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
 
+NO_SIGNAL = 0
 LONG_SIGNAL = 1
 SHORT_SIGNAL = -1
 
@@ -22,6 +23,7 @@ PLOT_DIR = Path(f"{ROOT_DIR}/backtesting_plots")
 BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
+
 
 class ValidYahooApiFrequencies(Enum):
     """Frequency values accepted by Yahoo Finance API."""

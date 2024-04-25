@@ -21,24 +21,31 @@ class AverageTrueRangeCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-
     def calculate_average_true_range(self) -> None:
         """Calculate rolling ATR via rolling TR and EMA."""
 
         # Calculate rolling True Range
-        self.dataframe["tr"] = self.dataframe["adj close"].rolling(
-            self.window_size,
-        ).apply(
-            self.__calc_tr, args=(self.dataframe, ),
+        self.dataframe["tr"] = (
+            self.dataframe["adj close"]
+            .rolling(
+                self.window_size,
+            )
+            .apply(
+                self.__calc_tr,
+                args=(self.dataframe,),
+            )
         )
 
         # Calculate Average True Range using J. Welles Wilder's WMA of TR
-        self.dataframe["atr"] = self.dataframe["tr"].ewm(
-            alpha=1 / self.window_size,
-            min_periods=self.window_size,
-            adjust=False,
-        ).mean()
-
+        self.dataframe["atr"] = (
+            self.dataframe["tr"]
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.window_size,
+                adjust=False,
+            )
+            .mean()
+        )
 
     def __calc_tr(self, series: pd.Series, dataframe: pd.DataFrame) -> None:
         """

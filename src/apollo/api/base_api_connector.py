@@ -52,7 +52,6 @@ class BaseApiConnector(ABC):
         self.end_date = end_date
         self.frequency = frequency
 
-
     @abstractmethod
     def request_or_read_prices(self) -> DataFrame:
         """
@@ -61,7 +60,6 @@ class BaseApiConnector(ABC):
         :returns: Dataframe with price data.
         """
 
-
     @abstractmethod
     def _prep_dataframe(self, dataframe: DataFrame) -> None:
         """
@@ -69,7 +67,6 @@ class BaseApiConnector(ABC):
 
         :param dataframe: Raw data from the API.
         """
-
 
     @abstractmethod
     def _save_dataframe(self, dataframe: DataFrame) -> None:
