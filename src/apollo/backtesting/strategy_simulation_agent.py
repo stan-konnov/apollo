@@ -43,11 +43,11 @@ class StrategySimulationAgent(Strategy):
         # Grab close of the current row
         close = self.data["Close"][-1]
 
-        # We should come precalculated
-        multiplier = 2
-        lowest_price = 50
-        highest_price = 100
-        average_true_range = 10
+        # NOTE: volatility multiplier should be different than one used in modelling!
+        multiplier = 2  # Comes from environment parameters
+        lowest_price = 50  # Precomputed for window
+        highest_price = 100  # Precomputed for window
+        average_true_range = 10  # Precomputed for window
 
         # Loop through open positions and calculate trailing stop loss
         for trade in self.trades:
