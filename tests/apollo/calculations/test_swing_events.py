@@ -45,7 +45,7 @@ def test__calculate_swing_events__for_correct_rolling_window(
     Where N = WINDOW_SIZE.
 
     Resulting dataframe must skip WINDOW_SIZE - 1 rows for SM column
-    Since SM calculation must have at least N rows to be calculated.
+    Since SE calculation must have at least N rows to be calculated.
     """
 
     sm_calculator = SwingEventsCalculator(
@@ -67,7 +67,7 @@ def test__calculate_swing_events__for_correct_atr_calculation(
     """
     Test calculate_swing_events method for correct swings calculation.
 
-    Resulting SM column must have correct values for each row.
+    Resulting SE column must have correct values for each row.
     """
 
     control_dataframe = dataframe.copy()
