@@ -47,7 +47,6 @@ class YahooApiConnector(BaseApiConnector):
             f"{self.start_date}-{self.end_date}.csv"
         )
 
-
     def request_or_read_prices(self) -> pd.DataFrame:
         """
         Request prices from Yahoo Finance or read them from storage.
@@ -89,7 +88,6 @@ class YahooApiConnector(BaseApiConnector):
 
         return price_data
 
-
     def _prep_dataframe(self, dataframe: pd.DataFrame) -> None:
         """
         Prepare Dataframe for consistency.
@@ -107,7 +105,6 @@ class YahooApiConnector(BaseApiConnector):
 
         dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", self.ticker)
-
 
     def _save_dataframe(self, dataframe: pd.DataFrame) -> None:
         """
