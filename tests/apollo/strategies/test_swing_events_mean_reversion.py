@@ -36,37 +36,37 @@ def test__swing_events_mean_reversion__with_missing_parameters(
     assert str(exception.value) == "Parameter swing_filter is missing"
 
 
-# @pytest.mark.usefixtures("dataframe", "window_size")
-# def test__swing_events_mean_reversion__with_invalid_parameters(
-#     dataframe: pd.DataFrame,
-#     window_size: int,
-# ) -> None:
-#     """
-#     Test Linear Regression Channel Mean Reversion with invalid parameters.
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__swing_events_mean_reversion__with_invalid_parameters(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Swing Events Mean Reversion with invalid parameters.
 
-#     Strategy should raise TypeError when parameter is not of expected type.
-#     """
+    Strategy should raise TypeError when parameter is not of expected type.
+    """
 
-#     invalid_param_set = {
-#         "channel_sd_spread": "invalid",
-#     }
+    invalid_param_set = {
+        "swing_filter": "invalid",
+    }
 
-#     exception_message = str(
-#         "Parameter channel_sd_spread is "
-#         f"not of expected type {float.__name__}",
-#     )
+    exception_message = str(
+        "Parameter swing_filter is "
+        f"not of expected type {float.__name__}",
+    )
 
-#     with pytest.raises(
-#         TypeError,
-#         match=exception_message,
-#     ) as exception:
-#         LinearRegressionChannelMeanReversion(
-#             dataframe=dataframe,
-#             window_size=window_size,
-#             channel_sd_spread=invalid_param_set.get("channel_sd_spread"),  # type: ignore[assignment]
-#         )
+    with pytest.raises(
+        TypeError,
+        match=exception_message,
+    ) as exception:
+        SwingEventsMeanReversion(
+            dataframe=dataframe,
+            window_size=window_size,
+            swing_filter=invalid_param_set.get("swing_filter"),  # type: ignore[assignment]
+        )
 
-#     assert str(exception.value) == exception_message
+    assert str(exception.value) == exception_message
 
 
 # @pytest.mark.usefixtures("dataframe", "window_size")
