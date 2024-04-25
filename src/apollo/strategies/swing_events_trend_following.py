@@ -5,6 +5,7 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
+# MEAN REVERSION!
 class SwingEventsTrendFollowing(BaseStrategy):
     """
     Swing Events Trend Following.
@@ -55,7 +56,5 @@ class SwingEventsTrendFollowing(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[self.dataframe["se"] == LONG_SIGNAL, "signal"] = LONG_SIGNAL
-        self.dataframe.loc[self.dataframe["se"] == SHORT_SIGNAL, "signal"] = (
-            SHORT_SIGNAL
-        )
+        self.dataframe.loc[self.dataframe["se"] == LONG_SIGNAL, "signal"] = SHORT_SIGNAL
+        self.dataframe.loc[self.dataframe["se"] == SHORT_SIGNAL, "signal"] = LONG_SIGNAL
