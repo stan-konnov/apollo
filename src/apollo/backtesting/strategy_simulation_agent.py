@@ -25,6 +25,7 @@ class StrategySimulationAgent(Strategy):
 
         NOTE: Backtesting.py requires this method to be implemented.
         """
+        super().init()
 
     def next(self) -> None:
         """
@@ -37,22 +38,42 @@ class StrategySimulationAgent(Strategy):
 
         NOTE: Backtesting.py requires this method to be implemented.
         """
+        super().init()
+
+        # Grab close of the current row
+        close = self.data["Close"][-1]
+
+        multiplier = 2
+        highest_price = 100
+        average_true_range = 10
+
+        # Loop through open positions and set trailing stop loss
+        for trade in self.trades:
+            if trade.is_long:
+                trade.sl = self._calculate_trailing_sl(
+                    close=close,
+                    multiplier=multiplier,
+                    highest_price=highest_price,
+                    average_true_range=average_true_range,
+                )
+            else:
+                trade.sl = self._calculate_trailing_sl(
+                    close=close,
+                    multiplier=multiplier,
+                    highest_price=highest_price,
+                    average_true_range=average_true_range,
+                )
 
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
         # Enter the trade if signal identified
         if signal_identified:
-
             # Identify if signal is long or short
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
-            # Grab close of the current row
-            close = self.data["Close"][-1]
-
             if long_signal:
-
                 # Skip if we already have long position
                 if self.position.is_long:
                     return
@@ -68,7 +89,6 @@ class StrategySimulationAgent(Strategy):
                 self.buy(sl=sl, tp=tp)
 
             if short_signal:
-
                 # Skip if we already have short position
                 if self.position.is_short:
                     return
@@ -100,3 +120,18 @@ class StrategySimulationAgent(Strategy):
         """
 
         return close * (1 + self.stop_loss_level), close * (1 - self.take_profit_level)
+
+    def _calculate_trailing_sl(
+        self,
+        close: float,
+        multiplier: float,
+        highest_price: float,
+        average_true_range: float,
+    ) -> float:
+        """
+        Calculate trailing stop loss.
+
+        Using Average True Range (ATR), multiplier and the highest price within window.
+        """
+
+        raise NotImplementedError
