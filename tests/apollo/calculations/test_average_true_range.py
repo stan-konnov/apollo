@@ -13,6 +13,7 @@ def test__calculate_average_true_range__for_correct_columns(
     Test calculate_average_true_range method for correct columns.
 
     Resulting dataframe must have columns "tr" and "atr".
+    Resulting dataframe must drop "prev_close" column.
     """
 
     atr_calculator = AverageTrueRangeCalculator(
@@ -24,6 +25,7 @@ def test__calculate_average_true_range__for_correct_columns(
 
     assert "tr" in atr_calculator.dataframe.columns
     assert "atr" in atr_calculator.dataframe.columns
+    assert "prev_close" not in atr_calculator.dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -66,9 +68,10 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     """
 
     control_dataframe = dataframe.copy()
+    control_dataframe["prev_close"] = control_dataframe["close"].shift()
 
     control_dataframe["tr"] = (
-        control_dataframe["adj close"]
+        control_dataframe["close"]
         .rolling(
             window_size,
         )
@@ -100,9 +103,10 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     """
 
     control_dataframe = dataframe.copy()
+    control_dataframe["prev_close"] = control_dataframe["close"].shift()
 
     control_dataframe["tr"] = (
-        control_dataframe["adj close"]
+        control_dataframe["close"]
         .rolling(
             window_size,
         )
@@ -141,20 +145,10 @@ def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     rolling_df = dataframe.loc[series.index]
 
-    high = rolling_df["high"]
-    low = rolling_df["low"]
-    prev_close = rolling_df["adj close"].shift()
+    high = rolling_df["high"][-1]
+    low = rolling_df["low"][-1]
+    prev_close = rolling_df["prev_close"][-1]
 
-    true_range = pd.concat(
-        [
-            tr.abs()
-            for tr in [
-                high - low,
-                high - prev_close,
-                prev_close - low,
-            ]
-        ],
-        axis=1,
-    ).max(axis=1)
+    true_range = [high - low, high - prev_close, prev_close - low]
 
-    return true_range.iloc[-1]
+    return max([abs(tr) for tr in true_range])
