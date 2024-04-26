@@ -75,5 +75,5 @@ class AverageTrueRangeCalculator(BaseCalculator):
         # Kaufman, Trading Systems and Methods, 2020, p.850
         true_range = [high - low, high - prev_close, prev_close - low]
 
-        # Bring to absolute value and return
+        # Bring to maximum absolute value and return
         return max([abs(tr) for tr in true_range])
