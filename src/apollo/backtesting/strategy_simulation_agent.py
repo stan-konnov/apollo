@@ -13,11 +13,9 @@ class StrategySimulationAgent(Strategy):
     Used as one of the components in backtesting process facilitated by runner class.
     """
 
-    # Stop loss level to use for exits
-    stop_loss_level: ClassVar[float]
-
-    # Take profit level to use for exits
-    take_profit_level: ClassVar[float]
+    # Volatility multiplier applied to ATR
+    # for calculating trailing stop loss and take profit
+    volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
         """
@@ -43,28 +41,12 @@ class StrategySimulationAgent(Strategy):
         # Grab close of the current row
         close = self.data["Close"][-1]
 
-        # NOTE: volatility multiplier should be different than one used in modelling!
-        multiplier = 2  # Comes from environment parameters
-        lowest_price = 50  # Precomputed for window
-        highest_price = 100  # Precomputed for window
-        average_true_range = 10  # Precomputed for window
+        # Grab lowest low and highest high of the current row
+        lowest_low = self.data["l_low"][-1]
+        highest_high = self.data["h_high"][-1]
 
-        # Loop through open positions and calculate trailing stop loss
-        for trade in self.trades:
-            if trade.is_long:
-                trade.sl = self._calculate_trailing_stop_loss(
-                    position_type=PositionType.LONG,
-                    limit_price=highest_price,
-                    average_true_range=average_true_range,
-                    volatility_multiplier=multiplier,
-                )
-            else:
-                trade.sl = self._calculate_trailing_stop_loss(
-                    position_type=PositionType.SHORT,
-                    limit_price=lowest_price,
-                    average_true_range=average_true_range,
-                    volatility_multiplier=multiplier,
-                )
+        # Grab average true range of the current row
+        average_true_range = self.data["atr"][-1]
 
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
@@ -84,11 +66,8 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_short:
                     self.position.close()
 
-                # Calculate stop loss and take profit levels
-                sl, tp = self._calculate_long_sl_and_tp(close)
-
                 # And open new long position
-                self.buy(tp=tp)
+                self.buy()
 
             if short_signal:
                 # Skip if we already have short position
@@ -99,37 +78,43 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_long:
                     self.position.close()
 
-                # Calculate stop loss and take profit levels
-                sl, tp = self._calculate_short_sl_and_tp(close)
-
                 # And open new short position
-                self.sell(tp=tp)
+                self.sell()
 
-    def _calculate_long_sl_and_tp(self, close: float) -> tuple[float, float]:
-        """
-        Calculate long stop loss and take profit.
+        # Loop through open positions and
+        # calculate trailing stop loss and take profit
+        for trade in self.trades:
+            if trade.is_long:
+                sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
+                    position_type=PositionType.LONG,
+                    close_price=close,
+                    limit_price=highest_high,
+                    average_true_range=average_true_range,
+                    volatility_multiplier=self.volatility_multiplier,
+                )
 
-        Use provided close, stop loss and take profit levels.
-        """
+                trade.sl = sl
+                trade.tp = tp
+            else:
+                sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
+                    position_type=PositionType.SHORT,
+                    close_price=close,
+                    limit_price=lowest_low,
+                    average_true_range=average_true_range,
+                    volatility_multiplier=self.volatility_multiplier,
+                )
 
-        return close * (1 - self.stop_loss_level), close * (1 + self.take_profit_level)
+                trade.sl = sl
+                trade.tp = tp
 
-    def _calculate_short_sl_and_tp(self, close: float) -> tuple[float, float]:
-        """
-        Calculate short stop loss and take profit.
-
-        Use provided close, stop loss and take profit levels.
-        """
-
-        return close * (1 + self.stop_loss_level), close * (1 - self.take_profit_level)
-
-    def _calculate_trailing_stop_loss(
+    def _calculate_trailing_stop_loss_and_take_profit(
         self,
         position_type: PositionType,
+        close_price: float,
         limit_price: float,
         average_true_range: float,
         volatility_multiplier: float,
-    ) -> float:
+    ) -> tuple[float, float]:
         """
         Calculate trailing stop loss.
 
@@ -145,7 +130,15 @@ class StrategySimulationAgent(Strategy):
         :returns: Trailing Stop Loss
         """
 
-        if position_type == PositionType.LONG:
-            return limit_price - volatility_multiplier * average_true_range
+        sl = 0.0
+        tp = 0.0
 
-        return limit_price + volatility_multiplier * average_true_range
+        if position_type == PositionType.LONG:
+            sl = limit_price - volatility_multiplier * average_true_range
+            tp = close_price + volatility_multiplier * average_true_range
+
+        else:
+            sl = limit_price + volatility_multiplier * average_true_range
+            tp = close_price - volatility_multiplier * average_true_range
+
+        return sl, tp
