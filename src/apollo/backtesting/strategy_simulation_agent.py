@@ -81,10 +81,10 @@ class StrategySimulationAgent(Strategy):
                 # And open new short position
                 self.sell()
 
-        # Loop through open positions and
-        # calculate trailing stop loss and take profit
+        # Loop through open positions
         for trade in self.trades:
             if trade.is_long:
+                # Calculate long trailing stop loss and take profit
                 sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
                     position_type=PositionType.LONG,
                     close_price=close,
@@ -93,9 +93,11 @@ class StrategySimulationAgent(Strategy):
                     volatility_multiplier=self.volatility_multiplier,
                 )
 
+                # And assign to open position(s)
                 trade.sl = sl
                 trade.tp = tp
             else:
+                # Calculate short trailing stop loss and take profit
                 sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
                     position_type=PositionType.SHORT,
                     close_price=close,
@@ -104,6 +106,7 @@ class StrategySimulationAgent(Strategy):
                     volatility_multiplier=self.volatility_multiplier,
                 )
 
+                # And assign to open position(s)
                 trade.sl = sl
                 trade.tp = tp
 
@@ -116,18 +119,19 @@ class StrategySimulationAgent(Strategy):
         volatility_multiplier: float,
     ) -> tuple[float, float]:
         """
-        Calculate trailing stop loss.
+        Calculate trailing stop loss and take profit.
 
-        Using Average True Range (ATR), multiplier and
-        highest high (for long) or lowest low (for short).
+        Using highest high, lowest low, close,
+        Average True Range, and volatility multiplier.
 
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
+        :param close_price: Close price
         :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
         :param volatility_multiplier: Multiplier for ATR
-        :returns: Trailing Stop Loss
+        :returns: Trailing stop loss and take profit levels
         """
 
         sl = 0.0
