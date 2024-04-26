@@ -24,9 +24,12 @@ class AverageTrueRangeCalculator(BaseCalculator):
     def calculate_average_true_range(self) -> None:
         """Calculate rolling ATR via rolling TR and EMA."""
 
+        # Precalculate previous close
+        self.dataframe["prev_close"] = self.dataframe["close"].shift(1)
+
         # Calculate rolling True Range
         self.dataframe["tr"] = (
-            self.dataframe["adj close"]
+            self.dataframe["close"]
             .rolling(
                 self.window_size,
             )
@@ -47,6 +50,9 @@ class AverageTrueRangeCalculator(BaseCalculator):
             .mean()
         )
 
+        # Drop previous close as we no longer need it
+        self.dataframe.drop(columns=["prev_close"], inplace=True)
+
     def __calc_tr(self, series: pd.Series, dataframe: pd.DataFrame) -> None:
         """
         Calculate rolling TR for a given window.
@@ -60,20 +66,14 @@ class AverageTrueRangeCalculator(BaseCalculator):
         rolling_df = dataframe.loc[series.index]
 
         # Get high, low, and previous close
-        high = rolling_df["high"]
-        low = rolling_df["low"]
-        prev_close = rolling_df["adj close"].shift()
+        high = rolling_df["high"][-1]
+        low = rolling_df["low"][-1]
+        prev_close = rolling_df["prev_close"][-1]
 
         # Calculate True Range for each row, where TR is:
         # max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)
         # Kaufman, Trading Systems and Methods, 2020, p.850
         true_range = [high - low, high - prev_close, prev_close - low]
 
-        # Bring to absolute values
-        true_range = [tr.abs() for tr in true_range]
-
-        # Get the max out of 3 operations
-        true_range = pd.concat(true_range, axis=1).max(axis=1)
-
-        # Return latest entry from processed window
-        return true_range.iloc[-1]
+        # Bring to absolute value and return
+        return max([abs(tr) for tr in true_range])
