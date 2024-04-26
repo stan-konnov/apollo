@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Any, Type
 
 from pandas import DataFrame
@@ -6,7 +5,7 @@ from pandas import DataFrame
 from apollo.settings import NO_SIGNAL
 
 
-class BaseStrategy(ABC):
+class BaseStrategy:
     """
     Base class for all strategies.
 
@@ -29,13 +28,14 @@ class BaseStrategy(ABC):
 
         self.dataframe["signal"] = NO_SIGNAL
 
-    @abstractmethod
     def model_trading_signals(self) -> None:
         """
         Model entry and exit signals.
 
         Is required to be implemented by subclasses.
         """
+
+        raise NotImplementedError("Method model_trading_signals is not implemented")
 
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
