@@ -40,8 +40,7 @@ def main() -> None:
         dataframe=dataframe,
         strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
-        stop_loss_level=0.005,
-        take_profit_level=0.1,
+        volatility_multiplier=1.0,
         write_result_plot=True,
     )
 

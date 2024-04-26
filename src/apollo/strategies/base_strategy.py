@@ -31,6 +31,7 @@ class BaseStrategy:
         self.dataframe["signal"] = NO_SIGNAL
 
         self.atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+        self.calculate_volatility_and_limit_prices()
 
     def model_trading_signals(self) -> None:
         """

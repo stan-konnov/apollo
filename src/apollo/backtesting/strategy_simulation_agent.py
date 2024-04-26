@@ -15,7 +15,7 @@ class StrategySimulationAgent(Strategy):
 
     # Volatility multiplier applied to ATR
     # for calculating trailing stop loss and take profit
-    exit_volatility_multiplier: ClassVar[float]
+    volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
         """
@@ -90,7 +90,7 @@ class StrategySimulationAgent(Strategy):
                     close_price=close,
                     limit_price=highest_high,
                     average_true_range=average_true_range,
-                    exit_volatility_multiplier=self.exit_volatility_multiplier,
+                    volatility_multiplier=self.volatility_multiplier,
                 )
 
                 # And assign to open position(s)
@@ -103,7 +103,7 @@ class StrategySimulationAgent(Strategy):
                     close_price=close,
                     limit_price=lowest_low,
                     average_true_range=average_true_range,
-                    exit_volatility_multiplier=self.exit_volatility_multiplier,
+                    volatility_multiplier=self.volatility_multiplier,
                 )
 
                 # And assign to open position(s)
@@ -116,7 +116,7 @@ class StrategySimulationAgent(Strategy):
         close_price: float,
         limit_price: float,
         average_true_range: float,
-        exit_volatility_multiplier: float,
+        volatility_multiplier: float,
     ) -> tuple[float, float]:
         """
         Calculate trailing stop loss and take profit.
@@ -130,7 +130,7 @@ class StrategySimulationAgent(Strategy):
         :param close_price: Close price
         :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
-        :param exit_volatility_multiplier: Multiplier for ATR
+        :param volatility_multiplier: Multiplier for ATR
         :returns: Trailing stop loss and take profit levels
         """
 
@@ -138,11 +138,11 @@ class StrategySimulationAgent(Strategy):
         tp = 0.0
 
         if position_type == PositionType.LONG:
-            sl = limit_price - exit_volatility_multiplier * average_true_range
-            tp = close_price + exit_volatility_multiplier * average_true_range
+            sl = limit_price - volatility_multiplier * average_true_range
+            tp = close_price + volatility_multiplier * average_true_range
 
         else:
-            sl = limit_price + exit_volatility_multiplier * average_true_range
-            tp = close_price - exit_volatility_multiplier * average_true_range
+            sl = limit_price + volatility_multiplier * average_true_range
+            tp = close_price - volatility_multiplier * average_true_range
 
         return sl, tp
