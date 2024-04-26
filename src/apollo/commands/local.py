@@ -29,36 +29,25 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SkewnessKurtosisVolatilityTrendFollowing(
-        window_size=5,
+    strategy = SwingEventsMeanReversion(
         dataframe=dataframe,
-        kurtosis_threshold=0.0,
-        volatility_multiplier=1.0,
+        window_size=15,
+        swing_filter=0.03,
     )
 
     strategy.model_trading_signals()
 
-    # print(dataframe.tail(5))
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name="SwingEventsMeanReversion",
+        lot_size_cash=1000,
+        volatility_multiplier=1.0,
+        write_result_plot=True,
+    )
 
-    # strategy = SwingEventsMeanReversion(
-    #     dataframe=dataframe,
-    #     window_size=5,
-    #     swing_filter=0.03,
-    # )
+    stats = backtesting_runner.run()
 
-    # strategy.model_trading_signals()
-
-    # backtesting_runner = BacktestingRunner(
-    #     dataframe=dataframe,
-    #     strategy_name="SwingEventsMeanReversion",
-    #     lot_size_cash=1000,
-    #     volatility_multiplier=1.0,
-    #     write_result_plot=True,
-    # )
-
-    # stats = backtesting_runner.run()
-
-    # print(stats)
+    print(stats)
 
 
 if __name__ == "__main__":

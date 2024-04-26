@@ -51,6 +51,24 @@ class StrategySimulationAgent(Strategy):
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
+        # Calculate long trailing stop loss and take profit
+        long_sl, long_tp = self._calculate_trailing_stop_loss_and_take_profit(
+            position_type=PositionType.LONG,
+            close_price=close,
+            limit_price=highest_high,
+            average_true_range=average_true_range,
+            volatility_multiplier=self.volatility_multiplier,
+        )
+
+        # Calculate short trailing stop loss and take profit
+        short_sl, short_tp = self._calculate_trailing_stop_loss_and_take_profit(
+            position_type=PositionType.SHORT,
+            close_price=close,
+            limit_price=lowest_low,
+            average_true_range=average_true_range,
+            volatility_multiplier=self.volatility_multiplier,
+        )
+
         # Enter the trade if signal identified
         if signal_identified:
             # Identify if signal is long or short
@@ -82,36 +100,19 @@ class StrategySimulationAgent(Strategy):
                 self.sell()
 
         # Loop through open positions
+        # And assign SL and TP to open position(s)
         for trade in self.trades:
             if trade.is_long:
-                # Calculate long trailing stop loss and take profit
-                sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
-                    position_type=PositionType.LONG,
-                    close_price=close,
-                    limit_price=highest_high,
-                    average_true_range=average_true_range,
-                    volatility_multiplier=self.volatility_multiplier,
-                )
-
-                # And assign to open position(s)
-                trade.sl = sl
-                trade.tp = tp
+                trade.sl = long_sl
+                trade.tp = long_tp
             else:
-                # Calculate short trailing stop loss and take profit
-                sl, tp = self._calculate_trailing_stop_loss_and_take_profit(
-                    position_type=PositionType.SHORT,
-                    close_price=close,
-                    limit_price=lowest_low,
-                    average_true_range=average_true_range,
-                    volatility_multiplier=self.volatility_multiplier,
-                )
+                trade.sl = short_sl
+                trade.tp = short_tp
 
-                # And assign to open position(s)
-                trade.sl = sl
-                trade.tp = tp
-
+            if trade.is_long:
                 print(
-                    "Type", PositionType.LONG if trade.is_long else PositionType.SHORT
+                    "Type",
+                    PositionType.LONG if trade.is_long else PositionType.SHORT,
                 )
                 print("Entry", trade.entry_price)
                 print("Close", close)
