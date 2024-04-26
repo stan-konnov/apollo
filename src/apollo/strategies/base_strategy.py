@@ -63,6 +63,14 @@ class BaseStrategy:
         # Calculate Average True Range
         self.atr_calculator.calculate_average_true_range()
 
+        # Calculate highest high within the window
+        self.dataframe["h_high"] = (
+            self.dataframe["high"].rolling(self.window_size).max()
+        )
+
+        # Calculate lowest low within the window
+        self.dataframe["l_low"] = self.dataframe["low"].rolling(self.window_size).min()
+
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
         Validate that all parameters are provided and of type specified by the caller.
