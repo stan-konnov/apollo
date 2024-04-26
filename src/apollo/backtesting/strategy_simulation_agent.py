@@ -147,12 +147,18 @@ class StrategySimulationAgent(Strategy):
         sl = 0.0
         tp = 0.0
 
+        # Okay, don't make TP dynamic
+
         if position_type == PositionType.LONG:
             sl = limit_price - volatility_multiplier * average_true_range
-            tp = close_price + volatility_multiplier * average_true_range
+            # tp = close_price + volatility_multiplier * average_true_range
+
+            tp = close_price * (1 + 0.01)
 
         else:
             sl = limit_price + volatility_multiplier * average_true_range
-            tp = close_price - volatility_multiplier * average_true_range
+            # tp = close_price - volatility_multiplier * average_true_range
+
+            tp = close_price * (1 - 0.01)
 
         return sl, tp
