@@ -51,6 +51,8 @@ class StrategySimulationAgent(Strategy):
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
+        # PLEASE CALCULATE TP WITHIN THE SIGNAL LOOP TO SOLIDIFY IT
+        # ONCE AGAIN: MAKE ONLY SL DYNAMIC
         # Calculate long trailing stop loss and take profit
         long_sl, long_tp = self._calculate_trailing_stop_loss_and_take_profit(
             position_type=PositionType.LONG,
@@ -113,6 +115,7 @@ class StrategySimulationAgent(Strategy):
                 "Type",
                 PositionType.LONG if trade.is_long else PositionType.SHORT,
             )
+            print("Identifier", trade.entry_bar)
             print("Entry", trade.entry_price)
             print("Close", close)
             print("Stop Loss", trade.sl)
