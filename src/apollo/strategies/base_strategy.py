@@ -2,6 +2,7 @@ from typing import Any, Type
 
 from pandas import DataFrame
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import NO_SIGNAL
 
 
@@ -18,6 +19,7 @@ class BaseStrategy:
         Construct Base Strategy.
 
         Insert signal column.
+        Initialize Average True Range calculator.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
@@ -27,6 +29,8 @@ class BaseStrategy:
         self.window_size = window_size
 
         self.dataframe["signal"] = NO_SIGNAL
+
+        self.atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
 
     def model_trading_signals(self) -> None:
         """
@@ -70,3 +74,25 @@ class BaseStrategy:
                     f"Parameter {parameter_name} is "
                     f"not of expected type {expected_type.__name__}",
                 )
+
+    def calculate_volatility_and_limit_prices(self) -> None:
+        """
+        Calculate volatility and limit prices for the strategy.
+
+        All strategies are designed to be trailing strategies that
+        apply dynamic stop loss and take profit orders.
+
+        The stop loss and take profit levels are calculated based on:
+
+        * Average True Range (ATR), which is a measure of volatility.
+        * Volatility multiplier, which is a user-defined parameter.
+        * Highest high and lowest low prices within the window.
+        * Current closing price of the analyzed instrument.
+
+        The job of calculating these levels is delegated to backtesting module.
+        Yet, the strategy is responsible for providing the necessary data.
+        Therefore, this method calculates volatility and limit prices.
+        """
+
+        # Calculate Average True Range
+        self.atr_calculator.calculate_average_true_range()
