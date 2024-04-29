@@ -242,6 +242,25 @@ class ParameterOptimizer:
         # Reset the indices to clean up the dataframe after concatenation
         results_dataframe.reset_index(drop=True, inplace=True)
 
+        # Grab the best performing trades
+        trades: pd.Series = results_dataframe.iloc[0]["_trades"]
+
+        # Bring returns to more human readable format
+        trades["ReturnPct"] = trades["ReturnPct"] * 100
+
+        # Write trades to the file system for further analysis
+        if not Path.is_dir(BRES_DIR):
+            BRES_DIR.mkdir(parents=True, exist_ok=True)
+
+        trades.to_csv(
+            f"{BRES_DIR}/"
+            "TRADES-"
+            f"{self._configuration.ticker}-"
+            f"{self._configuration.strategy}-"
+            f"{self._configuration.start_date}-"
+            f"{self._configuration.end_date}.csv",
+        )
+
         # Drop columns that are not needed for further analysis
         results_dataframe.drop(
             columns=[
@@ -258,9 +277,6 @@ class ParameterOptimizer:
         )
 
         # Write the results to a CSV file for further analysis
-        if not Path.is_dir(BRES_DIR):
-            BRES_DIR.mkdir(parents=True, exist_ok=True)
-
         results_dataframe.to_csv(
             f"{BRES_DIR}/"
             f"{self._configuration.ticker}-"

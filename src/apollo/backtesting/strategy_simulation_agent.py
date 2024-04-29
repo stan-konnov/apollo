@@ -4,6 +4,15 @@ from backtesting import Strategy
 
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
+# Assumptions:
+# * are we sure we always running exclusively, non-overlapping trades?
+# * we assume that trade-on-close is available to us
+# * we assume no commission are applied (!)
+# * we assume no slippage happens (!)
+
+# On trailing SL:
+# * Sometimes applied above TP in case of long positions (!)
+
 
 class StrategySimulationAgent(Strategy):
     """
