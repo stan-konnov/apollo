@@ -104,7 +104,7 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # And open new long position
-                self.buy(stop=close)
+                self.buy(sl=long_sl, tp=long_tp, stop=close)
 
             if short_signal:
                 # Skip if we already have short position
@@ -116,7 +116,7 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # And open new short position
-                self.sell(stop=close)
+                self.sell(sl=short_sl, tp=short_tp, stop=close)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
@@ -127,6 +127,13 @@ class StrategySimulationAgent(Strategy):
             else:
                 trade.sl = short_sl
                 trade.tp = short_tp
+
+            print("Identifier: ", trade.entry_bar)
+            print("Type: ", PositionType.LONG if trade.is_long else PositionType.SHORT)
+            print("SL: ", trade.sl)
+            print("Entry price: ", trade.entry_price)
+            print("TP: ", trade.tp)
+            print("\n\n")
 
     def _calculate_trailing_stop_loss_and_take_profit(
         self,
@@ -156,11 +163,13 @@ class StrategySimulationAgent(Strategy):
         tp = 0.0
 
         if position_type == PositionType.LONG:
-            sl = limit_price - average_true_range * sl_volatility_multiplier
-            tp = close_price * (1 + self.take_profit_level)
+            sl = close_price - average_true_range * sl_volatility_multiplier
+            # tp = close_price * (1 + self.take_profit_level)
+            tp = close_price + average_true_range * sl_volatility_multiplier
 
         else:
-            sl = limit_price + average_true_range * sl_volatility_multiplier
-            tp = close_price * (1 - self.take_profit_level)
+            sl = close_price + average_true_range * sl_volatility_multiplier
+            # tp = close_price * (1 - self.take_profit_level)
+            tp = close_price - average_true_range * sl_volatility_multiplier
 
         return sl, tp
