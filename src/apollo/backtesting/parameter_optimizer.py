@@ -96,7 +96,6 @@ class ParameterOptimizer:
 
         # Iterate over each combination of parameters
         for combination in combinations:
-
             # We copy the dataframe to have a clean
             # set of prices for each combination we are testing
             dataframe_to_test = dataframe.copy()
@@ -140,7 +139,6 @@ class ParameterOptimizer:
 
             # Skip this run if there are no signals
             if (dataframe_to_test["signal"] == NO_SIGNAL).all():
-
                 continue
 
             # Instantiate the backtesting runner and run the backtesting process
@@ -243,26 +241,30 @@ class ParameterOptimizer:
         # Reset the indices to clean up the dataframe after concatenation
         results_dataframe.reset_index(drop=True, inplace=True)
 
-        # TODO: PLEASE NORMALIZE WRITING TO FILE SYSTEM WITH LESS REPETITION
-
         # Grab the best performing trades
         trades: pd.Series = results_dataframe.iloc[0]["_trades"]
 
         # Bring returns to more human readable format
         trades["ReturnPct"] = trades["ReturnPct"] * 100
 
-        # Write trades to the file system for further analysis
+        # Create a main backtesting results directory
         if not Path.is_dir(BRES_DIR):
             BRES_DIR.mkdir(parents=True, exist_ok=True)
 
-        trades.to_csv(
+        # Create a directory for individual strategy results and trades
+        strategy_dir = Path(
             f"{BRES_DIR}/"
-            "TRADES-"
             f"{self._configuration.ticker}-"
             f"{self._configuration.strategy}-"
             f"{self._configuration.start_date}-"
-            f"{self._configuration.end_date}.csv",
+            f"{self._configuration.end_date}",
         )
+
+        if not Path.is_dir(strategy_dir):
+            strategy_dir.mkdir(parents=True, exist_ok=True)
+
+        # Write trades
+        trades.to_csv(f"{strategy_dir}/TRADES.csv")
 
         # Drop columns that are not needed for further analysis
         results_dataframe.drop(
@@ -280,13 +282,7 @@ class ParameterOptimizer:
         )
 
         # Write the results to a CSV file for further analysis
-        results_dataframe.to_csv(
-            f"{BRES_DIR}/"
-            f"{self._configuration.ticker}-"
-            f"{self._configuration.strategy}-"
-            f"{self._configuration.start_date}-"
-            f"{self._configuration.end_date}.csv",
-        )
+        results_dataframe.to_csv(f"{strategy_dir}/RESULTS.csv")
 
         # Extract the best performing parameters as JSON
         # and prepare them for writing to a file
