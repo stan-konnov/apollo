@@ -20,6 +20,10 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 # * Work with limit orders, as current backtesting still applies market orders
 
 
+# Place initial SL as close - ATR * multiplier, then trail it
+# as limit - ATR * multiplier
+# reverse for short
+
 class StrategySimulationAgent(Strategy):
     """
     Strategy Simulation Agent is backtesting library wrapper class.
@@ -164,12 +168,10 @@ class StrategySimulationAgent(Strategy):
 
         if position_type == PositionType.LONG:
             sl = close_price - average_true_range * sl_volatility_multiplier
-            # tp = close_price * (1 + self.take_profit_level)
             tp = close_price + average_true_range * sl_volatility_multiplier
 
         else:
             sl = close_price + average_true_range * sl_volatility_multiplier
-            # tp = close_price * (1 - self.take_profit_level)
             tp = close_price - average_true_range * sl_volatility_multiplier
 
         return sl, tp
