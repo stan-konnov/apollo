@@ -44,7 +44,7 @@ class BaseStrategy:
 
     def calculate_volatility_and_limit_prices(self) -> None:
         """
-        Calculate volatility and limit prices for the strategy.
+        Calculate volatility for the strategy.
 
         All strategies are designed to be trailing strategies that
         apply dynamic stop loss and take profit orders.
@@ -53,24 +53,14 @@ class BaseStrategy:
 
         * Average True Range (ATR), which is a measure of volatility.
         * Volatility multiplier, which is a user-defined parameter.
-        * Highest high and lowest low prices within the window.
         * Current closing price of the analyzed instrument.
 
-        The job of calculating these levels is delegated to backtesting module.
-        Yet, the strategy is responsible for providing the necessary data.
-        Therefore, this method calculates volatility and limit prices.
+        The job of calculating these levels is delegated to backtesting module,
+        yet, the strategy is responsible for providing necessary inputs.
+        Therefore, this method calculates volatility for all strategies.
         """
 
-        # Calculate Average True Range
         self.atr_calculator.calculate_average_true_range()
-
-        # Calculate highest high within the window
-        self.dataframe["h_high"] = (
-            self.dataframe["high"].rolling(self.window_size).max()
-        )
-
-        # Calculate lowest low within the window
-        self.dataframe["l_low"] = self.dataframe["low"].rolling(self.window_size).min()
 
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
