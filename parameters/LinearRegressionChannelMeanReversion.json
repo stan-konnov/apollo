@@ -8,12 +8,7 @@
         "range": [5, 40]
     },
 
-    "take_profit_level": {
-        "step": 0.01,
-        "range": [0.01, 0.1]
-    },
-
-    "sl_volatility_multiplier": {
+    "exit_volatility_multiplier": {
         "step": 0.5,
         "range": [0.5, 1.0]
     },

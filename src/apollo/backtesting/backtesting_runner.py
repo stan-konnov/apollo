@@ -25,8 +25,7 @@ class BacktestingRunner:
         dataframe: DataFrame,
         strategy_name: str,
         lot_size_cash: float,
-        take_profit_level: float,
-        sl_volatility_multiplier: float,
+        exit_volatility_multiplier: float,
         write_result_plot: bool = False,
     ) -> None:
         """
@@ -57,8 +56,7 @@ class BacktestingRunner:
         self.write_result_plot = write_result_plot
 
         self.strategy_sim_agent = StrategySimulationAgent
-        self.strategy_sim_agent.take_profit_level = take_profit_level
-        self.strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
+        self.strategy_sim_agent.exit_volatility_multiplier = exit_volatility_multiplier
 
     def run(self) -> Series:
         """

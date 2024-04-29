@@ -19,8 +19,7 @@ class ParameterSet(TypedDict):
     cash_size: float
 
     window_size: ParameterSpec
-    take_profit_level: ParameterSpec
-    sl_volatility_multiplier: ParameterSpec
+    exit_volatility_multiplier: ParameterSpec
 
     # Every strategy defines its own set of specific parameters
     # We do not know beforehand what these parameters are and cannot type them
