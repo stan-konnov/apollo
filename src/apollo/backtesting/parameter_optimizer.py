@@ -150,8 +150,8 @@ class ParameterOptimizer:
                 # NOTE: cash_size is non-optimized parameter (yet)
                 # and therefore is hardcoded to the value from parameter set
                 lot_size_cash=parameter_set["cash_size"],
-                stop_loss_level=combination_to_test["stop_loss_level"],
                 take_profit_level=combination_to_test["take_profit_level"],
+                volatility_multiplier=combination_to_test["volatility_multiplier"],
             )
 
             stats = backtesting_runner.run()
