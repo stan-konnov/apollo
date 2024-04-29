@@ -242,6 +242,8 @@ class ParameterOptimizer:
         # Reset the indices to clean up the dataframe after concatenation
         results_dataframe.reset_index(drop=True, inplace=True)
 
+        # TODO: PLEASE NORMALIZE WRITING TO FILE SYSTEM WITH LESS REPETITION
+
         # Grab the best performing trades
         trades: pd.Series = results_dataframe.iloc[0]["_trades"]
 

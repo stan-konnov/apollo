@@ -13,6 +13,10 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 # On trailing SL:
 # * Sometimes applied above TP in case of long positions (!)
 
+# On backtesting API:
+# * Play with limit and stop properties available on self.buy() and self.sell()
+# * Capturing the spread with limit/stop, something-something?
+
 
 class StrategySimulationAgent(Strategy):
     """
