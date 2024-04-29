@@ -13,7 +13,7 @@ class StrategySimulationAgent(Strategy):
     Used as one of the components in backtesting process facilitated by runner class.
     """
 
-    # Percentage representation of static
+    # Percentage representation of trailing
     # take profit level for all trades to aim at
     take_profit_level: ClassVar[float]
 
