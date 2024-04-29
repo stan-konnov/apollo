@@ -12,10 +12,13 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
 # On trailing SL:
 # * Sometimes applied above TP in case of long positions (!)
+# This has to be investigated: if stop will be placed above TP, will it get executed
+# at current price below stop?
 
 # On backtesting API:
 # * Play with limit and stop properties available on self.buy() and self.sell()
 # * Capturing the spread with limit/stop, something-something?
+# * Work with limit orders, as current backtesting still applies market orders
 
 
 class StrategySimulationAgent(Strategy):
