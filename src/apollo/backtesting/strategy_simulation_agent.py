@@ -113,17 +113,17 @@ class StrategySimulationAgent(Strategy):
                 trade.sl = short_sl
                 trade.tp = short_tp
 
-            print(
-                "Type",
-                PositionType.LONG if trade.is_long else PositionType.SHORT,
-            )
-            print("Identifier", trade.entry_bar)
-            print("Entry", trade.entry_price)
-            print("Close", close)
-            print("Stop Loss", trade.sl)
-            print("Take Profit", trade.tp)
-            print("ATR", average_true_range)
-            print("\n\n")
+            # print(
+            #     "Type",
+            #     PositionType.LONG if trade.is_long else PositionType.SHORT,
+            # )
+            # print("Identifier", trade.entry_bar)
+            # print("Entry", trade.entry_price)
+            # print("Close", close)
+            # print("Stop Loss", trade.sl)
+            # print("Take Profit", trade.tp)
+            # print("ATR", average_true_range)
+            # print("\n\n")
 
     def _calculate_trailing_stop_loss_and_take_profit(
         self,
