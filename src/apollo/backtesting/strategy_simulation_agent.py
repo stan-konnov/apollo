@@ -5,7 +5,6 @@ from backtesting import Strategy
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
 # Assumptions:
-# * are we sure we always running exclusively, non-overlapping trades?
 # * we assume that trade-on-close is available to us
 # * we assume no commission are applied (!)
 # * we assume no slippage happens (!)
@@ -105,7 +104,7 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # And open new long position
-                self.buy()
+                self.buy(stop=close)
 
             if short_signal:
                 # Skip if we already have short position
@@ -117,7 +116,7 @@ class StrategySimulationAgent(Strategy):
                     self.position.close()
 
                 # And open new short position
-                self.sell()
+                self.sell(stop=close)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
