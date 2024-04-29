@@ -4,25 +4,6 @@ from backtesting import Strategy
 
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
-# Assumptions:
-# * we assume that trade-on-close is available to us
-# * we assume no commission are applied (!)
-# * we assume no slippage happens (!)
-
-# On trailing SL:
-# * Sometimes applied above TP in case of long positions (!)
-# This has to be investigated: if stop will be placed above TP, will it get executed
-# at current price below stop?
-
-# On backtesting API:
-# * Play with limit and stop properties available on self.buy() and self.sell()
-# * Capturing the spread with limit/stop, something-something?
-# * Work with limit orders, as current backtesting still applies market orders
-
-
-# Place initial SL as close - ATR * multiplier, then trail it
-# as limit - ATR * multiplier
-# reverse for short
 
 class StrategySimulationAgent(Strategy):
     """
@@ -64,10 +45,6 @@ class StrategySimulationAgent(Strategy):
         # Grab close of the current row
         close = self.data["Close"][-1]
 
-        # Grab lowest low and highest high of the current row
-        lowest_low = self.data["l_low"][-1]
-        highest_high = self.data["h_high"][-1]
-
         # Grab average true range of the current row
         average_true_range = self.data["atr"][-1]
 
@@ -78,7 +55,6 @@ class StrategySimulationAgent(Strategy):
         long_sl, long_tp = self._calculate_trailing_stop_loss_and_take_profit(
             position_type=PositionType.LONG,
             close_price=close,
-            limit_price=highest_high,
             average_true_range=average_true_range,
             sl_volatility_multiplier=self.sl_volatility_multiplier,
         )
@@ -87,7 +63,6 @@ class StrategySimulationAgent(Strategy):
         short_sl, short_tp = self._calculate_trailing_stop_loss_and_take_profit(
             position_type=PositionType.SHORT,
             close_price=close,
-            limit_price=lowest_low,
             average_true_range=average_true_range,
             sl_volatility_multiplier=self.sl_volatility_multiplier,
         )
@@ -132,32 +107,22 @@ class StrategySimulationAgent(Strategy):
                 trade.sl = short_sl
                 trade.tp = short_tp
 
-            print("Identifier: ", trade.entry_bar)
-            print("Type: ", PositionType.LONG if trade.is_long else PositionType.SHORT)
-            print("SL: ", trade.sl)
-            print("Entry price: ", trade.entry_price)
-            print("TP: ", trade.tp)
-            print("\n\n")
-
     def _calculate_trailing_stop_loss_and_take_profit(
         self,
         position_type: PositionType,
         close_price: float,
-        limit_price: float,
         average_true_range: float,
         sl_volatility_multiplier: float,
     ) -> tuple[float, float]:
         """
         Calculate trailing stop loss and take profit.
 
-        Using highest high, lowest low, close,
-        Average True Range, and volatility multiplier.
+        Using close, Average True Range, and volatility multiplier.
 
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
         :param close_price: Closing price
-        :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
         :param sl_volatility_multiplier: Multiplier for ATR
         :returns: Trailing stop loss and take profit levels
