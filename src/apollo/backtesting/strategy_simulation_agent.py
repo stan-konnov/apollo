@@ -13,6 +13,10 @@ class StrategySimulationAgent(Strategy):
     Used as one of the components in backtesting process facilitated by runner class.
     """
 
+    # Percentage representation of static
+    # take profit level for all trades to aim at
+    take_profit_level: ClassVar[float]
+
     # Volatility multiplier applied to ATR
     # for calculating trailing stop loss and take profit
     volatility_multiplier: ClassVar[float]
@@ -51,8 +55,6 @@ class StrategySimulationAgent(Strategy):
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
-        # PLEASE CALCULATE TP WITHIN THE SIGNAL LOOP TO SOLIDIFY IT
-        # ONCE AGAIN: MAKE ONLY SL DYNAMIC
         # Calculate long trailing stop loss and take profit
         long_sl, long_tp = self._calculate_trailing_stop_loss_and_take_profit(
             position_type=PositionType.LONG,
@@ -150,18 +152,12 @@ class StrategySimulationAgent(Strategy):
         sl = 0.0
         tp = 0.0
 
-        # Okay, don't make TP dynamic
-
         if position_type == PositionType.LONG:
             sl = limit_price - volatility_multiplier * average_true_range
-            # tp = close_price + volatility_multiplier * average_true_range
-
-            tp = close_price * (1 + 0.01)
+            tp = close_price * (1 + self.take_profit_level)
 
         else:
             sl = limit_price + volatility_multiplier * average_true_range
-            # tp = close_price - volatility_multiplier * average_true_range
-
-            tp = close_price * (1 - 0.01)
+            tp = close_price * (1 - self.take_profit_level)
 
         return sl, tp

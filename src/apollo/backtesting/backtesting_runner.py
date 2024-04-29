@@ -56,6 +56,7 @@ class BacktestingRunner:
         self.write_result_plot = write_result_plot
 
         self.strategy_sim_agent = StrategySimulationAgent
+        self.strategy_sim_agent.take_profit_level = 0.01
         self.strategy_sim_agent.volatility_multiplier = volatility_multiplier
 
     def run(self) -> Series:
