@@ -25,6 +25,7 @@ class BacktestingRunner:
         dataframe: DataFrame,
         strategy_name: str,
         lot_size_cash: float,
+        take_profit_level: float,
         volatility_multiplier: float,
         write_result_plot: bool = False,
     ) -> None:
@@ -34,8 +35,8 @@ class BacktestingRunner:
         Rename dataframe columns to adhere to library signature.
 
         :param dataframe: Precalculated and marked dataframe to run backtesting on.
-        :param stop_loss_level: Stop loss level to use for exits.
         :param take_profit_level: Take profit level to use for exits.
+        :param volatility_multiplier: Volatility multiplier to use for exits.
         :param write_result_plot: Flag to plot backtesting results.
         """
 
@@ -56,7 +57,7 @@ class BacktestingRunner:
         self.write_result_plot = write_result_plot
 
         self.strategy_sim_agent = StrategySimulationAgent
-        self.strategy_sim_agent.take_profit_level = 0.01
+        self.strategy_sim_agent.take_profit_level = take_profit_level
         self.strategy_sim_agent.volatility_multiplier = volatility_multiplier
 
     def run(self) -> Series:
