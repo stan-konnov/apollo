@@ -130,7 +130,7 @@ class StrategySimulationAgent(Strategy):
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
-        :param close_price: Close price
+        :param close_price: Closing price
         :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
         :param sl_volatility_multiplier: Multiplier for ATR
@@ -139,8 +139,6 @@ class StrategySimulationAgent(Strategy):
 
         sl = 0.0
         tp = 0.0
-
-        # Experiment with not applying ATR and volatility multiplier
 
         if position_type == PositionType.LONG:
             sl = limit_price - average_true_range * sl_volatility_multiplier
