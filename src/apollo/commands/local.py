@@ -1,6 +1,7 @@
 import logging
 
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+
 # from apollo.api.yahoo_api_connector import YahooApiConnector
 # from apollo.backtesting.backtesting_runner import BacktestingRunner
 # from apollo.settings import END_DATE, START_DATE, TICKER
