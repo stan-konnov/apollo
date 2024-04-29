@@ -17,9 +17,9 @@ class StrategySimulationAgent(Strategy):
     # take profit level for all trades to aim at
     take_profit_level: ClassVar[float]
 
-    # Volatility multiplier applied to ATR
-    # for calculating trailing stop loss and take profit
-    volatility_multiplier: ClassVar[float]
+    # Volatility multiplier applied to
+    # ATR for calculating trailing stop loss
+    sl_volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
         """
@@ -61,7 +61,7 @@ class StrategySimulationAgent(Strategy):
             close_price=close,
             limit_price=highest_high,
             average_true_range=average_true_range,
-            volatility_multiplier=self.volatility_multiplier,
+            sl_volatility_multiplier=self.sl_volatility_multiplier,
         )
 
         # Calculate short trailing stop loss and take profit
@@ -70,7 +70,7 @@ class StrategySimulationAgent(Strategy):
             close_price=close,
             limit_price=lowest_low,
             average_true_range=average_true_range,
-            volatility_multiplier=self.volatility_multiplier,
+            sl_volatility_multiplier=self.sl_volatility_multiplier,
         )
 
         # Enter the trade if signal identified
@@ -119,7 +119,7 @@ class StrategySimulationAgent(Strategy):
         close_price: float,
         limit_price: float,
         average_true_range: float,
-        volatility_multiplier: float,
+        sl_volatility_multiplier: float,
     ) -> tuple[float, float]:
         """
         Calculate trailing stop loss and take profit.
@@ -133,19 +133,21 @@ class StrategySimulationAgent(Strategy):
         :param close_price: Close price
         :param limit_price: Highest or lowest price
         :param average_true_range: Average True Range
-        :param volatility_multiplier: Multiplier for ATR
+        :param sl_volatility_multiplier: Multiplier for ATR
         :returns: Trailing stop loss and take profit levels
         """
 
         sl = 0.0
         tp = 0.0
 
+        # Experiment with not applying ATR and volatility multiplier
+
         if position_type == PositionType.LONG:
-            sl = limit_price - volatility_multiplier * average_true_range
+            sl = limit_price - average_true_range * sl_volatility_multiplier
             tp = close_price * (1 + self.take_profit_level)
 
         else:
-            sl = limit_price + volatility_multiplier * average_true_range
+            sl = limit_price + average_true_range * sl_volatility_multiplier
             tp = close_price * (1 - self.take_profit_level)
 
         return sl, tp

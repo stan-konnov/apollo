@@ -151,7 +151,7 @@ class ParameterOptimizer:
                 # and therefore is hardcoded to the value from parameter set
                 lot_size_cash=parameter_set["cash_size"],
                 take_profit_level=combination_to_test["take_profit_level"],
-                volatility_multiplier=combination_to_test["volatility_multiplier"],
+                sl_volatility_multiplier=combination_to_test["sl_volatility_multiplier"],
             )
 
             stats = backtesting_runner.run()
