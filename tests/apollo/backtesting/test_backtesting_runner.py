@@ -7,9 +7,9 @@ from pandas import DataFrame
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from tests.fixtures.env_and_constants import (
     LOT_SIZE_CASH,
-    STOP_LOSS_LEVEL,
+    SL_VOL_MULT,
     STRATEGY,
-    TAKE_PROFIT_LEVEL,
+    TP_VOL_MULT,
 )
 from tests.fixtures.files_and_directories import PLOT_DIR
 
@@ -28,8 +28,8 @@ def test__backtesting_runner__for_uppercasing_columns(
         dataframe=dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
     )
 
     assert all(
@@ -56,8 +56,8 @@ def test__backtesting_runner__for_running_the_process(
         dataframe=dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
     )
 
     stats = backtesting_runner.run()
@@ -84,8 +84,8 @@ def test__backtesting_runner__for_creating_plots_directory(
         dataframe=dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
         write_result_plot=True,
     )
 
@@ -112,8 +112,8 @@ def test__backtesting_runner__for_writing_result_plot(
         dataframe=dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
         write_result_plot=True,
     )
 

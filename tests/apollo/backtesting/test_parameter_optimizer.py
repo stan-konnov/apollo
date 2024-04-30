@@ -15,11 +15,11 @@ from apollo.utils.types import ParameterSet
 from tests.fixtures.env_and_constants import (
     END_DATE,
     LOT_SIZE_CASH,
+    SL_VOL_MULT,
     START_DATE,
-    STOP_LOSS_LEVEL,
     STRATEGY,
-    TAKE_PROFIT_LEVEL,
     TICKER,
+    TP_VOL_MULT,
 )
 from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR, PARM_DIR
 
@@ -178,8 +178,8 @@ def test__parameter_optimizer__for_correct_result_output(
         dataframe=optimization_run_1_dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
     )
     optimization_run_1_stats = backtesting_runner.run()
 
@@ -188,8 +188,8 @@ def test__parameter_optimizer__for_correct_result_output(
         dataframe=optimization_run_2_dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=STOP_LOSS_LEVEL,
-        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=SL_VOL_MULT,
+        tp_volatility_multiplier=TP_VOL_MULT,
     )
     optimization_run_2_stats = backtesting_runner.run()
 
