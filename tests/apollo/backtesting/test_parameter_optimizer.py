@@ -168,7 +168,7 @@ def test__parameter_optimizer__for_correct_result_output(  # noqa: PLR0915
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
-    # Insert signal
+    # Insert signal column
     dataframe["signal"] = 0
 
     # Reset the indices so we can insert random signals
