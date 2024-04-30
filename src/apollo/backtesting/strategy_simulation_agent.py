@@ -16,6 +16,8 @@ These assumptions are partially validated by our broker documentation (Alpaca).
 Alpaca indeed allows trading during extended hours (pre-market and after-hours).
 Alpaca also allows limit orders, yet there are no guarantees that they will be filled.
 Alpaca does not charge trading commissions for US equities, but does for other assets.
+
+TODO: introduce different multipliers for stop loss and take profit
 """
 
 
@@ -147,10 +149,10 @@ class StrategySimulationAgent(Strategy):
 
         if position_type == PositionType.LONG:
             sl = close_price - average_true_range * exit_volatility_multiplier
-            tp = close_price + average_true_range * exit_volatility_multiplier
+            tp = close_price + average_true_range * 0.3
 
         else:
             sl = close_price + average_true_range * exit_volatility_multiplier
-            tp = close_price - average_true_range * exit_volatility_multiplier
+            tp = close_price - average_true_range * 0.3
 
         return sl, tp
