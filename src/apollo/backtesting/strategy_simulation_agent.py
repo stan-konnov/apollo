@@ -80,8 +80,8 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a stop-entry order -- nearest price above close
-                self.buy(sl=long_sl, tp=long_tp, stop=close)
+                # and entry is a limit order -- price below or equal close
+                self.buy(sl=long_sl, tp=long_tp, limit=close)
 
             if short_signal:
                 # Skip if we already have short position
@@ -94,8 +94,8 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a stop-entry order -- nearest price below close
-                self.sell(sl=short_sl, tp=short_tp, stop=close)
+                # and entry is a limit order -- price above or equal close
+                self.sell(sl=short_sl, tp=short_tp, limit=close)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)

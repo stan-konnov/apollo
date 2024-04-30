@@ -71,7 +71,6 @@ class BacktestingRunner:
             strategy=self.strategy_sim_agent,
             cash=self.lot_size_cash,
             exclusive_orders=True,
-            trade_on_close=True,
         )
 
         # Make sure directory for plots exists
