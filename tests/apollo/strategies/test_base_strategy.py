@@ -1,3 +1,5 @@
+from typing import Any, Type
+
 import pandas as pd
 import pytest
 
@@ -36,3 +38,63 @@ def test__base_strategy__for_calculating_volatility(
     assert "atr" in strategy.dataframe.columns
 
     pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
+
+
+@pytest.mark.usefixtures("window_size")
+def test__base_strategy__with_missing_parameters(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Base Strategy validating missing parameters.
+
+    Strategy should raise ValueError when parameter is missing.
+    """
+
+    strategy = BaseStrategy(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+
+    parameters: list[tuple[str, Any, Type]] = [("missing_parameter", None, float)]
+
+    with pytest.raises(
+        ValueError,
+        match="Parameter missing_parameter is missing",
+    ) as exception:
+        strategy._validate_parameters(parameters)  # noqa: SLF001
+
+    assert str(exception.value) == "Parameter missing_parameter is missing"
+
+
+@pytest.mark.usefixtures("window_size")
+def test__base_strategy__with_invalid_parameters(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Base Strategy validating invalid parameters.
+
+    Strategy should raise TypeError when parameter is not of expected type.
+    """
+
+    strategy = BaseStrategy(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+
+    parameter_name = "invalid_parameter"
+    exception_message = str(
+        f"Parameter {parameter_name} is "
+        f"not of expected type {float.__name__}",
+    )
+
+    parameters: list[tuple[str, Any, Type]] = [(parameter_name, "", float)]
+
+    with pytest.raises(
+        TypeError,
+        match=exception_message,
+    ) as exception:
+        strategy._validate_parameters(parameters)  # noqa: SLF001
+
+    assert str(exception.value) == exception_message
