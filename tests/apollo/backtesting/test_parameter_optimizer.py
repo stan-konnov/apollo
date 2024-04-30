@@ -157,6 +157,7 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
     # Create two optimization runs with different signals and parameters
+    dataframe["atr"] = 0
     dataframe["signal"] = 0
     dataframe.reset_index(inplace=True)
 
@@ -177,8 +178,8 @@ def test__parameter_optimizer__for_correct_result_output(
         dataframe=optimization_run_1_dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        stop_loss_level=STOP_LOSS_LEVEL,
-        take_profit_level=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=STOP_LOSS_LEVEL,
+        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
     )
     optimization_run_1_stats = backtesting_runner.run()
 
@@ -187,8 +188,8 @@ def test__parameter_optimizer__for_correct_result_output(
         dataframe=optimization_run_2_dataframe,
         strategy_name=STRATEGY,
         lot_size_cash=LOT_SIZE_CASH,
-        stop_loss_level=STOP_LOSS_LEVEL,
-        take_profit_level=TAKE_PROFIT_LEVEL,
+        sl_volatility_multiplier=STOP_LOSS_LEVEL,
+        tp_volatility_multiplier=TAKE_PROFIT_LEVEL,
     )
     optimization_run_2_stats = backtesting_runner.run()
 
