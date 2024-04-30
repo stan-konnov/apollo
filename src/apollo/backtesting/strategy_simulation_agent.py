@@ -4,6 +4,20 @@ from backtesting import Strategy
 
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
 
+"""
+As with any other backtesting approach, this one takes on several assumptions:
+
+* We are allowed to trade on close (during extended hours)
+* We will get filled on our limit orders
+* There are no commissions
+
+These assumptions are partially validated by our broker documentation (Alpaca).
+
+Alpaca indeed allows trading during extended hours (pre-market and after-hours).
+Alpaca also allows limit orders, yet there are no guarantees that they will be filled.
+Alpaca does not charge trading commissions for US equities, but does for other assets.
+"""
+
 
 class StrategySimulationAgent(Strategy):
     """

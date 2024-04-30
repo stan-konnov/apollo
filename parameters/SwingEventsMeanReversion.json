@@ -10,7 +10,7 @@
 
     "exit_volatility_multiplier": {
         "step": 0.1,
-        "range": [0.1, 5.0]
+        "range": [0.1, 1.0]
     },
 
     "swing_filter": {
