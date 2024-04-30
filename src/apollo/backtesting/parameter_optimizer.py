@@ -245,7 +245,7 @@ class ParameterOptimizer:
         results_dataframe.reset_index(drop=True, inplace=True)
 
         # Grab the best performing trades
-        trades: pd.Series = results_dataframe.iloc[0]["_trades"]
+        trades: pd.DataFrame = results_dataframe.iloc[0]["_trades"]
 
         # Bring returns to more human readable format
         trades["ReturnPct"] = trades["ReturnPct"] * 100
