@@ -26,7 +26,11 @@ def test__base_strategy__for_calculating_volatility(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
-    """Test Base Strategy for properly calculating volatility (ATR)."""
+    """
+    Test Base Strategy for properly calculating volatility (ATR).
+
+    Strategy should have "tr" and "atr" columns.
+    """
 
     control_dataframe = dataframe.copy()
 
@@ -35,6 +39,7 @@ def test__base_strategy__for_calculating_volatility(
 
     strategy = BaseStrategy(dataframe, window_size)
 
+    assert "tr" in strategy.dataframe.columns
     assert "atr" in strategy.dataframe.columns
     pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
 

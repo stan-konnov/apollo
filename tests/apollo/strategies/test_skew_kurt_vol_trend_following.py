@@ -17,7 +17,7 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     """
     Test Skewness Kurtosis Volatility Trend Following with valid parameters.
 
-    Strategy should have relevant columns: "signal", "skew", "kurt", "tr", "atr".
+    Strategy should have relevant columns: "skew", "kurt".
     Strategy should properly calculate trading signals.
     """
 
@@ -58,10 +58,8 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
 
     skew_kurt_vol_trend_following.model_trading_signals()
 
-    assert "signal" in skew_kurt_vol_trend_following.dataframe.columns
     assert "skew" in skew_kurt_vol_trend_following.dataframe.columns
     assert "kurt" in skew_kurt_vol_trend_following.dataframe.columns
     assert "tr" in skew_kurt_vol_trend_following.dataframe.columns
-    assert "atr" in skew_kurt_vol_trend_following.dataframe.columns
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
