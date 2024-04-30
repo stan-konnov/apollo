@@ -30,8 +30,8 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     dm_calculator = DistributionMomentsCalculator(control_dataframe, window_size)
     dm_calculator.calculate_distribution_moments()
 
-    at_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
-    at_calculator.calculate_average_true_range()
+    atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    atr_calculator.calculate_average_true_range()
 
     long = (
         (control_dataframe["skew"] < 0)

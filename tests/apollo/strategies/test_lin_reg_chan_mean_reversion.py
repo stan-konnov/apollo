@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
@@ -35,6 +36,9 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
         channel_sd_spread=channel_sd_spread,
     )
     lrc_calculator.calculate_linear_regression_channel()
+
+    atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    atr_calculator.calculate_average_true_range()
 
     long = (control_dataframe["adj close"] <= control_dataframe["l_bound"]) & (
         control_dataframe["slope"] <= control_dataframe["prev_slope"]

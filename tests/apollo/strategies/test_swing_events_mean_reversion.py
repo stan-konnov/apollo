@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.swing_events import SwingEventsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
@@ -30,6 +31,9 @@ def test__swing_events_mean_reversion__with_valid_parameters(
         swing_filter=swing_filter,
     )
     se_calculator.calculate_swing_events()
+
+    atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    atr_calculator.calculate_average_true_range()
 
     control_dataframe.loc[
         control_dataframe["se"] == se_calculator.DOWN_SWING,
