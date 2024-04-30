@@ -4,12 +4,12 @@ from random import randint
 from typing import cast
 from unittest.mock import patch
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 import pandas as pd
 import pytest
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
