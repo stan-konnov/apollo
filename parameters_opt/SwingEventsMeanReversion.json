@@ -2,6 +2,7 @@
     "frequency": "1d",
     "cash_size": 1000,
     "window_size": 5.0,
-    "exit_volatility_multiplier": 0.1,
+    "sl_volatility_multiplier": 0.1,
+    "tp_volatility_multiplier": 0.3,
     "swing_filter": 0.01
 }

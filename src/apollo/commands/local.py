@@ -1,6 +1,6 @@
 import logging
 
-from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+# from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
@@ -42,7 +42,7 @@ def main() -> None:
         strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
         write_result_plot=True,
     )
 

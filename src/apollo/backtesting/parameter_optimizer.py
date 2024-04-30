@@ -148,8 +148,11 @@ class ParameterOptimizer:
                 # NOTE: cash_size is non-optimized parameter (yet)
                 # and therefore is hardcoded to the value from parameter set
                 lot_size_cash=parameter_set["cash_size"],
-                exit_volatility_multiplier=combination_to_test[
-                    "exit_volatility_multiplier"
+                sl_volatility_multiplier=combination_to_test[
+                    "sl_volatility_multiplier"
+                ],
+                tp_volatility_multiplier=combination_to_test[
+                    "tp_volatility_multiplier"
                 ],
             )
 

@@ -2,10 +2,10 @@ from typing import ClassVar
 
 from backtesting import Strategy
 
-from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL, PositionType
+from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
-As with any other backtesting approach, this one takes on several assumptions:
+As with any other backtesting approaches, this one takes on several assumptions:
 
 * We are allowed to trade on close (during extended hours)
 * We will get filled on our limit orders
@@ -14,7 +14,7 @@ As with any other backtesting approach, this one takes on several assumptions:
 These assumptions are partially validated by our broker documentation (Alpaca).
 
 Alpaca indeed allows trading during extended hours (pre-market and after-hours).
-Alpaca also allows limit orders, yet there are no guarantees that they will be filled.
+Alpaca also allows limit orders, yet there is no guarantee that they will be filled.
 Alpaca does not charge trading commissions for US equities, but does for other assets.
 """
 
@@ -65,22 +65,14 @@ class StrategySimulationAgent(Strategy):
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
-        # Calculate long trailing stop loss and take profit
-        long_sl, long_tp = self._calculate_trailing_stop_loss_and_take_profit(
-            position_type=PositionType.LONG,
-            close_price=close,
-            average_true_range=average_true_range,
-            sl_volatility_multiplier=self.sl_volatility_multiplier,
-            tp_volatility_multiplier=self.tp_volatility_multiplier,
-        )
-
-        # Calculate short trailing stop loss and take profit
-        short_sl, short_tp = self._calculate_trailing_stop_loss_and_take_profit(
-            position_type=PositionType.SHORT,
-            close_price=close,
-            average_true_range=average_true_range,
-            sl_volatility_multiplier=self.sl_volatility_multiplier,
-            tp_volatility_multiplier=self.tp_volatility_multiplier,
+        # Calculate trailing stop loss and take profit
+        long_sl, long_tp, short_sl, short_tp = (
+            self._calculate_trailing_stop_loss_and_take_profit(
+                close_price=close,
+                average_true_range=average_true_range,
+                sl_volatility_multiplier=self.sl_volatility_multiplier,
+                tp_volatility_multiplier=self.tp_volatility_multiplier,
+            )
         )
 
         # Enter the trade if signal identified
@@ -129,12 +121,11 @@ class StrategySimulationAgent(Strategy):
 
     def _calculate_trailing_stop_loss_and_take_profit(
         self,
-        position_type: PositionType,
         close_price: float,
         average_true_range: float,
         sl_volatility_multiplier: float,
         tp_volatility_multiplier: float,
-    ) -> tuple[float, float]:
+    ) -> tuple[float, float, float, float]:
         """
         Calculate trailing stop loss and take profit.
 
@@ -143,22 +134,16 @@ class StrategySimulationAgent(Strategy):
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
-        :param close_price: Closing price
         :param average_true_range: Average True Range
         :param sl_volatility_multiplier: Stop loss volatility multiplier
         :param tp_volatility_multiplier: Take profit volatility multiplier
         :returns: Trailing stop loss and take profit levels
         """
 
-        sl = 0.0
-        tp = 0.0
+        long_sl = close_price - average_true_range * sl_volatility_multiplier
+        long_tp = close_price + average_true_range * tp_volatility_multiplier
 
-        if position_type == PositionType.LONG:
-            sl = close_price - average_true_range * sl_volatility_multiplier
-            tp = close_price + average_true_range * tp_volatility_multiplier
+        short_sl = close_price + average_true_range * sl_volatility_multiplier
+        short_tp = close_price - average_true_range * tp_volatility_multiplier
 
-        else:
-            sl = close_price + average_true_range * sl_volatility_multiplier
-            tp = close_price - average_true_range * tp_volatility_multiplier
-
-        return sl, tp
+        return long_sl, long_tp, short_sl, short_tp

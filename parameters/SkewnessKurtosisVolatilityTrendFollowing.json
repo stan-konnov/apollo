@@ -8,7 +8,12 @@
         "range": [5, 40]
     },
 
-    "exit_volatility_multiplier": {
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "tp_volatility_multiplier": {
         "step": 0.1,
         "range": [0.1, 1.0]
     },
