@@ -2,24 +2,29 @@ import pytest
 from pandas import DataFrame
 
 from apollo.backtesting.strategy_simulation_agent import StrategySimulationAgent
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from tests.fixtures.env_and_constants import SL_VOL_MULT, TP_VOL_MULT
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
     dataframe: DataFrame,
+    window_size: int,
 ) -> None:
     """
-    Test Strategy Simulation Agent for correct SL and TP calculation.
+    Test Strategy Simulation Agent for correct trailing SL and TP calculation.
 
     Strategy Simulation Agent must calculate correct stop loss and take profit levels.
     """
 
-    close = dataframe.iloc[0]["close"]
-    stop_loss_level = 0.01
-    take_profit_level = 0.02
+    at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+    at_calculator.calculate_average_true_range()
 
-    StrategySimulationAgent.stop_loss_level = stop_loss_level
-    StrategySimulationAgent.take_profit_level = take_profit_level
+    close = dataframe.iloc[-1]["close"]
+    average_true_range = dataframe.iloc[-1]["atr"]
+
+    StrategySimulationAgent.sl_volatility_multiplier = SL_VOL_MULT
+    StrategySimulationAgent.tp_volatility_multiplier = TP_VOL_MULT
 
     agent_instance = StrategySimulationAgent(
         broker={},
@@ -27,17 +32,20 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
         params={},
     )
 
-    long_sl, long_tp = agent_instance._calculate_long_sl_and_tp(close)  # noqa: SLF001
+    long_sl, long_tp, short_sl, short_tp = (
+        agent_instance._calculate_trailing_stop_loss_and_take_profit(  # noqa: SLF001
+            close_price=close,
+            average_true_range=average_true_range,
+            sl_volatility_multiplier=SL_VOL_MULT,
+            tp_volatility_multiplier=TP_VOL_MULT,
+        )
+    )
 
-    control_long_sl = close * (1 - stop_loss_level)
-    control_long_tp = close * (1 + take_profit_level)
+    control_long_sl = close - average_true_range * SL_VOL_MULT
+    control_long_tp = close + average_true_range * TP_VOL_MULT
 
-    short_sl, short_tp = agent_instance._calculate_short_sl_and_tp(
-        close
-    )  # noqa: SLF001
-
-    control_short_sl = close * (1 + stop_loss_level)
-    control_short_tp = close * (1 - take_profit_level)
+    control_short_sl = close + average_true_range * SL_VOL_MULT
+    control_short_tp = close - average_true_range * TP_VOL_MULT
 
     assert long_sl == control_long_sl
     assert long_tp == control_long_tp
