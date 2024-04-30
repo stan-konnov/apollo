@@ -154,6 +154,7 @@ def test__parameter_optimizer__for_correct_result_output(
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()
 
+    # Drop NaNs after rolling calculations
     dataframe.dropna(inplace=True)
 
     # Initialize ParameterOptimizer with Configuration
