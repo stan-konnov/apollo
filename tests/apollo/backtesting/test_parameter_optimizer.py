@@ -130,7 +130,7 @@ def test__parameter_optimizer__for_correct_error_handling(
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 @patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_correct_result_output(
+def test__parameter_optimizer__for_correct_result_output(  # noqa: PLR0915
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
@@ -138,8 +138,10 @@ def test__parameter_optimizer__for_correct_result_output(
     Test Parameter Optimizer for correct result output.
 
     Parameter Optimizer must create results directory.
+    Parameter Optimizer must create individual strategy directory.
     Parameter Optimizer must create optimized parameters directory.
 
+    Parameter Optimizer must output trades CSV file.
     Parameter Optimizer must output results CSV file.
     Parameter Optimizer must output optimized parameters JSON file.
 
@@ -147,6 +149,7 @@ def test__parameter_optimizer__for_correct_result_output(
     Results CSV must omit unnecessary columns.
     Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
 
+    Trades CSV must match the best results.
     Optimized parameters JSON must match the best results.
     """
 
@@ -165,9 +168,10 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
+    # Insert signal
     dataframe["signal"] = 0
 
-    # Reset indices so we can insert random signals
+    # Reset the indices so we insert random signals
     dataframe.reset_index(inplace=True)
 
     # Create two optimization runs with different signals and parameters
@@ -228,14 +232,21 @@ def test__parameter_optimizer__for_correct_result_output(
         inplace=True,
     )
 
-    # Reset the indices of the control dataframe
+    # Reset the indices of the control
+    # dataframe to cleanup after concatenation
     control_dataframe.reset_index(drop=True, inplace=True)
 
     # Preserve the best performing trades
-    trades: pd.Series = control_dataframe.iloc[0]["_trades"]
+    trades: pd.DataFrame = control_dataframe.iloc[0]["_trades"]
 
-    # Humanize returns
+    # Humanize trades' returns
     trades["ReturnPct"] = trades["ReturnPct"] * 100
+
+    # Map Duration, ExitTime, and EntryTime to strings
+    # for simpler comparison later when we read the file
+    trades["Duration"] = trades["Duration"].astype(str)
+    trades["ExitTime"] = trades["ExitTime"].astype(str)
+    trades["EntryTime"] = trades["EntryTime"].astype(str)
 
     # Drop unnecessary columns from the control dataframe
     control_dataframe.drop(
@@ -266,6 +277,12 @@ def test__parameter_optimizer__for_correct_result_output(
         index_col=0,
     )
 
+    # Read back the trades
+    trades_dataframe = pd.read_csv(
+        f"{individual_strategy_directory}/TRADES.csv",
+        index_col=0,
+    )
+
     # Read back the optimized parameters
     with Path.open(Path(f"{OPTP_DIR}/{STRATEGY}.json")) as file:
         optimized_parameters = load(file)
@@ -279,9 +296,6 @@ def test__parameter_optimizer__for_correct_result_output(
     assert Path.exists(OPTP_DIR)
     assert Path.exists(individual_strategy_directory)
 
-    # Trades file must exist
-    assert Path.exists(Path(f"{individual_strategy_directory}/TRADES.csv"))
-
     # Results CSV must have clean indices
     assert results_dataframe.index.equals(control_dataframe.index)
 
@@ -290,6 +304,9 @@ def test__parameter_optimizer__for_correct_result_output(
 
     # Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades"
     assert results_return == control_return
+
+    # Trades CSV must match the best performing trades
+    pd.testing.assert_frame_equal(trades_dataframe, trades)
 
     # Optimized parameters JSON must match the best results
     assert str(optimized_parameters) == control_dataframe.iloc[0]["parameters"]
