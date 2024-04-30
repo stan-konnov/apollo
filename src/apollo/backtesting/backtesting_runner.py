@@ -35,7 +35,8 @@ class BacktestingRunner:
         Rename dataframe columns to adhere to library signature.
 
         :param dataframe: Precalculated and marked dataframe to run backtesting on.
-        :param take_profit_level: Take profit level to use for exits.
+        :param strategy_name: Name of the strategy.
+        :param lot_size_cash: Initial cash amount to backtest with.
         :param sl_volatility_multiplier: Stop loss volatility multiplier.
         :param tp_volatility_multiplier: Take profit volatility multiplier.
         :param write_result_plot: Flag to plot backtesting results.
