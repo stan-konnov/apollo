@@ -154,6 +154,8 @@ def test__parameter_optimizer__for_correct_result_output(
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()
 
+    dataframe.dropna(inplace=True)
+
     # Initialize ParameterOptimizer with Configuration
     parameter_optimizer = ParameterOptimizer()
     parameter_optimizer._configuration = Configuration()  # noqa: SLF001
@@ -225,6 +227,12 @@ def test__parameter_optimizer__for_correct_result_output(
     # Reset the indices of the control dataframe
     control_dataframe.reset_index(drop=True, inplace=True)
 
+    # Preserve the best performing trades
+    trades: pd.Series = control_dataframe.iloc[0]["_trades"]
+
+    # Humanize returns
+    trades["ReturnPct"] = trades["ReturnPct"] * 100
+
     # Drop unnecessary columns from the control dataframe
     control_dataframe.drop(
         columns=[
@@ -243,12 +251,18 @@ def test__parameter_optimizer__for_correct_result_output(
     # Now, run the _output_results method
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
 
-    # Read back the results and optimized parameters
+    # Define the individual strategy directory
+    individual_strategy_directory = Path(
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
+    )
+
+    # Read back the results
     results_dataframe = pd.read_csv(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}.csv",
+        f"{individual_strategy_directory}/RESULTS.csv",
         index_col=0,
     )
 
+    # Read back the optimized parameters
     with Path.open(Path(f"{OPTP_DIR}/{STRATEGY}.json")) as file:
         optimized_parameters = load(file)
 
@@ -259,6 +273,10 @@ def test__parameter_optimizer__for_correct_result_output(
     # Directories must exist
     assert Path.exists(BRES_DIR)
     assert Path.exists(OPTP_DIR)
+    assert Path.exists(individual_strategy_directory)
+
+    # Trades file must exist
+    assert Path.exists(Path(f"{individual_strategy_directory}/TRADES.csv"))
 
     # Results CSV must have clean indices
     assert results_dataframe.index.equals(control_dataframe.index)
