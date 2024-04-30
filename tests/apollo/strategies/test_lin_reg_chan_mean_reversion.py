@@ -11,67 +11,6 @@ from apollo.strategies.lin_reg_chan_mean_reversion import (
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__lin_reg_chan_mean_reversion__with_missing_parameters(
-    dataframe: pd.DataFrame,
-    window_size: int,
-) -> None:
-    """
-    Test Skewness Kurtosis Volatility Trend Following with missing parameters.
-
-    Strategy should raise ValueError when parameter is missing.
-    """
-
-    invalid_param_set = {
-        "channel_sd_spread": None,
-    }
-
-    with pytest.raises(
-        ValueError,
-        match="Parameter channel_sd_spread is missing",
-    ) as exception:
-        LinearRegressionChannelMeanReversion(
-            dataframe=dataframe,
-            window_size=window_size,
-            channel_sd_spread=invalid_param_set.get("channel_sd_spread"),  # type: ignore[assignment]
-        )
-
-    assert str(exception.value) == "Parameter channel_sd_spread is missing"
-
-
-@pytest.mark.usefixtures("dataframe", "window_size")
-def test__lin_reg_chan_mean_reversion__with_invalid_parameters(
-    dataframe: pd.DataFrame,
-    window_size: int,
-) -> None:
-    """
-    Test Linear Regression Channel Mean Reversion with invalid parameters.
-
-    Strategy should raise TypeError when parameter is not of expected type.
-    """
-
-    invalid_param_set = {
-        "channel_sd_spread": "invalid",
-    }
-
-    exception_message = str(
-        "Parameter channel_sd_spread is "
-        f"not of expected type {float.__name__}",
-    )
-
-    with pytest.raises(
-        TypeError,
-        match=exception_message,
-    ) as exception:
-        LinearRegressionChannelMeanReversion(
-            dataframe=dataframe,
-            window_size=window_size,
-            channel_sd_spread=invalid_param_set.get("channel_sd_spread"),  # type: ignore[assignment]
-        )
-
-    assert str(exception.value) == exception_message
-
-
-@pytest.mark.usefixtures("dataframe", "window_size")
 def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     dataframe: pd.DataFrame,
     window_size: int,

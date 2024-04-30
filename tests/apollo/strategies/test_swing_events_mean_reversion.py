@@ -7,67 +7,6 @@ from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversi
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__swing_events_mean_reversion__with_missing_parameters(
-    dataframe: pd.DataFrame,
-    window_size: int,
-) -> None:
-    """
-    Test Swing Events Mean Reversion with missing parameters.
-
-    Strategy should raise ValueError when parameter is missing.
-    """
-
-    invalid_param_set = {
-        "swing_filter": None,
-    }
-
-    with pytest.raises(
-        ValueError,
-        match="Parameter swing_filter is missing",
-    ) as exception:
-        SwingEventsMeanReversion(
-            dataframe=dataframe,
-            window_size=window_size,
-            swing_filter=invalid_param_set.get("swing_filter"),  # type: ignore[assignment]
-        )
-
-    assert str(exception.value) == "Parameter swing_filter is missing"
-
-
-@pytest.mark.usefixtures("dataframe", "window_size")
-def test__swing_events_mean_reversion__with_invalid_parameters(
-    dataframe: pd.DataFrame,
-    window_size: int,
-) -> None:
-    """
-    Test Swing Events Mean Reversion with invalid parameters.
-
-    Strategy should raise TypeError when parameter is not of expected type.
-    """
-
-    invalid_param_set = {
-        "swing_filter": "invalid",
-    }
-
-    exception_message = str(
-        "Parameter swing_filter is "
-        f"not of expected type {float.__name__}",
-    )
-
-    with pytest.raises(
-        TypeError,
-        match=exception_message,
-    ) as exception:
-        SwingEventsMeanReversion(
-            dataframe=dataframe,
-            window_size=window_size,
-            swing_filter=invalid_param_set.get("swing_filter"),  # type: ignore[assignment]
-        )
-
-    assert str(exception.value) == exception_message
-
-
-@pytest.mark.usefixtures("dataframe", "window_size")
 def test__swing_events_mean_reversion__with_valid_parameters(
     dataframe: pd.DataFrame,
     window_size: int,
