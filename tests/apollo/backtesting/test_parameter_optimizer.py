@@ -166,6 +166,8 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
     dataframe["signal"] = 0
+
+    # Reset indices so we can insert random signals
     dataframe.reset_index(inplace=True)
 
     # Create two optimization runs with different signals and parameters
@@ -178,6 +180,7 @@ def test__parameter_optimizer__for_correct_result_output(
     optimization_run_1_dataframe.loc[random_index_1, "signal"] = LONG_SIGNAL
     optimization_run_2_dataframe.loc[random_index_2, "signal"] = SHORT_SIGNAL
 
+    # Set indices back to date
     optimization_run_1_dataframe.set_index("date", inplace=True)
     optimization_run_2_dataframe.set_index("date", inplace=True)
 
@@ -204,12 +207,12 @@ def test__parameter_optimizer__for_correct_result_output(
     # Transpose the results and add parameters
     optimized_results_1 = pd.DataFrame(optimization_run_1_stats).transpose()
     optimized_results_1["parameters"] = (
-        "{'stop_loss_level': 0.01, 'take_profit_level': 0.01}"
+        "{'sl_volatility_multiplier': 0.01, 'tp_volatility_multiplier': 0.01}"
     )
 
     optimized_results_2 = pd.DataFrame(optimization_run_2_stats).transpose()
     optimized_results_2["parameters"] = (
-        "{'stop_loss_level': 0.02, 'take_profit_level': 0.02}"
+        "{'sl_volatility_multiplier': 0.02, 'tp_volatility_multiplier': 0.02}"
     )
 
     # Merge the results
