@@ -41,7 +41,8 @@ def main() -> None:
         dataframe=dataframe,
         strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
-        exit_volatility_multiplier=0.1,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.1,
         write_result_plot=True,
     )
 

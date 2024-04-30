@@ -16,8 +16,6 @@ These assumptions are partially validated by our broker documentation (Alpaca).
 Alpaca indeed allows trading during extended hours (pre-market and after-hours).
 Alpaca also allows limit orders, yet there are no guarantees that they will be filled.
 Alpaca does not charge trading commissions for US equities, but does for other assets.
-
-TODO: introduce different multipliers for stop loss and take profit
 """
 
 
@@ -30,8 +28,12 @@ class StrategySimulationAgent(Strategy):
     """
 
     # Volatility multiplier applied to
-    # ATR for calculating trailing stop loss and take profit
-    exit_volatility_multiplier: ClassVar[float]
+    # ATR for calculating trailing stop loss
+    sl_volatility_multiplier: ClassVar[float]
+
+    # Volatility multiplier applied to
+    # ATR for calculating trailing take profit
+    tp_volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
         """
@@ -68,7 +70,8 @@ class StrategySimulationAgent(Strategy):
             position_type=PositionType.LONG,
             close_price=close,
             average_true_range=average_true_range,
-            exit_volatility_multiplier=self.exit_volatility_multiplier,
+            sl_volatility_multiplier=self.sl_volatility_multiplier,
+            tp_volatility_multiplier=self.tp_volatility_multiplier,
         )
 
         # Calculate short trailing stop loss and take profit
@@ -76,7 +79,8 @@ class StrategySimulationAgent(Strategy):
             position_type=PositionType.SHORT,
             close_price=close,
             average_true_range=average_true_range,
-            exit_volatility_multiplier=self.exit_volatility_multiplier,
+            sl_volatility_multiplier=self.sl_volatility_multiplier,
+            tp_volatility_multiplier=self.tp_volatility_multiplier,
         )
 
         # Enter the trade if signal identified
@@ -128,19 +132,21 @@ class StrategySimulationAgent(Strategy):
         position_type: PositionType,
         close_price: float,
         average_true_range: float,
-        exit_volatility_multiplier: float,
+        sl_volatility_multiplier: float,
+        tp_volatility_multiplier: float,
     ) -> tuple[float, float]:
         """
         Calculate trailing stop loss and take profit.
 
-        Using close, Average True Range, and volatility multiplier.
+        Using close, Average True Range, and volatility multipliers.
 
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
         :param position_type: Position type
         :param close_price: Closing price
         :param average_true_range: Average True Range
-        :param exit_volatility_multiplier: Multiplier for ATR
+        :param sl_volatility_multiplier: Stop loss volatility multiplier
+        :param tp_volatility_multiplier: Take profit volatility multiplier
         :returns: Trailing stop loss and take profit levels
         """
 
@@ -148,11 +154,11 @@ class StrategySimulationAgent(Strategy):
         tp = 0.0
 
         if position_type == PositionType.LONG:
-            sl = close_price - average_true_range * exit_volatility_multiplier
-            tp = close_price + average_true_range * 0.3
+            sl = close_price - average_true_range * sl_volatility_multiplier
+            tp = close_price + average_true_range * tp_volatility_multiplier
 
         else:
-            sl = close_price + average_true_range * exit_volatility_multiplier
-            tp = close_price - average_true_range * 0.3
+            sl = close_price + average_true_range * sl_volatility_multiplier
+            tp = close_price - average_true_range * tp_volatility_multiplier
 
         return sl, tp
