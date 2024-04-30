@@ -4,6 +4,7 @@ from random import randint
 from typing import cast
 from unittest.mock import patch
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 import pandas as pd
 import pytest
 
@@ -125,12 +126,13 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "window_size")
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 @patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
 def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
+    window_size: int,
 ) -> None:
     """
     Test Parameter Optimizer for correct result output.
@@ -148,6 +150,10 @@ def test__parameter_optimizer__for_correct_result_output(
     Optimized parameters JSON must match the best results.
     """
 
+    # Precalculate volatility
+    at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+    at_calculator.calculate_average_true_range()
+
     # Initialize ParameterOptimizer with Configuration
     parameter_optimizer = ParameterOptimizer()
     parameter_optimizer._configuration = Configuration()  # noqa: SLF001
@@ -156,11 +162,10 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
-    # Create two optimization runs with different signals and parameters
-    dataframe["atr"] = 0
     dataframe["signal"] = 0
     dataframe.reset_index(inplace=True)
 
+    # Create two optimization runs with different signals and parameters
     optimization_run_1_dataframe = dataframe.copy()
     optimization_run_2_dataframe = dataframe.copy()
 
