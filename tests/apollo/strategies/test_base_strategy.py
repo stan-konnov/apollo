@@ -36,7 +36,6 @@ def test__base_strategy__for_calculating_volatility(
     strategy = BaseStrategy(dataframe, window_size)
 
     assert "atr" in strategy.dataframe.columns
-
     pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
 
 
@@ -56,15 +55,17 @@ def test__base_strategy__with_missing_parameters(
         window_size=window_size,
     )
 
-    parameters: list[tuple[str, Any, Type]] = [("missing_parameter", None, float)]
+    parameter_name = "missing_parameter"
+    parameters: list[tuple[str, Any, Type]] = [(parameter_name, None, float)]
+    exception_message = f"Parameter {parameter_name} is missing"
 
     with pytest.raises(
         ValueError,
-        match="Parameter missing_parameter is missing",
+        match=exception_message,
     ) as exception:
         strategy._validate_parameters(parameters)  # noqa: SLF001
 
-    assert str(exception.value) == "Parameter missing_parameter is missing"
+    assert str(exception.value) == exception_message
 
 
 @pytest.mark.usefixtures("window_size")
@@ -85,8 +86,7 @@ def test__base_strategy__with_invalid_parameters(
 
     parameter_name = "invalid_parameter"
     exception_message = str(
-        f"Parameter {parameter_name} is "
-        f"not of expected type {float.__name__}",
+        f"Parameter {parameter_name} is not of expected type {float.__name__}",
     )
 
     parameters: list[tuple[str, Any, Type]] = [(parameter_name, "", float)]
@@ -96,5 +96,32 @@ def test__base_strategy__with_invalid_parameters(
         match=exception_message,
     ) as exception:
         strategy._validate_parameters(parameters)  # noqa: SLF001
+
+    assert str(exception.value) == exception_message
+
+
+@pytest.mark.usefixtures("window_size")
+def test__base_strategy__for_throwing_error_when_modelling_method_is_not_implemented(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Base Strategy for throwing NotImplementedError error.
+
+    When model_trading_signals method is not implemented in subclass.
+    """
+
+    strategy = BaseStrategy(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+
+    exception_message = "Method model_trading_signals is not implemented"
+
+    with pytest.raises(
+        NotImplementedError,
+        match=exception_message,
+    ) as exception:
+        strategy.model_trading_signals()
 
     assert str(exception.value) == exception_message
