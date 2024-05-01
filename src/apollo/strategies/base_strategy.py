@@ -19,31 +19,7 @@ class BaseStrategy:
         Construct Base Strategy.
 
         Insert signal column.
-        Initialize Average True Range calculator.
 
-        :param dataframe: Dataframe with price data.
-        :param window_size: Size of the window for the strategy.
-        """
-
-        self.dataframe = dataframe
-        self.window_size = window_size
-
-        self.dataframe["signal"] = NO_SIGNAL
-
-        self.atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
-        self.calculate_volatility_and_limit_prices()
-
-    def model_trading_signals(self) -> None:
-        """
-        Model entry and exit signals.
-
-        Is required to be implemented by subclasses.
-        """
-
-        raise NotImplementedError("Method model_trading_signals is not implemented")
-
-    def calculate_volatility_and_limit_prices(self) -> None:
-        """
         Calculate volatility for the strategy.
 
         All strategies are designed to be trailing strategies that
@@ -58,9 +34,27 @@ class BaseStrategy:
         The job of calculating these levels is delegated to backtesting module,
         yet, the strategy is responsible for providing necessary inputs.
         Therefore, this method calculates volatility for all strategies.
+
+        :param dataframe: Dataframe with price data.
+        :param window_size: Size of the window for the strategy.
         """
 
+        self.dataframe = dataframe
+        self.window_size = window_size
+
+        self.dataframe["signal"] = NO_SIGNAL
+
+        self.atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
         self.atr_calculator.calculate_average_true_range()
+
+    def model_trading_signals(self) -> None:
+        """
+        Model entry and exit signals.
+
+        Is required to be implemented by subclasses.
+        """
+
+        raise NotImplementedError("Method model_trading_signals is not implemented")
 
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
