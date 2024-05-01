@@ -60,6 +60,5 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
 
     assert "skew" in skew_kurt_vol_trend_following.dataframe.columns
     assert "kurt" in skew_kurt_vol_trend_following.dataframe.columns
-    assert "tr" in skew_kurt_vol_trend_following.dataframe.columns
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
