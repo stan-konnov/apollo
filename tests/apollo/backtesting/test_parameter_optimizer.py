@@ -126,6 +126,41 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
+@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
+@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
+def test__parameter_optimizer__for_correctly_creating_results_directories() -> None:
+    """
+    Test Parameter Optimizer for correctly creating results directories.
+
+    Parameter Optimizer must create main backtesting results directory.
+    Parameter Optimizer must create individual strategy directory.
+    Parameter Optimizer must create optimized parameters directory.
+    """
+
+    strategy_dir = Path(
+        f"{BRES_DIR}/"
+        f"{TICKER}-"
+        f"{STRATEGY}-"
+        f"{START_DATE}-"
+        f"{END_DATE}",
+    )
+
+    # Initialize ParameterOptimizer with Configuration
+    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
+    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
+    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
+    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+
+    parameter_optimizer._create_output_directories() # noqa: SLF001
+
+    assert Path.exists(BRES_DIR)
+    assert Path.exists(strategy_dir)
+    assert Path.exists(OPTP_DIR)
+
+
 @pytest.mark.usefixtures("dataframe", "window_size")
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
@@ -136,10 +171,6 @@ def test__parameter_optimizer__for_correct_result_output(  # noqa: PLR0915
 ) -> None:
     """
     Test Parameter Optimizer for correct result output.
-
-    Parameter Optimizer must create results directory.
-    Parameter Optimizer must create individual strategy directory.
-    Parameter Optimizer must create optimized parameters directory.
 
     Parameter Optimizer must output trades CSV file.
     Parameter Optimizer must output results CSV file.
@@ -284,11 +315,6 @@ def test__parameter_optimizer__for_correct_result_output(  # noqa: PLR0915
     # Grab the return from the results and control dataframes
     results_return = round(results_dataframe.iloc[0]["Return [%]"], 2)
     control_return = round(control_dataframe.iloc[0]["Return [%]"], 2)
-
-    # Directories must exist
-    assert Path.exists(BRES_DIR)
-    assert Path.exists(OPTP_DIR)
-    assert Path.exists(individual_strategy_directory)
 
     # Results CSV must have clean indices
     assert results_dataframe.index.equals(control_dataframe.index)

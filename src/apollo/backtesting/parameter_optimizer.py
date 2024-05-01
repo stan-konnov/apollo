@@ -300,8 +300,8 @@ class ParameterOptimizer:
         """
         Create output directories if they do not exist.
 
-        Create main backtesting results directory.
-        Create individual strategy results and trades directories.
+        Create main results directory.
+        Create individual strategy directory.
         Create optimized parameters directory.
         """
 
