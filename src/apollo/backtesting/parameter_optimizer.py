@@ -35,8 +35,8 @@ class ParameterOptimizer:
     Consumes configuration object with various parameters that go into the strategy.
     Constructs ranges and combinations of parameters to optimize.
     Runs series of backtesting processes each for each set of parameters to optimize.
-    Writes backtesting results into a file for further analysis.
-    Creates optimized parameter set from sorted backtesting results.
+    Writes backtesting results and trades into a file for further analysis.
+    Writes optimized parameter set from sorted backtesting results.
     """
 
     # Represents a mapping between strategy name and strategy class
@@ -229,7 +229,9 @@ class ParameterOptimizer:
 
     def _output_results(self, results_dataframe: pd.DataFrame) -> None:
         """
-        Prepare and write the results to a file, create optimized parameters file.
+        Prepare and write the results and trades to a file system.
+
+        Write optimized parameters file.
 
         :param results_dataframe: DataFrame with backtesting results.
         """
@@ -249,6 +251,10 @@ class ParameterOptimizer:
 
         # Bring returns to more human readable format
         trades["ReturnPct"] = trades["ReturnPct"] * 100
+
+        # TODO:
+        # Create directories in a separate method
+        # Write files in a separate method
 
         # Create a main backtesting results directory
         if not Path.is_dir(BRES_DIR):

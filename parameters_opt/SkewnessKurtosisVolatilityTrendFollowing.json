@@ -3,7 +3,7 @@
     "cash_size": 1000,
     "window_size": 5.0,
     "sl_volatility_multiplier": 0.1,
-    "tp_volatility_multiplier": 0.3,
+    "tp_volatility_multiplier": 0.1,
     "kurtosis_threshold": 3.0,
     "volatility_multiplier": 1.0
 }

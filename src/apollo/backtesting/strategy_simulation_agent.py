@@ -140,11 +140,11 @@ class StrategySimulationAgent(Strategy):
 
         Kaufman, Trading Systems and Methods, 2020, 6th ed.
 
-        :param position_type: Position type
-        :param average_true_range: Average True Range
-        :param sl_volatility_multiplier: Stop loss volatility multiplier
-        :param tp_volatility_multiplier: Take profit volatility multiplier
-        :returns: Trailing stop loss and take profit levels
+        :param position_type: Position type.
+        :param average_true_range: Average True Range.
+        :param sl_volatility_multiplier: Stop loss volatility multiplier.
+        :param tp_volatility_multiplier: Take profit volatility multiplier.
+        :returns: Trailing stop loss and take profit levels.
         """
 
         long_sl = close_price - average_true_range * sl_volatility_multiplier
@@ -166,10 +166,10 @@ class StrategySimulationAgent(Strategy):
 
         We treat our limit entry as a point between close and take profit.
 
-        :param close_price: Close price
-        :param average_true_range: Average True Range
-        :param tp_volatility_multiplier: Take profit volatility multiplier
-        :returns: Limit entry price for long and short signals
+        :param close_price: Close price.
+        :param average_true_range: Average True Range.
+        :param tp_volatility_multiplier: Take profit volatility multiplier.
+        :returns: Limit entry price for long and short signals.
         """
 
         l_limit = close_price + average_true_range * tp_volatility_multiplier / 2
