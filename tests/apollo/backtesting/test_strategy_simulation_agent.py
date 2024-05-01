@@ -36,8 +36,6 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
         agent_instance._calculate_trailing_stop_loss_and_take_profit(  # noqa: SLF001
             close_price=close,
             average_true_range=average_true_range,
-            sl_volatility_multiplier=SL_VOL_MULT,
-            tp_volatility_multiplier=TP_VOL_MULT,
         )
     )
 
@@ -52,3 +50,40 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
 
     assert short_sl == control_short_sl
     assert short_tp == control_short_tp
+
+
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__strategy_simulation_agent__for_correct_limit_entry_price_calculation(
+    dataframe: DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Strategy Simulation Agent for correct limit entry price calculation.
+
+    Strategy Simulation Agent must calculate correct limit entry price.
+    """
+
+    at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+    at_calculator.calculate_average_true_range()
+
+    close = dataframe.iloc[-1]["close"]
+    average_true_range = dataframe.iloc[-1]["atr"]
+
+    StrategySimulationAgent.tp_volatility_multiplier = TP_VOL_MULT
+
+    agent_instance = StrategySimulationAgent(
+        broker={},
+        data=dataframe,
+        params={},
+    )
+
+    long_limit, short_limit = agent_instance._calculate_limit_entry_price(  # noqa: SLF001
+        close_price=close,
+        average_true_range=average_true_range,
+    )
+
+    control_long_limit = close + average_true_range * TP_VOL_MULT / 2
+    control_short_limit = close - average_true_range * TP_VOL_MULT / 2
+
+    assert long_limit == control_long_limit
+    assert short_limit == control_short_limit
