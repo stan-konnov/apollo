@@ -1,6 +1,5 @@
 from json import load
 from pathlib import Path
-from random import randint
 from typing import cast
 from unittest.mock import patch
 
@@ -215,7 +214,7 @@ def test__parameter_optimizer__for_correct_result_output(
     Results CSV must omit unnecessary columns.
     Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
 
-    Trades CSV must match the best results.
+    Trades CSV returns must match the best results.
     Optimized parameters JSON must match the best results.
     """
 
@@ -244,11 +243,11 @@ def test__parameter_optimizer__for_correct_result_output(
     optimization_run_1_dataframe = dataframe.copy()
     optimization_run_2_dataframe = dataframe.copy()
 
-    random_index_1 = randint(1, dataframe.shape[0] - 1)  # noqa: S311
-    random_index_2 = random_index_1 - 1
-
-    optimization_run_1_dataframe.loc[random_index_1, "signal"] = LONG_SIGNAL
-    optimization_run_2_dataframe.loc[random_index_2, "signal"] = SHORT_SIGNAL
+    # NOTE: we explicitly setting signal at index 1,
+    # since otherwise, given our test data, we would have no trades,
+    # resulting in empty run, which would not be useful for testing purposes
+    optimization_run_1_dataframe.loc[1, "signal"] = LONG_SIGNAL
+    optimization_run_2_dataframe.loc[1, "signal"] = SHORT_SIGNAL
 
     # Set indices back to date
     optimization_run_1_dataframe.set_index("date", inplace=True)
@@ -303,10 +302,10 @@ def test__parameter_optimizer__for_correct_result_output(
     control_dataframe.reset_index(drop=True, inplace=True)
 
     # Preserve the best performing trades
-    trades_dataframe: pd.DataFrame = control_dataframe.iloc[0]["_trades"]
+    control_trades_dataframe: pd.DataFrame = control_dataframe.iloc[0]["_trades"]
 
     # Humanize trades' returns
-    trades_dataframe["ReturnPct"] = trades_dataframe["ReturnPct"] * 100
+    control_trades_dataframe["ReturnPct"] = control_trades_dataframe["ReturnPct"] * 100
 
     # Drop unnecessary columns from the control dataframe
     control_dataframe.drop(
@@ -333,13 +332,13 @@ def test__parameter_optimizer__for_correct_result_output(
 
     # Read back the results
     results_dataframe = pd.read_csv(
-        f"{individual_strategy_directory}/RESULTS.csv",
+        f"{individual_strategy_directory}/results.csv",
         index_col=0,
     )
 
     # Read back the trades
-    trades_dataframe_from_disk = pd.read_csv(
-        f"{individual_strategy_directory}/TRADES.csv",
+    trades_dataframe = pd.read_csv(
+        f"{individual_strategy_directory}/trades.csv",
         index_col=0,
     )
 
@@ -360,10 +359,10 @@ def test__parameter_optimizer__for_correct_result_output(
     # Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades"
     assert results_return == control_return
 
-    # Trades CSV must match the best performing trades
-    assert (
-        trades_dataframe["ReturnPct"].to_numpy()
-        == trades_dataframe_from_disk["ReturnPct"].to_numpy()
+    # Trades CSV returns must match the best results
+    pd.testing.assert_series_equal(
+        trades_dataframe["ReturnPct"],
+        control_trades_dataframe["ReturnPct"],
     )
 
     # Optimized parameters JSON must match the best results
