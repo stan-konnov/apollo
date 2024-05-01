@@ -30,6 +30,6 @@ Time-in-force must be set to be `day`. Any other time_in_force will be rejected 
 
     1. Install TWS
     2. Login using credentials
-    3. Download IB API source doe
+    3. Download IB API source code
     4. Use Python to connect to TWS
     5. Follow: https://algotrading101.com/learn/interactive-brokers-python-api-native-guide/
