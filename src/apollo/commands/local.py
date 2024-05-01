@@ -1,6 +1,6 @@
 import logging
 
-# from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner

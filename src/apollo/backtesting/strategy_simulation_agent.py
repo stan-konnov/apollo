@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from backtesting import Strategy
 
-from apollo.settings import LIMIT_ENTRY_OFFSET, LONG_SIGNAL, SHORT_SIGNAL
+from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
 As with any other backtesting approaches, this one takes on several assumptions:
@@ -81,7 +81,12 @@ class StrategySimulationAgent(Strategy):
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
-            long_limit, short_limit = self._calculate_limit_entry_price(close)
+            # Calculate limit entry price for long and short signals
+            long_limit, short_limit = self._calculate_limit_entry_price(
+                close,
+                average_true_range,
+                self.tp_volatility_multiplier,
+            )
 
             if long_signal:
                 # Skip if we already have long position
@@ -94,7 +99,7 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price below or equal close
+                # and entry is a limit order -- price below or equal our limit
                 self.buy(sl=long_sl, tp=long_tp, limit=long_limit)
 
             if short_signal:
@@ -108,7 +113,7 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price above or equal close
+                # and entry is a limit order -- price above or equal our limit
                 self.sell(sl=short_sl, tp=short_tp, limit=short_limit)
 
         # Loop through open positions
@@ -150,14 +155,24 @@ class StrategySimulationAgent(Strategy):
 
         return long_sl, long_tp, short_sl, short_tp
 
-    def _calculate_limit_entry_price(self, close: float) -> tuple[float, float]:
+    def _calculate_limit_entry_price(
+        self,
+        close_price: float,
+        average_true_range: float,
+        tp_volatility_multiplier: float,
+    ) -> tuple[float, float]:
         """
         Calculate limit entry price for long and short signals.
 
-        We treat our limit entry from close as a 1/10 of a percent above or below close.
+        We treat our limit entry as a point between close and take profit.
 
-        :param close: Close price
+        :param close_price: Close price
+        :param average_true_range: Average True Range
+        :param tp_volatility_multiplier: Take profit volatility multiplier
         :returns: Limit entry price for long and short signals
         """
 
-        return close * (1 + LIMIT_ENTRY_OFFSET), close * (1 - LIMIT_ENTRY_OFFSET)
+        l_limit = close_price + average_true_range * tp_volatility_multiplier / 2
+        s_limit = close_price - average_true_range * tp_volatility_multiplier / 2
+
+        return l_limit, s_limit

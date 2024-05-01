@@ -15,8 +15,6 @@ NO_SIGNAL = 0
 LONG_SIGNAL = 1
 SHORT_SIGNAL = -1
 
-LIMIT_ENTRY_OFFSET = 0.001
-
 ROOT_DIR = Path(curdir).resolve()
 DATA_DIR = Path(f"{ROOT_DIR}/data")
 PARM_DIR = Path(f"{ROOT_DIR}/parameters")
