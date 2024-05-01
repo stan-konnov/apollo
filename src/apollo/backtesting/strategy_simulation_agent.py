@@ -4,6 +4,20 @@ from backtesting import Strategy
 
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
+"""
+As with any other backtesting approaches, this one takes on several assumptions:
+
+* We are allowed to trade on close (during extended hours)
+* We will get filled on our limit orders
+* There are no commissions
+
+These assumptions are partially validated by our broker documentation (Alpaca).
+
+Alpaca indeed allows trading during extended hours (pre-market and after-hours).
+Alpaca also allows limit orders, yet there is no guarantee that they will be filled.
+Alpaca does not charge trading commissions for US equities, but does for other assets.
+"""
+
 
 class StrategySimulationAgent(Strategy):
     """
@@ -13,11 +27,13 @@ class StrategySimulationAgent(Strategy):
     Used as one of the components in backtesting process facilitated by runner class.
     """
 
-    # Stop loss level to use for exits
-    stop_loss_level: ClassVar[float]
+    # Volatility multiplier applied to
+    # ATR for calculating trailing stop loss
+    sl_volatility_multiplier: ClassVar[float]
 
-    # Take profit level to use for exits
-    take_profit_level: ClassVar[float]
+    # Volatility multiplier applied to
+    # ATR for calculating trailing take profit and limit entry
+    tp_volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
         """
@@ -25,6 +41,7 @@ class StrategySimulationAgent(Strategy):
 
         NOTE: Backtesting.py requires this method to be implemented.
         """
+        super().init()
 
     def next(self) -> None:
         """
@@ -37,22 +54,38 @@ class StrategySimulationAgent(Strategy):
 
         NOTE: Backtesting.py requires this method to be implemented.
         """
+        super().init()
+
+        # Grab close of the current row
+        close = self.data["Close"][-1]
+
+        # Grab average true range of the current row
+        average_true_range = self.data["atr"][-1]
 
         # Get currently iterated signal
         signal_identified = self.data["signal"][-1] != 0
 
+        # Calculate trailing stop loss and take profit
+        long_sl, long_tp, short_sl, short_tp = (
+            self._calculate_trailing_stop_loss_and_take_profit(
+                close_price=close,
+                average_true_range=average_true_range,
+            )
+        )
+
         # Enter the trade if signal identified
         if signal_identified:
-
             # Identify if signal is long or short
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
-            # Grab close of the current row
-            close = self.data["Close"][-1]
+            # Calculate limit entry price for long and short signals
+            long_limit, short_limit = self._calculate_limit_entry_price(
+                close,
+                average_true_range,
+            )
 
             if long_signal:
-
                 # Skip if we already have long position
                 if self.position.is_long:
                     return
@@ -61,14 +94,12 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_short:
                     self.position.close()
 
-                # Calculate stop loss and take profit levels
-                sl, tp = self._calculate_long_sl_and_tp(close)
-
-                # And open new long position
-                self.buy(sl=sl, tp=tp)
+                # And open new long position, where:
+                # stop loss and take profit are our trailing levels
+                # and entry is a limit order -- price below or equal our limit
+                self.buy(sl=long_sl, tp=long_tp, limit=long_limit)
 
             if short_signal:
-
                 # Skip if we already have short position
                 if self.position.is_short:
                     return
@@ -77,26 +108,62 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_long:
                     self.position.close()
 
-                # Calculate stop loss and take profit levels
-                sl, tp = self._calculate_short_sl_and_tp(close)
+                # And open new short position, where:
+                # stop loss and take profit are our trailing levels
+                # and entry is a limit order -- price above or equal our limit
+                self.sell(sl=short_sl, tp=short_tp, limit=short_limit)
 
-                # And open new short position
-                self.sell(sl=sl, tp=tp)
+        # Loop through open positions
+        # And assign SL and TP to open position(s)
+        for trade in self.trades:
+            if trade.is_long:
+                trade.sl = long_sl
+                trade.tp = long_tp
+            else:
+                trade.sl = short_sl
+                trade.tp = short_tp
 
-    def _calculate_long_sl_and_tp(self, close: float) -> tuple[float, float]:
+    def _calculate_trailing_stop_loss_and_take_profit(
+        self,
+        close_price: float,
+        average_true_range: float,
+    ) -> tuple[float, float, float, float]:
         """
-        Calculate long stop loss and take profit.
+        Calculate trailing stop loss and take profit.
 
-        Use provided close, stop loss and take profit levels.
+        Using close, Average True Range, and volatility multipliers.
+
+        Kaufman, Trading Systems and Methods, 2020, 6th ed.
+
+        :param position_type: Position type.
+        :param average_true_range: Average True Range.
+        :returns: Trailing stop loss and take profit levels.
         """
 
-        return close * (1 - self.stop_loss_level), close * (1 + self.take_profit_level)
+        long_sl = close_price - average_true_range * self.sl_volatility_multiplier
+        long_tp = close_price + average_true_range * self.tp_volatility_multiplier
 
-    def _calculate_short_sl_and_tp(self, close: float) -> tuple[float, float]:
+        short_sl = close_price + average_true_range * self.sl_volatility_multiplier
+        short_tp = close_price - average_true_range * self.tp_volatility_multiplier
+
+        return long_sl, long_tp, short_sl, short_tp
+
+    def _calculate_limit_entry_price(
+        self,
+        close_price: float,
+        average_true_range: float,
+    ) -> tuple[float, float]:
         """
-        Calculate short stop loss and take profit.
+        Calculate limit entry price for long and short signals.
 
-        Use provided close, stop loss and take profit levels.
+        We treat our limit entry as a point between close and take profit.
+
+        :param close_price: Close price.
+        :param average_true_range: Average True Range.
+        :returns: Limit entry price for long and short signals.
         """
 
-        return close * (1 + self.stop_loss_level), close * (1 - self.take_profit_level)
+        l_limit = close_price + average_true_range * self.tp_volatility_multiplier / 2
+        s_limit = close_price - average_true_range * self.tp_volatility_multiplier / 2
+
+        return l_limit, s_limit

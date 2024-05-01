@@ -35,8 +35,8 @@ class ParameterOptimizer:
     Consumes configuration object with various parameters that go into the strategy.
     Constructs ranges and combinations of parameters to optimize.
     Runs series of backtesting processes each for each set of parameters to optimize.
-    Writes backtesting results into a file for further analysis.
-    Creates optimized parameter set from sorted backtesting results.
+    Writes backtesting results and trades into files for further analysis.
+    Writes optimized parameter set from sorted backtesting results.
     """
 
     # Represents a mapping between strategy name and strategy class
@@ -56,9 +56,25 @@ class ParameterOptimizer:
 
         Instantiate configuration that consumes environment
         variables and parses strategy parameters file.
+
+        Define a path to individual strategy directory
+        to store backtesting results and trades.
+
+        Create output directories for results,
+        trades, and optimized parameters if they do not exist.
         """
 
         self._configuration = Configuration()
+
+        self.strategy_dir = Path(
+            f"{BRES_DIR}/"
+            f"{self._configuration.ticker}-"
+            f"{self._configuration.strategy}-"
+            f"{self._configuration.start_date}-"
+            f"{self._configuration.end_date}",
+        )
+
+        self._create_output_directories()
 
     def process(self) -> None:
         """Run the optimization process."""
@@ -96,7 +112,6 @@ class ParameterOptimizer:
 
         # Iterate over each combination of parameters
         for combination in combinations:
-
             # We copy the dataframe to have a clean
             # set of prices for each combination we are testing
             dataframe_to_test = dataframe.copy()
@@ -140,7 +155,6 @@ class ParameterOptimizer:
 
             # Skip this run if there are no signals
             if (dataframe_to_test["signal"] == NO_SIGNAL).all():
-
                 continue
 
             # Instantiate the backtesting runner and run the backtesting process
@@ -150,8 +164,12 @@ class ParameterOptimizer:
                 # NOTE: cash_size is non-optimized parameter (yet)
                 # and therefore is hardcoded to the value from parameter set
                 lot_size_cash=parameter_set["cash_size"],
-                stop_loss_level=combination_to_test["stop_loss_level"],
-                take_profit_level=combination_to_test["take_profit_level"],
+                sl_volatility_multiplier=combination_to_test[
+                    "sl_volatility_multiplier"
+                ],
+                tp_volatility_multiplier=combination_to_test[
+                    "tp_volatility_multiplier"
+                ],
             )
 
             stats = backtesting_runner.run()
@@ -227,7 +245,9 @@ class ParameterOptimizer:
 
     def _output_results(self, results_dataframe: pd.DataFrame) -> None:
         """
-        Prepare and write the results to a file, create optimized parameters file.
+        Prepare and write the results and trades to a file system.
+
+        Write optimized parameters file.
 
         :param results_dataframe: DataFrame with backtesting results.
         """
@@ -241,6 +261,12 @@ class ParameterOptimizer:
 
         # Reset the indices to clean up the dataframe after concatenation
         results_dataframe.reset_index(drop=True, inplace=True)
+
+        # Grab the best performing trades
+        trades_dataframe = results_dataframe.iloc[0]["_trades"]
+
+        # Bring returns to more human readable format
+        trades_dataframe["ReturnPct"] = trades_dataframe["ReturnPct"] * 100
 
         # Drop columns that are not needed for further analysis
         results_dataframe.drop(
@@ -257,27 +283,48 @@ class ParameterOptimizer:
             inplace=True,
         )
 
-        # Write the results to a CSV file for further analysis
-        if not Path.is_dir(BRES_DIR):
-            BRES_DIR.mkdir(parents=True, exist_ok=True)
-
-        results_dataframe.to_csv(
-            f"{BRES_DIR}/"
-            f"{self._configuration.ticker}-"
-            f"{self._configuration.strategy}-"
-            f"{self._configuration.start_date}-"
-            f"{self._configuration.end_date}.csv",
-        )
-
         # Extract the best performing parameters as JSON
         # and prepare them for writing to a file
-        optimized_parameters = results_dataframe["parameters"].loc[0]
+        optimized_parameters = results_dataframe.iloc[0]["parameters"]
         optimized_parameters = str(optimized_parameters).replace("'", '"')
         optimized_parameters = loads(optimized_parameters)
 
-        # Write the optimized parameters to a JSON file
-        if not Path.is_dir(OPTP_DIR):
-            OPTP_DIR.mkdir(parents=True, exist_ok=True)
+        # Write the results and parameters to files
+        self._write_result_files(
+            trades_dataframe,
+            results_dataframe,
+            optimized_parameters,
+        )
+
+    def _create_output_directories(self) -> None:
+        """
+        Create output directories if they do not exist.
+
+        Create main results directory.
+        Create individual strategy directory.
+        Create optimized parameters directory.
+        """
+
+        for path in [BRES_DIR, self.strategy_dir, OPTP_DIR]:
+            if not Path.is_dir(path):
+                path.mkdir(parents=True, exist_ok=True)
+
+    def _write_result_files(
+        self,
+        trades_dataframe: pd.DataFrame,
+        results_dataframe: pd.DataFrame,
+        optimized_parameters: dict[str, str | int | float],
+    ) -> None:
+        """
+        Write the results, trades and parameters to files.
+
+        :param trades_dataframe: Dataframe with trades.
+        :param results_dataframe: Dataframe with backtesting results.
+        :param optimized_parameters: Dictionary with optimized parameters.
+        """
+
+        trades_dataframe.to_csv(f"{self.strategy_dir}/trades.csv")
+        results_dataframe.to_csv(f"{self.strategy_dir}/results.csv")
 
         with Path.open(
             Path(f"{OPTP_DIR}/{self._configuration.strategy}.json"),
