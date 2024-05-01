@@ -5,22 +5,22 @@
 
     "window_size": {
         "step": 5,
-        "range": [5, 40]
+        "range": [5, 20]
     },
 
-    "stop_loss_level": {
-        "step": 0.005,
-        "range": [0.005, 0.01]
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
     },
 
-    "take_profit_level": {
-        "step": 0.01,
-        "range": [0.01, 0.1]
+    "tp_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
     },
 
     "channel_sd_spread": {
-        "step": 0.5,
-        "range": [0.5, 3.0]
+        "step": 0.1,
+        "range": [0.1, 1.0]
     },
 
     "strategy_specific_parameters": [

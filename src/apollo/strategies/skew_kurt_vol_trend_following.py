@@ -1,6 +1,5 @@
 from pandas import DataFrame
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
@@ -63,7 +62,6 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
         self.kurtosis_threshold = kurtosis_threshold
         self.volatility_multiplier = volatility_multiplier
 
-        self.at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
         self.dm_calculator = DistributionMomentsCalculator(dataframe, window_size)
 
     def model_trading_signals(self) -> None:
@@ -76,7 +74,6 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.at_calculator.calculate_average_true_range()
         self.dm_calculator.calculate_distribution_moments()
 
     def __mark_trading_signals(self) -> None:
