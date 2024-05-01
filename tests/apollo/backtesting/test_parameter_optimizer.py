@@ -302,7 +302,7 @@ def test__parameter_optimizer__for_correct_result_output(
     control_dataframe.reset_index(drop=True, inplace=True)
 
     # Preserve the best performing trades
-    control_trades_dataframe: pd.DataFrame = control_dataframe.iloc[0]["_trades"]
+    control_trades_dataframe = control_dataframe.iloc[0]["_trades"].copy()
 
     # Humanize trades' returns
     control_trades_dataframe["ReturnPct"] = control_trades_dataframe["ReturnPct"] * 100

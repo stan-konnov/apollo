@@ -263,7 +263,7 @@ class ParameterOptimizer:
         results_dataframe.reset_index(drop=True, inplace=True)
 
         # Grab the best performing trades
-        trades_dataframe: pd.DataFrame = results_dataframe.iloc[0]["_trades"]
+        trades_dataframe = results_dataframe.iloc[0]["_trades"]
 
         # Bring returns to more human readable format
         trades_dataframe["ReturnPct"] = trades_dataframe["ReturnPct"] * 100
@@ -285,7 +285,7 @@ class ParameterOptimizer:
 
         # Extract the best performing parameters as JSON
         # and prepare them for writing to a file
-        optimized_parameters = results_dataframe["parameters"].loc[0]
+        optimized_parameters = results_dataframe.iloc[0]["parameters"]
         optimized_parameters = str(optimized_parameters).replace("'", '"')
         optimized_parameters = loads(optimized_parameters)
 
