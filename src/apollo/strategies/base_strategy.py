@@ -23,9 +23,9 @@ class BaseStrategy:
         Calculate volatility for the strategy.
 
         All strategies are designed to be trailing strategies that
-        apply dynamic stop loss and take profit orders.
+        apply dynamic limit, stop loss and take profit orders.
 
-        The stop loss and take profit levels are calculated based on:
+        The limit, stop loss and take profit levels are calculated based on:
 
         * Average True Range (ATR), which is a measure of volatility.
         * Volatility multiplier, which is a user-defined parameter.
