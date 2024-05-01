@@ -165,7 +165,7 @@ def test__parameter_optimizer__for_correctly_creating_results_directories() -> N
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 @patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_correct_result_output(  # noqa: PLR0915
+def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
