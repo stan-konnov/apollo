@@ -22,8 +22,8 @@ class BaseStrategy:
 
         Calculate volatility for the strategy.
 
-        All strategies are designed to be trailing strategies that
-        apply dynamic limit, stop loss and take profit orders.
+        All strategies are designed to be trailing strategies
+        that apply dynamic limit, stop loss and take profit orders.
 
         The limit, stop loss and take profit levels are calculated based on:
 
