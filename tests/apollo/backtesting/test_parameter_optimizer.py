@@ -139,11 +139,7 @@ def test__parameter_optimizer__for_correctly_creating_results_directories() -> N
     """
 
     strategy_dir = Path(
-        f"{BRES_DIR}/"
-        f"{TICKER}-"
-        f"{STRATEGY}-"
-        f"{START_DATE}-"
-        f"{END_DATE}",
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
     )
 
     # Initialize ParameterOptimizer with Configuration
@@ -154,11 +150,54 @@ def test__parameter_optimizer__for_correctly_creating_results_directories() -> N
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
 
-    parameter_optimizer._create_output_directories() # noqa: SLF001
+    parameter_optimizer._create_output_directories()  # noqa: SLF001
 
     assert Path.exists(BRES_DIR)
     assert Path.exists(strategy_dir)
     assert Path.exists(OPTP_DIR)
+
+
+@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
+@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
+def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
+    """
+    Test Parameter Optimizer for correctly writing result files.
+
+    Parameter Optimizer must write trades CSV file.
+    Parameter Optimizer must write results CSV file.
+    Parameter Optimizer must write optimized parameters JSON file.
+    """
+
+    strategy_dir = Path(
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
+    )
+
+    # Initialize ParameterOptimizer with Configuration
+    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
+    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
+    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
+    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+
+    trades_dataframe = pd.DataFrame({"ReturnPct": [1.0]})
+    results_dataframe = pd.DataFrame({"Return [%]": [1.0]})
+    optimized_parameters = {
+        "frequency": "1d",
+        "window_size": 5,
+        "sl_volatility_multiplier": 0.01,
+    }
+
+    parameter_optimizer._write_result_files(  # noqa: SLF001
+        trades_dataframe,
+        results_dataframe,
+        optimized_parameters,
+    )
+
+    assert Path.exists(Path(f"{strategy_dir}/trades.csv"))
+    assert Path.exists(Path(f"{strategy_dir}/results.csv"))
+    assert Path.exists(Path(f"{OPTP_DIR}/{STRATEGY}.json"))
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -171,10 +210,6 @@ def test__parameter_optimizer__for_correct_result_output(
 ) -> None:
     """
     Test Parameter Optimizer for correct result output.
-
-    Parameter Optimizer must output trades CSV file.
-    Parameter Optimizer must output results CSV file.
-    Parameter Optimizer must output optimized parameters JSON file.
 
     Results CSV must have clean indices.
     Results CSV must omit unnecessary columns.
@@ -326,11 +361,9 @@ def test__parameter_optimizer__for_correct_result_output(
     assert results_return == control_return
 
     # Trades CSV must match the best performing trades
-    # NOTE: to avoid hacks around different type of indices and columns
-    # between dataframe in memory and one read from disk, we simply compare returns
-    pd.testing.assert_series_equal(
-        trades_dataframe["ReturnPct"].reset_index(drop=True),
-        trades_dataframe_from_disk["ReturnPct"].reset_index(drop=True),
+    assert (
+        trades_dataframe["ReturnPct"].to_numpy()
+        == trades_dataframe_from_disk["ReturnPct"].to_numpy()
     )
 
     # Optimized parameters JSON must match the best results
