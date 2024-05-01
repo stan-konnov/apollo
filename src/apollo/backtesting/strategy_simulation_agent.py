@@ -155,6 +155,9 @@ class StrategySimulationAgent(Strategy):
         Calculate limit entry price for long and short signals.
 
         We treat our limit entry from close as a 1/10 of a percent above or below close.
+
+        :param close: Close price
+        :returns: Limit entry price for long and short signals
         """
 
         return close * (1 + LIMIT_ENTRY_OFFSET), close * (1 - LIMIT_ENTRY_OFFSET)
