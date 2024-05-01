@@ -32,7 +32,7 @@ class StrategySimulationAgent(Strategy):
     sl_volatility_multiplier: ClassVar[float]
 
     # Volatility multiplier applied to
-    # ATR for calculating trailing take profit
+    # ATR for calculating trailing take profit and limit entry
     tp_volatility_multiplier: ClassVar[float]
 
     def init(self) -> None:
