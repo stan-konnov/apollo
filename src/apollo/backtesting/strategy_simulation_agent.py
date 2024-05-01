@@ -81,6 +81,12 @@ class StrategySimulationAgent(Strategy):
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
+            # TODO: pack me in the method
+            # Set long limit 10th of a percent above close
+            # Set short limit 10th of a percent below close
+            lc = close * 1.001
+            sc = close * 0.999
+
             if long_signal:
                 # Skip if we already have long position
                 if self.position.is_long:
@@ -93,7 +99,7 @@ class StrategySimulationAgent(Strategy):
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
                 # and entry is a limit order -- price below or equal close
-                self.buy(sl=long_sl, tp=long_tp, limit=close)
+                self.buy(sl=long_sl, tp=long_tp, limit=lc)
 
             if short_signal:
                 # Skip if we already have short position
@@ -107,7 +113,7 @@ class StrategySimulationAgent(Strategy):
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
                 # and entry is a limit order -- price above or equal close
-                self.sell(sl=short_sl, tp=short_tp, limit=close)
+                self.sell(sl=short_sl, tp=short_tp, limit=sc)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
