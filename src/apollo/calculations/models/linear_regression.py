@@ -77,11 +77,43 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Select best model
         best_model = self._select_best_model()
 
+        # Calculate rolling forecast
+        self.dataframe["forecast"] = (
+            self.dataframe["close"]
+            .rolling(
+                self.window_size,
+            )
+            .apply(
+                self.__calc_rolling_forecast,
+                args=(self.dataframe, best_model),
+            )
+        )
+
+    def __calc_rolling_forecast(
+        self,
+        series: pd.Series,
+        dataframe: pd.DataFrame,
+        model: ModelItem,
+    ) -> None:
+        """
+        Do rolling.
+
+        And docstring.
+        """
+
+        # Slice out a chunk of dataframe to work with
+        rolling_df = dataframe.loc[series.index]
+
         # Create trading conditions
-        x, _ = self._create_regression_trading_conditions(self.dataframe)
+        x, _ = self._create_regression_trading_conditions(rolling_df)
+
+        # Drop first row, to accommodate for T-1 close shift
+        rolling_df.drop(rolling_df.index[0], inplace=True)
 
         # Forecast future periods
-        self.dataframe["forecast"] = best_model[1].predict(x)
+        forecast = model[1].predict(x)
+
+        return forecast[-1]
 
     def _select_best_model(self) -> ModelSpec:
         """
