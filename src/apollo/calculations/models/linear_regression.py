@@ -14,6 +14,12 @@ ModelType = LinearRegression | Lasso | Ridge
 ModelItem = tuple[str, ModelType]
 ModelSpec = tuple[str, ModelType, float]
 
+"""
+Do we need regression output?
+
+Can we just classify it?
+"""
+
 
 class LinearRegressionModelCalculator(BaseCalculator):
     """
