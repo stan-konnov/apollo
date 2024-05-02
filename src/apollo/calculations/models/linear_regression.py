@@ -192,13 +192,41 @@ class LinearRegressionModelCalculator(BaseCalculator):
         training_conditions_dataframe = dataframe.copy()
 
         # Calculate difference between high and low, open and close
-        training_conditions_dataframe["high_low"] = dataframe["high"] - dataframe["low"]
+        # PLEASE, pack all aspects into separate method
+        training_conditions_dataframe["open_high"] = (
+            training_conditions_dataframe["open"]
+            - training_conditions_dataframe["high"]
+        )
+        training_conditions_dataframe["open_low"] = (
+            training_conditions_dataframe["open"] - training_conditions_dataframe["low"]
+        )
         training_conditions_dataframe["open_close"] = (
-            dataframe["open"] - dataframe["close"]
+            training_conditions_dataframe["open"]
+            - training_conditions_dataframe["close"]
+        )
+        training_conditions_dataframe["high_low"] = (
+            training_conditions_dataframe["high"] - training_conditions_dataframe["low"]
+        )
+        training_conditions_dataframe["high_close"] = (
+            training_conditions_dataframe["high"]
+            - training_conditions_dataframe["close"]
+        )
+        training_conditions_dataframe["low_close"] = (
+            training_conditions_dataframe["low"]
+            - training_conditions_dataframe["close"]
         )
 
         # Pack into dataframe
-        x = training_conditions_dataframe[["open_close", "high_low"]]
+        x = training_conditions_dataframe[
+            [
+                "open_high",
+                "open_low",
+                "open_close",
+                "high_low",
+                "high_close",
+                "low_close",
+            ]
+        ]
 
         # Calculate Y variable
         y = dataframe["close"].shift(1) - dataframe["close"]
