@@ -1,5 +1,4 @@
 import logging
-from typing import ClassVar
 
 import pandas as pd
 from sklearn.linear_model import Lasso, LinearRegression, Ridge
@@ -36,10 +35,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
-    # List of models to choose from
-    # Represents model name, model instance, model score
-    models_to_apply: ClassVar[list[ModelSpec]]
-
     def __init__(
         self,
         dataframe: pd.DataFrame,
@@ -69,11 +64,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
 
         # Select best model
+        # MAKE me static variable, so I won't be recomputed during optimization
         if self.model is None:
-            best_model = self._select_best_model()
-            self.model = best_model[1]
-
-            logger.info(f"Forecasting with {best_model[0]}")
+            self.model = self._select_best_model()[1]
 
         # Calculate rolling forecast
         self.dataframe["forecast"] = (
@@ -123,10 +116,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         models: list[ModelItem] = [
             ("OLS", LinearRegression()),
-            # Use smoothing factors of 0.1 and 10000
+            # Use smoothing factors of 0.1
             # Donadio and Ghosh, Algorithmic Trading, 2019, p.98
             ("Lasso", Lasso(alpha=0.1)),
-            ("Ridge", Ridge(alpha=10000)),
+            ("Ridge", Ridge(alpha=0.1)),
         ]
 
         model_specs: list[ModelSpec] = []
