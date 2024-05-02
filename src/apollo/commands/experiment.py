@@ -29,7 +29,9 @@ def main() -> None:
         split_ratio=0.8,
     )
 
-    linear_regression_calculator.select_best_model()
+    linear_regression_calculator.forecast_periods()
+
+    print(dataframe)
 
 
 if __name__ == "__main__":

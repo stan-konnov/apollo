@@ -65,7 +65,25 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
-    def select_best_model(self) -> ModelSpec:
+    def forecast_periods(self) -> None:
+        """
+        Forecast future periods using linear regression models.
+
+        And write better docstring.
+
+        Make me rolling, senpai.
+        """
+
+        # Select best model
+        best_model = self._select_best_model()
+
+        # Create trading conditions
+        x, _ = self._create_regression_trading_conditions(self.dataframe)
+
+        # Forecast future periods
+        self.dataframe["forecast"] = best_model[1].predict(x)
+
+    def _select_best_model(self) -> ModelSpec:
         """
         Select best model.
 
@@ -77,14 +95,12 @@ class LinearRegressionModelCalculator(BaseCalculator):
             # Use smoothing factors of 0.1 and 10000
             # Donadio and Ghosh, Algorithmic Trading, 2019, p.98
             ("Lasso", Lasso(alpha=0.1)),
-            ("Ridge", Ridge(alpha=0.1)),
+            ("Ridge", Ridge(alpha=10000)),
         ]
 
         model_specs: list[ModelSpec] = []
 
         for model_item in models:
-            # print(model_item[0])
-
             model_spec = self._fit_predict_score(model_item)
             model_specs.append(model_spec)
 
