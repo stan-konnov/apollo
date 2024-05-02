@@ -9,6 +9,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 """
 TODO: observable variable, X, can factor in all OHLC aspects
+TODO: add logging for MSE and R2 for each model
 """
 
 ModelType = LinearRegression | Lasso | Ridge
@@ -60,7 +61,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
         Fit the model, predict on both train and test data, and score the model.
 
-        Create trading conditions and split into train and test.
+        Create trading conditions.
+        Split data into train and test.
         """
 
         x, y = self._create_regression_trading_conditions(self.dataframe)
@@ -71,19 +73,21 @@ class LinearRegressionModelCalculator(BaseCalculator):
         ordinary_least_squares.fit(x_train, y_train)
 
         forecast_train = ordinary_least_squares.predict(x_train)
-        variance_train = r2_score(y_train, forecast_train)
-        mce_train = mean_squared_error(y_train, forecast_train)
+        r_squared_train = r2_score(y_train, forecast_train)
+        mean_square_error_train = mean_squared_error(y_train, forecast_train)
 
         forecast_test = ordinary_least_squares.predict(x_test)
-        variance_test = r2_score(y_test, forecast_test)
-        mse_test = mean_squared_error(y_test, forecast_test)
+        r_squared_test = r2_score(y_test, forecast_test)
+        mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
-        # model_score = self._score_model(
-        #     train_mean_square_error=mce_train,
-        #     train_r_squared=variance_train,
-        #     test_mean_square_error=test_mse,
-        #     test_r_squared=test_variance,
-        # )
+        model_score = self._score_model(
+            r_squared_train=float(r_squared_train),
+            mean_square_error_train=float(mean_square_error_train),
+            r_squared_test=float(r_squared_test),
+            mean_square_error_test=float(mean_square_error_test),
+        )
+
+        print(model_score)
 
     def _create_regression_trading_conditions(
         self,
@@ -146,10 +150,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
     def _score_model(
         self,
-        train_r_squared: float,
-        train_mean_square_error: float,
-        test_r_squared: float,
-        test_mean_square_error: float,
+        r_squared_train: float,
+        mean_square_error_train: float,
+        r_squared_test: float,
+        mean_square_error_test: float,
     ) -> float:
         """
         Score the model based on mean square error and R-squared.
@@ -162,17 +166,21 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         Sum both factors to get the final score.
 
-        :param train_r_squared: R-squared for train data.
-        :param train_mean_square_error: Mean square error for train data.
-        :param test_r_squared: R-squared for test data.
-        :param test_mean_square_error: Mean square error for test data.
+        NOTE: this is a simple heuristic to select the best model.
+        It can and will produce negative values, but we are not interested
+        in those values (yet), we are interested in the model with the highest score.
+
+        :param r_squared_train: R-squared for train data.
+        :param mean_square_error_train: Mean square error for train data.
+        :param r_squared_test: R-squared for test data.
+        :param mean_square_error_test: Mean square error for test data.
         :return: Score of the model.
         """
 
-        r_squared_factor = train_r_squared + test_r_squared
+        r_squared_factor = r_squared_train + r_squared_test
 
         mean_square_error_factor = (
-            train_mean_square_error + test_mean_square_error
+            mean_square_error_train + mean_square_error_test
         ) * -1
 
         return r_squared_factor + mean_square_error_factor
