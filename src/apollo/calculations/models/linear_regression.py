@@ -2,8 +2,8 @@ from typing import ClassVar
 
 import pandas as pd
 from sklearn.base import BaseEstimator
-
-# from sklearn.linear_model import Lasso, LinearRegression, Ridge
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
 from apollo.calculations.base_calculator import BaseCalculator
@@ -53,6 +53,36 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
+    def fit_and_predict(self) -> None:
+        """
+        Fit the model to the training data.
+
+        Create trading conditions and split into train and test.
+        """
+
+        x, y = self._create_regression_trading_conditions(self.dataframe)
+
+        x_train, x_test, y_train, y_test = self.create_train_split_group(x, y)
+
+        ordinary_least_squares = LinearRegression()
+        ordinary_least_squares.fit(x_train, y_train)
+
+        forecast = ordinary_least_squares.predict(x_train)
+
+        variance_score = r2_score(y_train, forecast)
+        mse_score = mean_squared_error(y_train, forecast)
+
+        print("MSE Train: ", mse_score)
+        print("Variance Train: ", variance_score)
+
+        forecast = ordinary_least_squares.predict(x_test)
+
+        variance_score = r2_score(y_test, forecast)
+        mse_score = mean_squared_error(y_test, forecast)
+
+        print("MSE Test: ", mse_score)
+        print("Variance Test: ", variance_score)
+
     def _create_regression_trading_conditions(
         self,
         dataframe: pd.DataFrame,
@@ -82,6 +112,11 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Calculate Y variable
         y = dataframe["close"].shift(1) - dataframe["close"]
 
+        # Remove row from X and Y where
+        # Y is NaN after shift and drop NaN from Y
+        x.drop(x.index[0], inplace=True)
+        y.dropna(inplace=True)
+
         return x, y
 
     def create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
@@ -95,6 +130,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
 
         # Split into train and test
+        # NOTE: we do not shuffle, since:
+        # our time series is already ordered by date
+        # we want to forecast future values based on past values
         x_train, x_test, y_train, y_test = train_test_split(
             x,
             y,
