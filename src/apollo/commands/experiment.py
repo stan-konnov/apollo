@@ -31,8 +31,6 @@ def main() -> None:
 
     linear_regression_calculator.forecast_periods()
 
-    print(dataframe)
-
 
 if __name__ == "__main__":
     main()

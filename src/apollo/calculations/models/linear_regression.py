@@ -65,17 +65,20 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
+        # Model to use for forecasting
+        self.model: ModelType | None = None
+
     def forecast_periods(self) -> None:
         """
         Forecast future periods using linear regression models.
 
         And write better docstring.
-
-        Make me rolling, senpai.
         """
 
         # Select best model
-        best_model = self._select_best_model()
+        if self.model is None:
+            self.model = self._select_best_model()[1]
+            print(self.model)
 
         # Calculate rolling forecast
         self.dataframe["forecast"] = (
@@ -85,7 +88,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
             )
             .apply(
                 self.__calc_rolling_forecast,
-                args=(self.dataframe, best_model),
+                args=(self.dataframe, self.model),
             )
         )
 
@@ -93,7 +96,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         self,
         series: pd.Series,
         dataframe: pd.DataFrame,
-        model: ModelItem,
+        model: ModelType,
     ) -> None:
         """
         Do rolling.
@@ -111,8 +114,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
         rolling_df.drop(rolling_df.index[0], inplace=True)
 
         # Forecast future periods
-        forecast = model[1].predict(x)
+        forecast = model.predict(x)
 
+        # Return latest forecast
         return forecast[-1]
 
     def _select_best_model(self) -> ModelSpec:
@@ -167,11 +171,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
             r_squared_test=float(r_squared_test),
             mean_square_error_test=float(mean_square_error_test),
         )
-
-        # print("R-squared train:", r_squared_train)
-        # print("Mean square error train:", mean_square_error_train)
-        # print("R-squared test:", r_squared_test)
-        # print("Mean square error test:", mean_square_error_test)
 
         return name, model, model_score
 

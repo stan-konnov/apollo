@@ -49,10 +49,8 @@ def main() -> None:
 
     logger.info(stats)
 
-    # trades: pd.DataFrame = stats["_trades"]
-    # trades["ReturnPct"] = trades["ReturnPct"] * 100
-
-    # trades.to_csv("_temp_trades.csv")  # noqa: ERA001
+    trades: pd.DataFrame = stats["_trades"]
+    trades["ReturnPct"] = trades["ReturnPct"] * 100
 
 
 if __name__ == "__main__":
