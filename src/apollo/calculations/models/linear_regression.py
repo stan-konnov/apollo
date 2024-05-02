@@ -1,8 +1,7 @@
 from typing import ClassVar
 
 import pandas as pd
-from sklearn.base import BaseEstimator
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
@@ -11,6 +10,10 @@ from apollo.calculations.base_calculator import BaseCalculator
 """
 TODO: observable variable, X, can factor in all OHLC aspects
 """
+
+ModelType = LinearRegression | Lasso | Ridge
+ModelsScore = tuple[tuple[float, float], tuple[float, float]]
+ModelsToApply = tuple[str, ModelType, ModelsScore]
 
 
 class LinearRegressionModelCalculator(BaseCalculator):
@@ -31,9 +34,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
     * Ridge Regression
     """
 
-    # Stores selected model to apply
-    # after running goodness of fit tests
-    model_to_apply: ClassVar[BaseEstimator]
+    # Tuple of models to choose from
+    # Represents model name, model instance, model score
+    models_to_apply: ClassVar[ModelsToApply]
 
     def __init__(
         self,
@@ -53,35 +56,34 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
-    def fit_and_predict(self) -> None:
+    def fit_predict_score(self) -> None:
         """
-        Fit the model to the training data.
+        Fit the model, predict on both train and test data, and score the model.
 
         Create trading conditions and split into train and test.
         """
 
         x, y = self._create_regression_trading_conditions(self.dataframe)
 
-        x_train, x_test, y_train, y_test = self.create_train_split_group(x, y)
+        x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
 
         ordinary_least_squares = LinearRegression()
         ordinary_least_squares.fit(x_train, y_train)
 
-        forecast = ordinary_least_squares.predict(x_train)
+        forecast_train = ordinary_least_squares.predict(x_train)
+        variance_train = r2_score(y_train, forecast_train)
+        mce_train = mean_squared_error(y_train, forecast_train)
 
-        variance_score = r2_score(y_train, forecast)
-        mse_score = mean_squared_error(y_train, forecast)
+        forecast_test = ordinary_least_squares.predict(x_test)
+        variance_test = r2_score(y_test, forecast_test)
+        mse_test = mean_squared_error(y_test, forecast_test)
 
-        print("MSE Train: ", mse_score)
-        print("Variance Train: ", variance_score)
-
-        forecast = ordinary_least_squares.predict(x_test)
-
-        variance_score = r2_score(y_test, forecast)
-        mse_score = mean_squared_error(y_test, forecast)
-
-        print("MSE Test: ", mse_score)
-        print("Variance Test: ", variance_score)
+        # model_score = self._score_model(
+        #     train_mean_square_error=mce_train,
+        #     train_r_squared=variance_train,
+        #     test_mean_square_error=test_mse,
+        #     test_r_squared=test_variance,
+        # )
 
     def _create_regression_trading_conditions(
         self,
@@ -119,7 +121,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         return x, y
 
-    def create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
+    def _create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
         """
         Create train and test split for given X and Y variables.
 
@@ -141,3 +143,36 @@ class LinearRegressionModelCalculator(BaseCalculator):
         )
 
         return x_train, x_test, y_train, y_test
+
+    def _score_model(
+        self,
+        train_r_squared: float,
+        train_mean_square_error: float,
+        test_r_squared: float,
+        test_mean_square_error: float,
+    ) -> float:
+        """
+        Score the model based on mean square error and R-squared.
+
+        Sum R-squared and return the factor.
+        (We want to maximize R-squared, hence the positive sign).
+
+        Sum mean square error and multiply by -1 to get the factor.
+        (We want to minimize MSE, hence the negative sign).
+
+        Sum both factors to get the final score.
+
+        :param train_mean_square_error: Mean square error for train data.
+        :param train_r_squared: R-squared for train data.
+        :param test_mean_square_error: Mean square error for test data.
+        :param test_r_squared: R-squared for test data.
+        :return: Score of the model.
+        """
+
+        r_squared_factor = train_r_squared + test_r_squared
+
+        mean_square_error_factor = (
+            train_mean_square_error + test_mean_square_error
+        ) * -1
+
+        return r_squared_factor + mean_square_error_factor

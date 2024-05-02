@@ -29,7 +29,7 @@ def main() -> None:
         split_ratio=0.8,
     )
 
-    linear_regression_calculator.fit_and_predict()
+    linear_regression_calculator.fit_predict_score()
 
 
 if __name__ == "__main__":
