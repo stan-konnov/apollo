@@ -60,11 +60,11 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
         Create trading conditions to supply to the model.
 
-        We consider our X variable to be the difference between
-        the high and low, and open and close of every observation.
+        We consider our explanatory variable (X) to be the difference
+        between the high and low, and open and close of every observation.
 
-        We consider our Y variable to be the
-        difference between close at T and close at T-1.
+        We consider our dependent variable (Y) to be the difference
+        between close at T and close at T-1.
         """
 
         # Create a copy to avoid modifying original dataframe
@@ -88,8 +88,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
         Create train and test split for given X and Y variables.
 
-        :param x: X variable.
-        :param y: Y variable.
+        :param x: explanatory variable.
+        :param y: dependent variable.
 
         :return: Train and test split.
         """
