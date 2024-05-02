@@ -1,3 +1,4 @@
+import logging
 from typing import ClassVar
 
 import pandas as pd
@@ -7,15 +8,7 @@ from sklearn.model_selection import train_test_split
 
 from apollo.calculations.base_calculator import BaseCalculator
 
-"""
-TODO: observable variable, X, can factor in all OHLC aspects
-TODO: add logging for MSE and R2 for each model
-
-How do you know that model with best
-fit will be best at producing signals?
-Consider backtesting on top, and if backtesting
-results are different, then scrap statistical tests
-"""
+logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
 ModelType = LinearRegression | Lasso | Ridge
@@ -77,8 +70,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         # Select best model
         if self.model is None:
-            self.model = self._select_best_model()[1]
-            print(self.model)
+            best_model = self._select_best_model()
+            self.model = best_model[1]
+
+            logger.info(f"Forecasting with {best_model[0]}")
 
         # Calculate rolling forecast
         self.dataframe["forecast"] = (
@@ -217,6 +212,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
         )
 
         # Pack into dataframe
+        # This indexing can be done in aspects method
+        # Then we assign to x here
         x = training_conditions_dataframe[
             [
                 "open_high",
