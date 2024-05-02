@@ -4,7 +4,8 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 
 # from sklearn.linear_model import Lasso, LinearRegression, Ridge
-# from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
+
 from apollo.calculations.base_calculator import BaseCalculator
 
 """
@@ -34,15 +35,23 @@ class LinearRegressionModelCalculator(BaseCalculator):
     # after running goodness of fit tests
     model_to_apply: ClassVar[BaseEstimator]
 
-    def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
+    def __init__(
+        self,
+        dataframe: pd.DataFrame,
+        window_size: int,
+        split_ratio: float,
+    ) -> None:
         """
         Construct Linear Regression Model Calculator.
 
         :param dataframe: Dataframe to calculate ATR for.
         :param window_size: Window size for rolling ATR calculation.
+        :param split_ratio: Ratio to split data into train and test.
         """
 
         super().__init__(dataframe, window_size)
+
+        self.split_ratio = split_ratio
 
     def _create_regression_trading_conditions(
         self,
@@ -74,3 +83,23 @@ class LinearRegressionModelCalculator(BaseCalculator):
         y = dataframe["close"].shift(1) - dataframe["close"]
 
         return x, y
+
+    def create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
+        """
+        Create train and test split for given X and Y variables.
+
+        :param x: X variable.
+        :param y: Y variable.
+
+        :return: Train and test split.
+        """
+
+        # Split into train and test
+        x_train, x_test, y_train, y_test = train_test_split(
+            x,
+            y,
+            shuffle=False,
+            test_size=self.split_ratio or 0.8,
+        )
+
+        return x_train, x_test, y_train, y_test
