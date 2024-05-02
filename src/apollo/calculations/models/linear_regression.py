@@ -162,10 +162,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         Sum both factors to get the final score.
 
-        :param train_mean_square_error: Mean square error for train data.
         :param train_r_squared: R-squared for train data.
-        :param test_mean_square_error: Mean square error for test data.
+        :param train_mean_square_error: Mean square error for train data.
         :param test_r_squared: R-squared for test data.
+        :param test_mean_square_error: Mean square error for test data.
         :return: Score of the model.
         """
 
