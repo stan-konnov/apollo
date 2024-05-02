@@ -26,6 +26,7 @@ def main() -> None:
     linear_regression_calculator = LinearRegressionModelCalculator(
         dataframe=dataframe,
         window_size=5,
+        split_ratio=0.8,
     )
 
     x, y = linear_regression_calculator._create_regression_trading_conditions(

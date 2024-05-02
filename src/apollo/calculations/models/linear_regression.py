@@ -99,7 +99,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
             x,
             y,
             shuffle=False,
-            test_size=self.split_ratio or 0.8,
+            test_size=self.split_ratio,
         )
 
         return x_train, x_test, y_train, y_test
