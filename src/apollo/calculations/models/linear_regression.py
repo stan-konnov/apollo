@@ -151,6 +151,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         # Calculate difference between high and low, open and close
         # PLEASE, pack all aspects into separate method
+        # Also, lots depends on what you feed in here
         training_conditions_dataframe["open_high"] = (
             training_conditions_dataframe["open"]
             - training_conditions_dataframe["high"]
