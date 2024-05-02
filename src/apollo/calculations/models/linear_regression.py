@@ -7,6 +7,10 @@ from sklearn.base import BaseEstimator
 # from sklearn.model_selection import train_test_split
 from apollo.calculations.base_calculator import BaseCalculator
 
+"""
+TODO: observable variable, X, can factor in all OHLC aspects
+"""
+
 
 class LinearRegressionModelCalculator(BaseCalculator):
     """
