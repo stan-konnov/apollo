@@ -10,11 +10,17 @@ from apollo.calculations.base_calculator import BaseCalculator
 """
 TODO: observable variable, X, can factor in all OHLC aspects
 TODO: add logging for MSE and R2 for each model
+
+How do you know that model with best
+fit will be best at producing signals?
+Consider backtesting on top, and if backtesting
+results are different, then scrap statistical tests
 """
 
+# Type hints exclusive to this class
 ModelType = LinearRegression | Lasso | Ridge
-ModelsScore = tuple[tuple[float, float], tuple[float, float]]
-ModelsToApply = tuple[str, ModelType, ModelsScore]
+ModelItem = tuple[str, ModelType]
+ModelSpec = tuple[str, ModelType, float]
 
 
 class LinearRegressionModelCalculator(BaseCalculator):
@@ -33,11 +39,13 @@ class LinearRegressionModelCalculator(BaseCalculator):
     * Ordinary Least Squares (OLS)
     * Lasso Regression
     * Ridge Regression
+
+    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
-    # Tuple of models to choose from
+    # List of models to choose from
     # Represents model name, model instance, model score
-    models_to_apply: ClassVar[ModelsToApply]
+    models_to_apply: ClassVar[list[ModelSpec]]
 
     def __init__(
         self,
@@ -57,26 +65,51 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
-    def fit_predict_score(self) -> None:
+    def select_best_model(self) -> ModelSpec:
+        """
+        Select best model.
+
+        And write a better docstring.
+        """
+
+        models: list[ModelItem] = [
+            ("OLS", LinearRegression()),
+            # Use smoothing factors of 0.1 and 10000
+            # Donadio and Ghosh, Algorithmic Trading, 2019, p.98
+            ("Lasso", Lasso(alpha=0.1)),
+            ("Ridge", Ridge(alpha=0.1)),
+        ]
+
+        model_specs: list[ModelSpec] = []
+
+        for model_item in models:
+            # print(model_item[0])
+
+            model_spec = self._fit_predict_score(model_item)
+            model_specs.append(model_spec)
+
+        return max(model_specs, key=lambda x: x[2])
+
+    def _fit_predict_score(self, model_item: ModelItem) -> ModelSpec:
         """
         Fit the model, predict on both train and test data, and score the model.
 
-        Create trading conditions.
-        Split data into train and test.
+        Please write more, brotha.
         """
+
+        name, model = model_item
 
         x, y = self._create_regression_trading_conditions(self.dataframe)
 
         x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
 
-        ordinary_least_squares = LinearRegression()
-        ordinary_least_squares.fit(x_train, y_train)
+        model.fit(x_train, y_train)
 
-        forecast_train = ordinary_least_squares.predict(x_train)
+        forecast_train = model.predict(x_train)
         r_squared_train = r2_score(y_train, forecast_train)
         mean_square_error_train = mean_squared_error(y_train, forecast_train)
 
-        forecast_test = ordinary_least_squares.predict(x_test)
+        forecast_test = model.predict(x_test)
         r_squared_test = r2_score(y_test, forecast_test)
         mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
@@ -87,7 +120,12 @@ class LinearRegressionModelCalculator(BaseCalculator):
             mean_square_error_test=float(mean_square_error_test),
         )
 
-        print(model_score)
+        # print("R-squared train:", r_squared_train)
+        # print("Mean square error train:", mean_square_error_train)
+        # print("R-squared test:", r_squared_test)
+        # print("Mean square error test:", mean_square_error_test)
+
+        return name, model, model_score
 
     def _create_regression_trading_conditions(
         self,
@@ -120,7 +158,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         # Remove row from X and Y where
         # Y is NaN after shift and drop NaN from Y
-        x.drop(x.index[0], inplace=True)
+        x = x.drop(x.index[0])
         y.dropna(inplace=True)
 
         return x, y
