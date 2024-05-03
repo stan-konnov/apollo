@@ -71,6 +71,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         dataframe: pd.DataFrame,
         window_size: int,
         split_ratio: float,
+        smoothing_factor: float,
     ) -> None:
         """
         Construct Linear Regression Model Calculator.
@@ -82,6 +83,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         super().__init__(dataframe, window_size)
 
         self.split_ratio = split_ratio
+        self.smoothing_factor = smoothing_factor
 
     def forecast_periods(self) -> None:
         """
@@ -121,10 +123,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         models: list[ModelItem] = [
             ("OLS", LinearRegression()),
-            # Use smoothing factors of 0.1
-            # Donadio and Ghosh, Algorithmic Trading, 2019, p.98
-            ("Lasso", Lasso(alpha=0.1)),
-            ("Ridge", Ridge(alpha=0.1)),
+            ("Lasso", Lasso(alpha=self.smoothing_factor)),
+            ("Ridge", Ridge(alpha=self.smoothing_factor)),
         ]
 
         model_specs: list[ModelSpec] = []

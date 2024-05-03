@@ -13,6 +13,7 @@ class LinearRegressionForecast(BaseStrategy):
         dataframe: DataFrame,
         window_size: int,
         split_ratio: float,
+        smoothing_factor: float,
     ) -> None:
         """
         Construct.
@@ -25,6 +26,7 @@ class LinearRegressionForecast(BaseStrategy):
         self._validate_parameters(
             [
                 ("split_ratio", split_ratio, float),
+                ("smoothing_factor", smoothing_factor, float),
             ],
         )
 
@@ -34,6 +36,7 @@ class LinearRegressionForecast(BaseStrategy):
             dataframe=dataframe,
             window_size=window_size,
             split_ratio=split_ratio,
+            smoothing_factor=smoothing_factor,
         )
 
     def model_trading_signals(self) -> None:

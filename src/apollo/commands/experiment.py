@@ -27,6 +27,7 @@ def main() -> None:
         dataframe=dataframe,
         window_size=5,
         split_ratio=0.8,
+        smoothing_factor=0.1,
     )
 
     linear_regression_calculator.forecast_periods()

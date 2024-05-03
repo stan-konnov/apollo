@@ -32,6 +32,7 @@ def main() -> None:
         dataframe=dataframe,
         window_size=5,
         split_ratio=0.6,
+        smoothing_factor=0.1,
     )
 
     strategy.model_trading_signals()
