@@ -98,7 +98,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Select the model for forecasting
         # if it has not been selected before
         if self.model is None:
-            self.model = self._select_model_to_use()[1]
+            model = self._select_model_to_use()
+
+            self.model = model[1]
+            self.model_name = model[0]
 
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)
