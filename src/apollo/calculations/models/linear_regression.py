@@ -21,6 +21,13 @@ Can we just classify it?
 
 Please make sure we know which model we're running (needs thinking through)
 Ultimately, we want to have the model name in optimized parameters file
+
+TODO: not only intra-bar differences, but also bar on bar
+(either aspect on aspect, or aspect on all other aspects)
+E.g., prev_open on curr_open,
+Or prev_open on curr_high, curr_low, curr_close, curr_adj_close
+
+Or even both
 """
 
 
