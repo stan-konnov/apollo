@@ -36,18 +36,6 @@ class LinearRegressionForecast(BaseStrategy):
             split_ratio=split_ratio,
         )
 
-    def __str__(self) -> str:
-        """
-        Return strategy name with selected model.
-
-        NOTE: for now this is only necessary for this strategy,
-        since we want to gauge which linear regression model was used in forecast.
-
-        TODO: please implement me on other strategies, so it can be used in optimization.
-        """
-
-        return f"LinearRegressionForecast {self.lr_calculator.model_name}"
-
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 

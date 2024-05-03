@@ -17,10 +17,10 @@ ModelSpec = tuple[str, ModelType, float]
 
 """
 Do we need regression output?
-
 Can we just classify it?
 
-Please make sure model name gets into results file
+Please make sure we know which model we're running (needs thinking through)
+Ultimately, we want to have the model name in optimized parameters file
 """
 
 
@@ -66,9 +66,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
         ("c", "a"),
     ]
 
-    # Model selected for forecasting
-    model: ModelType | None = None
-
     def __init__(
         self,
         dataframe: pd.DataFrame,
@@ -96,14 +93,12 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
 
         # Select the model for forecasting
-        # if it has not been selected before
-        # TODO: you actually want to select the best model on every backtesting run
-        # since we parametrize smoothing factors for Lasso and Ridge
-        if self.model is None:
-            model = self._select_model_to_use()
+        # NOTE: we do not need to store the model,
+        # since we parametrize smoothing factor and split ratio
+        # Therefore, each backtesting run might end up using different model
+        model_item = self._select_model_to_use()
 
-            self.model = model[1]
-            self.model_name = model[0]
+        model = model_item[1]
 
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)
@@ -112,7 +107,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         self.dataframe.drop(self.dataframe.index[0], inplace=True)
 
         # Forecast future periods
-        self.dataframe["forecast"] = self.model.predict(x)
+        self.dataframe["forecast"] = model.predict(x)
 
     def _select_model_to_use(self) -> ModelSpec:
         """

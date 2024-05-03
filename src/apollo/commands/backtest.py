@@ -38,7 +38,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name=strategy.__str__(),
+        strategy_name="LinearRegressionForecast",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.3,
@@ -48,7 +48,6 @@ def main() -> None:
     stats = backtesting_runner.run()
 
     logger.info(stats)
-    print(stats["_strategy"])
 
     trades: pd.DataFrame = stats["_trades"]
     trades["ReturnPct"] = trades["ReturnPct"] * 100
