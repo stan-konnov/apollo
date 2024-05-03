@@ -49,6 +49,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         "h": "high",
         "l": "low",
         "c": "close",
+        "a": "adj close",
     }
 
     # Combinations of OHLC aspects to calculate differences between
@@ -60,6 +61,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         ("h", "l"),
         ("h", "c"),
         ("l", "c"),
+        ("c", "a"),
     ]
 
     # Model selected for forecasting
@@ -203,7 +205,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         As our explanatory variables, we consider the difference between
         all aspects of OHLC (open, high, low, close), amounting to 6 combinations:
-        Open - High, Open - Low, Open - Close, High - Low, High - Close, Low - Close
+        Open - High, Open - Low, Open - Close, High - Low, High - Close, Low - Close.
+
+        Additionally, we consider the difference between Close and Adj Close.
 
         :param dataframe: Dataframe to calculate explanatory variables for.
         :return: Dataframe with calculated differences between aspects.
