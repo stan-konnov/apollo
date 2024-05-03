@@ -141,22 +141,29 @@ class LinearRegressionModelCalculator(BaseCalculator):
         :returns: Tuple containing model name, model instance and model score.
         """
 
+        # Unpack model item
         name, model = model_item
 
+        # Create trading conditions
         x, y = self._create_regression_trading_conditions(self.dataframe)
 
+        # Split into train and test
         x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
 
+        # Fit the model
         model.fit(x_train, y_train)
 
+        # Predict and gauge metrics on train data
         forecast_train = model.predict(x_train)
         r_squared_train = r2_score(y_train, forecast_train)
         mean_square_error_train = mean_squared_error(y_train, forecast_train)
 
+        # Predict and gauge metrics on test data
         forecast_test = model.predict(x_test)
         r_squared_test = r2_score(y_test, forecast_test)
         mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
+        # Score the model
         model_score = self._score_model(
             r_squared_train=float(r_squared_train),
             mean_square_error_train=float(mean_square_error_train),
@@ -164,6 +171,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
             mean_square_error_test=float(mean_square_error_test),
         )
 
+        # Return model specification
         return name, model, model_score
 
     def _create_regression_trading_conditions(
