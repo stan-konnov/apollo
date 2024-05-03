@@ -27,7 +27,9 @@ TODO: not only intra-bar differences, but also bar on bar
 E.g., prev_open on curr_open,
 Or prev_open on curr_high, curr_low, curr_close, curr_adj_close
 
-Or even both
+Both, actually
+
+And prev volume on curr volume, please
 """
 
 
