@@ -78,7 +78,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
         :param window_size: Window size for rolling ATR calculation.
         :param split_ratio: Ratio to split data into train and test.
         """
-
         super().__init__(dataframe, window_size)
 
         self.split_ratio = split_ratio
@@ -131,7 +130,13 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
         Fit the model, predict on both train and test data, and score the model.
 
-        Please write more, brotha.
+        For every provided model, split the data into train and test, fit, predict
+        and gauge the model's performance based on R-squared and Mean Squared Error.
+
+        Apply the scoring heuristic on train and test metrics to select the best model.
+
+        :param model_item: Tuple containing model name and model instance.
+        :returns: Tuple containing model name, model instance and model score.
         """
 
         name, model = model_item
@@ -171,6 +176,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         We consider our dependent variable (Y) to be the difference
         between close at T and close at T-1.
+
+        :param dataframe: Dataframe to create trading conditions for.
+        :return: Explanatory variable (X) and dependent variable (Y).
         """
 
         # Create a copy to avoid modifying original dataframe
