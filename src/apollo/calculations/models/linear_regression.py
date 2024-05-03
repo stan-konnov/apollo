@@ -155,47 +155,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Create a copy to avoid modifying original dataframe
         training_conditions_dataframe = dataframe.copy()
 
-        # Calculate difference between high and low, open and close
-        # PLEASE, pack all aspects into separate method
-        # Also, lots depends on what you feed in here
-        training_conditions_dataframe["open_high"] = (
-            training_conditions_dataframe["open"]
-            - training_conditions_dataframe["high"]
-        )
-        training_conditions_dataframe["open_low"] = (
-            training_conditions_dataframe["open"] - training_conditions_dataframe["low"]
-        )
-        training_conditions_dataframe["open_close"] = (
-            training_conditions_dataframe["open"]
-            - training_conditions_dataframe["close"]
-        )
-        training_conditions_dataframe["high_low"] = (
-            training_conditions_dataframe["high"] - training_conditions_dataframe["low"]
-        )
-        training_conditions_dataframe["high_close"] = (
-            training_conditions_dataframe["high"]
-            - training_conditions_dataframe["close"]
-        )
-        training_conditions_dataframe["low_close"] = (
-            training_conditions_dataframe["low"]
-            - training_conditions_dataframe["close"]
-        )
+        # Define explanatory variable (X)
+        x = self._define_explanatory_variables(training_conditions_dataframe)
 
-        # Pack into dataframe
-        # This indexing can be done in aspects method
-        # Then we assign to x here
-        x = training_conditions_dataframe[
-            [
-                "open_high",
-                "open_low",
-                "open_close",
-                "high_low",
-                "high_close",
-                "low_close",
-            ]
-        ]
-
-        # Calculate Y variable
+        # Calculate dependent variable (Y)
         y = dataframe["close"].shift(1) - dataframe["close"]
 
         # Remove row from X and Y where
@@ -204,6 +167,36 @@ class LinearRegressionModelCalculator(BaseCalculator):
         y.dropna(inplace=True)
 
         return x, y
+
+    def _define_explanatory_variables(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        """Define explanatory variables for the model."""
+
+        ohlc_aspects = {
+            "o": "open",
+            "h": "high",
+            "l": "low",
+            "c": "close",
+        }
+
+        ohlc_aspects_combinations = [
+            ("o", "h"),
+            ("o", "l"),
+            ("o", "c"),
+            ("h", "l"),
+            ("h", "c"),
+            ("l", "c"),
+        ]
+
+        variables_to_apply = []
+
+        for a, b in ohlc_aspects_combinations:
+            dataframe[f"{a}_{b}"] = (
+                dataframe[ohlc_aspects[a]] - dataframe[ohlc_aspects[b]]
+            )
+
+            variables_to_apply.append(f"{a}_{b}")
+
+        return dataframe[variables_to_apply]
 
     def _create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
         """
