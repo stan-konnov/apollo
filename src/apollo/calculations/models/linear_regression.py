@@ -97,6 +97,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         # Select the model for forecasting
         # if it has not been selected before
+        # TODO: you actually want to select the best model on every backtesting run
+        # since we parametrize smoothing factors for Lasso and Ridge
         if self.model is None:
             model = self._select_model_to_use()
 
