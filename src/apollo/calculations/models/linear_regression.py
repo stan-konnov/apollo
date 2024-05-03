@@ -1,4 +1,5 @@
 import logging
+from typing import ClassVar
 
 import pandas as pd
 from sklearn.linear_model import Lasso, LinearRegression, Ridge
@@ -40,6 +41,22 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
+
+    ohlc_aspects: ClassVar[dict[str, str]] = {
+        "o": "open",
+        "h": "high",
+        "l": "low",
+        "c": "close",
+    }
+
+    ohlc_aspects_combinations: ClassVar[list[tuple[str, str]]] = [
+        ("o", "h"),
+        ("o", "l"),
+        ("o", "c"),
+        ("h", "l"),
+        ("h", "c"),
+        ("l", "c"),
+    ]
 
     def __init__(
         self,
@@ -169,33 +186,31 @@ class LinearRegressionModelCalculator(BaseCalculator):
         return x, y
 
     def _define_explanatory_variables(self, dataframe: pd.DataFrame) -> pd.DataFrame:
-        """Define explanatory variables for the model."""
+        """
+        Define explanatory variables for the model.
 
-        ohlc_aspects = {
-            "o": "open",
-            "h": "high",
-            "l": "low",
-            "c": "close",
-        }
+        As our explanatory variables, we consider the difference between
+        all aspects of OHLC (open, high, low, close), amounting to 6 combinations:
+        Open - High, Open - Low, Open - Close, High - Low, High - Close, Low - Close
 
-        ohlc_aspects_combinations = [
-            ("o", "h"),
-            ("o", "l"),
-            ("o", "c"),
-            ("h", "l"),
-            ("h", "c"),
-            ("l", "c"),
-        ]
+        :param dataframe: Dataframe to calculate explanatory variables for.
+        :return: Dataframe with calculated differences between aspects.
+        """
 
         variables_to_apply = []
 
-        for a, b in ohlc_aspects_combinations:
-            dataframe[f"{a}_{b}"] = (
-                dataframe[ohlc_aspects[a]] - dataframe[ohlc_aspects[b]]
+        # Loop through all combinations and calculate differences
+        for aspect_a, aspect_b in self.ohlc_aspects_combinations:
+            dataframe[f"{aspect_a}_{aspect_b}"] = (
+                dataframe[self.ohlc_aspects[aspect_a]]
+                - dataframe[self.ohlc_aspects[aspect_b]]
             )
 
-            variables_to_apply.append(f"{a}_{b}")
+            # Append to list of columns to
+            # index out from resulting dataframe
+            variables_to_apply.append(f"{aspect_a}_{aspect_b}")
 
+        # Return only the columns we are interested in
         return dataframe[variables_to_apply]
 
     def _create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
