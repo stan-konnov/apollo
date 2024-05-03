@@ -63,7 +63,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
     ]
 
     # Model selected for forecasting
-    model: ModelType
+    model: ModelType | None = None
 
     def __init__(
         self,
