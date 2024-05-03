@@ -2,7 +2,13 @@ import logging
 from typing import ClassVar
 
 import pandas as pd
-from sklearn.linear_model import Lasso, LinearRegression, Ridge
+from sklearn.linear_model import (
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+)
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
@@ -11,7 +17,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
-ModelType = LinearRegression | Lasso | Ridge
+ModelType = LinearRegression | Lasso | Ridge | ElasticNet | LogisticRegression
 ModelItem = tuple[str, ModelType]
 ModelSpec = tuple[str, ModelType, float]
 
@@ -40,6 +46,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
     * Ordinary Least Squares (OLS)
     * Lasso Regression
     * Ridge Regression
+    * Elastic Net Regression
+    * Logistic Regression
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -125,6 +133,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
             ("OLS", LinearRegression()),
             ("Lasso", Lasso(alpha=self.smoothing_factor)),
             ("Ridge", Ridge(alpha=self.smoothing_factor)),
+            ("Elastic Net", ElasticNet(alpha=self.smoothing_factor)),
+            ("Logistic Regression", LogisticRegression()),
         ]
 
         model_specs: list[ModelSpec] = []
