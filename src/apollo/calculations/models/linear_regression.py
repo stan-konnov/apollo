@@ -31,7 +31,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
     based on several statistical tests that quantify the goodness of fit.
 
     We apply two most commonly used metrics: R-squared and Mean Squared Error.
-    The model with the highest R-squared and lowest MSE is used for rolling forecast.
+    The model with the highest R-squared and lowest MSE is used for forecasting.
 
     Linear regression models that we consider are:
 
