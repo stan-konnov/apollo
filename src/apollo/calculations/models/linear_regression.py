@@ -94,7 +94,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Select best model
         # to use for forecasting
         if self.model is None:
-            self.model = self._select_best_model()[1]
+            self.model = self._select_model_to_use()[1]
 
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)
@@ -105,11 +105,14 @@ class LinearRegressionModelCalculator(BaseCalculator):
         # Forecast future periods
         self.dataframe["forecast"] = self.model.predict(x)
 
-    def _select_best_model(self) -> ModelSpec:
+    def _select_model_to_use(self) -> ModelSpec:
         """
-        Select best model.
+        Select model to use based on R-squared and Mean Squared Error.
 
-        And write a better docstring.
+        Fit, predict and score all models.
+        Select the model with the highest score.
+
+        :return: Model specification with the highest score.
         """
 
         models: list[ModelItem] = [
