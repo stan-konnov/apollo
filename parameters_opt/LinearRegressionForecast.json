@@ -1,0 +1,9 @@
+{
+    "frequency": "1d",
+    "cash_size": 1000,
+    "window_size": 10.0,
+    "sl_volatility_multiplier": 0.1,
+    "tp_volatility_multiplier": 0.2,
+    "split_ratio": 0.6,
+    "smoothing_factor": 0.1
+}

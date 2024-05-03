@@ -1,0 +1,35 @@
+{
+    "frequency": "1d",
+
+    "cash_size": 1000,
+
+    "window_size": {
+        "step": 5,
+        "range": [5, 20]
+    },
+
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "tp_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "split_ratio": {
+        "step": 0.1,
+        "range": [0.6, 0.8]
+    },
+
+    "smoothing_factor": {
+        "step": 0.1,
+        "range": [0.1, 0.5]
+    },
+
+    "strategy_specific_parameters": [
+        "split_ratio",
+        "smoothing_factor"
+    ]
+}
