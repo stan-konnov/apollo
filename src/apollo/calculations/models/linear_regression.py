@@ -19,6 +19,8 @@ ModelSpec = tuple[str, ModelType, float]
 Do we need regression output?
 
 Can we just classify it?
+
+Please make sure model name gets into results file
 """
 
 
@@ -91,8 +93,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
         And write better docstring.
         """
 
-        # Select best model
-        # to use for forecasting
+        # Select the model for forecasting
+        # if it has not been selected before
         if self.model is None:
             self.model = self._select_model_to_use()[1]
 
