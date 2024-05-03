@@ -42,6 +42,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
+    # Mapping of OHLC short names to their respective names
+    # Used in creating explanatory variables for the model
     ohlc_aspects: ClassVar[dict[str, str]] = {
         "o": "open",
         "h": "high",
@@ -49,6 +51,8 @@ class LinearRegressionModelCalculator(BaseCalculator):
         "c": "close",
     }
 
+    # Combinations of OHLC aspects to calculate differences between
+    # Used in creating explanatory variables for the model
     ohlc_aspects_combinations: ClassVar[list[tuple[str, str]]] = [
         ("o", "h"),
         ("o", "l"),
@@ -57,6 +61,9 @@ class LinearRegressionModelCalculator(BaseCalculator):
         ("h", "c"),
         ("l", "c"),
     ]
+
+    # Model selected for forecasting
+    model: ModelType
 
     def __init__(
         self,
@@ -76,9 +83,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
         self.split_ratio = split_ratio
 
-        # Model to use for forecasting
-        self.model: ModelType | None = None
-
     def forecast_periods(self) -> None:
         """
         Forecast future periods using linear regression models.
@@ -87,7 +91,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         """
 
         # Select best model
-        # MAKE me static variable, so I won't be recomputed during optimization
+        # to use for forecasting
         if self.model is None:
             self.model = self._select_best_model()[1]
 
@@ -163,7 +167,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         Create trading conditions to supply to the model.
 
         We consider our explanatory variable (X) to be the difference
-        between the high and low, and open and close of every observation.
+        between all aspects of OHLC (open, high, low, close) of each observation.
 
         We consider our dependent variable (Y) to be the difference
         between close at T and close at T-1.
