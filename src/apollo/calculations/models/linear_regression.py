@@ -88,9 +88,11 @@ class LinearRegressionModelCalculator(BaseCalculator):
 
     def forecast_periods(self) -> None:
         """
-        Forecast future periods using linear regression models.
+        Forecast future periods using one of the linear regression models.
 
-        And write better docstring.
+        Select the model with the highest R-squared and lowest Mean Squared Error.
+
+        Create trading conditions and predict future periods.
         """
 
         # Select the model for forecasting
