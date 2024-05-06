@@ -30,7 +30,7 @@ def main() -> None:
 
     strategy = LinearRegressionForecast(
         dataframe=dataframe,
-        window_size=5,
+        window_size=10,
         split_ratio=0.6,
         smoothing_factor=0.1,
     )
@@ -42,7 +42,7 @@ def main() -> None:
         strategy_name="LinearRegressionForecast",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.3,
+        tp_volatility_multiplier=0.2,
         write_result_plot=True,
     )
 
