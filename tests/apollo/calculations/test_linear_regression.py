@@ -35,7 +35,7 @@ def test__forecast_periods__for_correctly_dropping_first_observation(
     """
     Test forecast_periods method for correctly dropping first observation.
 
-    Resulting dataframe length must be equal to the original dataframe length -1.
+    Resulting dataframe length must be equal to the original dataframe length - 1.
     """
 
     control_dataframe_length = len(dataframe.copy().index)
