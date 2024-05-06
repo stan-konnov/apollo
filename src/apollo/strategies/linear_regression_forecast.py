@@ -47,7 +47,6 @@ class LinearRegressionForecast(BaseStrategy):
 
         self.lrm_calculator = LinearRegressionModelCalculator(
             dataframe=dataframe,
-            window_size=window_size,
             split_ratio=split_ratio,
             smoothing_factor=smoothing_factor,
         )
@@ -67,5 +66,5 @@ class LinearRegressionForecast(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[self.dataframe["forecast"] > 0, "signal"] = LONG_SIGNAL
-        self.dataframe.loc[self.dataframe["forecast"] < 0, "signal"] = SHORT_SIGNAL
+        self.dataframe.loc[self.dataframe["lrf"] > 0, "signal"] = LONG_SIGNAL
+        self.dataframe.loc[self.dataframe["lrf"] < 0, "signal"] = SHORT_SIGNAL
