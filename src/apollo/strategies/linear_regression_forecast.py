@@ -6,7 +6,19 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 
 class LinearRegressionForecast(BaseStrategy):
-    """Linear Regression Forecast."""
+    """
+    Linear Regression Forecast.
+
+    This strategy takes long positions when:
+
+    * Underlying linear regression model forecasts positive change on next period.
+
+    This strategy takes short positions when:
+
+    * Underlying linear regression model forecasts negative change on next period.
+
+    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
+    """
 
     def __init__(
         self,
@@ -16,11 +28,12 @@ class LinearRegressionForecast(BaseStrategy):
         smoothing_factor: float,
     ) -> None:
         """
-        Construct.
+        Construct Linear Regression Forecast Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
         :param split_ratio: Ratio to split data into train and test.
+        :param smoothing_factor: Smoothing factor for the linear regression model.
         """
 
         self._validate_parameters(
