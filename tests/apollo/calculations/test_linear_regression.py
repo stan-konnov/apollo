@@ -103,3 +103,30 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
     x = lrm_calculator._define_explanatory_variables(dataframe)  # noqa: SLF001
 
     pd.testing.assert_frame_equal(x, control_x)
+
+
+@pytest.mark.usefixtures("dataframe")
+def test__create_regression_trading_conditions__for_creating_correct_y_variable(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test create_regression_trading_conditions method for creating correct Y variable.
+
+    Resulting Y variable must be a Series containing the difference between:
+    Close at T and Close at T-1.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_y = control_dataframe["close"].shift(1) - control_dataframe["close"]
+    control_y.dropna(inplace=True)
+
+    lrm_calculator = LinearRegressionModelCalculator(
+        dataframe=dataframe,
+        split_ratio=SPLIT_RATIO,
+        smoothing_factor=SMOOTHING_FACTOR,
+    )
+
+    _, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+
+    pd.testing.assert_series_equal(y, control_y)
