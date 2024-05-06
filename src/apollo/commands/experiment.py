@@ -25,6 +25,7 @@ def main() -> None:
 
     linear_regression_calculator = LinearRegressionModelCalculator(
         dataframe=dataframe,
+        window_size=5,
         split_ratio=0.8,
         smoothing_factor=0.1,
     )

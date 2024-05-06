@@ -62,6 +62,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
     def __init__(
         self,
         dataframe: pd.DataFrame,
+        window_size: int,
         split_ratio: float,
         smoothing_factor: float,
     ) -> None:
@@ -69,10 +70,10 @@ class LinearRegressionModelCalculator(BaseCalculator):
         Construct Linear Regression Model Calculator.
 
         :param dataframe: Dataframe to calculate ATR for.
+        :param window_size: Window size for rolling ATR calculation.
         :param split_ratio: Ratio to split data into train and test.
-        :param smoothing_factor: Smoothing factor for the linear regression model.
         """
-        super().__init__(dataframe)
+        super().__init__(dataframe, window_size)
 
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
