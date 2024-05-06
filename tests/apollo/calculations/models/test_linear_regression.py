@@ -182,3 +182,36 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
 
     pd.testing.assert_series_equal(y_train, control_y_train)
     pd.testing.assert_series_equal(y_test, control_y_test)
+
+
+def test__score_model__for_correctly_calculating_score() -> None:
+    """
+    Test score_model method for correctly calculating score.
+
+    Resulting score must be a correct combination of R2 and MSE.
+    """
+
+    r_squared_train = 0.5
+    mean_square_error_train = 2
+
+    r_squared_test = 0.4
+    mean_square_error_test = 3
+
+    lrm_calculator = LinearRegressionModelCalculator(
+        dataframe=pd.DataFrame(),
+        split_ratio=SPLIT_RATIO,
+        smoothing_factor=SMOOTHING_FACTOR,
+    )
+
+    control_score = (r_squared_train + r_squared_test) + (
+        (mean_square_error_train + mean_square_error_test) * -1
+    )
+
+    score = lrm_calculator._score_model(  # noqa: SLF001
+        r_squared_train,
+        mean_square_error_train,
+        r_squared_test,
+        mean_square_error_test,
+    )
+
+    assert score == control_score
