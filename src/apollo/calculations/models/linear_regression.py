@@ -16,9 +16,6 @@ ModelItem = tuple[str, ModelType]
 ModelSpec = tuple[str, ModelType, float]
 
 """
-Do we need regression output?
-Can we just classify it?
-
 Please make sure we know which model we're running (needs thinking through)
 Ultimately, we want to have the model name in optimized parameters file
 """
