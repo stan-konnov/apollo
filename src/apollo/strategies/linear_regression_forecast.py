@@ -32,7 +32,7 @@ class LinearRegressionForecast(BaseStrategy):
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
-        :param split_ratio: Ratio to split data into train and test.
+        :param split_ratio: Ratio to split data into train and test set.
         :param smoothing_factor: Smoothing factor for the linear regression model.
         """
 

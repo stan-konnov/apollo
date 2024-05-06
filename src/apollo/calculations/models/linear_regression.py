@@ -66,8 +66,8 @@ class LinearRegressionModelCalculator:
         """
         Construct Linear Regression Model Calculator.
 
-        :param dataframe: Dataframe to calculate ATR for.
-        :param split_ratio: Ratio to split data into train and test.
+        :param dataframe: Dataframe to model linear regression on.
+        :param split_ratio: Ratio to split data into train and test set.
         :param smoothing_factor: Smoothing factor for the linear regression model.
 
         NOTE: Linear Regression Model Calculator does not require window size.
