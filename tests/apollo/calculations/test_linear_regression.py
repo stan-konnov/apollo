@@ -7,10 +7,9 @@ SPLIT_RATIO = 0.6
 SMOOTHING_FACTOR = 0.1
 
 
-@pytest.mark.usefixtures("dataframe", "window_size")
+@pytest.mark.usefixtures("dataframe")
 def test__forecast_periods__for_correct_columns(
     dataframe: pd.DataFrame,
-    window_size: int,
 ) -> None:
     """
     Test forecast_periods method for correct columns.
@@ -20,7 +19,6 @@ def test__forecast_periods__for_correct_columns(
 
     lrm_calculator = LinearRegressionModelCalculator(
         dataframe=dataframe,
-        window_size=window_size,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
     )
@@ -30,10 +28,9 @@ def test__forecast_periods__for_correct_columns(
     assert "lrf" in lrm_calculator.dataframe.columns
 
 
-@pytest.mark.usefixtures("dataframe", "window_size")
+@pytest.mark.usefixtures("dataframe")
 def test__forecast_periods__for_correctly_dropping_first_observation(
     dataframe: pd.DataFrame,
-    window_size: int,
 ) -> None:
     """
     Test forecast_periods method for correctly dropping first observation.
@@ -45,7 +42,6 @@ def test__forecast_periods__for_correctly_dropping_first_observation(
 
     lrm_calculator = LinearRegressionModelCalculator(
         dataframe=dataframe,
-        window_size=window_size,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
     )

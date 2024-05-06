@@ -6,8 +6,6 @@ from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
-from apollo.calculations.base_calculator import BaseCalculator
-
 logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
@@ -16,7 +14,7 @@ ModelItem = tuple[str, ModelType]
 ModelSpec = tuple[str, ModelType, float]
 
 
-class LinearRegressionModelCalculator(BaseCalculator):
+class LinearRegressionModelCalculator:
     """
     Linear Regression Model Calculator.
 
@@ -62,7 +60,6 @@ class LinearRegressionModelCalculator(BaseCalculator):
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        window_size: int,
         split_ratio: float,
         smoothing_factor: float,
     ) -> None:
@@ -70,12 +67,13 @@ class LinearRegressionModelCalculator(BaseCalculator):
         Construct Linear Regression Model Calculator.
 
         :param dataframe: Dataframe to calculate ATR for.
-        :param window_size: Window size for rolling ATR calculation.
         :param split_ratio: Ratio to split data into train and test.
         :param smoothing_factor: Smoothing factor for the linear regression model.
-        """
-        super().__init__(dataframe, window_size)
 
+        NOTE: Linear Regression Model Calculator does not require window size.
+        """
+
+        self.dataframe = dataframe
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
 
