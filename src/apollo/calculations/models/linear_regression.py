@@ -72,6 +72,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         :param dataframe: Dataframe to calculate ATR for.
         :param window_size: Window size for rolling ATR calculation.
         :param split_ratio: Ratio to split data into train and test.
+        :param smoothing_factor: Smoothing factor for the linear regression model.
         """
         super().__init__(dataframe, window_size)
 

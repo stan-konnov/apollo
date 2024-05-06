@@ -67,5 +67,5 @@ class LinearRegressionForecast(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[self.dataframe["forecast"] > 0, "signal"] = LONG_SIGNAL
-        self.dataframe.loc[self.dataframe["forecast"] < 0, "signal"] = SHORT_SIGNAL
+        self.dataframe.loc[self.dataframe["lrf"] > 0, "signal"] = LONG_SIGNAL
+        self.dataframe.loc[self.dataframe["lrf"] < 0, "signal"] = SHORT_SIGNAL
