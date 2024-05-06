@@ -110,7 +110,7 @@ class LinearRegressionModelCalculator:
         Fit, predict and score all models.
         Select the model with the highest score.
 
-        :return: Model specification with the highest score.
+        :returns: Model specification with the highest score.
         """
 
         models: list[ModelItem] = [
@@ -188,7 +188,7 @@ class LinearRegressionModelCalculator:
         between close at T and close at T-1.
 
         :param dataframe: Dataframe to create trading conditions for.
-        :return: Explanatory variable (X) and dependent variable (Y).
+        :returns: Explanatory variable (X) and dependent variable (Y).
         """
 
         # Create a copy to avoid modifying original dataframe
@@ -218,7 +218,7 @@ class LinearRegressionModelCalculator:
         Additionally, we consider the difference between Close and Adj Close.
 
         :param dataframe: Dataframe to calculate explanatory variables for.
-        :return: Dataframe with calculated differences between aspects.
+        :returns: Dataframe with calculated differences between aspects.
         """
 
         variables_to_apply = []
@@ -244,7 +244,7 @@ class LinearRegressionModelCalculator:
         :param x: explanatory variable.
         :param y: dependent variable.
 
-        :return: Train and test split.
+        :returns: Train and test split.
         """
 
         # Split into train and test
@@ -286,7 +286,7 @@ class LinearRegressionModelCalculator:
         :param mean_square_error_train: Mean square error for train data.
         :param r_squared_test: R-squared for test data.
         :param mean_square_error_test: Mean square error for test data.
-        :return: Score of the model.
+        :returns: Score of the model.
         """
 
         r_squared_factor = r_squared_train + r_squared_test
