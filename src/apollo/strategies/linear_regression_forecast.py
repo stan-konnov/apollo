@@ -45,7 +45,7 @@ class LinearRegressionForecast(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.lr_calculator = LinearRegressionModelCalculator(
+        self.lrm_calculator = LinearRegressionModelCalculator(
             dataframe=dataframe,
             window_size=window_size,
             split_ratio=split_ratio,
@@ -62,7 +62,7 @@ class LinearRegressionForecast(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.lr_calculator.forecast_periods()
+        self.lrm_calculator.forecast_periods()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
