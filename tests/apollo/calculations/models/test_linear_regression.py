@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+from sklearn.model_selection import train_test_split
 
 from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
 
@@ -130,3 +131,54 @@ def test__create_regression_trading_conditions__for_creating_correct_y_variable(
     _, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
 
     pd.testing.assert_series_equal(y, control_y)
+
+
+@pytest.mark.usefixtures("dataframe")
+def test__create_train_split_group__for_correctly_splitting_inputs(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test create_train_split_group method for correctly splitting inputs.
+
+    Resulting train and split groups must be equal to the control groups.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_dataframe["o_h"] = control_dataframe["open"] - control_dataframe["high"]
+    control_x = control_dataframe[["o_h"]]
+    control_x = control_x.drop(control_x.index[0])
+
+    control_y = control_dataframe["close"].shift(1) - control_dataframe["close"]
+    control_y.dropna(inplace=True)
+
+    control_x_train, control_x_test, control_y_train, control_y_test = train_test_split(
+        control_x,
+        control_y,
+        shuffle=False,
+        test_size=SPLIT_RATIO,
+    )
+
+    dataframe["o_h"] = dataframe["open"] - dataframe["high"]
+    x = dataframe[["o_h"]]
+    x = x.drop(x.index[0])
+
+    y = dataframe["close"].shift(1) - dataframe["close"]
+    y.dropna(inplace=True)
+
+    lrm_calculator = LinearRegressionModelCalculator(
+        dataframe=dataframe,
+        split_ratio=SPLIT_RATIO,
+        smoothing_factor=SMOOTHING_FACTOR,
+    )
+
+    x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+        x,
+        y,
+    )
+
+    pd.testing.assert_frame_equal(x_train, control_x_train)
+    pd.testing.assert_frame_equal(x_test, control_x_test)
+
+    pd.testing.assert_series_equal(y_train, control_y_train)
+    pd.testing.assert_series_equal(y_test, control_y_test)
