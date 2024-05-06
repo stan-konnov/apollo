@@ -102,7 +102,7 @@ class LinearRegressionModelCalculator(BaseCalculator):
         self.dataframe.drop(self.dataframe.index[0], inplace=True)
 
         # Forecast future periods
-        self.dataframe["forecast"] = model.predict(x)
+        self.dataframe["lrf"] = model.predict(x)
 
     def _select_model_to_use(self) -> ModelSpec:
         """
