@@ -196,8 +196,8 @@ class LinearRegressionModelCalculator:
         # Calculate dependent variable (Y)
         y = dataframe["close"].shift(1) - dataframe["close"]
 
-        # Remove row from X and Y where
-        # Y is NaN after shift and drop NaN from Y
+        # Remove rows from X and Y
+        # where Y is NaN after shift
         x = x.drop(x.index[0])
         y.dropna(inplace=True)
 
