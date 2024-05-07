@@ -231,11 +231,11 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
 
     control_models = []
 
-    models: list[tuple[str, LinearRegression | Lasso | Ridge | ElasticNet]] = [
-        ("OLS", LinearRegression()),
-        ("Lasso", Lasso(alpha=SMOOTHING_FACTOR)),
-        ("Ridge", Ridge(alpha=SMOOTHING_FACTOR)),
-        ("Elastic Net", ElasticNet(alpha=SMOOTHING_FACTOR)),
+    models: list[LinearRegression | Lasso | Ridge | ElasticNet] = [
+        LinearRegression(),
+        Lasso(alpha=SMOOTHING_FACTOR),
+        Ridge(alpha=SMOOTHING_FACTOR),
+        ElasticNet(alpha=SMOOTHING_FACTOR),
     ]
 
     lrm_calculator = LinearRegressionModelCalculator(
@@ -244,9 +244,7 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
         smoothing_factor=SMOOTHING_FACTOR,
     )
 
-    for model_item in models:
-        name, model = model_item
-
+    for model in models:
         # Create trading conditions
         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
 
@@ -277,10 +275,10 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
             mean_square_error_test=float(mean_square_error_test),
         )
 
-        control_models.append((name, model, model_score))
+        control_models.append((model, model_score))
 
-    control_best_model = max(control_models, key=lambda x: x[2])
+    control_best_model = max(control_models, key=lambda x: x[1])
 
     best_model = lrm_calculator._select_model_to_use()  # noqa: SLF001
 
-    assert best_model[0] == control_best_model[0]
+    assert best_model[1] == control_best_model[1]

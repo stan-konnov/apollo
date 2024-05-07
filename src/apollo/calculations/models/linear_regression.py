@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
 ModelType = LinearRegression | Lasso | Ridge | ElasticNet
-ModelItem = tuple[str, ModelType]
-ModelSpec = tuple[str, ModelType, float]
+ModelSpec = tuple[ModelType, float]
 
 
 class LinearRegressionModelCalculator:
@@ -92,7 +91,7 @@ class LinearRegressionModelCalculator:
         # Therefore, each backtesting run might end up using different model
         model_item = self._select_model_to_use()
 
-        model = model_item[1]
+        model = model_item[0]
 
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)
@@ -113,11 +112,11 @@ class LinearRegressionModelCalculator:
         :returns: Model specification with the highest score.
         """
 
-        models: list[ModelItem] = [
-            ("OLS", LinearRegression()),
-            ("Lasso", Lasso(alpha=self.smoothing_factor)),
-            ("Ridge", Ridge(alpha=self.smoothing_factor)),
-            ("Elastic Net", ElasticNet(alpha=self.smoothing_factor)),
+        models: list[ModelType] = [
+            LinearRegression(),
+            Lasso(alpha=self.smoothing_factor),
+            Ridge(alpha=self.smoothing_factor),
+            ElasticNet(alpha=self.smoothing_factor),
         ]
 
         model_specs: list[ModelSpec] = []
@@ -126,9 +125,9 @@ class LinearRegressionModelCalculator:
             model_spec = self._fit_predict_score(model_item)
             model_specs.append(model_spec)
 
-        return max(model_specs, key=lambda x: x[2])
+        return max(model_specs, key=lambda x: x[1])
 
-    def _fit_predict_score(self, model_item: ModelItem) -> ModelSpec:
+    def _fit_predict_score(self, model: ModelType) -> ModelSpec:
         """
         Fit the model, predict on both train and test data, and score the model.
 
@@ -137,12 +136,9 @@ class LinearRegressionModelCalculator:
 
         Apply the scoring heuristic on train and test metrics to select the best model.
 
-        :param model_item: Tuple containing model name and model instance.
-        :returns: Tuple containing model name, model instance and model score.
+        :param model: Model to fit, predict and score.
+        :returns: Tuple containing model instance and model score.
         """
-
-        # Unpack model item
-        name, model = model_item
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(self.dataframe)
@@ -172,7 +168,7 @@ class LinearRegressionModelCalculator:
         )
 
         # Return model specification
-        return name, model, model_score
+        return model, model_score
 
     def _create_regression_trading_conditions(
         self,
