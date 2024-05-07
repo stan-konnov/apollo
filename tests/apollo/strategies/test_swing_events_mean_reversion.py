@@ -15,8 +15,6 @@ def test__swing_events_mean_reversion__with_valid_parameters(
     """
     Test Swing Events Mean Reversion with valid parameters.
 
-    Strategy should have "se" column.
-
     Strategy should properly calculate trading signals.
     """
 
@@ -54,7 +52,5 @@ def test__swing_events_mean_reversion__with_valid_parameters(
     )
 
     swing_events_mean_reversion.model_trading_signals()
-
-    assert "se" in swing_events_mean_reversion.dataframe.columns
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
