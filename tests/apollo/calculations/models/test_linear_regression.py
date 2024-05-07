@@ -245,29 +245,23 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
     )
 
     for model in models:
-        # Create trading conditions
         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
 
-        # Split into train and test
         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
             x,
             y,
         )
 
-        # Fit the model
         model.fit(x_train, y_train)
 
-        # Predict and gauge metrics on train data
         forecast_train = model.predict(x_train)
         r_squared_train = r2_score(y_train, forecast_train)
         mean_square_error_train = mean_squared_error(y_train, forecast_train)
 
-        # Predict and gauge metrics on test data
         forecast_test = model.predict(x_test)
         r_squared_test = r2_score(y_test, forecast_test)
         mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
-        # Score the model
         model_score = lrm_calculator._score_model(  # noqa: SLF001
             r_squared_train=float(r_squared_train),
             mean_square_error_train=float(mean_square_error_train),
