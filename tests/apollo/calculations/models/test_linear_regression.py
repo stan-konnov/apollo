@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.model_selection import train_test_split
 
 from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
@@ -215,3 +216,24 @@ def test__score_model__for_correctly_calculating_score() -> None:
     )
 
     assert score == control_score
+
+
+def test__fit_predict_score__for_correctly_selecting_best_model() -> None:
+    """
+    Test fit_predict_score method for correctly selecting best model.
+
+    Resulting model must be the one with the highest score.
+    """
+
+    models = [
+        ("OLS", LinearRegression()),
+        ("Lasso", Lasso(alpha=SMOOTHING_FACTOR)),
+        ("Ridge", Ridge(alpha=SMOOTHING_FACTOR)),
+        ("Elastic Net", ElasticNet(alpha=SMOOTHING_FACTOR)),
+    ]
+
+    lrm_calculator = LinearRegressionModelCalculator(
+        dataframe=pd.DataFrame(),
+        split_ratio=SPLIT_RATIO,
+        smoothing_factor=SMOOTHING_FACTOR,
+    )
