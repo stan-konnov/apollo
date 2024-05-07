@@ -14,6 +14,7 @@ from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.strategies.lin_reg_chan_mean_reversion import (
     LinearRegressionChannelMeanReversion,
 )
+from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
@@ -44,6 +45,8 @@ class ParameterOptimizer:
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
         "SwingEventsMeanReversion":
             SwingEventsMeanReversion,
+        "LinearRegressionForecast":
+            LinearRegressionForecast,
         "LinearRegressionChannelMeanReversion":
             LinearRegressionChannelMeanReversion,
         "SkewnessKurtosisVolatilityTrendFollowing":
