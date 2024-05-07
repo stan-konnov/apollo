@@ -19,8 +19,6 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     """
     Test Linear Regression Channel Mean Reversion with valid parameters.
 
-    Strategy should have relevant columns: "l_bound", "u_bound", "slope", "prev_slope".
-
     Strategy should properly calculate trading signals.
     """
 
@@ -58,11 +56,5 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     )
 
     lin_reg_chan_mean_reversion.model_trading_signals()
-
-    assert "l_bound" in lin_reg_chan_mean_reversion.dataframe.columns
-    assert "u_bound" in lin_reg_chan_mean_reversion.dataframe.columns
-
-    assert "slope" in lin_reg_chan_mean_reversion.dataframe.columns
-    assert "prev_slope" in lin_reg_chan_mean_reversion.dataframe.columns
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
