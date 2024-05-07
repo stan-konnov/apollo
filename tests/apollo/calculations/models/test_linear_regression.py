@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
 from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
@@ -218,14 +219,19 @@ def test__score_model__for_correctly_calculating_score() -> None:
     assert score == control_score
 
 
-def test__fit_predict_score__for_correctly_selecting_best_model() -> None:
+@pytest.mark.usefixtures("dataframe")
+def test__select_model_to_use__for_correctly_selecting_best_model(
+    dataframe: pd.DataFrame,
+) -> None:
     """
-    Test fit_predict_score method for correctly selecting best model.
+    Test select_model_to_use method for correctly selecting best model.
 
     Resulting model must be the one with the highest score.
     """
 
-    models = [
+    control_models = []
+
+    models: list[tuple[str, LinearRegression | Lasso | Ridge | ElasticNet]] = [
         ("OLS", LinearRegression()),
         ("Lasso", Lasso(alpha=SMOOTHING_FACTOR)),
         ("Ridge", Ridge(alpha=SMOOTHING_FACTOR)),
@@ -233,7 +239,48 @@ def test__fit_predict_score__for_correctly_selecting_best_model() -> None:
     ]
 
     lrm_calculator = LinearRegressionModelCalculator(
-        dataframe=pd.DataFrame(),
+        dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
     )
+
+    for model_item in models:
+        name, model = model_item
+
+        # Create trading conditions
+        x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+
+        # Split into train and test
+        x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+            x,
+            y,
+        )
+
+        # Fit the model
+        model.fit(x_train, y_train)
+
+        # Predict and gauge metrics on train data
+        forecast_train = model.predict(x_train)
+        r_squared_train = r2_score(y_train, forecast_train)
+        mean_square_error_train = mean_squared_error(y_train, forecast_train)
+
+        # Predict and gauge metrics on test data
+        forecast_test = model.predict(x_test)
+        r_squared_test = r2_score(y_test, forecast_test)
+        mean_square_error_test = mean_squared_error(y_test, forecast_test)
+
+        # Score the model
+        model_score = lrm_calculator._score_model(  # noqa: SLF001
+            r_squared_train=float(r_squared_train),
+            mean_square_error_train=float(mean_square_error_train),
+            r_squared_test=float(r_squared_test),
+            mean_square_error_test=float(mean_square_error_test),
+        )
+
+        control_models.append((name, model, model_score))
+
+    control_best_model = max(control_models, key=lambda x: x[2])
+
+    best_model = lrm_calculator._select_model_to_use()  # noqa: SLF001
+
+    assert best_model[0] == control_best_model[0]
