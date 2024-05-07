@@ -233,7 +233,11 @@ class LinearRegressionModelCalculator:
         # Return only the columns we are interested in
         return dataframe[variables_to_apply]
 
-    def _create_train_split_group(self, x: pd.DataFrame, y: pd.Series) -> tuple:
+    def _create_train_split_group(
+        self,
+        x: pd.DataFrame,
+        y: pd.Series,
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
         """
         Create train and test split for given X and Y variables.
 
