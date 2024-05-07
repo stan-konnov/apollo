@@ -276,3 +276,71 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
     best_model = lrm_calculator._select_model_to_use()  # noqa: SLF001
 
     assert best_model[1] == control_best_model[1]
+
+
+@pytest.mark.usefixtures("dataframe")
+def test__forecast_periods__for_correct_forecast(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test forecast_periods method for correct forecast.
+
+    Resulting forecast must be a correct forecast of the model.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_models: list[
+        tuple[LinearRegression | Lasso | Ridge | ElasticNet, float]
+    ] = []
+
+    models: list[LinearRegression | Lasso | Ridge | ElasticNet] = [
+        LinearRegression(),
+        Lasso(alpha=SMOOTHING_FACTOR),
+        Ridge(alpha=SMOOTHING_FACTOR),
+        ElasticNet(alpha=SMOOTHING_FACTOR),
+    ]
+
+    lrm_calculator = LinearRegressionModelCalculator(
+        dataframe=dataframe,
+        split_ratio=SPLIT_RATIO,
+        smoothing_factor=SMOOTHING_FACTOR,
+    )
+
+    for model in models:
+        x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+
+        x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+            x,
+            y,
+        )
+
+        model.fit(x_train, y_train)
+
+        forecast_train = model.predict(x_train)
+        r_squared_train = r2_score(y_train, forecast_train)
+        mean_square_error_train = mean_squared_error(y_train, forecast_train)
+
+        forecast_test = model.predict(x_test)
+        r_squared_test = r2_score(y_test, forecast_test)
+        mean_square_error_test = mean_squared_error(y_test, forecast_test)
+
+        model_score = lrm_calculator._score_model(  # noqa: SLF001
+            r_squared_train=float(r_squared_train),
+            mean_square_error_train=float(mean_square_error_train),
+            r_squared_test=float(r_squared_test),
+            mean_square_error_test=float(mean_square_error_test),
+        )
+
+        control_models.append((model, model_score))
+
+    control_best_model = max(control_models, key=lambda x: x[1])[0]
+
+    x, _ = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+
+    control_dataframe.drop(control_dataframe.index[0], inplace=True)
+    control_dataframe["lrf"] = control_best_model.predict(x)
+
+    lrm_calculator.forecast_periods()
+
+    pd.testing.assert_series_equal(dataframe["lrf"], control_dataframe["lrf"])
