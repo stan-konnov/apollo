@@ -21,15 +21,12 @@ class BaseRegressionModelCalculator:
     # Threshold for p-value to determine stationarity
     P_VALUE_THRESHOLD: float = 0.05
 
-    def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
+    def __init__(self, dataframe: pd.DataFrame) -> None:
         """
         Construct Base Regression Model.
 
         :param dataframe: Dataframe with price data.
         """
-
-        self.dataframe = dataframe
-        self.window_size = window_size
 
         self.transformed_dataframe = dataframe.copy()
 
@@ -58,4 +55,8 @@ class BaseRegressionModelCalculator:
                 self.transformed_dataframe.columns != "ticker",
             ].diff()
 
-            self.transformed_dataframe.dropna(inplace=True)
+            # Drop the first row with NaN values
+            self.transformed_dataframe.drop(
+                self.transformed_dataframe.index[0],
+                inplace=True,
+            )

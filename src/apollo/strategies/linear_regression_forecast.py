@@ -47,7 +47,6 @@ class LinearRegressionForecast(BaseStrategy):
 
         self.lrm_calculator = LinearRegressionModelCalculator(
             dataframe=dataframe,
-            window_size=window_size,
             split_ratio=split_ratio,
             smoothing_factor=smoothing_factor,
         )

@@ -63,7 +63,6 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        window_size: int,
         split_ratio: float,
         smoothing_factor: float,
     ) -> None:
@@ -74,8 +73,9 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         :param split_ratio: Ratio to split data into train and test set.
         :param smoothing_factor: Smoothing factor for the linear regression model.
         """
-        super().__init__(dataframe, window_size)
+        super().__init__(dataframe)
 
+        self.dataframe = dataframe
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
 
@@ -150,7 +150,7 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         """
 
         # Create trading conditions
-        x, y = self._create_regression_trading_conditions(self.dataframe)
+        x, y = self._create_regression_trading_conditions(self.transformed_dataframe)
 
         # Split into train and test
         x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
