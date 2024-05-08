@@ -97,9 +97,6 @@ class LinearRegressionModelCalculator:
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)
 
-        # Drop first row, to accommodate for T-1 close shift
-        self.dataframe.drop(self.dataframe.index[0], inplace=True)
-
         # Forecast future periods
         self.dataframe["lrf"] = model.predict(x)
 
@@ -202,11 +199,6 @@ class LinearRegressionModelCalculator:
                 -1,
             ),
         )
-
-        # Remove rows from X and Y
-        # where Y is NaN after shift
-        x = x.drop(x.index[0])
-        y = y.drop(y.index[0])
 
         return x, y
 
