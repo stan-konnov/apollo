@@ -28,6 +28,7 @@ class BaseRegressionModelCalculator:
         :param dataframe: Dataframe with price data.
         """
 
+        self.dataframe = dataframe
         self.transformed_dataframe = dataframe.copy()
 
     def _bring_to_stationary(self) -> None:

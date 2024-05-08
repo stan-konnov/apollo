@@ -75,7 +75,6 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         """
         super().__init__(dataframe)
 
-        self.dataframe = dataframe
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
 
