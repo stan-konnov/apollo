@@ -3,14 +3,20 @@ from typing import ClassVar
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
+from sklearn.linear_model import (
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+)
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
-ModelType = LinearRegression | Lasso | Ridge | ElasticNet
+ModelType = LinearRegression | Lasso | Ridge | ElasticNet | LogisticRegression
 ModelSpec = tuple[ModelType, float]
 
 
@@ -111,10 +117,11 @@ class LinearRegressionModelCalculator:
         """
 
         models: list[ModelType] = [
-            LinearRegression(),
-            Lasso(alpha=self.smoothing_factor),
-            Ridge(alpha=self.smoothing_factor),
-            ElasticNet(alpha=self.smoothing_factor),
+            # LinearRegression(),
+            LogisticRegression(),
+            # Lasso(alpha=self.smoothing_factor),
+            # Ridge(alpha=self.smoothing_factor),
+            # ElasticNet(alpha=self.smoothing_factor),
         ]
 
         model_specs: list[ModelSpec] = []
