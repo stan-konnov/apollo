@@ -56,6 +56,6 @@ class BaseRegressionModelCalculator:
             self.transformed_dataframe = self.transformed_dataframe.loc[
                 :,
                 self.transformed_dataframe.columns != "ticker",
-            ].diff(periods=self.window_size)
+            ].diff()
 
             self.transformed_dataframe.dropna(inplace=True)
