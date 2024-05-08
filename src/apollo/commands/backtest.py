@@ -31,7 +31,7 @@ def main() -> None:
     strategy = LinearRegressionForecast(
         dataframe=dataframe,
         window_size=10,
-        split_ratio=0.6,
+        split_ratio=0.8,
         smoothing_factor=0.1,
     )
 

@@ -261,6 +261,9 @@ class LinearRegressionModelCalculator:
             x,
             y,
             shuffle=False,
+            # TODO: test_size 0.6/0.8 will actually take 0.4, 0.2 of the data for train!
+            # BUT, it works better than taking higher train_size
+            # So, please rename split_ratio to test_size!
             test_size=self.split_ratio,
         )
 
