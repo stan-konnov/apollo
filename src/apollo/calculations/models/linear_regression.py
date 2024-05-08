@@ -78,7 +78,7 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
 
-        # Bring time series to stationary
+        # Create new stationary dataframe
         self._bring_to_stationary()
 
     def forecast_periods(self) -> None:
