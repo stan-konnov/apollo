@@ -101,10 +101,8 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.transformed_dataframe)
 
-        # Adhere indices of original dataframe to the transformed one
-        self.dataframe = self.dataframe.loc[self.transformed_dataframe.index]
-
         # Drop the first row, to accommodate for T-1 close shift
+        self.dataframe.drop(self.dataframe.index[0], inplace=True)
         self.dataframe.drop(self.dataframe.index[0], inplace=True)
 
         # Forecast future periods
