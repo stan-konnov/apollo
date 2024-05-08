@@ -6,6 +6,10 @@ from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
+from apollo.calculations.models.base_regression import (
+    BaseRegressionModelCalculator,
+)
+
 logger = logging.getLogger(__name__)
 
 # Type hints exclusive to this class
@@ -13,7 +17,7 @@ ModelType = LinearRegression | Lasso | Ridge | ElasticNet
 ModelSpec = tuple[ModelType, float]
 
 
-class LinearRegressionModelCalculator:
+class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
     """
     Linear Regression Model Calculator.
 
@@ -59,6 +63,7 @@ class LinearRegressionModelCalculator:
     def __init__(
         self,
         dataframe: pd.DataFrame,
+        window_size: int,
         split_ratio: float,
         smoothing_factor: float,
     ) -> None:
@@ -68,13 +73,14 @@ class LinearRegressionModelCalculator:
         :param dataframe: Dataframe to model linear regression on.
         :param split_ratio: Ratio to split data into train and test set.
         :param smoothing_factor: Smoothing factor for the linear regression model.
-
-        NOTE: Linear Regression Model Calculator does not require window size.
         """
+        super().__init__(dataframe, window_size)
 
-        self.dataframe = dataframe
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
+
+        # Bring time series to stationary
+        self._bring_to_stationary()
 
     def forecast_periods(self) -> None:
         """
@@ -94,9 +100,12 @@ class LinearRegressionModelCalculator:
         model = model_item[0]
 
         # Create trading conditions
-        x, _ = self._create_regression_trading_conditions(self.dataframe)
+        x, _ = self._create_regression_trading_conditions(self.transformed_dataframe)
 
-        # Drop first row, to accommodate for T-1 close shift
+        # Adhere indices of original dataframe to the transformed one
+        self.dataframe = self.dataframe.loc[self.transformed_dataframe.index]
+
+        # Drop the first row, to accommodate for T-1 close shift
         self.dataframe.drop(self.dataframe.index[0], inplace=True)
 
         # Forecast future periods
