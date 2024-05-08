@@ -116,6 +116,9 @@ class LinearRegressionModelCalculator:
         :returns: Model specification with the highest score.
         """
 
+        # TODO: we also don't need smoothing factor anymore
+        # optimizing will be faster
+
         models: list[ModelType] = [
             # LinearRegression(),
             LogisticRegression(),
