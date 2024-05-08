@@ -1,14 +1,11 @@
 import logging
 from typing import ClassVar
 
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
-
-from apollo.calculations.models.base_regression import (
-    BaseRegressionModelCalculator,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +14,7 @@ ModelType = LinearRegression | Lasso | Ridge | ElasticNet
 ModelSpec = tuple[ModelType, float]
 
 
-class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
+class LinearRegressionModelCalculator:
     """
     Linear Regression Model Calculator.
 
@@ -72,14 +69,13 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         :param dataframe: Dataframe to model linear regression on.
         :param split_ratio: Ratio to split data into train and test set.
         :param smoothing_factor: Smoothing factor for the linear regression model.
-        """
-        super().__init__(dataframe)
 
+        NOTE: Linear Regression Model Calculator does not require window size.
+        """
+
+        self.dataframe = dataframe
         self.split_ratio = split_ratio
         self.smoothing_factor = smoothing_factor
-
-        # Create new stationary dataframe
-        self._bring_to_stationary()
 
     def forecast_periods(self) -> None:
         """
@@ -99,10 +95,9 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         model = model_item[0]
 
         # Create trading conditions
-        x, _ = self._create_regression_trading_conditions(self.transformed_dataframe)
+        x, _ = self._create_regression_trading_conditions(self.dataframe)
 
-        # Drop the first row, to accommodate for T-1 close shift
-        self.dataframe.drop(self.dataframe.index[0], inplace=True)
+        # Drop first row, to accommodate for T-1 close shift
         self.dataframe.drop(self.dataframe.index[0], inplace=True)
 
         # Forecast future periods
@@ -147,7 +142,7 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         """
 
         # Create trading conditions
-        x, y = self._create_regression_trading_conditions(self.transformed_dataframe)
+        x, y = self._create_regression_trading_conditions(self.dataframe)
 
         # Split into train and test
         x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
@@ -200,12 +195,18 @@ class LinearRegressionModelCalculator(BaseRegressionModelCalculator):
         x = self._define_explanatory_variables(training_conditions_dataframe)
 
         # Calculate dependent variable (Y)
-        y = dataframe["close"].shift(1) - dataframe["close"]
+        y = pd.Series(
+            np.where(
+                self.dataframe["close"].shift(-1) > self.dataframe["close"],
+                1,
+                -1,
+            ),
+        )
 
         # Remove rows from X and Y
         # where Y is NaN after shift
         x = x.drop(x.index[0])
-        y.dropna(inplace=True)
+        y = y.drop(y.index[0])
 
         return x, y
 
