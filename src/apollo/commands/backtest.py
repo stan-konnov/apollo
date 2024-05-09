@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,7 +28,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = LinearRegressionForecast(
+    strategy = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=15,
         test_size=0.6,
@@ -38,7 +38,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="LinearRegressionForecast",
+        strategy_name="LogisticRegressionForecast",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.2,

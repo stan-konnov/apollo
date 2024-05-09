@@ -79,9 +79,9 @@ class LogisticRegressionModelCalculator:
         model.fit(x_train, y_train)
 
         # Gauge model score
-        score = model.score(x_test, y_test)
+        # score = model.score(x_test, y_test)
 
-        print(f"Model score: {score}")
+        # print(f"Model score: {score}")
 
         # Create trading conditions
         x, _ = self._create_regression_trading_conditions(self.dataframe)

@@ -7,17 +7,17 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class LinearRegressionForecast(BaseStrategy):
+class LogisticRegressionForecast(BaseStrategy):
     """
-    Linear Regression Forecast.
+    Logistic Regression Forecast.
 
     This strategy takes long positions when:
 
-    * Underlying linear regression model forecasts positive change on next period.
+    * Underlying logistic regression model forecasts positive change on next period.
 
     This strategy takes short positions when:
 
-    * Underlying linear regression model forecasts negative change on next period.
+    * Underlying logistic regression model forecasts negative change on next period.
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -29,7 +29,7 @@ class LinearRegressionForecast(BaseStrategy):
         test_size: float,
     ) -> None:
         """
-        Construct Linear Regression Forecast Strategy.
+        Construct Logistic Regression Forecast Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.

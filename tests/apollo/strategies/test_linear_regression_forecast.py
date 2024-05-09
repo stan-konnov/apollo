@@ -6,7 +6,7 @@ from apollo.calculations.models.logistic_regression import (
     LogisticRegressionModelCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
 SPLIT_RATIO = 0.6
 SMOOTHING_FACTOR = 0.1
@@ -41,7 +41,7 @@ def test__linear_regression_forecast__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    linear_regression_forecast = LinearRegressionForecast(
+    linear_regression_forecast = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=window_size,
         split_ratio=SPLIT_RATIO,

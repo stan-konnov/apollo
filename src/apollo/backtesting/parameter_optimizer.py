@@ -14,7 +14,7 @@ from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.strategies.lin_reg_chan_mean_reversion import (
     LinearRegressionChannelMeanReversion,
 )
-from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
@@ -43,14 +43,10 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "SwingEventsMeanReversion":
-            SwingEventsMeanReversion,
-        "LinearRegressionForecast":
-            LinearRegressionForecast,
-        "LinearRegressionChannelMeanReversion":
-            LinearRegressionChannelMeanReversion,
-        "SkewnessKurtosisVolatilityTrendFollowing":
-            SkewnessKurtosisVolatilityTrendFollowing,
+        "SwingEventsMeanReversion": SwingEventsMeanReversion,
+        "LogisticRegressionForecast": LogisticRegressionForecast,
+        "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,
     }
 
     def __init__(self) -> None:
