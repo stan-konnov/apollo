@@ -2,9 +2,9 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 
 
-class BaseRegressionModelCalculator:
+class TimeSeriesTransformer:
     """
-    Base class for all regression models.
+    Time Series Transformer.
 
     Prepares time series for forecasting by removing
     trends and seasonality making the time series stationary.
@@ -12,8 +12,8 @@ class BaseRegressionModelCalculator:
     The stationarity of time series implies that the statistical
     properties, such as mean, variance, and autocorrelation, do not change over time.
 
-    No regression analysis can be performed on non-stationary time series,
-    as it can lead to spurious regression results.
+    No (auto) regression analysis can be performed on non-stationary
+    time series, as it can lead to spurious regression results.
 
     Granger, Newbold, Journal of Econometrics, 1974.
     """
