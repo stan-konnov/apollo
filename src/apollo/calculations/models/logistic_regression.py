@@ -83,9 +83,6 @@ class LogisticRegressionModelCalculator:
 
         # print(f"Model score: {score}")
 
-        # Create trading conditions
-        x, _ = self._create_regression_trading_conditions(self.dataframe)
-
         # Forecast future periods
         self.dataframe["lrf"] = model.predict(x)
 
