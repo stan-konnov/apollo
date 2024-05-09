@@ -10,6 +10,19 @@ TODO:
 1. Look into SARIMA.
 
 2. Apply Kalman Filter (from Kaufman).
+
+3. Look into seasonal_decompose.
+
+4. Move transformer here.
+
+5. Auto ARIMA: (auto_arima),
+
+    The auto_arima function returns a fitted ARIMA model
+    after determining the most optimal p, d, q parameters.
+
+https://www.analyticsvidhya.com/blog/2021/07/stock-market-forecasting-using-time-series-analysis-with-arima-model/
+
+6. Are we using close or adjusted close?
 """
 
 
@@ -29,9 +42,9 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
     ARIMA operates on three parameters:
 
-    * q: The size of the moving average window.
     * p: The number of lag observations included in the model.
     * d: The number of times that the raw observations are differenced.
+    * q: The size of the moving average window.
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -53,6 +66,12 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # Params to be computed, WIP
         model = ARIMA(time_series, order=(2, 0, 2))
 
-        print(model.fit())
+        fitted_model = model.fit()
 
-        # self.dataframe["arf"] = model.
+        # forecast: pd.Series = fitted_model.forecast(steps=self.dataframe.shape[0])
+        # forecast.index = self.dataframe.index
+        # self.dataframe["arf"] = forecast
+
+        # forecast(steps=1) in a rolling window!
+        # Are we training on the entire dataset?
+        # Or are we training on a rolling window?

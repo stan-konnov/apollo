@@ -27,6 +27,8 @@ def main() -> None:
 
     arm_calculator.forecast_periods()
 
+    print(dataframe)
+
 
 if __name__ == "__main__":
     main()
