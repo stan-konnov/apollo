@@ -11,21 +11,11 @@ logger = logging.getLogger(__name__)
 
 class LogisticRegressionModelCalculator:
     """
-    Linear Regression Model Calculator.
+    Logistic Regression Model Calculator.
 
-    Since there are multiple linear regression models one can
-    apply to given time series, this class acts as a model selector
-    based on several statistical tests that quantify the goodness of fit.
-
-    We apply two most commonly used metrics: R-squared and Mean Squared Error.
-    The model with the highest R-squared and lowest MSE is used for forecasting.
-
-    Linear regression models that we consider are:
-
-    * Ordinary Least Squares (OLS)
-    * Lasso Regression
-    * Ridge Regression
-    * Elastic Net Regression
+    Logistic regression is a supervised method that is suitable for
+    binary classification problems. It is used to model the probability of
+    a certain class or event existing, such as, in our case, price going up or down.
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -71,11 +61,9 @@ class LogisticRegressionModelCalculator:
 
     def forecast_periods(self) -> None:
         """
-        Forecast future periods using one of the linear regression models.
+        Forecast future periods using logistic regression model.
 
-        Select the model with the highest R-squared and lowest Mean Squared Error.
-
-        Create trading conditions and predict future periods.
+        Create trading conditions, fit the model, and forecast future periods.
         """
 
         # Initialize the model
@@ -111,8 +99,8 @@ class LogisticRegressionModelCalculator:
         We consider our explanatory variable (X) to be the difference
         between all aspects of OHLC (open, high, low, close) of each observation.
 
-        We consider our dependent variable (Y) to be the difference
-        between close at T and close at T-1.
+        We consider our dependent variable (Y) to be a binary classifier
+        that indicates whether the price will go up or down in the next period.
 
         :param dataframe: Dataframe to create trading conditions for.
         :returns: Explanatory variable (X) and dependent variable (Y).
