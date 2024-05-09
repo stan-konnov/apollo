@@ -78,11 +78,6 @@ class LogisticRegressionModelCalculator:
         # Fit the model
         model.fit(x_train, y_train)
 
-        # Gauge model score
-        # score = model.score(x_test, y_test)
-
-        # print(f"Model score: {score}")
-
         # Forecast future periods
         self.dataframe["lrf"] = model.predict(x)
 
