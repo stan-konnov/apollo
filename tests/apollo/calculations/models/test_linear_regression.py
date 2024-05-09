@@ -4,7 +4,9 @@ from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
-from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
+from apollo.calculations.models.logistic_regression import (
+    LogisticRegressionModelCalculator,
+)
 
 SPLIT_RATIO = 0.6
 SMOOTHING_FACTOR = 0.1
@@ -20,7 +22,7 @@ def test__forecast_periods__for_correct_columns(
     Resulting dataframe must have "lrf" column.
     """
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -43,7 +45,7 @@ def test__forecast_periods__for_correctly_dropping_first_observation(
 
     control_dataframe_length = len(dataframe.copy().index)
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -97,7 +99,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 
     control_x = control_dataframe[variables_to_apply]
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -124,7 +126,7 @@ def test__create_regression_trading_conditions__for_creating_correct_y_variable(
     control_y = control_dataframe["close"].shift(1) - control_dataframe["close"]
     control_y.dropna(inplace=True)
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -168,7 +170,7 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
     y = dataframe["close"].shift(1) - dataframe["close"]
     y.dropna(inplace=True)
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -199,7 +201,7 @@ def test__score_model__for_correctly_calculating_score() -> None:
     r_squared_test = 0.4
     mean_square_error_test = 3
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=pd.DataFrame(),
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -238,7 +240,7 @@ def test__select_model_to_use__for_correctly_selecting_best_model(
         ElasticNet(alpha=SMOOTHING_FACTOR),
     ]
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,
@@ -301,7 +303,7 @@ def test__forecast_periods__for_correct_forecast(
         ElasticNet(alpha=SMOOTHING_FACTOR),
     ]
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,

@@ -2,7 +2,9 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
+from apollo.calculations.models.logistic_regression import (
+    LogisticRegressionModelCalculator,
+)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
 
@@ -27,7 +29,7 @@ def test__linear_regression_forecast__with_valid_parameters(
     atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
     atr_calculator.calculate_average_true_range()
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
         split_ratio=SPLIT_RATIO,
         smoothing_factor=SMOOTHING_FACTOR,

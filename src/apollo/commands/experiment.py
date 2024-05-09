@@ -1,7 +1,9 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
+from apollo.calculations.models.logistic_regression import (
+    LogisticRegressionModelCalculator,
+)
 from apollo.settings import END_DATE, START_DATE, TICKER
 
 logging.basicConfig(
@@ -23,7 +25,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    linear_regression_calculator = LinearRegressionModelCalculator(
+    linear_regression_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
         split_ratio=0.8,
         smoothing_factor=0.1,

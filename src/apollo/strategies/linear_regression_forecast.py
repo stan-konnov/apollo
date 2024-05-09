@@ -1,6 +1,8 @@
 from pandas import DataFrame
 
-from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
+from apollo.calculations.models.logistic_regression import (
+    LogisticRegressionModelCalculator,
+)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
@@ -45,7 +47,7 @@ class LinearRegressionForecast(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.lrm_calculator = LinearRegressionModelCalculator(
+        self.lrm_calculator = LogisticRegressionModelCalculator(
             dataframe=dataframe,
             split_ratio=split_ratio,
             smoothing_factor=smoothing_factor,

@@ -3,24 +3,13 @@ from typing import ClassVar
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import (
-    ElasticNet,
-    Lasso,
-    LinearRegression,
-    LogisticRegression,
-    Ridge,
-)
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger(__name__)
 
-# Type hints exclusive to this class
-ModelType = LinearRegression | Lasso | Ridge | ElasticNet | LogisticRegression
-ModelSpec = tuple[ModelType, float]
 
-
-class LinearRegressionModelCalculator:
+class LogisticRegressionModelCalculator:
     """
     Linear Regression Model Calculator.
 
@@ -92,61 +81,8 @@ class LinearRegressionModelCalculator:
         Create trading conditions and predict future periods.
         """
 
-        # Select the model for forecasting
-        # NOTE: we do not need to store the model,
-        # since we parametrize smoothing factor and split ratio
-        # Therefore, each backtesting run might end up using different model
-        model_item = self._select_model_to_use()
-
-        model = model_item[0]
-
-        # Create trading conditions
-        x, _ = self._create_regression_trading_conditions(self.dataframe)
-
-        # Forecast future periods
-        self.dataframe["lrf"] = model.predict(x)
-
-    def _select_model_to_use(self) -> ModelSpec:
-        """
-        Select model to use based on R-squared and Mean Squared Error.
-
-        Fit, predict and score all models.
-        Select the model with the highest score.
-
-        :returns: Model specification with the highest score.
-        """
-
-        # TODO: we also don't need smoothing factor anymore
-        # optimizing will be faster
-
-        models: list[ModelType] = [
-            # LinearRegression(),
-            LogisticRegression(),
-            # Lasso(alpha=self.smoothing_factor),
-            # Ridge(alpha=self.smoothing_factor),
-            # ElasticNet(alpha=self.smoothing_factor),
-        ]
-
-        model_specs: list[ModelSpec] = []
-
-        for model_item in models:
-            model_spec = self._fit_predict_score(model_item)
-            model_specs.append(model_spec)
-
-        return max(model_specs, key=lambda x: x[1])
-
-    def _fit_predict_score(self, model: ModelType) -> ModelSpec:
-        """
-        Fit the model, predict on both train and test data, and score the model.
-
-        For every provided model, split the data into train and test, fit, predict
-        and gauge the model's performance based on R-squared and Mean Squared Error.
-
-        Apply the scoring heuristic on train and test metrics to select the best model.
-
-        :param model: Model to fit, predict and score.
-        :returns: Tuple containing model instance and model score.
-        """
+        # Initialize the model
+        model = LogisticRegression()
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(self.dataframe)
@@ -157,26 +93,16 @@ class LinearRegressionModelCalculator:
         # Fit the model
         model.fit(x_train, y_train)
 
-        # Predict and gauge metrics on train data
-        forecast_train = model.predict(x_train)
-        r_squared_train = r2_score(y_train, forecast_train)
-        mean_square_error_train = mean_squared_error(y_train, forecast_train)
+        # Gauge model score
+        score = model.score(x_test, y_test)
 
-        # Predict and gauge metrics on test data
-        forecast_test = model.predict(x_test)
-        r_squared_test = r2_score(y_test, forecast_test)
-        mean_square_error_test = mean_squared_error(y_test, forecast_test)
+        print(f"Model score: {score}")
 
-        # Score the model
-        model_score = self._score_model(
-            r_squared_train=float(r_squared_train),
-            mean_square_error_train=float(mean_square_error_train),
-            r_squared_test=float(r_squared_test),
-            mean_square_error_test=float(mean_square_error_test),
-        )
+        # Create trading conditions
+        x, _ = self._create_regression_trading_conditions(self.dataframe)
 
-        # Return model specification
-        return model, model_score
+        # Forecast future periods
+        self.dataframe["lrf"] = model.predict(x)
 
     def _create_regression_trading_conditions(
         self,
@@ -271,40 +197,3 @@ class LinearRegressionModelCalculator:
         )
 
         return x_train, x_test, y_train, y_test
-
-    def _score_model(
-        self,
-        r_squared_train: float,
-        mean_square_error_train: float,
-        r_squared_test: float,
-        mean_square_error_test: float,
-    ) -> float:
-        """
-        Score the model based on mean square error and R-squared.
-
-        Sum R-squared and return the factor.
-        (We want to maximize R-squared, hence the positive sign).
-
-        Sum mean square error and multiply by -1 to get the factor.
-        (We want to minimize MSE, hence the negative sign).
-
-        Sum both factors to get the final score.
-
-        NOTE: this is a simple heuristic to select the best model.
-        It can and will produce negative values, but we are not interested
-        in those values (yet), we are interested in the model with the highest score.
-
-        :param r_squared_train: R-squared for train data.
-        :param mean_square_error_train: Mean square error for train data.
-        :param r_squared_test: R-squared for test data.
-        :param mean_square_error_test: Mean square error for test data.
-        :returns: Score of the model.
-        """
-
-        r_squared_factor = r_squared_train + r_squared_test
-
-        mean_square_error_factor = (
-            mean_square_error_train + mean_square_error_test
-        ) * -1
-
-        return r_squared_factor + mean_square_error_factor
