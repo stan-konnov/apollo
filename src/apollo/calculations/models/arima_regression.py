@@ -4,7 +4,13 @@ from statsmodels.tsa.arima.model import ARIMA
 from apollo.calculations.base_calculator import BaseCalculator
 from apollo.utils.time_series_transformer import TimeSeriesTransformer
 
-"""Look into SARIMAX."""
+"""
+TODO:
+
+1. Look into SARIMA.
+
+2. Apply Kalman Filter (from Kaufman).
+"""
 
 
 class ARIMARegressionModelCalculator(BaseCalculator):
@@ -47,4 +53,6 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # Params to be computed, WIP
         model = ARIMA(time_series, order=(2, 0, 2))
 
-        self.dataframe["arf"] = model.fit()
+        print(model.fit())
+
+        # self.dataframe["arf"] = model.
