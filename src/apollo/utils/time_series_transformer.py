@@ -21,43 +21,23 @@ class TimeSeriesTransformer:
     # Threshold for p-value to determine stationarity
     P_VALUE_THRESHOLD: float = 0.05
 
-    def __init__(self, dataframe: pd.DataFrame) -> None:
-        """
-        Construct Base Regression Model.
-
-        :param dataframe: Dataframe with price data.
-        """
-
-        self.dataframe = dataframe
-        self.transformed_dataframe = dataframe.copy()
-
-    def _bring_to_stationary(self) -> None:
+    @classmethod
+    def bring_to_stationary(cls, time_series: pd.Series) -> pd.Series:
         """
         Make time series stationary.
 
-        There are multiple ways to make time series stationary, yet,
-        the most applicable to our case is seasonal differencing,
-        as it takes care of both trend and seasonality.
+        There are multiple ways to making time series stationary
+        yet, the most commonly used is differencing.
         """
 
         # We first apply Augmented Dickey-Fuller test
         # to check for stationarity in the time series
         # where non-stationarity exists if p-value > 0.05
-        adf_test = adfuller(
-            self.transformed_dataframe["close"],
-            autolag="AIC",
-        )
+        adf_test = adfuller(time_series, autolag="AIC")
 
-        if adf_test[1] > self.P_VALUE_THRESHOLD:
-            # Differentiate all aspects of OHLCV
-            # (all columns except for the ticker)
-            self.transformed_dataframe = self.transformed_dataframe.loc[
-                :,
-                self.transformed_dataframe.columns != "ticker",
-            ].diff()
+        # And if the time series is non-stationary,
+        # we apply differencing to make it stationary
+        if adf_test[1] > cls.P_VALUE_THRESHOLD:
+            time_series = time_series.diff()
 
-            # Drop the first row with NaN values
-            self.transformed_dataframe.drop(
-                self.transformed_dataframe.index[0],
-                inplace=True,
-            )
+        return time_series
