@@ -18,12 +18,12 @@
         "range": [0.1, 1.0]
     },
 
-    "test_size": {
+    "train_size": {
         "step": 0.1,
         "range": [0.1, 0.9]
     },
 
     "strategy_specific_parameters": [
-        "test_size"
+        "train_size"
     ]
 }

@@ -4,5 +4,5 @@
     "window_size": 15.0,
     "sl_volatility_multiplier": 0.1,
     "tp_volatility_multiplier": 0.2,
-    "test_size": 0.6
+    "train_size": 0.4
 }

@@ -31,7 +31,7 @@ def main() -> None:
     strategy = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=15,
-        test_size=0.6,
+        train_size=0.6,
     )
 
     strategy.model_trading_signals()

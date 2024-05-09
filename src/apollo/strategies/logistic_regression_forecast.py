@@ -26,19 +26,19 @@ class LogisticRegressionForecast(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        test_size: float,
+        train_size: float,
     ) -> None:
         """
         Construct Logistic Regression Forecast Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
-        :param test_size: Size of the test set.
+        :param train_size: Size of the train set.
         """
 
         self._validate_parameters(
             [
-                ("test_size", test_size, float),
+                ("test_size", train_size, float),
             ],
         )
 
@@ -46,7 +46,7 @@ class LogisticRegressionForecast(BaseStrategy):
 
         self.lrm_calculator = LogisticRegressionModelCalculator(
             dataframe=dataframe,
-            test_size=test_size,
+            train_size=train_size,
         )
 
     def model_trading_signals(self) -> None:

@@ -45,19 +45,19 @@ class LogisticRegressionModelCalculator:
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        test_size: float,
+        train_size: float,
     ) -> None:
         """
         Construct Logistic Regression Model Calculator.
 
         :param dataframe: Dataframe to model linear regression on.
-        :param test_size: Size of the test set.
+        :param train_size: Size of the train set.
 
         NOTE: Logistic Regression Model Calculator does not require window size.
         """
 
         self.dataframe = dataframe
-        self.test_size = test_size
+        self.train_size = train_size
 
     def forecast_periods(self) -> None:
         """
@@ -175,7 +175,7 @@ class LogisticRegressionModelCalculator:
             x,
             y,
             shuffle=False,
-            test_size=self.test_size,
+            train_size=self.train_size,
         )
 
         return x_train, x_test, y_train, y_test
