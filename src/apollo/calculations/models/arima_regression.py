@@ -1,5 +1,5 @@
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 
 from apollo.calculations.base_calculator import BaseCalculator
 from apollo.utils.time_series_transformer import TimeSeriesTransformer
@@ -61,12 +61,14 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         """
 
         # Stationarize the time series
-        time_series = TimeSeriesTransformer.bring_to_stationary(self.dataframe["close"])
+        # time_series = TimeSeriesTransformer.bring_to_stationary(self.dataframe["close"])
 
         # Params to be computed, WIP
-        model = ARIMA(time_series, order=(2, 0, 2))
+        model = ARIMA(self.dataframe["close"], order=(2, 0, 2))
 
-        fitted_model = model.fit()
+        results: ARIMAResults = model.fit()
+
+        self.dataframe["arf"] = results.fittedvalues
 
         # forecast: pd.Series = fitted_model.forecast(steps=self.dataframe.shape[0])
         # forecast.index = self.dataframe.index
