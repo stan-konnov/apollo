@@ -26,22 +26,19 @@ class LinearRegressionForecast(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        split_ratio: float,
-        smoothing_factor: float,
+        test_size: float,
     ) -> None:
         """
         Construct Linear Regression Forecast Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
-        :param split_ratio: Ratio to split data into train and test set.
-        :param smoothing_factor: Smoothing factor for the linear regression model.
+        :param test_size: Size of the test set.
         """
 
         self._validate_parameters(
             [
-                ("split_ratio", split_ratio, float),
-                ("smoothing_factor", smoothing_factor, float),
+                ("test_size", test_size, float),
             ],
         )
 
@@ -49,8 +46,7 @@ class LinearRegressionForecast(BaseStrategy):
 
         self.lrm_calculator = LogisticRegressionModelCalculator(
             dataframe=dataframe,
-            split_ratio=split_ratio,
-            smoothing_factor=smoothing_factor,
+            test_size=test_size,
         )
 
     def model_trading_signals(self) -> None:

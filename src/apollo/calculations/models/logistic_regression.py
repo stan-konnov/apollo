@@ -55,22 +55,19 @@ class LogisticRegressionModelCalculator:
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        split_ratio: float,
-        smoothing_factor: float,
+        test_size: float,
     ) -> None:
         """
-        Construct Linear Regression Model Calculator.
+        Construct Logistic Regression Model Calculator.
 
         :param dataframe: Dataframe to model linear regression on.
-        :param split_ratio: Ratio to split data into train and test set.
-        :param smoothing_factor: Smoothing factor for the linear regression model.
+        :param test_size: Size of the test set.
 
-        NOTE: Linear Regression Model Calculator does not require window size.
+        NOTE: Logistic Regression Model Calculator does not require window size.
         """
 
         self.dataframe = dataframe
-        self.split_ratio = split_ratio
-        self.smoothing_factor = smoothing_factor
+        self.test_size = test_size
 
     def forecast_periods(self) -> None:
         """
@@ -190,10 +187,7 @@ class LogisticRegressionModelCalculator:
             x,
             y,
             shuffle=False,
-            # TODO: test_size 0.6/0.8 will actually take 0.4, 0.2 of the data for train!
-            # BUT, it works better than taking higher train_size
-            # So, please rename split_ratio to test_size!
-            test_size=self.split_ratio,
+            test_size=self.test_size,
         )
 
         return x_train, x_test, y_train, y_test

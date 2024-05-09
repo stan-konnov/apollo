@@ -31,8 +31,7 @@ def main() -> None:
     strategy = LinearRegressionForecast(
         dataframe=dataframe,
         window_size=15,
-        split_ratio=0.6,
-        smoothing_factor=0.1,
+        test_size=0.6,
     )
 
     strategy.model_trading_signals()
