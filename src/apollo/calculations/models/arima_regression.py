@@ -62,7 +62,10 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         )
 
         # Params to be computed, WIP
-        model = ARIMA(time_series.trend, order=(5, 5, 5))
+        model = ARIMA(
+            time_series.trend,
+            order=(self.window_size, self.window_size, self.window_size),
+        )
 
         results: ARIMAResults = model.fit()
 
