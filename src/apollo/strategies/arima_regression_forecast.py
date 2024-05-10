@@ -46,10 +46,13 @@ class ARIMARegressionForecast(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[
-            self.dataframe["close"] < self.dataframe["arf"],
+            self.dataframe["adj close"] < self.dataframe["arf"],
             "signal",
         ] = LONG_SIGNAL
         self.dataframe.loc[
-            self.dataframe["close"] > self.dataframe["arf"],
+            self.dataframe["adj close"] > self.dataframe["arf"],
             "signal",
         ] = SHORT_SIGNAL
+
+        # self.dataframe.loc[self.dataframe["arf"] > 0, "signal"] = LONG_SIGNAL
+        # self.dataframe.loc[self.dataframe["arf"] < 0, "signal"] = SHORT_SIGNAL
