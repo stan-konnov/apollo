@@ -12,20 +12,9 @@ warnings.simplefilter("ignore", ConvergenceWarning)
 """
 TODO:
 
-1. Look into SARIMA.
+1. Apply Kalman Filter (from Kaufman).
 
-2. Apply Kalman Filter (from Kaufman).
-
-3. Look into seasonal_decompose.
-
-4. Move transformer here.
-
-5. Auto ARIMA: (auto_arima),
-
-    The auto_arima function returns a fitted ARIMA model
-    after determining the most optimal p, d, q parameters.
-
-https://www.analyticsvidhya.com/blog/2021/07/stock-market-forecasting-using-time-series-analysis-with-arima-model/
+2. Look into seasonal_decompose.
 """
 
 
@@ -76,8 +65,6 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         model = ARIMA(time_series.trend, order=(5, 0, 5))
 
         results: ARIMAResults = model.fit()
-
-        print(results.summary())
 
         self.dataframe["arf"] = results.fittedvalues
 
