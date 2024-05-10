@@ -58,6 +58,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         Stationarize the time series, fit the model, and forecast future periods.
         """
 
+        # We, basically, forecast the trend of the time series!
         time_series = seasonal_decompose(
             self.dataframe["adj close"],
             model="multiplicative",
