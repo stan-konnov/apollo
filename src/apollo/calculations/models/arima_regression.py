@@ -58,6 +58,8 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         Stationarize the time series, fit the model, and forecast future periods.
         """
 
+        self.dataframe.reset_index(inplace=True)
+
         # We, basically, forecast the trend of the time series!
         time_series = seasonal_decompose(
             self.dataframe["adj close"],
@@ -71,6 +73,9 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         results: ARIMAResults = model.fit()
 
         self.dataframe["arf"] = results.fittedvalues
+
+        # Reset indices back to date
+        self.dataframe.set_index("date", inplace=True)
 
         # forecast: pd.Series = fitted_model.forecast(steps=self.dataframe.shape[0])
         # forecast.index = self.dataframe.index
