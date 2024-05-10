@@ -30,7 +30,7 @@ def main() -> None:
 
     strategy = ARIMARegressionForecast(
         dataframe=dataframe,
-        window_size=15,
+        window_size=5,
     )
 
     strategy.model_trading_signals()

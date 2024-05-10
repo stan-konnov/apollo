@@ -21,8 +21,6 @@ TODO:
     after determining the most optimal p, d, q parameters.
 
 https://www.analyticsvidhya.com/blog/2021/07/stock-market-forecasting-using-time-series-analysis-with-arima-model/
-
-6. Are we using close or adjusted close?
 """
 
 
@@ -59,9 +57,6 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         Stationarize the time series, fit the model, and forecast future periods.
         """
-
-        # Stationarize the time series
-        # time_series = TimeSeriesTransformer.bring_to_stationary(self.dataframe["close"])
 
         time_series = seasonal_decompose(
             self.dataframe["adj close"],
