@@ -1,8 +1,13 @@
+import warnings
+
 import pandas as pd
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 from apollo.calculations.base_calculator import BaseCalculator
+
+warnings.simplefilter("ignore", ConvergenceWarning)
 
 """
 TODO:
@@ -72,15 +77,9 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         results: ARIMAResults = model.fit()
 
+        print(results.summary())
+
         self.dataframe["arf"] = results.fittedvalues
 
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
-
-        # forecast: pd.Series = fitted_model.forecast(steps=self.dataframe.shape[0])
-        # forecast.index = self.dataframe.index
-        # self.dataframe["arf"] = forecast
-
-        # forecast(steps=1) in a rolling window!
-        # Are we training on the entire dataset?
-        # Or are we training on a rolling window?
