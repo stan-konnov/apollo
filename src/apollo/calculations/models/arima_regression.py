@@ -64,7 +64,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # time_series = TimeSeriesTransformer.bring_to_stationary(self.dataframe["close"])
 
         # Params to be computed, WIP
-        model = ARIMA(self.dataframe["adj close"], order=(2, 0, 2))
+        model = ARIMA(self.dataframe["adj close"], order=(5, 0, 5))
 
         results: ARIMAResults = model.fit()
 
