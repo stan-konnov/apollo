@@ -1,8 +1,8 @@
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 from apollo.calculations.base_calculator import BaseCalculator
-from apollo.utils.time_series_transformer import TimeSeriesTransformer
 
 """
 TODO:
@@ -63,8 +63,14 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # Stationarize the time series
         # time_series = TimeSeriesTransformer.bring_to_stationary(self.dataframe["close"])
 
+        time_series = seasonal_decompose(
+            self.dataframe["adj close"],
+            model="multiplicative",
+            period=self.window_size,
+        )
+
         # Params to be computed, WIP
-        model = ARIMA(self.dataframe["adj close"], order=(5, 0, 5))
+        model = ARIMA(time_series.trend, order=(5, 0, 5))
 
         results: ARIMAResults = model.fit()
 
