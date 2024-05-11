@@ -53,6 +53,8 @@ def main() -> None:
     trades: pd.DataFrame = stats["_trades"]
     trades["ReturnPct"] = trades["ReturnPct"] * 100
 
+    # trades.to_csv("trades.csv")  # noqa: ERA001
+
 
 if __name__ == "__main__":
     main()
