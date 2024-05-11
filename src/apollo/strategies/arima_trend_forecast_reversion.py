@@ -5,7 +5,7 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class ARIMARegressionForecast(BaseStrategy):
+class ARIMARegressionTrendForecastReversion(BaseStrategy):
     """
     ARIMA Regression Forecast.
 
