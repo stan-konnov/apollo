@@ -69,7 +69,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         results: ARIMAResults = model.fit()
 
-        self.dataframe["arf"] = results.fittedvalues
+        self.dataframe["artf"] = results.fittedvalues
 
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
