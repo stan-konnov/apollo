@@ -53,9 +53,10 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
     def forecast_periods(self) -> None:
         """
-        Forecast future periods using ARIMA regression model.
+        Forecast trend periods using ARIMA regression model.
 
-        Stationarize the time series, fit the model, and forecast future periods.
+        Decompose the time series into trend, seasonal, and residual.
+        Forecast the trend component using ARIMA regression.
         """
 
         # Reset the indices to integer values
