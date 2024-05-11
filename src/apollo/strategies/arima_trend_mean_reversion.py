@@ -7,9 +7,20 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 class ARIMATrendMeanReversion(BaseStrategy):
     """
-    ARIMA Regression Forecast.
+    ARIMA Trend Mean Reversion.
 
-    WIP.
+    This strategy takes long positions when:
+
+    * Adjusted close crosses below the forecasted trend,
+    indicating that instrument entered oversold zone.
+
+    This strategy takes short positions when:
+
+    * Adjusted close crosses above the forecasted trend,
+    indicating that instrument entered overbought zone.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
     def __init__(
@@ -20,7 +31,8 @@ class ARIMATrendMeanReversion(BaseStrategy):
         """
         Construct ARIMA Regression Forecast Strategy.
 
-        WIP.
+        :param dataframe: Dataframe with price data.
+        :param window_size: Size of the window for the strategy.
         """
 
         super().__init__(dataframe, window_size)
