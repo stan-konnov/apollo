@@ -11,6 +11,7 @@ from tqdm.contrib.itertools import product
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
+from apollo.strategies.arima_trend_forecast_reversion import ARIMATrendForecastReversion
 from apollo.strategies.lin_reg_chan_mean_reversion import (
     LinearRegressionChannelMeanReversion,
 )
@@ -43,10 +44,16 @@ class ParameterOptimizer:
     # Represents a mapping between strategy name and strategy class
     # Is used to instantiate the strategy class based on configured name
     _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "SwingEventsMeanReversion": SwingEventsMeanReversion,
-        "LogisticRegressionForecast": LogisticRegressionForecast,
-        "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
-        "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,
+        "SwingEventsMeanReversion":
+            SwingEventsMeanReversion,
+        "LogisticRegressionForecast":
+            LogisticRegressionForecast,
+        "ARIMATrendForecastReversion":
+            ARIMATrendForecastReversion,
+        "LinearRegressionChannelMeanReversion":
+            LinearRegressionChannelMeanReversion,
+        "SkewnessKurtosisVolatilityTrendFollowing":
+            SkewnessKurtosisVolatilityTrendFollowing,
     }
 
     def __init__(self) -> None:

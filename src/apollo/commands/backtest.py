@@ -5,7 +5,7 @@ from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
 from apollo.strategies.arima_trend_forecast_reversion import (
-    ARIMARegressionTrendForecastReversion,
+    ARIMATrendForecastReversion,
 )
 
 if TYPE_CHECKING:
@@ -30,9 +30,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = ARIMARegressionTrendForecastReversion(
+    strategy = ARIMATrendForecastReversion(
         dataframe=dataframe,
-        window_size=4,
+        window_size=5,
     )
 
     strategy.model_trading_signals()
