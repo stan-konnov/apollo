@@ -122,7 +122,7 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
     """
     Test create_train_split_group method for correctly splitting inputs.
 
-    Resulting train and split groups must be equal to the control groups.
+    Resulting train groups must be equal to the control groups.
     """
 
     control_dataframe = dataframe.copy()
