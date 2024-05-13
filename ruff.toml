@@ -22,5 +22,6 @@ ignore = [
     "PLR0913", # Too many arguments in function definition.
     "PD010", # .pivot_table is preferred to .pivot or .unstack.
     "S101", # Use of assert detected.
-    "DTZ007", # The use of `datetime.datetime.strptime()` without %z must be followed by `.replace(tzinfo=)` or `.astimezone()`
+    "DTZ007", # The use of `datetime.datetime.strptime()` without %z must be followed by `.replace(tzinfo=)` or `.astimezone()`.
+    "ANN102", # Missing type annotation for `cls` in classmethod.
 ]
