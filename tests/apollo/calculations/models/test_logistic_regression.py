@@ -1,6 +1,6 @@
+import numpy as np
 import pandas as pd
 import pytest
-from sklearn.model_selection import train_test_split
 
 from apollo.calculations.models.logistic_regression import (
     LogisticRegressionModelCalculator,
@@ -82,31 +82,35 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
     pd.testing.assert_frame_equal(x, control_x)
 
 
-# @pytest.mark.usefixtures("dataframe")
-# def test__create_regression_trading_conditions__for_creating_correct_y_variable(
-#     dataframe: pd.DataFrame,
-# ) -> None:
-#     """
-#     Test create_regression_trading_conditions method for creating correct Y variable.
+@pytest.mark.usefixtures("dataframe")
+def test__create_regression_trading_conditions__for_creating_correct_y_variable(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test create_regression_trading_conditions method for creating correct Y variable.
 
-#     Resulting Y variable must be a Series containing the difference between:
-#     Close at T and Close at T-1.
-#     """
+    Resulting Y variable must be a Series containing binary classifier
+    that indicates whether the price will go up or down in the next period.
+    """
 
-#     control_dataframe = dataframe.copy()
+    control_dataframe = dataframe.copy()
 
-#     control_y = control_dataframe["close"].shift(1) - control_dataframe["close"]
-#     control_y.dropna(inplace=True)
+    control_y = pd.Series(
+        np.where(
+            control_dataframe["close"].shift(-1) > control_dataframe["close"],
+            1,
+            -1,
+        ),
+    )
 
-#     lrm_calculator = LogisticRegressionModelCalculator(
-#         dataframe=dataframe,
-#         split_ratio=SPLIT_RATIO,
-#         smoothing_factor=SMOOTHING_FACTOR,
-#     )
+    lrm_calculator = LogisticRegressionModelCalculator(
+        dataframe=dataframe,
+        train_size=TRAIN_SIZE,
+    )
 
-#     _, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+    _, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
 
-#     pd.testing.assert_series_equal(y, control_y)
+    pd.testing.assert_series_equal(y, control_y)
 
 
 # @pytest.mark.usefixtures("dataframe")
@@ -148,7 +152,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #         smoothing_factor=SMOOTHING_FACTOR,
 #     )
 
-#     x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+#     x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(
 #         x,
 #         y,
 #     )
@@ -183,7 +187,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #         (mean_square_error_train + mean_square_error_test) * -1
 #     )
 
-#     score = lrm_calculator._score_model(  # noqa: SLF001
+#     score = lrm_calculator._score_model(
 #         r_squared_train,
 #         mean_square_error_train,
 #         r_squared_test,
@@ -219,9 +223,9 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #     )
 
 #     for model in models:
-#         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+#         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)
 
-#         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+#         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(
 #             x,
 #             y,
 #         )
@@ -236,7 +240,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #         r_squared_test = r2_score(y_test, forecast_test)
 #         mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
-#         model_score = lrm_calculator._score_model(  # noqa: SLF001
+#         model_score = lrm_calculator._score_model(
 #             r_squared_train=float(r_squared_train),
 #             mean_square_error_train=float(mean_square_error_train),
 #             r_squared_test=float(r_squared_test),
@@ -247,7 +251,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 
 #     control_best_model = max(control_models, key=lambda x: x[1])
 
-#     best_model = lrm_calculator._select_model_to_use()  # noqa: SLF001
+#     best_model = lrm_calculator._select_model_to_use()
 
 #     assert best_model[1] == control_best_model[1]
 
@@ -282,9 +286,9 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #     )
 
 #     for model in models:
-#         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+#         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)
 
-#         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+#         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(
 #             x,
 #             y,
 #         )
@@ -299,7 +303,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 #         r_squared_test = r2_score(y_test, forecast_test)
 #         mean_square_error_test = mean_squared_error(y_test, forecast_test)
 
-#         model_score = lrm_calculator._score_model(  # noqa: SLF001
+#         model_score = lrm_calculator._score_model(
 #             r_squared_train=float(r_squared_train),
 #             mean_square_error_train=float(mean_square_error_train),
 #             r_squared_test=float(r_squared_test),
@@ -310,7 +314,7 @@ def test__define_explanatory_variables__for_creating_correct_x_variable(
 
 #     control_best_model = max(control_models, key=lambda x: x[1])[0]
 
-#     x, _ = lrm_calculator._create_regression_trading_conditions(dataframe)  # noqa: SLF001
+#     x, _ = lrm_calculator._create_regression_trading_conditions(dataframe)
 
 #     control_dataframe.drop(control_dataframe.index[0], inplace=True)
 #     control_dataframe["lrf"] = control_best_model.predict(x)
