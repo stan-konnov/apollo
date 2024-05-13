@@ -5,8 +5,6 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 
 from apollo.calculations.models.arima_regression import ARIMARegressionModelCalculator
 
-TRAIN_SIZE = 0.4
-
 
 @pytest.mark.usefixtures("dataframe", "window_size")
 def test__forecast_periods__for_correct_columns(
