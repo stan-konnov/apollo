@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.model_selection import train_test_split
 
 from apollo.calculations.models.logistic_regression import (
     LogisticRegressionModelCalculator,
@@ -113,147 +114,62 @@ def test__create_regression_trading_conditions__for_creating_correct_y_variable(
     pd.testing.assert_series_equal(y, control_y)
 
 
-# @pytest.mark.usefixtures("dataframe")
-# def test__create_train_split_group__for_correctly_splitting_inputs(
-#     dataframe: pd.DataFrame,
-# ) -> None:
-#     """
-#     Test create_train_split_group method for correctly splitting inputs.
+@pytest.mark.usefixtures("dataframe")
+def test__create_train_split_group__for_correctly_splitting_inputs(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test create_train_split_group method for correctly splitting inputs.
 
-#     Resulting train and split groups must be equal to the control groups.
-#     """
+    Resulting train and split groups must be equal to the control groups.
+    """
 
-#     control_dataframe = dataframe.copy()
+    control_dataframe = dataframe.copy()
 
-#     control_dataframe["o_h"] = control_dataframe["open"] - control_dataframe["high"]
-#     control_x = control_dataframe[["o_h"]]
-#     control_x = control_x.drop(control_x.index[0])
+    control_dataframe["o_h"] = control_dataframe["open"] - control_dataframe["high"]
 
-#     control_y = control_dataframe["close"].shift(1) - control_dataframe["close"]
-#     control_y.dropna(inplace=True)
+    control_x = control_dataframe[["o_h"]]
+    control_y = pd.Series(
+        np.where(
+            control_dataframe["close"].shift(-1) > control_dataframe["close"],
+            1,
+            -1,
+        ),
+    )
 
-#     control_x_train, control_x_test, control_y_train, control_y_test = train_test_split(
-#         control_x,
-#         control_y,
-#         shuffle=False,
-#         test_size=SPLIT_RATIO,
-#     )
+    control_x_train, control_x_test, control_y_train, control_y_test = train_test_split(
+        control_x,
+        control_y,
+        shuffle=False,
+        train_size=TRAIN_SIZE,
+    )
 
-#     dataframe["o_h"] = dataframe["open"] - dataframe["high"]
-#     x = dataframe[["o_h"]]
-#     x = x.drop(x.index[0])
+    dataframe["o_h"] = dataframe["open"] - dataframe["high"]
 
-#     y = dataframe["close"].shift(1) - dataframe["close"]
-#     y.dropna(inplace=True)
+    x = dataframe[["o_h"]]
+    y = pd.Series(
+        np.where(
+            dataframe["close"].shift(-1) > dataframe["close"],
+            1,
+            -1,
+        ),
+    )
 
-#     lrm_calculator = LogisticRegressionModelCalculator(
-#         dataframe=dataframe,
-#         split_ratio=SPLIT_RATIO,
-#         smoothing_factor=SMOOTHING_FACTOR,
-#     )
+    lrm_calculator = LogisticRegressionModelCalculator(
+        dataframe=dataframe,
+        train_size=TRAIN_SIZE,
+    )
 
-#     x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(
-#         x,
-#         y,
-#     )
+    x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+        x,
+        y,
+    )
 
-#     pd.testing.assert_frame_equal(x_train, control_x_train)
-#     pd.testing.assert_frame_equal(x_test, control_x_test)
+    pd.testing.assert_frame_equal(x_train, control_x_train)
+    pd.testing.assert_frame_equal(x_test, control_x_test)
 
-#     pd.testing.assert_series_equal(y_train, control_y_train)
-#     pd.testing.assert_series_equal(y_test, control_y_test)
-
-
-# def test__score_model__for_correctly_calculating_score() -> None:
-#     """
-#     Test score_model method for correctly calculating score.
-
-#     Resulting score must be a correct combination of R2 and MSE.
-#     """
-
-#     r_squared_train = 0.5
-#     mean_square_error_train = 2
-
-#     r_squared_test = 0.4
-#     mean_square_error_test = 3
-
-#     lrm_calculator = LogisticRegressionModelCalculator(
-#         dataframe=pd.DataFrame(),
-#         split_ratio=SPLIT_RATIO,
-#         smoothing_factor=SMOOTHING_FACTOR,
-#     )
-
-#     control_score = (r_squared_train + r_squared_test) + (
-#         (mean_square_error_train + mean_square_error_test) * -1
-#     )
-
-#     score = lrm_calculator._score_model(
-#         r_squared_train,
-#         mean_square_error_train,
-#         r_squared_test,
-#         mean_square_error_test,
-#     )
-
-#     assert score == control_score
-
-
-# @pytest.mark.usefixtures("dataframe")
-# def test__select_model_to_use__for_correctly_selecting_best_model(
-#     dataframe: pd.DataFrame,
-# ) -> None:
-#     """
-#     Test select_model_to_use method for correctly selecting best model.
-
-#     Resulting model must be the one with the highest score.
-#     """
-
-#     control_models = []
-
-#     models: list[LinearRegression | Lasso | Ridge | ElasticNet] = [
-#         LinearRegression(),
-#         Lasso(alpha=SMOOTHING_FACTOR),
-#         Ridge(alpha=SMOOTHING_FACTOR),
-#         ElasticNet(alpha=SMOOTHING_FACTOR),
-#     ]
-
-#     lrm_calculator = LogisticRegressionModelCalculator(
-#         dataframe=dataframe,
-#         split_ratio=SPLIT_RATIO,
-#         smoothing_factor=SMOOTHING_FACTOR,
-#     )
-
-#     for model in models:
-#         x, y = lrm_calculator._create_regression_trading_conditions(dataframe)
-
-#         x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(
-#             x,
-#             y,
-#         )
-
-#         model.fit(x_train, y_train)
-
-#         forecast_train = model.predict(x_train)
-#         r_squared_train = r2_score(y_train, forecast_train)
-#         mean_square_error_train = mean_squared_error(y_train, forecast_train)
-
-#         forecast_test = model.predict(x_test)
-#         r_squared_test = r2_score(y_test, forecast_test)
-#         mean_square_error_test = mean_squared_error(y_test, forecast_test)
-
-#         model_score = lrm_calculator._score_model(
-#             r_squared_train=float(r_squared_train),
-#             mean_square_error_train=float(mean_square_error_train),
-#             r_squared_test=float(r_squared_test),
-#             mean_square_error_test=float(mean_square_error_test),
-#         )
-
-#         control_models.append((model, model_score))
-
-#     control_best_model = max(control_models, key=lambda x: x[1])
-
-#     best_model = lrm_calculator._select_model_to_use()
-
-#     assert best_model[1] == control_best_model[1]
+    pd.testing.assert_series_equal(y_train, control_y_train)
+    pd.testing.assert_series_equal(y_test, control_y_test)
 
 
 # @pytest.mark.usefixtures("dataframe")
