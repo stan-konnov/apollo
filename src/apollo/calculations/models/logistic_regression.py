@@ -73,7 +73,7 @@ class LogisticRegressionModelCalculator:
         x, y = self._create_regression_trading_conditions(self.dataframe)
 
         # Split into train and test
-        x_train, x_test, y_train, y_test = self._create_train_split_group(x, y)
+        x_train, y_train = self._create_train_split_group(x, y)
 
         # Fit the model
         model.fit(x_train, y_train)
@@ -149,25 +149,25 @@ class LogisticRegressionModelCalculator:
         self,
         x: pd.DataFrame,
         y: pd.Series,
-    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series]:
         """
         Create train and test split for given X and Y variables.
 
         :param x: explanatory variable.
         :param y: dependent variable.
 
-        :returns: Train and test split.
+        :returns: Train split.
         """
 
         # Split into train and test
         # NOTE: we do not shuffle, since:
         # our time series is already ordered by date
         # we want to forecast future values based on past values
-        x_train, x_test, y_train, y_test = train_test_split(
+        x_train, _, y_train, _ = train_test_split(
             x,
             y,
             shuffle=False,
             train_size=self.train_size,
         )
 
-        return x_train, x_test, y_train, y_test
+        return x_train, y_train

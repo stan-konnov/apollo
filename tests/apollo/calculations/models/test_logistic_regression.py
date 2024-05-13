@@ -126,7 +126,6 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
     """
 
     control_dataframe = dataframe.copy()
-
     control_dataframe["o_h"] = control_dataframe["open"] - control_dataframe["high"]
 
     control_x = control_dataframe[["o_h"]]
@@ -138,7 +137,7 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
         ),
     )
 
-    control_x_train, control_x_test, control_y_train, control_y_test = train_test_split(
+    control_x_train, _, control_y_train, _ = train_test_split(
         control_x,
         control_y,
         shuffle=False,
@@ -161,16 +160,13 @@ def test__create_train_split_group__for_correctly_splitting_inputs(
         train_size=TRAIN_SIZE,
     )
 
-    x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+    x_train, y_train = lrm_calculator._create_train_split_group(  # noqa: SLF001
         x,
         y,
     )
 
     pd.testing.assert_frame_equal(x_train, control_x_train)
-    pd.testing.assert_frame_equal(x_test, control_x_test)
-
     pd.testing.assert_series_equal(y_train, control_y_train)
-    pd.testing.assert_series_equal(y_test, control_y_test)
 
 
 @pytest.mark.usefixtures("dataframe")
@@ -191,7 +187,7 @@ def test__forecast_periods__for_correct_forecast(
     )
 
     x, y = lrm_calculator._create_regression_trading_conditions(control_dataframe)  # noqa: SLF001
-    x_train, x_test, y_train, y_test = lrm_calculator._create_train_split_group(  # noqa: SLF001
+    x_train, y_train = lrm_calculator._create_train_split_group(  # noqa: SLF001
         x,
         y,
     )
