@@ -8,12 +8,11 @@ from apollo.calculations.models.logistic_regression import (
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
-SPLIT_RATIO = 0.6
-SMOOTHING_FACTOR = 0.1
+TRAIN_SIZE = 0.4
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__linear_regression_forecast__with_valid_parameters(
+def test__logistic_regression_forecast__with_valid_parameters(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
@@ -31,8 +30,7 @@ def test__linear_regression_forecast__with_valid_parameters(
 
     lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
-        split_ratio=SPLIT_RATIO,
-        smoothing_factor=SMOOTHING_FACTOR,
+        train_size=TRAIN_SIZE,
     )
     lrm_calculator.forecast_periods()
 
@@ -44,8 +42,7 @@ def test__linear_regression_forecast__with_valid_parameters(
     linear_regression_forecast = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=window_size,
-        split_ratio=SPLIT_RATIO,
-        smoothing_factor=SMOOTHING_FACTOR,
+        train_size=TRAIN_SIZE,
     )
 
     linear_regression_forecast.model_trading_signals()
