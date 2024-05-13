@@ -37,7 +37,7 @@ class ARIMATrendMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.arf_calculator = ARIMARegressionModelCalculator(
+        self.arm_calculator = ARIMARegressionModelCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -52,7 +52,7 @@ class ARIMATrendMeanReversion(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.arf_calculator.forecast_periods()
+        self.arm_calculator.forecast_periods()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""

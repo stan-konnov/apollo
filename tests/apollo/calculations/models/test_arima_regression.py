@@ -59,11 +59,11 @@ def test__forecast_periods__for_correct_forecast(
 
     control_dataframe.set_index("date", inplace=True)
 
-    arf_calculator = ARIMARegressionModelCalculator(
+    arm_calculator = ARIMARegressionModelCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
 
-    arf_calculator.forecast_periods()
+    arm_calculator.forecast_periods()
 
     pd.testing.assert_series_equal(dataframe["artf"], control_dataframe["artf"])
