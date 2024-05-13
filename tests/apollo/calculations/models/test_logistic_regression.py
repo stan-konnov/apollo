@@ -186,15 +186,17 @@ def test__forecast_periods__for_correct_forecast(
         train_size=TRAIN_SIZE,
     )
 
-    x, y = lrm_calculator._create_regression_trading_conditions(control_dataframe)  # noqa: SLF001
-    x_train, y_train = lrm_calculator._create_train_split_group(  # noqa: SLF001
-        x,
-        y,
+    control_x, control_y = lrm_calculator._create_regression_trading_conditions(  # noqa: SLF001
+        control_dataframe,
+    )
+    control_x_train, control_y_train = lrm_calculator._create_train_split_group(  # noqa: SLF001
+        control_x,
+        control_y,
     )
 
     model = LogisticRegression()
-    model.fit(x_train, y_train)
-    control_dataframe["lrf"] = model.predict(x)
+    model.fit(control_x_train, control_y_train)
+    control_dataframe["lrf"] = model.predict(control_x)
 
     lrm_calculator.forecast_periods()
 
