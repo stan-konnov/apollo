@@ -72,7 +72,7 @@ class LogisticRegressionModelCalculator:
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(self.dataframe)
 
-        # Split into train and test
+        # Create train split group
         x_train, y_train = self._create_train_split_group(x, y)
 
         # Fit the model
@@ -151,7 +151,7 @@ class LogisticRegressionModelCalculator:
         y: pd.Series,
     ) -> tuple[pd.DataFrame, pd.Series]:
         """
-        Create train and test split for given X and Y variables.
+        Create train split for given X and Y variables.
 
         :param x: explanatory variable.
         :param y: dependent variable.
