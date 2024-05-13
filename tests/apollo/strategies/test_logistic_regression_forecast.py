@@ -2,21 +2,22 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.models.linear_regression import LinearRegressionModelCalculator
+from apollo.calculations.models.logistic_regression import (
+    LogisticRegressionModelCalculator,
+)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.linear_regression_forecast import LinearRegressionForecast
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
-SPLIT_RATIO = 0.6
-SMOOTHING_FACTOR = 0.1
+TRAIN_SIZE = 0.4
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__linear_regression_forecast__with_valid_parameters(
+def test__logistic_regression_forecast__with_valid_parameters(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test Linear Regression Forecast with valid parameters.
+    Test Logistic Regression Forecast with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
@@ -27,10 +28,9 @@ def test__linear_regression_forecast__with_valid_parameters(
     atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
     atr_calculator.calculate_average_true_range()
 
-    lrm_calculator = LinearRegressionModelCalculator(
+    lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
-        split_ratio=SPLIT_RATIO,
-        smoothing_factor=SMOOTHING_FACTOR,
+        train_size=TRAIN_SIZE,
     )
     lrm_calculator.forecast_periods()
 
@@ -39,13 +39,12 @@ def test__linear_regression_forecast__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    linear_regression_forecast = LinearRegressionForecast(
+    logistic_regression_forecast = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=window_size,
-        split_ratio=SPLIT_RATIO,
-        smoothing_factor=SMOOTHING_FACTOR,
+        train_size=TRAIN_SIZE,
     )
 
-    linear_regression_forecast.model_trading_signals()
+    logistic_regression_forecast.model_trading_signals()
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])

@@ -18,18 +18,12 @@
         "range": [0.1, 1.0]
     },
 
-    "split_ratio": {
+    "train_size": {
         "step": 0.1,
-        "range": [0.6, 0.8]
-    },
-
-    "smoothing_factor": {
-        "step": 0.1,
-        "range": [0.1, 0.5]
+        "range": [0.1, 0.9]
     },
 
     "strategy_specific_parameters": [
-        "split_ratio",
-        "smoothing_factor"
+        "train_size"
     ]
 }

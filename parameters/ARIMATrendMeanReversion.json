@@ -1,0 +1,22 @@
+{
+    "frequency": "1d",
+
+    "cash_size": 1000,
+
+    "window_size": {
+        "step": 1,
+        "range": [2, 6]
+    },
+
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "tp_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "strategy_specific_parameters": []
+}
