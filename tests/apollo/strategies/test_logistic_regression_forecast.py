@@ -17,7 +17,7 @@ def test__logistic_regression_forecast__with_valid_parameters(
     window_size: int,
 ) -> None:
     """
-    Test Linear Regression Forecast with valid parameters.
+    Test Logistic Regression Forecast with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
@@ -39,12 +39,12 @@ def test__logistic_regression_forecast__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    linear_regression_forecast = LogisticRegressionForecast(
+    logistic_regression_forecast = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=window_size,
         train_size=TRAIN_SIZE,
     )
 
-    linear_regression_forecast.model_trading_signals()
+    logistic_regression_forecast.model_trading_signals()
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
