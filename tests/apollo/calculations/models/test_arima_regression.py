@@ -7,12 +7,12 @@ from apollo.calculations.models.arima_regression import ARIMARegressionModelCalc
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__forecast_periods__for_correct_columns(
+def test__forecast_trend_periods__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test forecast_periods method for correct columns.
+    Test forecast_trend_periods method for correct columns.
 
     Resulting dataframe must have "artf" column.
     """
@@ -22,18 +22,18 @@ def test__forecast_periods__for_correct_columns(
         window_size=window_size,
     )
 
-    arf_calculator.forecast_periods()
+    arf_calculator.forecast_trend_periods()
 
     assert "artf" in arf_calculator.dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__forecast_periods__for_correct_forecast(
+def test__forecast_trend_periods__for_correct_forecast(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test forecast_periods method for correct trend forecast.
+    Test forecast_trend_periods method for correct trend forecast.
 
     Resulting forecast must be a correct forecast of the model.
     """
@@ -62,6 +62,6 @@ def test__forecast_periods__for_correct_forecast(
         window_size=window_size,
     )
 
-    arm_calculator.forecast_periods()
+    arm_calculator.forecast_trend_periods()
 
     pd.testing.assert_series_equal(dataframe["artf"], control_dataframe["artf"])

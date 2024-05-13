@@ -28,7 +28,7 @@ def test__arima_trend_mean_reversion__with_valid_parameters(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    arm_calculator.forecast_periods()
+    arm_calculator.forecast_trend_periods()
 
     control_dataframe.loc[
         control_dataframe["adj close"] < control_dataframe["artf"],

@@ -51,7 +51,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-    def forecast_periods(self) -> None:
+    def forecast_trend_periods(self) -> None:
         """
         Forecast trend periods using ARIMA regression model.
 
