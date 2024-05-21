@@ -10,6 +10,8 @@ class SupportResistanceCalculator(BaseCalculator):
 
     Calculates rolling support and resistance levels
     touch counts based on the threshold of tolerance.
+
+    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
     def __init__(
@@ -58,6 +60,10 @@ class SupportResistanceCalculator(BaseCalculator):
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_sr,
         )
+
+        # Write touch counts to the dataframe
+        self.dataframe["stc"] = self.sup_touch_count
+        self.dataframe["rtc"] = self.res_touch_count
 
     def _calc_sr(self, series: pd.Series) -> float:
         """
