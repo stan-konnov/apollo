@@ -32,7 +32,7 @@ def main() -> None:
 
     strategy = SupportResistanceTrendFollowing(
         dataframe=dataframe,
-        window_size=45,
+        window_size=40,
         tolerance_threshold=0.2,
         touch_count_threshold=2.0,
     )
@@ -43,7 +43,7 @@ def main() -> None:
         dataframe=dataframe,
         strategy_name="SupportResistanceTrendFollowing",
         lot_size_cash=1000,
-        sl_volatility_multiplier=0.1,
+        sl_volatility_multiplier=1.0,
         tp_volatility_multiplier=0.2,
         write_result_plot=True,
     )
