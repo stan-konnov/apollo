@@ -8,8 +8,8 @@ class SupportResistanceCalculator(BaseCalculator):
     """
     Support and Resistance calculator.
 
-    Calculates rolling support and resistance
-    levels based on threshold of tolerance.
+    Calculates rolling support and resistance levels
+    touch counts based on the threshold of tolerance.
     """
 
     def __init__(
@@ -22,8 +22,8 @@ class SupportResistanceCalculator(BaseCalculator):
         """
         Construct Support and Resistance calculator.
 
-        :param dataframe: Dataframe to calculate support and resistance levels for.
-        :param window_size: Window size for rolling support and resistance calculation.
+        :param dataframe: Dataframe to calculate touch counts for.
+        :param window_size: Window size for rolling touch counts calculation.
         :param sup_tolerance: Tolerance for support level calculation.
         :param res_tolerance: Tolerance for resistance level calculation.
         """
@@ -33,8 +33,13 @@ class SupportResistanceCalculator(BaseCalculator):
         self.sup_tolerance = sup_tolerance
         self.res_tolerance = res_tolerance
 
-        self.sup_touch_count: list[float] = []
-        self.res_touch_count: list[float] = []
+        # Initialize touch counters
+        self.sup_touched: int = 0
+        self.res_touched: int = 0
+
+        # Initialize touch count arrays
+        self.sup_touch_count: list[int] = []
+        self.res_touch_count: list[int] = []
 
     def calculate_support_resistance(self) -> None:
         """Calculate rolling support and resistance levels."""
@@ -52,10 +57,9 @@ class SupportResistanceCalculator(BaseCalculator):
         # Calculate rolling support and resistance touch counts
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_sr,
-            args=(self.dataframe,),
         )
 
-    def _calc_sr(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
+    def _calc_sr(self, series: pd.Series) -> float:
         """
         Calculate rolling support and resistance touch counts for a given window.
 
@@ -64,13 +68,10 @@ class SupportResistanceCalculator(BaseCalculator):
         :returns: Dummy float to satisfy Pandas' return value.
         """
 
-        # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[series.index]
-
         # Consider lowest and highest prices
         # as our support and resistance levels
-        sup_level = rolling_df["adj close"].min()
-        res_level = rolling_df["adj close"].max()
+        sup_level = series.min()
+        res_level = series.max()
 
         # Calculate the range between them
         sup_res_range = res_level - sup_level
@@ -79,4 +80,28 @@ class SupportResistanceCalculator(BaseCalculator):
         sup_tolerance = sup_level + self.sup_tolerance * sup_res_range
         res_tolerance = res_level - self.res_tolerance * sup_res_range
 
+        # Grab the current adjusted close price
+        current_price = series.iloc[-1]
+
+        # Increment the support touch counter
+        # if price is within the tolerance of support
+        if current_price <= sup_tolerance and current_price >= sup_level:
+            self.sup_touched += 1
+
+        # Increment the resistance touch counter
+        # if price is within the tolerance of resistance
+        elif current_price >= res_tolerance and current_price <= res_level:
+            self.res_touched += 1
+
+        # Reset touch counters
+        # if price is outside of tolerance
+        else:
+            self.res_touched = 0
+            self.sup_touched = 0
+
+        # Append touch counts to arrays
+        self.sup_touch_count.append(self.sup_touched)
+        self.res_touch_count.append(self.res_touched)
+
+        # Return dummy float to satisfy Pandas' return value
         return 0.0
