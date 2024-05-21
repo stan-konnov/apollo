@@ -32,7 +32,7 @@ def main() -> None:
 
     strategy = SupportResistanceTrendFollowing(
         dataframe=dataframe,
-        window_size=40,
+        window_size=45,
         sup_tolerance=0.2,
         res_tolerance=0.2,
         sup_touch_threshold=2,
