@@ -1,7 +1,11 @@
 import logging
 
+import pandas as pd
+
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.models.arima_regression import ARIMARegressionModelCalculator
+from apollo.calculations.support_resistance_touch_count import (
+    SupportResistanceTouchCountCalculator,
+)
 from apollo.settings import END_DATE, START_DATE, TICKER
 
 logging.basicConfig(
@@ -23,9 +27,17 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    arm_calculator = ARIMARegressionModelCalculator(dataframe=dataframe, window_size=5)
+    sr_calculator = SupportResistanceTouchCountCalculator(
+        dataframe=dataframe,
+        window_size=5,
+        sup_tolerance=0.2,
+        res_tolerance=0.2,
+    )
 
-    arm_calculator.forecast_periods()
+    sr_calculator.calculate_support_resistance()
+
+    dataframe.dropna(inplace=True)
+    pd.options.display.max_rows = 10000
 
     print(dataframe)
 

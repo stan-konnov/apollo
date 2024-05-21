@@ -4,9 +4,9 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class SupportResistanceCalculator(BaseCalculator):
+class SupportResistanceTouchCountCalculator(BaseCalculator):
     """
-    Support and Resistance calculator.
+    Support Resistance Touch Counts calculator.
 
     Calculates rolling support and resistance levels
     touch counts based on the threshold of tolerance.
@@ -22,7 +22,7 @@ class SupportResistanceCalculator(BaseCalculator):
         res_tolerance: float,
     ) -> None:
         """
-        Construct Support and Resistance calculator.
+        Construct Support Resistance Touch Counts calculator.
 
         :param dataframe: Dataframe to calculate touch counts for.
         :param window_size: Window size for rolling touch counts calculation.
@@ -44,7 +44,7 @@ class SupportResistanceCalculator(BaseCalculator):
         self.res_touch_count: list[int] = []
 
     def calculate_support_resistance(self) -> None:
-        """Calculate rolling support and resistance levels."""
+        """Calculate rolling support resistance touch counts."""
 
         # Fill support and resistance touch counts
         # arrays with N NaN, where N = window size
@@ -56,7 +56,7 @@ class SupportResistanceCalculator(BaseCalculator):
             np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         )
 
-        # Calculate rolling support and resistance touch counts
+        # Calculate rolling support resistance touch counts
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_sr,
         )
@@ -67,7 +67,7 @@ class SupportResistanceCalculator(BaseCalculator):
 
     def _calc_sr(self, series: pd.Series) -> float:
         """
-        Calculate rolling support and resistance touch counts for a given window.
+        Calculate rolling support resistance touch counts for a given window.
 
         :param series: Series which is used for indexing out rolling window.
         :param dataframe: Original dataframe acting as a source of rolling window.
