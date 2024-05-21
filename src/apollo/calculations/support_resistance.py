@@ -19,7 +19,7 @@ class SupportResistanceCalculator(BaseCalculator):
         res_tolerance: float,
     ) -> None:
         """
-        Construct Distribution Moments calculator.
+        Construct Support and Resistance calculator.
 
         :param dataframe: Dataframe to calculate support and resistance levels for.
         :param window_size: Window size for rolling support and resistance calculation.
