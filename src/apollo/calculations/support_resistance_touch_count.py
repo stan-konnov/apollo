@@ -3,6 +3,10 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+"""
+TODO: Calculate SR levels with K-Means clustering.
+"""
+
 
 class SupportResistanceTouchCountCalculator(BaseCalculator):
     """
