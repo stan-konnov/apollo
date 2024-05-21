@@ -82,7 +82,7 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         # Calculate the range between them
         sup_res_range = res_level - sup_level
 
-        # Calculate tolerance thresholds
+        # Calculate tolerance thresholds based on the range
         sup_tolerance = sup_level + self.sup_tolerance * sup_res_range
         res_tolerance = res_level - self.res_tolerance * sup_res_range
 
