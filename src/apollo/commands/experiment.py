@@ -27,9 +27,8 @@ def main() -> None:
 
     sr_calculator = SupportResistanceTouchCountCalculator(
         dataframe=dataframe,
-        window_size=5,
-        sup_tolerance=0.2,
-        res_tolerance=0.2,
+        window_size=45,
+        tolerance_threshold=0.2,
     )
 
     sr_calculator.calculate_support_resistance_touch_count()

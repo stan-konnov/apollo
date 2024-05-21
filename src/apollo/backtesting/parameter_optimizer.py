@@ -19,6 +19,9 @@ from apollo.strategies.logistic_regression_forecast import LogisticRegressionFor
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
+from apollo.strategies.support_resistance_trend_following import (
+    SupportResistanceTrendFollowing,
+)
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
@@ -50,6 +53,8 @@ class ParameterOptimizer:
             SwingEventsMeanReversion,
         "LogisticRegressionForecast":
             LogisticRegressionForecast,
+        "SupportResistanceTrendFollowing":
+            SupportResistanceTrendFollowing,
         "LinearRegressionChannelMeanReversion":
             LinearRegressionChannelMeanReversion,
         "SkewnessKurtosisVolatilityTrendFollowing":

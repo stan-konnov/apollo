@@ -33,10 +33,8 @@ def main() -> None:
     strategy = SupportResistanceTrendFollowing(
         dataframe=dataframe,
         window_size=45,
-        sup_tolerance=0.2,
-        res_tolerance=0.2,
-        sup_touch_threshold=2,
-        res_touch_threshold=2,
+        tolerance_threshold=0.2,
+        touch_count_threshold=2.0,
     )
 
     strategy.model_trading_signals()

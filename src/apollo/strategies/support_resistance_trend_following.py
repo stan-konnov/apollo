@@ -14,32 +14,28 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        sup_tolerance: float,
-        res_tolerance: float,
-        sup_touch_threshold: int,
-        res_touch_threshold: int,
+        # TODO: please rename me to tolerance_level
+        # and optimize with more windows
+        tolerance_threshold: float,
+        touch_count_threshold: float,
     ) -> None:
         """Work in progress."""
 
         self._validate_parameters(
             [
-                ("sup_tolerance", sup_tolerance, float),
-                ("res_tolerance", res_tolerance, float),
-                ("sup_touch_threshold", sup_touch_threshold, int),
-                ("res_touch_threshold", res_touch_threshold, int),
+                ("tolerance_threshold", tolerance_threshold, float),
+                ("touch_count_threshold", touch_count_threshold, float),
             ],
         )
 
         super().__init__(dataframe, window_size)
 
-        self.sup_touch_threshold = sup_touch_threshold
-        self.res_touch_threshold = res_touch_threshold
+        self.touch_count_threshold = touch_count_threshold
 
         self.srtc_calculator = SupportResistanceTouchCountCalculator(
             dataframe=dataframe,
             window_size=window_size,
-            sup_tolerance=sup_tolerance,
-            res_tolerance=res_tolerance,
+            tolerance_threshold=tolerance_threshold,
         )
 
     def model_trading_signals(self) -> None:
@@ -58,11 +54,11 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[
-            self.dataframe["rtc"] > self.res_touch_threshold,
+            self.dataframe["rtc"] > self.touch_count_threshold,
             "signal",
         ] = LONG_SIGNAL
 
         self.dataframe.loc[
-            self.dataframe["stc"] > self.sup_touch_threshold,
+            self.dataframe["stc"] > self.touch_count_threshold,
             "signal",
         ] = SHORT_SIGNAL
