@@ -6,7 +6,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 class SupportResistanceTouchCountCalculator(BaseCalculator):
     """
-    Support Resistance Touch Counts calculator.
+    Support Resistance Touch Count calculator.
 
     Calculates rolling support and resistance levels
     touch counts based on the threshold of tolerance.
@@ -22,7 +22,7 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         res_tolerance: float,
     ) -> None:
         """
-        Construct Support Resistance Touch Counts calculator.
+        Construct Support Resistance Touch Count calculator.
 
         :param dataframe: Dataframe to calculate touch counts for.
         :param window_size: Window size for rolling touch counts calculation.
@@ -43,7 +43,7 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         self.sup_touch_count: list[int] = []
         self.res_touch_count: list[int] = []
 
-    def calculate_support_resistance_touch_counts(self) -> None:
+    def calculate_support_resistance_touch_count(self) -> None:
         """Calculate rolling support resistance touch counts."""
 
         # Fill support and resistance touch counts

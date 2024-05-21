@@ -32,7 +32,7 @@ def main() -> None:
         res_tolerance=0.2,
     )
 
-    sr_calculator.calculate_support_resistance_touch_points()
+    sr_calculator.calculate_support_resistance_touch_count()
 
 
 if __name__ == "__main__":

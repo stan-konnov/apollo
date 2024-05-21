@@ -52,7 +52,7 @@ class SupportResistanceTrendFollowing(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.srtc_calculator.calculate_support_resistance_touch_counts()
+        self.srtc_calculator.calculate_support_resistance_touch_count()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
