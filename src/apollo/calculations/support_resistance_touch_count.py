@@ -43,7 +43,7 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         self.sup_touch_count: list[int] = []
         self.res_touch_count: list[int] = []
 
-    def calculate_support_resistance(self) -> None:
+    def calculate_support_resistance_touch_points(self) -> None:
         """Calculate rolling support resistance touch counts."""
 
         # Fill support and resistance touch counts

@@ -1,7 +1,5 @@
 import logging
 
-import pandas as pd
-
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.calculations.support_resistance_touch_count import (
     SupportResistanceTouchCountCalculator,
@@ -34,12 +32,7 @@ def main() -> None:
         res_tolerance=0.2,
     )
 
-    sr_calculator.calculate_support_resistance()
-
-    dataframe.dropna(inplace=True)
-    pd.options.display.max_rows = 10000
-
-    print(dataframe)
+    sr_calculator.calculate_support_resistance_touch_points()
 
 
 if __name__ == "__main__":

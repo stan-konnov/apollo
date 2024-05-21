@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.arima_trend_mean_reversion import (
-    ARIMATrendMeanReversion,
+from apollo.strategies.support_resistance_trend_following import (
+    SupportResistanceTrendFollowing,
 )
 
 if TYPE_CHECKING:
@@ -30,16 +30,20 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = ARIMATrendMeanReversion(
+    strategy = SupportResistanceTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
+        window_size=40,
+        sup_tolerance=0.2,
+        res_tolerance=0.2,
+        sup_touch_threshold=2,
+        res_touch_threshold=2,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="ARIMATrendMeanReversion",
+        strategy_name="SupportResistanceTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.2,
