@@ -22,19 +22,19 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        tolerance_threshold: float,
+        tolerance_level: float,
     ) -> None:
         """
         Construct Support Resistance Touch Count calculator.
 
         :param dataframe: Dataframe to calculate touch counts for.
         :param window_size: Window size for rolling touch counts calculation.
-        :param tolerance_threshold: Tolerance threshold for support-resistance levels.
+        :param tolerance_level: Tolerance level for support and resistance.
         """
 
         super().__init__(dataframe, window_size)
 
-        self.tolerance_threshold = tolerance_threshold
+        self.tolerance_level = tolerance_level
 
         # Initialize touch counters
         self.sup_touched: int = 0
@@ -84,8 +84,8 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         sup_res_range = res_level - sup_level
 
         # Calculate tolerance thresholds based on the range
-        sup_tolerance = sup_level + self.tolerance_threshold * sup_res_range
-        res_tolerance = res_level - self.tolerance_threshold * sup_res_range
+        sup_tolerance = sup_level + self.tolerance_level * sup_res_range
+        res_tolerance = res_level - self.tolerance_level * sup_res_range
 
         # Grab the current adjusted close price
         current_price = series.iloc[-1]

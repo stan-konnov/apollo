@@ -14,16 +14,14 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        # TODO: please rename me to tolerance_level
-        # and optimize with more windows
-        tolerance_threshold: float,
+        tolerance_level: float,
         touch_count_threshold: float,
     ) -> None:
         """Work in progress."""
 
         self._validate_parameters(
             [
-                ("tolerance_threshold", tolerance_threshold, float),
+                ("tolerance_level", tolerance_level, float),
                 ("touch_count_threshold", touch_count_threshold, float),
             ],
         )
@@ -35,7 +33,7 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         self.srtc_calculator = SupportResistanceTouchCountCalculator(
             dataframe=dataframe,
             window_size=window_size,
-            tolerance_threshold=tolerance_threshold,
+            tolerance_level=tolerance_level,
         )
 
     def model_trading_signals(self) -> None:
