@@ -36,8 +36,8 @@ def main() -> None:
 
     apo_calculator.calculate_absolute_price_oscillator()
 
-    # pd.options.display.max_rows = 10000
-    # print(dataframe)
+    pd.options.display.max_rows = 10000
+    print(dataframe)
 
 
 if __name__ == "__main__":
