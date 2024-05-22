@@ -8,7 +8,21 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 
 class SupportResistanceTrendFollowing(BaseStrategy):
-    """Work in progress."""
+    """
+    Support Resistance Trend Following.
+
+    This strategy takes long positions when:
+
+    * Resistance touch count is above the threshold,
+    indicating that price point is breaking through resistance level.
+
+    This strategy takes short positions when:
+
+    * Support touch count is above the threshold,
+    indicating that price point is breaking through support level.
+
+    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
+    """
 
     def __init__(
         self,
