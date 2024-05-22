@@ -14,8 +14,6 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        # TODO: please rename me to tolerance_level
-        # and optimize with more windows
         tolerance_threshold: float,
         touch_count_threshold: float,
     ) -> None:
