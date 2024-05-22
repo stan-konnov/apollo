@@ -4,9 +4,7 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.support_resistance_trend_following import (
-    SupportResistanceTrendFollowing,
-)
+from apollo.strategies.apo_mean_reversion import AbsolutePriceOscillatorMeanReversion
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -30,11 +28,12 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SupportResistanceTrendFollowing(
+    strategy = AbsolutePriceOscillatorMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        tolerance_threshold=0.1,
-        touch_count_threshold=2.0,
+        fast_ema_period=5.0,
+        slow_ema_period=10.0,
+        oscillator_threshold=0.1,
     )
 
     strategy.model_trading_signals()
@@ -43,8 +42,8 @@ def main() -> None:
         dataframe=dataframe,
         strategy_name="SupportResistanceTrendFollowing",
         lot_size_cash=1000,
-        sl_volatility_multiplier=0.4,
-        tp_volatility_multiplier=0.5,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.1,
         write_result_plot=True,
     )
 
