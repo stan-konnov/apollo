@@ -31,7 +31,14 @@ class SupportResistanceTrendFollowing(BaseStrategy):
         tolerance_threshold: float,
         touch_count_threshold: float,
     ) -> None:
-        """Work in progress."""
+        """
+        Construct Support Resistance Trend Following strategy.
+
+        :param dataframe: Dataframe with price data.
+        :param window_size: Size of the window for the strategy.
+        :param tolerance_threshold: Tolerance threshold for support-resistance levels.
+        :param touch_count_threshold: Threshold for touch count to trigger the signal.
+        """
 
         self._validate_parameters(
             [
