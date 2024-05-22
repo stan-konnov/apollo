@@ -77,11 +77,11 @@ class SupportResistanceTouchCountCalculator(BaseCalculator):
         res_level = series.max()
 
         # Calculate the range between them
-        sup_res_range = res_level - sup_level
+        # sup_res_range = res_level - sup_level
 
-        # Calculate tolerance thresholds based on the range
-        sup_tolerance = sup_level + self.tolerance_threshold * sup_res_range
-        res_tolerance = res_level - self.tolerance_threshold * sup_res_range
+        # Calculate tolerance thresholds based on the min and max
+        sup_tolerance = sup_level + self.tolerance_threshold * sup_level
+        res_tolerance = res_level - self.tolerance_threshold * res_level
 
         # Grab the current adjusted close price
         current_price = series.iloc[-1]

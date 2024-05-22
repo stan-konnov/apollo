@@ -1,9 +1,9 @@
 {
     "frequency": "1d",
     "cash_size": 1000,
-    "window_size": 40.0,
-    "sl_volatility_multiplier": 1.0,
-    "tp_volatility_multiplier": 0.2,
-    "tolerance_threshold": 0.2,
+    "window_size": 5.0,
+    "sl_volatility_multiplier": 0.4,
+    "tp_volatility_multiplier": 0.5,
+    "tolerance_threshold": 0.1,
     "touch_count_threshold": 2.0
 }

@@ -33,3 +33,16 @@ Time-in-force must be set to be `day`. Any other time_in_force will be rejected 
     3. Download IB API source code
     4. Use Python to connect to TWS
     5. Follow: https://algotrading101.com/learn/interactive-brokers-python-api-native-guide/
+
+
+### On Orders:
+
+* Immediate or Cancel (IOC)
+  An IOC order mandates that whatever amount of an order that can be executed in the market (or at a limit)
+  in a very short time span, often just a few seconds or less, be filled and then the rest of the order canceled.
+  If no shares are traded in that "immediate" interval, then the order is canceled completely.
+
+* Fill or Kill (FOK)
+  This type of order combines an AON order with an IOC specification; in other words,
+  it mandates that the entire order size be traded and in a very short time period,
+  often a few seconds or less. If neither condition is met, the order is canceled.
