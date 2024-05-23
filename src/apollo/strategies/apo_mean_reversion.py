@@ -36,6 +36,10 @@ class AbsolutePriceOscillatorMeanReversion(BaseStrategy):
 
         self.oscillator_threshold = oscillator_threshold
 
+        # NOTE: We cast fast and slow EMA periods to integers
+        # as they are used as window sizes in the calculations.
+        # Yet, the strategy consumes them as floats since parameter
+        # optimizer is designed to create combinations of float values.
         self.apo_calculator = AbsolutePriceOscillatorCalculator(
             dataframe=dataframe,
             window_size=window_size,
