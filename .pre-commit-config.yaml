@@ -6,7 +6,7 @@ repos:
         # Run the linter.
       - id: ruff
         types_or: [ python, jupyter ]
-        args: [ --fix ]
+        args: [ --fix, -q ]
       # Run the formatter.
       - id: ruff-format
         args: [ -q ]
