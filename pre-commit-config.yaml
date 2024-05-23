@@ -1,4 +1,4 @@
-- repo: https://github.com/StanisKo/apollo
+- repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
   rev: v0.4.5
   hooks:
