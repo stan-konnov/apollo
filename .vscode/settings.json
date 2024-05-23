@@ -1,5 +1,6 @@
 {
     "editor.tabSize": 4,
+    "editor.defaultFormatter": "charliermarsh.ruff",
 
     "files.exclude": {
         "**/.pytest_cache": true,
@@ -19,6 +20,11 @@
             "source.organizeImports": "explicit",
             "source.fixAll": "always"
         },
-        "editor.defaultFormatter": "charliermarsh.ruff",
     },
+
+    "notebook.formatOnSave.enabled": true,
+    "notebook.codeActionsOnSave": {
+        "notebook.source.fixAll": "explicit",
+        "notebook.source.organizeImports": "explicit"
+    }
 }
