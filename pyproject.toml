@@ -38,7 +38,6 @@ omit = [
 ]
 
 [tool.poe.tasks]
-format = "ruff format -q"
 test = "pytest -v --cov=src --cov-report term-missing"
 
 optimize = "python3 src/apollo/commands/optimize.py"
