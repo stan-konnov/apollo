@@ -41,27 +41,63 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
         By taking the difference between short-term and long-term EMAs.
         """
 
-        # Calculate fast EMA
-        fast_ema = (
+        fast_std = (
             self.dataframe["adj close"]
-            .ewm(
-                alpha=1 / self.fast_ema_period,
-                min_periods=self.fast_ema_period,
-                adjust=False,
+            .rolling(
+                window=self.fast_ema_period,
             )
-            .mean()
+            .std()
         )
 
-        # Calculate slow EMA
+        fast_ema = (
+            self.dataframe["adj close"]
+            .rolling(window=self.fast_ema_period)
+            .apply(
+                self._calc_vol_adj_ema,
+                args=(self.fast_ema_period, fast_std),
+            )
+        )
+
+        slow_std = (
+            self.dataframe["adj close"]
+            .rolling(
+                window=self.slow_ema_period,
+            )
+            .std()
+        )
+
         slow_ema = (
             self.dataframe["adj close"]
-            .ewm(
-                alpha=1 / self.slow_ema_period,
-                min_periods=self.slow_ema_period,
-                adjust=False,
+            .rolling(window=self.slow_ema_period)
+            .apply(
+                self._calc_vol_adj_ema,
+                args=(self.slow_ema_period, slow_std),
             )
-            .mean()
         )
 
         # Calculate APO
         self.dataframe["apo"] = fast_ema - slow_ema
+
+    def _calc_vol_adj_ema(
+        self,
+        series: pd.Series,
+        ema_window_size: int,
+        standard_deviation: pd.Series,
+    ) -> float:
+        """Calculate volatility adjusted fast EMA."""
+
+        # Calculate average standard deviation for the window
+        average_standard_deviation = standard_deviation.mean()
+
+        # Calculate standard deviation factor for the window
+        standard_deviation_factor = (standard_deviation / average_standard_deviation)[
+            -1
+        ]
+
+        # Calculate volatility adjusted smoothing factor
+        alpha = 1 / ema_window_size * standard_deviation_factor
+
+        # Calculate volatility adjusted EMA
+        vol_adjusted_ema = series.ewm(alpha=alpha, adjust=False).mean()
+
+        return vol_adjusted_ema[-1]

@@ -2,9 +2,9 @@
     "frequency": "1d",
     "cash_size": 1000,
     "window_size": 10.0,
-    "sl_volatility_multiplier": 0.4,
+    "sl_volatility_multiplier": 0.2,
     "tp_volatility_multiplier": 0.7,
     "fast_ema_period": 5.0,
-    "slow_ema_period": 15.0,
-    "oscillator_threshold": 0.5
+    "slow_ema_period": 20.0,
+    "oscillator_threshold": 0.1
 }
