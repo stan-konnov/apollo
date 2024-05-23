@@ -25,18 +25,11 @@ from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversi
 from apollo.utils.types import StrategyCatalogueMap
 
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
-    "ARIMATrendMeanReversion":
-        ARIMATrendMeanReversion,
-    "SwingEventsMeanReversion":
-        SwingEventsMeanReversion,
-    "LogisticRegressionForecast":
-        LogisticRegressionForecast,
-    "SupportResistanceTrendFollowing":
-        SupportResistanceTrendFollowing,
-    "LinearRegressionChannelMeanReversion":
-        LinearRegressionChannelMeanReversion,
-    "AbsolutePriceOscillatorMeanReversion":
-        AbsolutePriceOscillatorMeanReversion,
-    "SkewnessKurtosisVolatilityTrendFollowing":
-        SkewnessKurtosisVolatilityTrendFollowing,
+    "ARIMATrendMeanReversion": ARIMATrendMeanReversion,
+    "SwingEventsMeanReversion": SwingEventsMeanReversion,
+    "LogisticRegressionForecast": LogisticRegressionForecast,
+    "SupportResistanceTrendFollowing": SupportResistanceTrendFollowing,
+    "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
+    "AbsolutePriceOscillatorMeanReversion": AbsolutePriceOscillatorMeanReversion,
+    "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
 }

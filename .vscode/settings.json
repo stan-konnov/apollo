@@ -7,6 +7,7 @@
         "**/.coverage*": true,
         "**/venv": true,
         "**/__init__.py": true,
+        "**/.ruff_cache": true,
     },
 
     "python.analysis.autoImportCompletions": true,
@@ -18,5 +19,6 @@
             "source.organizeImports": "explicit",
             "source.fixAll": "always"
         },
+        "editor.defaultFormatter": "charliermarsh.ruff",
     },
 }

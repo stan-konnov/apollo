@@ -21,9 +21,9 @@ tqdm = "^4.66.2"
 pytest = "^8.1.1"
 pytest-cov = "^5.0.0"
 poethepoet = "^0.25.1"
-black = "^24.4.1"
 scikit-learn = "^1.4.2"
 statsmodels = "^0.14.2"
+ruff = "^0.4.5"
 
 [tool.poetry.dev-dependencies]
 
@@ -37,6 +37,7 @@ omit = [
 ]
 
 [tool.poe.tasks]
+format = "ruff format -q"
 test = "pytest -v --cov=src --cov-report term-missing"
 
 optimize = "python3 src/apollo/commands/optimize.py"
