@@ -49,6 +49,9 @@ class SupportResistanceTrendFollowing(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
+        # NOTE: We consume touch count threshold as float since parameter
+        # optimizer is designed to create combinations of float values.
+        # Yet, it is used as an integer to trigger the signal.
         self.touch_count_threshold = touch_count_threshold
 
         self.srtc_calculator = SupportResistanceTouchCountCalculator(
