@@ -24,6 +24,7 @@ poethepoet = "^0.25.1"
 scikit-learn = "^1.4.2"
 statsmodels = "^0.14.2"
 ruff = "^0.4.5"
+pre-commit = "^3.7.1"
 
 [tool.poetry.dev-dependencies]
 
