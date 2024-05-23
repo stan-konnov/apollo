@@ -7,7 +7,7 @@ repos:
       - id: ruff
         types_or: [ python, jupyter ]
         args: [ --fix ]
-      # # Run the formatter.
-      # - id: ruff-format
-      #   args: [ -q ]
-      #   types_or: [ python, jupyter ]
+      # Run the formatter.
+      - id: ruff-format
+        args: [ -q ]
+        types_or: [ python, jupyter ]
