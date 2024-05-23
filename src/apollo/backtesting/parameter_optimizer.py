@@ -32,6 +32,7 @@ class ParameterOptimizer:
     """
 
     def __init__(self) -> None:
+
         """
         Construct Parameter Optimizer.
 
