@@ -65,3 +65,6 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
 
         # Calculate APO
         self.dataframe["apo"] = fast_ema - slow_ema
+
+        # Calculate previous APO
+        self.dataframe["prev_apo"] = self.dataframe["apo"].shift(1)

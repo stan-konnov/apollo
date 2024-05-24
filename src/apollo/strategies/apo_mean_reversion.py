@@ -63,11 +63,11 @@ class AbsolutePriceOscillatorMeanReversion(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[
-            self.dataframe["apo"] < self.oscillator_threshold * -1,
+            self.dataframe["apo"] < self.dataframe["prev_apo"],
             "signal",
         ] = LONG_SIGNAL
 
         self.dataframe.loc[
-            self.dataframe["apo"] > self.oscillator_threshold,
+            self.dataframe["apo"] > self.dataframe["prev_apo"],
             "signal",
         ] = SHORT_SIGNAL
