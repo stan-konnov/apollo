@@ -32,9 +32,9 @@ def main() -> None:
 
     strategy = MovingAverageConvergenceDivergenceMeanReversion(
         dataframe=dataframe,
-        window_size=5,
-        fast_ema_period=5.0,
-        slow_ema_period=15.0,
+        window_size=10,
+        fast_ema_period=10.0,
+        slow_ema_period=20.0,
     )
 
     strategy.model_trading_signals()
@@ -43,8 +43,8 @@ def main() -> None:
         dataframe=dataframe,
         strategy_name="SupportResistanceTrendFollowing",
         lot_size_cash=1000,
-        sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.1,
+        sl_volatility_multiplier=0.4,
+        tp_volatility_multiplier=0.7,
         write_result_plot=True,
     )
 

@@ -59,11 +59,11 @@ class MovingAverageConvergenceDivergenceMeanReversion(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[
-            self.dataframe["macd"] > self.dataframe["macdsl"],
+            self.dataframe["macd"] < self.dataframe["macdsl"],
             "signal",
         ] = LONG_SIGNAL
 
         self.dataframe.loc[
-            self.dataframe["macd"] < self.dataframe["macdsl"],
+            self.dataframe["macd"] > self.dataframe["macdsl"],
             "signal",
         ] = SHORT_SIGNAL
