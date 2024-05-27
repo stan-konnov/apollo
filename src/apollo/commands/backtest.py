@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.apo_mean_reversion import AbsolutePriceOscillatorMeanReversion
+from apollo.strategies.macd_mean_reversion import (
+    MovingAverageConvergenceDivergenceMeanReversion,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,9 +30,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = AbsolutePriceOscillatorMeanReversion(
+    strategy = MovingAverageConvergenceDivergenceMeanReversion(
         dataframe=dataframe,
-        window_size=15,
+        window_size=5,
         fast_ema_period=5.0,
         slow_ema_period=15.0,
     )

@@ -14,6 +14,9 @@ from apollo.strategies.lin_reg_chan_mean_reversion import (
     LinearRegressionChannelMeanReversion,
 )
 from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
+from apollo.strategies.macd_mean_reversion import (
+    MovingAverageConvergenceDivergenceMeanReversion,
+)
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
@@ -26,4 +29,5 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "LogisticRegressionForecast": LogisticRegressionForecast,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
+    "MovingAverageConvergenceDivergenceMeanReversion": MovingAverageConvergenceDivergenceMeanReversion,  # noqa: E501
 }
