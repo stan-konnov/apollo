@@ -23,8 +23,8 @@ class MovingAverageConvergenceDivergenceMeanReversion(BaseStrategy):
     indicating that instrument is gaining bullish
     momentum and is likely to revert back to the mean.
 
-    Gerald Appel, CMT Association, 1970.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
+    Appel, Technical Analysis Power Tools for Active Investors, 2005.
     """
 
     def __init__(
