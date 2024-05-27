@@ -79,6 +79,3 @@ class MovingAverageConvergenceDivergenceCalculator(BaseCalculator):
             )
             .mean()
         )
-
-        # Calculate MACD Histogram
-        self.dataframe["macdhg"] = self.dataframe["macd"] - self.dataframe["macdsl"]
