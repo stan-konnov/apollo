@@ -14,12 +14,12 @@ class MovingAverageConvergenceDivergenceMeanReversion(BaseStrategy):
     This strategy takes long positions when:
 
     * MACD line crosses below the MACD Signal Line,
-    indicating that instrument entered overbought zone.
+    indicating that instrument entered oversold zone.
 
     This strategy takes short positions when:
 
     * MACD line crosses above the MACD Signal Line,
-    indicating that instrument entered oversold zone.
+    indicating that instrument entered overbought zone.
 
     Gerald Appel, CMT Association, 1970.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
