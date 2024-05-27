@@ -1,10 +1,8 @@
 import logging
 
-import pandas as pd
-
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.absolute_price_oscillator import (
-    AbsolutePriceOscillatorCalculator,
+from apollo.calculations.moving_average_convergence_divergence import (
+    MovingAverageConvergenceDivergenceCalculator,
 )
 from apollo.settings import END_DATE, START_DATE, TICKER
 
@@ -27,17 +25,14 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    apo_calculator = AbsolutePriceOscillatorCalculator(
+    macd_calculator = MovingAverageConvergenceDivergenceCalculator(
         dataframe=dataframe,
         window_size=5,
         fast_ema_period=10,
         slow_ema_period=40,
     )
 
-    apo_calculator.calculate_absolute_price_oscillator()
-
-    pd.options.display.max_rows = 10000
-    print(dataframe)
+    macd_calculator.calculate_moving_average_convergence_divergence()
 
 
 if __name__ == "__main__":
