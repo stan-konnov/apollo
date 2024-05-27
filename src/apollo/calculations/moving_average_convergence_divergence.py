@@ -10,8 +10,9 @@ class MovingAverageConvergenceDivergenceCalculator(BaseCalculator):
     Calculates the MACD based on the difference between
     short-term and long-term exponential moving averages.
 
-    Calculates MACD Signal Line based on the
-    exponential moving average of the MACD line.
+    Calculates MACD Signal Line expressed as the
+    exponential moving average of the MACD line
+    over the period of specified window size.
 
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
