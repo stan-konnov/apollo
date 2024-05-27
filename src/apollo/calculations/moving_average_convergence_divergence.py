@@ -79,3 +79,11 @@ class MovingAverageConvergenceDivergenceCalculator(BaseCalculator):
             )
             .mean()
         )
+
+        # Calculate MACD Histogram
+        self.dataframe["macdhg"] = self.dataframe["macd"] - self.dataframe["macdsl"]
+
+        # Calculate previous MACD Histogram
+        self.dataframe["prev_macdhg"] = self.dataframe["macdhg"].shift(1)
+
+        # Calculate minima and maxima of MACD Histogram
