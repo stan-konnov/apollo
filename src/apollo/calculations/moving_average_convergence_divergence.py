@@ -14,6 +14,7 @@ class MovingAverageConvergenceDivergenceCalculator(BaseCalculator):
     exponential moving average of the MACD line
     over the period of specified window size.
 
+    Gerald Appel, CMT Association, 1970.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 

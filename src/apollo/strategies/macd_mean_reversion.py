@@ -9,8 +9,19 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 class MovingAverageConvergenceDivergenceMeanReversion(BaseStrategy):
     """
-    Work in progress.
+    Moving Average Convergence Divergence (MACD) Mean Reversion.
 
+    This strategy takes long positions when:
+
+    * MACD line crosses below the MACD Signal Line,
+    indicating that instrument entered overbought zone.
+
+    This strategy takes short positions when:
+
+    * MACD line crosses above the MACD Signal Line,
+    indicating that instrument entered oversold zone.
+
+    Gerald Appel, CMT Association, 1970.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
