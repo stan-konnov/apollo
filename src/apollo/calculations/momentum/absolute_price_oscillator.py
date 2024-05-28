@@ -9,6 +9,10 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
 
     Calculates the APO based on the difference between
     short-term and long-term exponential moving averages.
+
+    Calculates rolling APO average over the period of
+    specified window size to use as a signal threshold.
+
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
@@ -62,10 +66,12 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
             .mean()
         )
 
-        # Calculate APO
+        # Calculate APO expressed as the
+        # difference between fast and slow EMAs
         self.dataframe["apo"] = fast_ema - slow_ema
 
-        # Calculate rolling APO average
+        # Finally, calculate rolling APO average
+        # over the period of specified window size
         self.dataframe["apo_avg"] = (
             self.dataframe["apo"]
             .ewm(
