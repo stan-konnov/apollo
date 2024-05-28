@@ -17,11 +17,24 @@ class RelativeStrengthIndexCalculator(BaseCalculator):
     def calculate_relative_strength_index(self) -> None:
         """Calculate RSI using deltas and EMA."""
 
-        # Calculate positive and negative deltas
-        pos_delta, neg_delta = (
+        # Calculate positive deltas
+        pos_delta = (
             self.dataframe["adj close"]
             .rolling(self.window_size)
-            .apply(self.__calc_deltas)
+            .apply(
+                self.__calc_delta,
+                args=("positive",),
+            )
+        )
+
+        # Calculate negative deltas
+        neg_delta = (
+            self.dataframe["adj close"]
+            .rolling(self.window_size)
+            .apply(
+                self.__calc_delta,
+                args=("negative",),
+            )
         )
 
         # Calculate EMA for both deltas
@@ -44,23 +57,25 @@ class RelativeStrengthIndexCalculator(BaseCalculator):
             inplace=True,
         )
 
-    def __calc_deltas(self, series: pd.Series) -> tuple[pd.Series, pd.Series]:
-        """
-        Calculate deltas between adjusted close prices.
+    def __calc_delta(
+        self,
+        series: pd.Series,
+        delta_type: str,
+    ) -> tuple[pd.Series, pd.Series]:
+        """Calculate positive or negative delta between adjusted close prices."""
 
-        :param series: Series to calculate deltas for.
-        :returns: Tuple of positive and negative deltas.
-        """
-
-        # Identify differences between adjusted close prices
+        # Calculate differences between adjusted close prices
         close_delta = series.diff()
 
-        # Calculate positive and negative deltas
-        pos_delta = close_delta.clip(lower=0)
-        neg_delta = close_delta.clip(upper=0) * -1
+        # Calculate positive or negative
+        if delta_type == "positive":
+            delta = close_delta.clip(lower=0)
+
+        else:
+            delta = close_delta.clip(upper=0) * -1
 
         # Return latest entry from processed window
-        return (pos_delta, neg_delta)
+        return delta.iloc[-1]
 
     def __calc_ema(self, series: pd.Series) -> pd.Series:
         """

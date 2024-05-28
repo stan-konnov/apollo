@@ -1,8 +1,8 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.moving_average_convergence_divergence import (
-    MovingAverageConvergenceDivergenceCalculator,
+from apollo.calculations.momentum.relative_strength_index import (
+    RelativeStrengthIndexCalculator,
 )
 from apollo.settings import END_DATE, START_DATE, TICKER
 
@@ -25,14 +25,12 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    macd_calculator = MovingAverageConvergenceDivergenceCalculator(
+    macd_calculator = RelativeStrengthIndexCalculator(
         dataframe=dataframe,
         window_size=5,
-        fast_ema_period=10,
-        slow_ema_period=40,
     )
 
-    macd_calculator.calculate_moving_average_convergence_divergence()
+    macd_calculator.calculate_relative_strength_index()
 
 
 if __name__ == "__main__":
