@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.support_resistance_trend_following import (
-    SupportResistanceTrendFollowing,
+from apollo.strategies.macd_mean_reversion import (
+    MovingAverageConvergenceDivergenceMeanReversion,
 )
 
 if TYPE_CHECKING:
@@ -30,11 +30,11 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SupportResistanceTrendFollowing(
+    strategy = MovingAverageConvergenceDivergenceMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        tolerance_threshold=0.1,
-        touch_count_threshold=2.0,
+        fast_ema_period=10.0,
+        slow_ema_period=20.0,
     )
 
     strategy.model_trading_signals()
