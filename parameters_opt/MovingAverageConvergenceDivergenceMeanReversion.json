@@ -1,9 +1,9 @@
 {
     "frequency": "1d",
     "cash_size": 1000,
-    "window_size": 10.0,
+    "window_size": 15.0,
     "sl_volatility_multiplier": 0.4,
-    "tp_volatility_multiplier": 0.7,
+    "tp_volatility_multiplier": 0.8,
     "fast_ema_period": 10.0,
-    "slow_ema_period": 20.0
+    "slow_ema_period": 15.0
 }

@@ -20,6 +20,7 @@ class AbsolutePriceOscillatorMeanReversion(BaseStrategy):
         window_size: int,
         fast_ema_period: float,
         slow_ema_period: float,
+        oscillator_threshold: float,
     ) -> None:
         """Work in progress."""
 
@@ -27,10 +28,13 @@ class AbsolutePriceOscillatorMeanReversion(BaseStrategy):
             [
                 ("fast_ema_period", fast_ema_period, float),
                 ("slow_ema_period", slow_ema_period, float),
+                ("oscillator_threshold", oscillator_threshold, float),
             ],
         )
 
         super().__init__(dataframe, window_size)
+
+        self.oscillator_threshold = oscillator_threshold
 
         # NOTE: We cast fast and slow EMA periods to integers
         # as they are used as window sizes in the calculations.
@@ -59,11 +63,11 @@ class AbsolutePriceOscillatorMeanReversion(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[
-            self.dataframe["apo"] < self.dataframe["apo_avg"] * -1,
+            self.dataframe["apo"] < self.oscillator_threshold * -1,
             "signal",
         ] = LONG_SIGNAL
 
         self.dataframe.loc[
-            self.dataframe["apo"] > self.dataframe["apo_avg"],
+            self.dataframe["apo"] > self.oscillator_threshold,
             "signal",
         ] = SHORT_SIGNAL
