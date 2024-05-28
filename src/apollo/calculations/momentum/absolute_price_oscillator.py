@@ -41,7 +41,7 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
         """
         Calculate Absolute Price Oscillator (APO).
 
-        By taking the difference between short-term and long-term EMAs.
+        Calculate rolling APO average over the period of specified window size.
         """
 
         # Calculate fast EMA
