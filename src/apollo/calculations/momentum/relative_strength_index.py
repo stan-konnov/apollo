@@ -7,8 +7,8 @@ class RelativeStrengthIndexCalculator(BaseCalculator):
     """
     Relative Strength Index (RSI) Calculator.
 
-    Momentum oscillator that measures
-    the speed and change of price movements.
+    Calculates the RSI based on the average of positive
+    and negative price changes over a specified window size.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Wilder, New Concepts in Technical Trading Systems, 1978.
