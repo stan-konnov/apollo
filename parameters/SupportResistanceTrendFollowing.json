@@ -1,0 +1,35 @@
+{
+    "frequency": "1d",
+
+    "cash_size": 1000,
+
+    "window_size": {
+        "step": 5,
+        "range": [5, 20]
+    },
+
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "tp_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 1.0]
+    },
+
+    "tolerance_threshold": {
+        "step": 0.1,
+        "range": [0.1, 0.3]
+    },
+
+    "touch_count_threshold": {
+        "step": 1,
+        "range": [2, 5]
+    },
+
+    "strategy_specific_parameters": [
+        "tolerance_threshold",
+        "touch_count_threshold"
+    ]
+}
