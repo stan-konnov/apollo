@@ -64,3 +64,14 @@ class AbsolutePriceOscillatorCalculator(BaseCalculator):
 
         # Calculate APO
         self.dataframe["apo"] = fast_ema - slow_ema
+
+        # Calculate rolling APO average
+        self.dataframe["apo_avg"] = (
+            self.dataframe["apo"]
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.window_size,
+                adjust=False,
+            )
+            .mean()
+        )

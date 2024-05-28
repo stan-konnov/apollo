@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.moving_average_convergence_divergence import (
+from apollo.calculations.momentum.moving_average_convergence_divergence import (
     MovingAverageConvergenceDivergenceCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
