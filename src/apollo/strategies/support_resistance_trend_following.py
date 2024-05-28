@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.support_resistance_touch_count import (
+from apollo.calculations.momentum.support_resistance_touch_count import (
     SupportResistanceTouchCountCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.absolute_price_oscillator import (
+from apollo.calculations.momentum.absolute_price_oscillator import (
     AbsolutePriceOscillatorCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
