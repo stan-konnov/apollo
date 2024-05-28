@@ -38,8 +38,8 @@ class RelativeStrengthIndexCalculator(BaseCalculator):
         )
 
         # Calculate EMA for both deltas
-        self.dataframe["pos_delta_ma"] = self.__calc_ema(pos_delta)
-        self.dataframe["neg_delta_ma"] = self.__calc_ema(neg_delta)
+        self.dataframe["pos_delta_ema"] = self.__calc_ema(pos_delta)
+        self.dataframe["neg_delta_ema"] = self.__calc_ema(neg_delta)
 
         # Calculate RSI
         self.dataframe["rsi"] = (
