@@ -28,8 +28,14 @@
         "range": [15, 20]
     },
 
+    "oscillator_threshold": {
+        "step": 0.1,
+        "range": [0.1, 0.5]
+    },
+
     "strategy_specific_parameters": [
         "fast_ema_period",
-        "slow_ema_period"
+        "slow_ema_period",
+        "oscillator_threshold"
     ]
 }
