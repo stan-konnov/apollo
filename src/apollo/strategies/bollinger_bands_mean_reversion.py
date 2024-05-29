@@ -105,12 +105,14 @@ class BollingerBandsMeanReversion(BaseStrategy):
         long = (
             (self.dataframe["adj close"] < self.dataframe["lb_band"])
             & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
+            & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
             & (self.dataframe["co"] < 0)
         )
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
             (self.dataframe["adj close"] > self.dataframe["ub_band"])
+            & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
             & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
             & (self.dataframe["co"] > 0)
         )
