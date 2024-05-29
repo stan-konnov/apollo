@@ -1,0 +1,11 @@
+{
+    "frequency": "1d",
+    "cash_size": 1000,
+    "window_size": 5.0,
+    "sl_volatility_multiplier": 0.1,
+    "tp_volatility_multiplier": 0.4,
+    "channel_sd_spread": 0.2,
+    "volatility_multiplier": 0.1,
+    "fast_ema_period": 10.0,
+    "slow_ema_period": 10.0
+}
