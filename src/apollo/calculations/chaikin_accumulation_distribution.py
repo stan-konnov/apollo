@@ -3,6 +3,10 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+"""
+TODO: clean me
+"""
+
 
 class ChaikinAccumulationDistributionCalculator(BaseCalculator):
     """

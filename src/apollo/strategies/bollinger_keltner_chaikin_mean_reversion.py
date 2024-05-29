@@ -8,6 +8,10 @@ from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
+"""
+TODO: clean me
+"""
+
 
 class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     """
