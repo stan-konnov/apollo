@@ -4,7 +4,7 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class ChaikinOscillatorCalculator(BaseCalculator):
+class ChaikinAccumulationDistributionCalculator(BaseCalculator):
     """
     Work in progress.
 
@@ -15,27 +15,20 @@ class ChaikinOscillatorCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        fast_ema_period: int,
-        slow_ema_period: int,
     ) -> None:
         """
         Construct Chaikin Oscillator calculator.
 
         :param dataframe: Dataframe to calculate Chaikin Oscillator for.
         :param window_size: Window size for rolling Chaikin Oscillator calculation.
-        :param fast_ema_period: Period for fast EMA calculation.
-        :param slow_ema_period: Period for slow EMA calculation.
         """
 
         super().__init__(dataframe, window_size)
 
-        self.fast_ema_period = fast_ema_period
-        self.slow_ema_period = slow_ema_period
-
         self.accumulation_distribution_line: list[float] = []
 
-    def calculate_chaikin_oscillator(self) -> None:
-        """Calculate Chaikin Oscillator."""
+    def calculate_chaikin_accumulation_distribution_line(self) -> None:
+        """Calculate Chaikin Accumulation Distribution Line."""
 
         # Fill AD line array with N NaN, where N = window size
         self.accumulation_distribution_line = (
@@ -50,31 +43,6 @@ class ChaikinOscillatorCalculator(BaseCalculator):
 
         # Preserve AD line on the dataframe
         self.dataframe["adl"] = self.accumulation_distribution_line
-
-        # Calculate fast ADL EMA
-        fast_adl_ema = (
-            self.dataframe["adl"]
-            .ewm(
-                alpha=1 / self.slow_ema_period,
-                min_periods=self.fast_ema_period,
-                adjust=False,
-            )
-            .mean()
-        )
-
-        # Calculate slow ADL EMA
-        slow_adl_ema = (
-            self.dataframe["adl"]
-            .ewm(
-                alpha=1 / self.fast_ema_period,
-                min_periods=self.slow_ema_period,
-                adjust=False,
-            )
-            .mean()
-        )
-
-        # Calculate Chaikin Oscillator
-        self.dataframe["co"] = fast_adl_ema - slow_adl_ema
 
     def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
