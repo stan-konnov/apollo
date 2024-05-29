@@ -17,6 +17,8 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     2. Chaikin Oscillator
     3. Make BB more adaptive to volatility (Kaufman)
     4. Experiment with MACD + Chaikin Oscillator
+    5. Experiment with McNicholl Moving Average for BB and KC
+    6. Generally experiment with different MAs for BB, KC, and CO
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
@@ -26,32 +28,43 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        channel_sd_spread: float,
-        volatility_multiplier: float,
         fast_ema_period: float,
         slow_ema_period: float,
+        channel_sd_spread: float,
+        volatility_multiplier: float,
     ) -> None:
         """
         Work in progress.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
-        :param channel_sd_spread: Standard deviation spread for Bollinger Bands.
-        :param volatility_multiplier: ATR multiplier for Keltner Channel.
         :param fast_ema_period: Period for fast ADL EMA calculation.
         :param slow_ema_period: Period for slow ADL EMA calculation.
+        :param channel_sd_spread: Standard deviation spread for Bollinger Bands.
+        :param volatility_multiplier: ATR multiplier for Keltner Channel.
         """
 
         self._validate_parameters(
             [
-                ("channel_sd_spread", channel_sd_spread, float),
-                ("volatility_multiplier", volatility_multiplier, float),
                 ("fast_ema_period", fast_ema_period, float),
                 ("slow_ema_period", slow_ema_period, float),
+                ("channel_sd_spread", channel_sd_spread, float),
+                ("volatility_multiplier", volatility_multiplier, float),
             ],
         )
 
         super().__init__(dataframe, window_size)
+
+        # NOTE: We cast fast and slow EMA periods to integers
+        # as they are used as window sizes in the calculations.
+        # Yet, the strategy consumes them as floats since parameter
+        # optimizer is designed to create combinations of float values.
+        self.co_calculator = ChaikinOscillatorCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+            fast_ema_period=int(fast_ema_period),
+            slow_ema_period=int(slow_ema_period),
+        )
 
         self.kc_calculator = KeltnerChannelCalculator(
             dataframe=dataframe,
@@ -63,17 +76,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             dataframe=dataframe,
             window_size=window_size,
             channel_sd_spread=channel_sd_spread,
-        )
-
-        # NOTE: We cast fast and slow EMA periods to integers
-        # as they are used as window sizes in the calculations.
-        # Yet, the strategy consumes them as floats since parameter
-        # optimizer is designed to create combinations of float values.
-        self.co_calculator = ChaikinOscillatorCalculator(
-            dataframe=dataframe,
-            window_size=window_size,
-            fast_ema_period=int(fast_ema_period),
-            slow_ema_period=int(slow_ema_period),
         )
 
     def model_trading_signals(self) -> None:

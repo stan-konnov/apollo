@@ -1,0 +1,47 @@
+{
+    "frequency": "1d",
+
+    "cash_size": 1000,
+
+    "window_size": {
+        "step": 5,
+        "range": [5, 10]
+    },
+
+    "sl_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 0.5]
+    },
+
+    "tp_volatility_multiplier": {
+        "step": 0.1,
+        "range": [0.1, 0.5]
+    },
+
+    "channel_sd_spread": {
+        "step": 0.1,
+        "range": [0.1, 0.5]
+    },
+
+    "volatility_multiplier": {
+        "step": 0.5,
+        "range": [0.1, 0.5]
+    },
+
+    "fast_ema_period": {
+        "step": 5,
+        "range": [5, 10]
+    },
+
+    "slow_ema_period": {
+        "step": 5,
+        "range": [10, 15]
+    },
+
+    "strategy_specific_parameters": [
+        "channel_sd_spread",
+        "volatility_multiplier",
+        "fast_ema_period",
+        "slow_ema_period"
+    ]
+}
