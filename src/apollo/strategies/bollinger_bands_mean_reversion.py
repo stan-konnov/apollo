@@ -15,6 +15,7 @@ class BollingerBandsMeanReversion(BaseStrategy):
     1. Keltner Channel
     2. Chaikin Oscillator
     3. Make BB more adaptive to volatility (Kaufman)
+    4. Experiment with MACD + Chaikin Oscillator
 
     On Chaikin:
 
