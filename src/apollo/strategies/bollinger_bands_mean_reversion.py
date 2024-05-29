@@ -1,6 +1,7 @@
 from pandas import DataFrame
 
 from apollo.calculations.bollinger_bands import BollingerBandsCalculator
+from apollo.calculations.chaikin_oscillator import ChaikinOscillatorCalculator
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
@@ -22,6 +23,10 @@ class BollingerBandsMeanReversion(BaseStrategy):
     https://stackoverflow.com/questions/48722737/create-chaikin-oscillator-using-pandas
     https://stackoverflow.com/questions/64124629/how-to-calculate-heiken-chaiken-osc-using-pandas-python
 
+    On Bounds:
+
+    Both BB bands need to be within Keltner Channel bounds.
+
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -32,6 +37,8 @@ class BollingerBandsMeanReversion(BaseStrategy):
         window_size: int,
         channel_sd_spread: float,
         volatility_multiplier: float,
+        fast_ema_period: float,
+        slow_ema_period: float,
     ) -> None:
         """
         Work in progress.
@@ -40,12 +47,16 @@ class BollingerBandsMeanReversion(BaseStrategy):
         :param window_size: Size of the window for the strategy.
         :param channel_sd_spread: Standard deviation spread for Bollinger Bands.
         :param volatility_multiplier: ATR multiplier for Keltner Channel.
+        :param fast_ema_period: Period for fast ADL EMA calculation.
+        :param slow_ema_period: Period for slow ADL EMA calculation.
         """
 
         self._validate_parameters(
             [
                 ("channel_sd_spread", channel_sd_spread, float),
                 ("volatility_multiplier", volatility_multiplier, float),
+                ("fast_ema_period", fast_ema_period, float),
+                ("slow_ema_period", slow_ema_period, float),
             ],
         )
 
@@ -63,6 +74,17 @@ class BollingerBandsMeanReversion(BaseStrategy):
             channel_sd_spread=channel_sd_spread,
         )
 
+        # NOTE: We cast fast and slow EMA periods to integers
+        # as they are used as window sizes in the calculations.
+        # Yet, the strategy consumes them as floats since parameter
+        # optimizer is designed to create combinations of float values.
+        self.co_calculator = ChaikinOscillatorCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+            fast_ema_period=int(fast_ema_period),
+            slow_ema_period=int(slow_ema_period),
+        )
+
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
@@ -75,18 +97,21 @@ class BollingerBandsMeanReversion(BaseStrategy):
 
         self.kc_calculator.calculate_keltner_channel()
         self.bb_calculator.calculate_bollinger_bands()
+        self.co_calculator.calculate_chaikin_oscillator()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self.dataframe["adj close"] < self.dataframe["lb_band"]) & (
-            self.dataframe["lb_band"] > self.dataframe["lkc_bound"]
+        long = (
+            (self.dataframe["adj close"] < self.dataframe["lb_band"])
+            & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
+            & (self.dataframe["co"] < 0)
         )
-
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self.dataframe["adj close"] > self.dataframe["ub_band"]) & (
-            self.dataframe["ub_band"] < self.dataframe["ukc_bound"]
+        short = (
+            (self.dataframe["adj close"] > self.dataframe["ub_band"])
+            & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
+            & (self.dataframe["co"] > 0)
         )
-
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

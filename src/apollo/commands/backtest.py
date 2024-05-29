@@ -33,6 +33,8 @@ def main() -> None:
         window_size=10,
         channel_sd_spread=0.1,
         volatility_multiplier=0.1,
+        fast_ema_period=10.0,
+        slow_ema_period=20.0,
     )
 
     strategy.model_trading_signals()
