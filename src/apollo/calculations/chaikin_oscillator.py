@@ -48,28 +48,36 @@ class ChaikinOscillatorCalculator(BaseCalculator):
             args=(self.dataframe,),
         )
 
-        # Map rolling AD line to dataframe
-        accumulation_distribution_line = pd.Series(
-            self.accumulation_distribution_line,
-            index=self.dataframe.index,
-        )
+        # Preserve AD line on the dataframe
+        self.dataframe["adl"] = self.accumulation_distribution_line
 
         # Calculate fast ADL EMA
-        fast_adl_ema = accumulation_distribution_line.ewm(
-            alpha=1 / self.window_size,
-            min_periods=self.fast_ema_period,
-            adjust=False,
-        ).mean()
+        fast_adl_ema = (
+            self.dataframe["adl"]
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.fast_ema_period,
+                adjust=False,
+            )
+            .mean()
+        )
 
         # Calculate slow ADL EMA
-        slow_adl_ema = accumulation_distribution_line.ewm(
-            alpha=1 / self.window_size,
-            min_periods=self.slow_ema_period,
-            adjust=False,
-        ).mean()
+        slow_adl_ema = (
+            self.dataframe["adl"]
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.slow_ema_period,
+                adjust=False,
+            )
+            .mean()
+        )
 
         # Calculate Chaikin Oscillator
         self.dataframe["co"] = fast_adl_ema - slow_adl_ema
+
+        # Drop ADL line from the dataframe
+        self.dataframe.drop(columns=["adl"], inplace=True)
 
     def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
