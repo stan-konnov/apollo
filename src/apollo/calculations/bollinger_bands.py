@@ -48,6 +48,7 @@ class BollingerBandsCalculator(BaseCalculator):
             self.dataframe["adj close"]
             .rolling(
                 self.window_size,
+                min_periods=self.window_size,
             )
             .mean()
         )
@@ -57,6 +58,10 @@ class BollingerBandsCalculator(BaseCalculator):
             self._calc_bands,
             args=(self.dataframe,),
         )
+
+        # Preserve bands on the dataframe
+        self.dataframe["lb_band"] = self.lb_band
+        self.dataframe["ub_band"] = self.ub_band
 
         # Drop SMA from the dataframe
         self.dataframe.drop(columns="sma", inplace=True)

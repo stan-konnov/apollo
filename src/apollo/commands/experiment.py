@@ -1,9 +1,7 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.momentum.relative_strength_index import (
-    RelativeStrengthIndexCalculator,
-)
+from apollo.calculations.bollinger_bands import BollingerBandsCalculator
 from apollo.settings import END_DATE, START_DATE, TICKER
 
 logging.basicConfig(
@@ -25,12 +23,13 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    macd_calculator = RelativeStrengthIndexCalculator(
+    bb_calculator = BollingerBandsCalculator(
         dataframe=dataframe,
         window_size=5,
+        channel_sd_spread=0.3,
     )
 
-    macd_calculator.calculate_relative_strength_index()
+    bb_calculator.calculate_bollinger_bands()
 
 
 if __name__ == "__main__":
