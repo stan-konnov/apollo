@@ -7,7 +7,7 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class BollingerBandsMeanReversion(BaseStrategy):
+class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     """
     Work in progress.
 

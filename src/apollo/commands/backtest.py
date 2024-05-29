@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.bollinger_bands_mean_reversion import BollingerBandsMeanReversion
+from apollo.strategies.bollinger_keltner_chaikin_mean_reversion import (
+    BollingerKeltnerChaikinMeanReversion,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,7 +30,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = BollingerBandsMeanReversion(
+    strategy = BollingerKeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=10,
         channel_sd_spread=0.1,
