@@ -1,0 +1,94 @@
+import numpy as np
+import pandas as pd
+
+from apollo.calculations.base_calculator import BaseCalculator
+
+
+class KeltnerChannelCalculator(BaseCalculator):
+    """
+    Keltner Channel Calculator.
+
+    Calculates the Keltner Channel expressed
+    as +/- N ATR from the simple moving average.
+
+    NOTE: since all of our strategies are volatility-based,
+    this calculator implicitly has access to calculated ATR values.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    """
+
+    def __init__(
+        self,
+        dataframe: pd.DataFrame,
+        window_size: int,
+        volatility_multiplier: float,
+    ) -> None:
+        """
+        Construct Keltner Channel calculator.
+
+        :param dataframe: Dataframe to calculate Bollinger Bands for.
+        :param window_size: Window size for rolling Bollinger Bands calculation.
+        :param volatility_multiplier: ATR multiplier for channel bounds.
+        """
+
+        super().__init__(dataframe, window_size)
+
+        self.volatility_multiplier = volatility_multiplier
+
+        self.lkc_bound: list[float] = []
+        self.ukc_bound: list[float] = []
+
+    def calculate_keltner_channel(self) -> None:
+        """Calculate Keltner Channel."""
+
+        # Fill bounds arrays with N NaN, where N = window size
+        self.lkc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        self.ukc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+
+        # Calculate simple moving average to act as the middle band
+        self.dataframe["sma"] = (
+            self.dataframe["adj close"]
+            .rolling(
+                self.window_size,
+                min_periods=self.window_size,
+            )
+            .mean()
+        )
+
+        # Calculate bounds by using SMA and ATR
+        self.dataframe["adj close"].rolling(self.window_size).apply(
+            self._calc_chan,
+            args=(self.dataframe,),
+        )
+
+        # Preserve bounds on the dataframe
+        self.dataframe["lkc_bound"] = self.lkc_bound
+        self.dataframe["ukc_bound"] = self.ukc_bound
+
+        # Drop SMA from the dataframe
+        self.dataframe.drop(columns="sma", inplace=True)
+
+    def _calc_chan(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
+        """
+        Calculate rolling Keltner Channel.
+
+        :param series: Series which is used for indexing out rolling window.
+        :param dataframe: Original dataframe acting as a source of rolling window.
+        :returns: Dummy float to satisfy Pandas' return value.
+        """
+
+        # Slice out a chunk of dataframe to work with
+        rolling_df = dataframe.loc[series.index]
+
+        # Grab ATR value
+        atr = rolling_df["atr"].iloc[-1]
+
+        # Calculate lower and upper channel bounds
+        lkc_bound = rolling_df["sma"] - atr * self.volatility_multiplier
+        ukc_bound = rolling_df["sma"] + atr * self.volatility_multiplier
+
+        self.lkc_bound.append(lkc_bound[-1])
+        self.ukc_bound.append(ukc_bound[-1])
+
+        # Return dummy float
+        return 0.0

@@ -32,6 +32,7 @@ def main() -> None:
         dataframe=dataframe,
         window_size=10,
         channel_sd_spread=0.1,
+        volatility_multiplier=0.1,
     )
 
     strategy.model_trading_signals()
