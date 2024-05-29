@@ -52,8 +52,13 @@ class ChaikinOscillatorCalculator(BaseCalculator):
         fast_adl_ema = (
             pd.Series(
                 self.accumulation_distribution_line,
+                index=self.dataframe.index,
             )
-            .ewm(span=self.fast_ema_period)
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.fast_ema_period,
+                adjust=False,
+            )
             .mean()
         )
 
@@ -61,8 +66,13 @@ class ChaikinOscillatorCalculator(BaseCalculator):
         slow_adl_ema = (
             pd.Series(
                 self.accumulation_distribution_line,
+                index=self.dataframe.index,
             )
-            .ewm(span=self.slow_ema_period)
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.slow_ema_period,
+                adjust=False,
+            )
             .mean()
         )
 
