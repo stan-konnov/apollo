@@ -55,7 +55,7 @@ class ChaikinOscillatorCalculator(BaseCalculator):
         fast_adl_ema = (
             self.dataframe["adl"]
             .ewm(
-                alpha=1 / self.window_size,
+                alpha=1 / self.slow_ema_period,
                 min_periods=self.fast_ema_period,
                 adjust=False,
             )
@@ -66,7 +66,7 @@ class ChaikinOscillatorCalculator(BaseCalculator):
         slow_adl_ema = (
             self.dataframe["adl"]
             .ewm(
-                alpha=1 / self.window_size,
+                alpha=1 / self.fast_ema_period,
                 min_periods=self.slow_ema_period,
                 adjust=False,
             )
@@ -75,9 +75,6 @@ class ChaikinOscillatorCalculator(BaseCalculator):
 
         # Calculate Chaikin Oscillator
         self.dataframe["co"] = fast_adl_ema - slow_adl_ema
-
-        # Drop ADL line from the dataframe
-        self.dataframe.drop(columns=["adl"], inplace=True)
 
     def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """

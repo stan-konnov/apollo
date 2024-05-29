@@ -18,15 +18,6 @@ class BollingerBandsMeanReversion(BaseStrategy):
     3. Make BB more adaptive to volatility (Kaufman)
     4. Experiment with MACD + Chaikin Oscillator
 
-    On Chaikin:
-
-    https://stackoverflow.com/questions/48722737/create-chaikin-oscillator-using-pandas
-    https://stackoverflow.com/questions/64124629/how-to-calculate-heiken-chaiken-osc-using-pandas-python
-
-    On Bounds:
-
-    Both BB bands need to be within Keltner Channel bounds.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
@@ -106,14 +97,12 @@ class BollingerBandsMeanReversion(BaseStrategy):
             (self.dataframe["adj close"] < self.dataframe["lb_band"])
             & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
             & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-            & (self.dataframe["co"] < 0)
-        )
+        ) | (self.dataframe["co"] > self.dataframe["adl"])
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
             (self.dataframe["adj close"] > self.dataframe["ub_band"])
             & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
             & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-            & (self.dataframe["co"] > 0)
-        )
+        ) | (self.dataframe["co"] < self.dataframe["adl"])
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
