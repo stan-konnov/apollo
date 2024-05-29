@@ -16,6 +16,11 @@ class BollingerBandsMeanReversion(BaseStrategy):
     2. Chaikin Oscillator
     3. Make BB more adaptive to volatility (Kaufman)
 
+    On Chaikin:
+
+    https://stackoverflow.com/questions/48722737/create-chaikin-oscillator-using-pandas
+    https://stackoverflow.com/questions/64124629/how-to-calculate-heiken-chaiken-osc-using-pandas-python
+
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
