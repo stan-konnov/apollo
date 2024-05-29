@@ -26,6 +26,8 @@ weighted sum.
 Reverse Back:
 The series is reversed back to its original order after the cumulative sums are computed
 to align the weighted sums correctly with the original time series.
+
+alpha = 2 / (window + 1) because it's akin to DAMA (Double Exponential Moving Average)
 """
 
 
