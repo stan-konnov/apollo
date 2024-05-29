@@ -9,6 +9,11 @@ class BollingerBandsMeanReversion(BaseStrategy):
     """
     Work in progress.
 
+    Apply additional indicators from Kaufman:
+
+    1. Keltner Channel
+    2. Chaikin Oscillator
+
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
