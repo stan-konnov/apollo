@@ -89,7 +89,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             (self.dataframe["adj close"] < self.dataframe["lb_band"])
             & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
             & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-        ) | (self.dataframe["adl"] < 0)
+        ) | (self.dataframe["adl"] < self.dataframe["adl_ema"])
 
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
@@ -97,6 +97,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             (self.dataframe["adj close"] > self.dataframe["ub_band"])
             & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
             & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-        ) | (self.dataframe["adl"] > 0)
+        ) | (self.dataframe["adl"] > self.dataframe["adl_ema"])
 
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

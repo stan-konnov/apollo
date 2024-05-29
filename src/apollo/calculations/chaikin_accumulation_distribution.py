@@ -17,7 +17,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         window_size: int,
     ) -> None:
         """
-        Construct Chaikin Oscillator calculator.
+        Work in progress.
 
         :param dataframe: Dataframe to calculate Chaikin Oscillator for.
         :param window_size: Window size for rolling Chaikin Oscillator calculation.
@@ -43,6 +43,16 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
 
         # Preserve AD line on the dataframe
         self.dataframe["adl"] = self.accumulation_distribution_line
+
+        self.dataframe["adl_ema"] = (
+            self.dataframe["adl"]
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.window_size,
+                adjust=False,
+            )
+            .mean()
+        )
 
     def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
