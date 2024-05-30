@@ -5,6 +5,9 @@ from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
+from apollo.calculations.mc_nicholl_moving_average import (
+    McNichollMovingAverageCalculator,
+)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
@@ -55,7 +58,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.cad_calculator = ChaikinAccumulationDistributionCalculator(
+        self.mnma_calculator = McNichollMovingAverageCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -72,6 +75,11 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             channel_sd_spread=channel_sd_spread,
         )
 
+        self.cad_calculator = ChaikinAccumulationDistributionCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+        )
+
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
@@ -82,6 +90,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
+        self.mnma_calculator.calculate_mcnicholl_moving_average()
         self.kc_calculator.calculate_keltner_channel()
         self.bb_calculator.calculate_bollinger_bands()
         self.cad_calculator.calculate_chaikin_accumulation_distribution_line()

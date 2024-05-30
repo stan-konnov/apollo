@@ -1,5 +1,59 @@
 import pandas as pd
 
+from apollo.calculations.base_calculator import BaseCalculator
+
+
+class McNichollMovingAverageCalculator(BaseCalculator):
+    """Work in progress."""
+
+    def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
+        """Work in progress."""
+
+        super().__init__(dataframe, window_size)
+
+        # Calculate the smoothing factor
+        # by using the constant of two to achieve
+        # double smoothing similar to the Double Exponential Moving Average
+        self.smoothing_factor = 2 / (window_size + 1)
+
+    def calculate_mcnicholl_moving_average(self) -> None:
+        """Calculate McNicholl Moving Average."""
+
+        # Initial SMA
+        simple_moving_average = (
+            self.dataframe["adj close"]
+            .rolling(window=self.window_size, min_periods=1)
+            .mean()
+        )
+
+        # Calculate the weights
+        weights = (1 - self.smoothing_factor) ** pd.Series(
+            len(self.dataframe.index),
+            index=self.dataframe.index,
+        )
+
+        # Reverse the weights so that the most
+        # recent point gets the highest weight
+        weights = weights[::-1]
+
+        # Apply weights to the data
+        weighted_data = self.dataframe["adj close"] * self.smoothing_factor * weights
+
+        # Calculate the weighted cumulative sum in reverse order
+        weighted_cumsum = weighted_data[::-1].expanding().sum()[::-1]
+
+        # Calculate the cumulative sum of the weights in reverse order
+        weights_cumsum = weights.expanding().sum()[::-1]
+
+        # Calculate the McNicholl Moving Average
+        mcnicholl_ma = weighted_cumsum / weights_cumsum
+
+        # For initial period use SMA values
+        mcnicholl_ma[: self.window_size] = simple_moving_average[: self.window_size]
+
+        self.dataframe["mnma"] = mcnicholl_ma
+
+
 """
 Here's a detailed explanation of the steps and why we reverse the series:
 
