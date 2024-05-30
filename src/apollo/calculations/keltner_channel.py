@@ -45,16 +45,6 @@ class KeltnerChannelCalculator(BaseCalculator):
         self.lkc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.ukc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
-        # Calculate simple moving average to act as the middle band
-        self.dataframe["sma"] = (
-            self.dataframe["adj close"]
-            .rolling(
-                self.window_size,
-                min_periods=self.window_size,
-            )
-            .mean()
-        )
-
         # Calculate bounds by using SMA and ATR
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_chan,
@@ -64,9 +54,6 @@ class KeltnerChannelCalculator(BaseCalculator):
         # Preserve bounds on the dataframe
         self.dataframe["lkc_bound"] = self.lkc_bound
         self.dataframe["ukc_bound"] = self.ukc_bound
-
-        # Drop SMA from the dataframe
-        self.dataframe.drop(columns="sma", inplace=True)
 
     def _calc_chan(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
@@ -84,8 +71,8 @@ class KeltnerChannelCalculator(BaseCalculator):
         atr = rolling_df["atr"].iloc[-1]
 
         # Calculate lower and upper channel bounds
-        lkc_bound = rolling_df["sma"] - atr * self.volatility_multiplier
-        ukc_bound = rolling_df["sma"] + atr * self.volatility_multiplier
+        lkc_bound = rolling_df["mnma"] - atr * self.volatility_multiplier
+        ukc_bound = rolling_df["mnma"] + atr * self.volatility_multiplier
 
         self.lkc_bound.append(lkc_bound[-1])
         self.ukc_bound.append(ukc_bound[-1])

@@ -28,20 +28,8 @@
         "range": [0.1, 0.5]
     },
 
-    "fast_ema_period": {
-        "step": 5,
-        "range": [5, 10]
-    },
-
-    "slow_ema_period": {
-        "step": 5,
-        "range": [10, 15]
-    },
-
     "strategy_specific_parameters": [
         "channel_sd_spread",
-        "volatility_multiplier",
-        "fast_ema_period",
-        "slow_ema_period"
+        "volatility_multiplier"
     ]
 }

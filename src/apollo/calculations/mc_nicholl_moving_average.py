@@ -22,7 +22,7 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         # Initial SMA
         simple_moving_average = (
             self.dataframe["adj close"]
-            .rolling(window=self.window_size, min_periods=1)
+            .rolling(window=self.window_size, min_periods=self.window_size)
             .mean()
         )
 

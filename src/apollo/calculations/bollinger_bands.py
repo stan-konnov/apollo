@@ -43,16 +43,6 @@ class BollingerBandsCalculator(BaseCalculator):
         self.lb_band = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.ub_band = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
-        # Calculate simple moving average to act as the middle band
-        self.dataframe["sma"] = (
-            self.dataframe["adj close"]
-            .rolling(
-                self.window_size,
-                min_periods=self.window_size,
-            )
-            .mean()
-        )
-
         # Calculate bands by using SMA and standard deviation
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_bands,
@@ -62,9 +52,6 @@ class BollingerBandsCalculator(BaseCalculator):
         # Preserve bands on the dataframe
         self.dataframe["lb_band"] = self.lb_band
         self.dataframe["ub_band"] = self.ub_band
-
-        # Drop SMA from the dataframe
-        self.dataframe.drop(columns="sma", inplace=True)
 
     def _calc_bands(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
@@ -82,8 +69,8 @@ class BollingerBandsCalculator(BaseCalculator):
         std = series.std()
 
         # Calculate lower and upper bands
-        l_band = rolling_df["sma"] - std * self.channel_sd_spread
-        u_band = rolling_df["sma"] + std * self.channel_sd_spread
+        l_band = rolling_df["mnma"] - std * self.channel_sd_spread
+        u_band = rolling_df["mnma"] + std * self.channel_sd_spread
 
         self.lb_band.append(l_band[-1])
         self.ub_band.append(u_band[-1])

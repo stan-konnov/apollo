@@ -63,16 +63,16 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             window_size=window_size,
         )
 
-        self.kc_calculator = KeltnerChannelCalculator(
-            dataframe=dataframe,
-            window_size=window_size,
-            volatility_multiplier=volatility_multiplier,
-        )
-
         self.bb_calculator = BollingerBandsCalculator(
             dataframe=dataframe,
             window_size=window_size,
             channel_sd_spread=channel_sd_spread,
+        )
+
+        self.kc_calculator = KeltnerChannelCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+            volatility_multiplier=volatility_multiplier,
         )
 
         self.cad_calculator = ChaikinAccumulationDistributionCalculator(
