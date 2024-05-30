@@ -28,6 +28,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     4. Experiment with MACD + Chaikin Oscillator
     5. Experiment with McNicholl Moving Average for BB and KC
     6. Generally experiment with different MAs for BB, KC, and CO
+    7. Introduce McClellan Volume Oscillator
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
@@ -97,8 +98,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
-
-        self.dataframe["prev_adl"] = self.dataframe["adl"].shift(1)
 
         long = (
             (self.dataframe["adj close"] < self.dataframe["lb_band"])

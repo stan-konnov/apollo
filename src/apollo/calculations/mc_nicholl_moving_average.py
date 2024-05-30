@@ -17,7 +17,11 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         self.smoothing_factor = 2 / (window_size + 1)
 
     def calculate_mcnicholl_moving_average(self) -> None:
-        """Calculate McNicholl Moving Average."""
+        """
+        Calculate McNicholl Moving Average.
+
+        Try me in rolling window
+        """
 
         # Initial SMA
         simple_moving_average = (
