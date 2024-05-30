@@ -9,7 +9,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
     Chaikin Accumulation Distribution Line Calculator.
 
     Chaikin Accumulation Distribution Line is a momentum indicator
-    that determines the flow of liquidity into or out of a security.
+    that determines the flow of liquidity into or out of an instrument.
 
     The Chaikin Accumulation Distribution Line is calculated as follows:
 
@@ -31,7 +31,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         window_size: int,
     ) -> None:
         """
-        Work in progress.
+        Construct Chaikin Accumulation Distribution Line calculator.
 
         :param dataframe: Dataframe to calculate Chaikin Oscillator for.
         :param window_size: Window size for rolling Chaikin Oscillator calculation.
