@@ -3,14 +3,24 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
-"""
-TODO: clean me
-"""
-
 
 class ChaikinAccumulationDistributionCalculator(BaseCalculator):
     """
-    Work in progress.
+    Chaikin Accumulation Distribution Line Calculator.
+
+    Chaikin Accumulation Distribution Line is a momentum indicator
+    that determines the flow of liquidity into or out of a security.
+
+    The Chaikin Accumulation Distribution Line is calculated as follows:
+
+    Calculate Money Flow Multiplier expressed as
+    difference between close and low minus difference between
+    high and close, divided by difference between high and low.
+
+    Calculate Money Flow Volume expressed as
+    product of Money Flow Multiplier and volume.
+
+    Calculate Accumulation Distribution as cumulative sum of Money Flow Volume.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -64,7 +74,6 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         rolling_df = dataframe.loc[series.index]
 
         # Calculate money flow multiplier
-        # expressed as ((close - low) - (high - close)) / (high - low)
         money_flow_multiplier = (
             (rolling_df["close"] - rolling_df["low"])
             - (rolling_df["high"] - rolling_df["close"])
@@ -73,12 +82,12 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         # Calculate money flow volume
         money_flow_volume = money_flow_multiplier * rolling_df["volume"]
 
-        # Calculate AD line
-        accumulation_distribution_line = money_flow_volume.cumsum()
+        # Calculate AD value
+        accumulation_distribution = money_flow_volume.cumsum()
 
         # Append last value to the AD line array
         self.accumulation_distribution_line.append(
-            accumulation_distribution_line.iloc[-1],
+            accumulation_distribution.iloc[-1],
         )
 
         # Return dummy float
