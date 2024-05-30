@@ -8,8 +8,9 @@ class KeltnerChannelCalculator(BaseCalculator):
     """
     Keltner Channel Calculator.
 
-    Calculates the Keltner Channel expressed
-    as +/- N ATR from the simple moving average.
+    Keltner Channel is a volatility-based indicator that
+    consists of bands around moving average of the price
+    and are calculated based off ATR and supplied multiplier.
 
     NOTE: since all of our strategies are volatility-based,
     this calculator implicitly has access to calculated ATR values.
