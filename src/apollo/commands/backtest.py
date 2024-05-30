@@ -33,7 +33,7 @@ def main() -> None:
     strategy = BollingerKeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        channel_sd_spread=0.2,
+        channel_sd_spread=0.5,
         volatility_multiplier=0.1,
     )
 
@@ -44,7 +44,7 @@ def main() -> None:
         strategy_name="BollingerBandsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.4,
+        tp_volatility_multiplier=0.2,
         write_result_plot=True,
     )
 
