@@ -4,7 +4,18 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 
 class McNichollMovingAverageCalculator(BaseCalculator):
-    """Work in progress."""
+    """
+    McNicholl Moving Average Calculator.
+
+    McNicholl Moving Average is a variation of the Exponential Moving Average
+    that uses a smoothing factor to calculate the weighted average of the data.
+
+    Is an extension of the Double Exponential Moving Average (DEMA), therefore,
+    the smoothing factor is calculated by dividing 2 by the window size plus 1,
+    instead of regular Wilders smoothing factor of 1 / window size.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """Work in progress."""
