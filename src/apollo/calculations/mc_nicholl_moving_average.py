@@ -18,7 +18,7 @@ class McNichollMovingAverageCalculator(BaseCalculator):
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
-        """Work in progress."""
+        """Construct McNicholl Moving Average calculator."""
 
         super().__init__(dataframe, window_size)
 
