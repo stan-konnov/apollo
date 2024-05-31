@@ -47,14 +47,18 @@ class McNichollMovingAverageCalculator(BaseCalculator):
             index=self.dataframe.index,
         )
 
+        # Reverse the weights so that the most
+        # recent point gets the highest weight
+        weights = weights[::-1]
+
         # Apply weights to the data
         weighted_data = self.dataframe["adj close"] * self.smoothing_factor * weights
 
         # Calculate the weighted cumulative sum in reverse order
-        weighted_cumsum = weighted_data.expanding().sum()
+        weighted_cumsum = weighted_data[::-1].expanding().sum()[::-1]
 
         # Calculate the cumulative sum of the weights in reverse order
-        weights_cumsum = weights.expanding().sum()
+        weights_cumsum = weights.expanding().sum()[::-1]
 
         # Calculate the McNicholl Moving Average
         mcnicholl_ma = weighted_cumsum / weights_cumsum
