@@ -69,7 +69,7 @@ def test__calculate_bollinger_bands__for_correct_rolling_window(
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_bollinger_bands__for_correct_atr_calculation(
+def test__calculate_bollinger_bands__for_correct_bb_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
