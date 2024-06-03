@@ -9,7 +9,7 @@ class BollingerBandsCalculator(BaseCalculator):
     Bollinger Bands Calculator.
 
     Calculates the Bollinger Bands expressed
-    as +/- N standard deviations from the simple moving average.
+    as +/- N standard deviations from the moving average.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
@@ -43,7 +43,7 @@ class BollingerBandsCalculator(BaseCalculator):
         self.lb_band = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         self.ub_band = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
-        # Calculate bands by using SMA and standard deviation
+        # Calculate bands by using MA and standard deviation
         self.dataframe["adj close"].rolling(self.window_size).apply(
             self._calc_bands,
             args=(self.dataframe,),
