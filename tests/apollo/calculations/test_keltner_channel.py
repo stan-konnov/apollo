@@ -91,7 +91,7 @@ def test__calculate_keltner_channel__for_correct_kc_calculation(
     """
     Test calculate_keltner_channel method for correct Keltner Channel calculation.
 
-    Resulting lkc_bound and ukc_bound columns must have correct values for each row.
+    Resulting "lkc_bound" and "ukc_bound" columns must have correct values for each row.
     """
 
     lkc_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()

@@ -63,7 +63,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
 
     def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
-        Work in progress.
+        Calculate rolling Chaikin Accumulation Distribution.
 
         :param series: Series which is used for indexing out rolling window.
         :param dataframe: Original dataframe acting as a source of rolling window.

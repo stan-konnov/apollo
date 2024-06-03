@@ -76,7 +76,7 @@ def test__calculate_bollinger_bands__for_correct_bb_calculation(
     """
     Test calculate_bollinger_bands method for correct Bollinger Bands calculation.
 
-    Resulting lb_band and ub_band columns must have correct values for each row.
+    Resulting "lb_band" and "ub_band" columns must have correct values for each row.
     """
 
     lb_band = np.full((1, window_size - 1), np.nan).flatten().tolist()
