@@ -14,7 +14,50 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     """
-    Work in progress.
+    Bollinger Keltner Chaikin Mean Reversion.
+
+    NOTE: this strategy uses McNicholl Moving Average as input
+    for calculation of the Bollinger Bands and Keltner Channel
+    in order to make the bands and the channel more responsive
+    to the volatility of the instrument.
+
+    This strategy takes long positions when:
+
+    * Adjusted close is below the lower Bollinger Band,
+    indicating that the instrument is oversold.
+
+    * Lower Bollinger Band is above the lower Keltner Channel bound,
+    indicating that the constructed band is within the volatility range,
+    thus, ensuring that the instrument is not oversold due to abnormal volatility.
+
+    * Upper Bollinger Band is below the upper Keltner Channel bound,
+    indicating that the constructed band is within the volatility range,
+    thus, ensuring that the instrument is not oversold due to abnormal volatility.
+
+    * Accumulation Distribution Line is decreasing,
+    indicating that the selling pressure is increasing
+    and, therefore, has the potential to reverse back to the mean.
+
+    This strategy takes short positions when:
+
+    * Adjusted close is above the upper Bollinger Band,
+    indicating that the instrument is overbought.
+
+    * Lower Bollinger Band is above the lower Keltner Channel bound,
+    indicating that the constructed band is within the volatility range,
+    thus, ensuring that the instrument is not overbought due to abnormal volatility.
+
+    * Upper Bollinger Band is below the upper Keltner Channel bound,
+    indicating that the constructed band is within the volatility range,
+    thus, ensuring that the instrument is not overbought due to abnormal volatility.
+
+    * Accumulation Distribution Line is increasing,
+    indicating that the buying pressure is increasing
+    and, therefore, has the potential to reverse back to the mean.
+
+    NOTE: we use Accumulation Distribution Line as OR condition
+    in order to avoid unnecessary signal scrutiny
+    that can lead to missed opportunities.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
@@ -28,7 +71,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
         volatility_multiplier: float,
     ) -> None:
         """
-        Work in progress.
+        Construct Bollinger Keltner Chaikin Mean Reversion Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
