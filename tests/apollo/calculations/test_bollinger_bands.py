@@ -84,7 +84,6 @@ def test__calculate_bollinger_bands__for_correct_atr_calculation(
 
     control_dataframe = dataframe.copy()
 
-    # Precalculate McNicholl Moving Average
     mnma_calculator = McNichollMovingAverageCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
@@ -108,7 +107,6 @@ def test__calculate_bollinger_bands__for_correct_atr_calculation(
         dataframe=dataframe,
         window_size=window_size,
     )
-
     mnma_calculator.calculate_mcnicholl_moving_average()
 
     bb_calculator = BollingerBandsCalculator(
@@ -116,7 +114,6 @@ def test__calculate_bollinger_bands__for_correct_atr_calculation(
         window_size=window_size,
         channel_sd_spread=CHANNEL_SD_SPREAD,
     )
-
     bb_calculator.calculate_bollinger_bands()
 
     pd.testing.assert_series_equal(dataframe["lb_band"], control_dataframe["lb_band"])
