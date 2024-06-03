@@ -28,20 +28,16 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         self.smoothing_factor = 2 / (window_size + 1)
 
     def calculate_mcnicholl_moving_average(self) -> None:
-        """
-        Calculate McNicholl Moving Average.
+        """Calculate McNicholl Moving Average."""
 
-        Try me in rolling window
-        """
-
-        # Initial SMA
+        # Calculate initial SMA
         simple_moving_average = (
             self.dataframe["adj close"]
             .rolling(window=self.window_size, min_periods=self.window_size)
             .mean()
         )
 
-        # Calculate the weights
+        # Calculate the weight for every data point
         weights = (1 - self.smoothing_factor) ** pd.Series(
             len(self.dataframe.index),
             index=self.dataframe.index,
@@ -49,84 +45,28 @@ class McNichollMovingAverageCalculator(BaseCalculator):
 
         # Reverse the weights so that the most
         # recent point gets the highest weight
+        # achieving exponential smoothing
         weights = weights[::-1]
 
-        # Apply weights to the data
-        weighted_data = self.dataframe["adj close"] * self.smoothing_factor * weights
+        # Apply the weights to the adjusted close price
+        weighted_close = self.dataframe["adj close"] * self.smoothing_factor * weights
 
-        # Calculate the weighted cumulative sum in reverse order
-        weighted_cumsum = weighted_data[::-1].expanding().sum()[::-1]
+        # Calculate cumulative sum of close prices in reverse order
+        # to ensure that we sum up the smoothed values from
+        # the oldest to the most recent data point
+        close_cumulative_sum = weighted_close[::-1].expanding().sum()[::-1]
 
-        # Calculate the cumulative sum of the weights in reverse order
-        weights_cumsum = weights.expanding().sum()[::-1]
+        # Calculate cumulative sum of the weights in reverse order
+        # to ensure that we sum up the weights values from
+        # the oldest to the most recent data point
+        weights_cumulative_sum = weights.expanding().sum()[::-1]
 
-        # Calculate the McNicholl Moving Average
-        mcnicholl_ma = weighted_cumsum / weights_cumsum
+        # Calculate the McNicholl Moving Average by dividing
+        # the close cumulative sum by the weights cumulative sum
+        mcnicholl_ma = close_cumulative_sum / weights_cumulative_sum
 
-        # For initial period use SMA values
+        # Finally, use the initial SMA values for the first N data points
         mcnicholl_ma[: self.window_size] = simple_moving_average[: self.window_size]
 
+        # Preserve the McNicholl Moving Average on the dataframe
         self.dataframe["mnma"] = mcnicholl_ma
-
-
-"""
-Here's a detailed explanation of the steps and why we reverse the series:
-
-Calculate Weights:
-The weights are calculated as (1 - alpha) ** pd.Series(range(len(data))), which gives a
-decreasing series of weights from the start to the end of the data.
-
-Reverse the Weights:
-The weights are then reversed so that they start from the most recent point and decrease
-going backwards. This reversal ensures that when applying the weights to the data, the
-most recent point gets the highest weight.
-
-Apply Weights:
-The data is multiplied by these weights. By reversing the weighted data, we ensure that
-the cumulative sum calculation considers the most recent data point first.
-
-Calculate Cumulative Sums:
-
-The weighted cumulative sum is calculated in reverse order to ensure that at each point,
-we are summing up the contributions of all previous points, correctly weighted.
-The cumulative sum of the weights is also calculated in reverse to normalize the
-weighted sum.
-
-Reverse Back:
-The series is reversed back to its original order after the cumulative sums are computed
-to align the weighted sums correctly with the original time series.
-
-alpha = 2 / (window + 1) because it's akin to DAMA (Double Exponential Moving Average)
-"""
-
-
-def mcnicholl_moving_average(data: pd.Series, window: int) -> pd.Series:
-    """
-    Calculate the McNicholl Moving Average.
-
-    :param data: Price data.
-    :param window: Window size for the moving average.
-    """
-    alpha = 2 / (window + 1)
-    sma = data.rolling(window=window, min_periods=1).mean()  # Initial SMA
-
-    # Calculate the weights
-    weights = (1 - alpha) ** pd.Series(range(len(data)))
-    weights = weights[
-        ::-1
-    ]  # Reverse the weights so that the most recent point gets the highest weight
-
-    # Apply weights to the data
-    weighted_data: pd.Series = data * alpha * weights
-    # Calculate the weighted cumulative sum in reverse order
-    weighted_cumsum: pd.Series = weighted_data[::-1].expanding().sum()[::-1]
-    # Calculate the cumulative sum of the weights in reverse order
-    weights_cumsum = weights.expanding().sum()[::-1]
-
-    # Calculate the McNicholl Moving Average
-    mcnicholl_ma = weighted_cumsum / weights_cumsum
-
-    # For initial period use SMA values
-    mcnicholl_ma[:window] = sma[:window]
-
-    return mcnicholl_ma
