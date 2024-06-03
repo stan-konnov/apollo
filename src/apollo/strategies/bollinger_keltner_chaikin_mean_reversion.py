@@ -11,24 +11,10 @@ from apollo.calculations.mc_nicholl_moving_average import (
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
-"""
-TODO: clean me
-"""
-
 
 class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     """
     Work in progress.
-
-    Apply additional indicators from Kaufman:
-
-    1. Keltner Channel
-    2. Chaikin Oscillator
-    3. Make BB more adaptive to volatility (Kaufman)
-    4. Experiment with MACD + Chaikin Oscillator
-    5. Experiment with McNicholl Moving Average for BB and KC
-    6. Generally experiment with different MAs for BB, KC, and CO
-    7. Introduce McClellan Volume Oscillator
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
