@@ -72,15 +72,18 @@ class KeltnerChannelCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = dataframe.loc[series.index]
 
-        # Grab ATR value
+        # Grab McNicholl Moving Average
+        mnma = rolling_df["mnma"].iloc[-1]
+
+        # Grab Average True Range
         atr = rolling_df["atr"].iloc[-1]
 
         # Calculate lower and upper channel bounds
-        lkc_bound = rolling_df["mnma"] - atr * self.volatility_multiplier
-        ukc_bound = rolling_df["mnma"] + atr * self.volatility_multiplier
+        lkc_bound = mnma - atr * self.volatility_multiplier
+        ukc_bound = mnma + atr * self.volatility_multiplier
 
-        self.lkc_bound.append(lkc_bound[-1])
-        self.ukc_bound.append(ukc_bound[-1])
+        self.lkc_bound.append(lkc_bound)
+        self.ukc_bound.append(ukc_bound)
 
         # Return dummy float
         return 0.0
