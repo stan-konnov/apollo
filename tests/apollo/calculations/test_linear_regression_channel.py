@@ -6,8 +6,7 @@ from scipy.stats import linregress
 from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
-
-CHANNEL_SD_SPREAD = 1.0
+from tests.fixtures.env_and_constants import CHANNEL_SD_SPREAD
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
