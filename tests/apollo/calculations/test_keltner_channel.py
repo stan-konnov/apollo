@@ -169,10 +169,13 @@ def mimic_calc_chan(
 
     rolling_df = dataframe.loc[series.index]
 
-    l_band = rolling_df["mnma"] - rolling_df["atr"] * volatility_multiplier
-    u_band = rolling_df["mnma"] + rolling_df["atr"] * volatility_multiplier
+    mnma = rolling_df["mnma"][-1]
+    atr = rolling_df["atr"][-1]
 
-    lkc_bound.append(l_band[-1])
-    ukc_bound.append(u_band[-1])
+    l_band = mnma - atr * volatility_multiplier
+    u_band = mnma + atr * volatility_multiplier
+
+    lkc_bound.append(l_band)
+    ukc_bound.append(u_band)
 
     return 0.0

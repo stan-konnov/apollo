@@ -136,12 +136,13 @@ def mimic_calc_bands(
 
     rolling_df = dataframe.loc[series.index]
 
+    mnma = rolling_df["mnma"][-1]
     std = series.std()
 
-    l_band = rolling_df["mnma"] - std * channel_sd_spread
-    u_band = rolling_df["mnma"] + std * channel_sd_spread
+    l_band = mnma - std * channel_sd_spread
+    u_band = mnma + std * channel_sd_spread
 
-    lb_band.append(l_band[-1])
-    ub_band.append(u_band[-1])
+    lb_band.append(l_band)
+    ub_band.append(u_band)
 
     return 0.0
