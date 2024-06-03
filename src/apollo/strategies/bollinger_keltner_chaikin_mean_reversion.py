@@ -5,7 +5,7 @@ from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
-from apollo.calculations.mc_nicholl_moving_average import (
+from apollo.calculations.mcnicholl_moving_average import (
     McNichollMovingAverageCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
