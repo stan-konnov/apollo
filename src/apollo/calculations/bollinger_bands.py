@@ -11,6 +11,10 @@ class BollingerBandsCalculator(BaseCalculator):
     Calculates the Bollinger Bands expressed
     as +/- N standard deviations from the moving average.
 
+    NOTE: this calculator uses McNicholl Moving Average
+    in order to make the bands more responsive
+    to the volatility of the instrument.
+
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
