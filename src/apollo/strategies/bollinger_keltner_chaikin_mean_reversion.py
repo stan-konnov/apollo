@@ -26,14 +26,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     * Adjusted close is below the lower Bollinger Band,
     indicating that the instrument is oversold.
 
-    * Lower Bollinger Band is above the lower Keltner Channel bound,
-    indicating that the constructed band is within the volatility range,
-    thus, ensuring that the instrument is not oversold due to abnormal volatility.
-
-    * Upper Bollinger Band is below the upper Keltner Channel bound,
-    indicating that the constructed band is within the volatility range,
-    thus, ensuring that the instrument is not oversold due to abnormal volatility.
-
     * Accumulation Distribution Line is decreasing,
     indicating that the selling pressure is increasing
     and, therefore, has the potential to reverse back to the mean.
@@ -43,17 +35,12 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     * Adjusted close is above the upper Bollinger Band,
     indicating that the instrument is overbought.
 
-    * Lower Bollinger Band is above the lower Keltner Channel bound,
-    indicating that the constructed band is within the volatility range,
-    thus, ensuring that the instrument is not overbought due to abnormal volatility.
-
-    * Upper Bollinger Band is below the upper Keltner Channel bound,
-    indicating that the constructed band is within the volatility range,
-    thus, ensuring that the instrument is not overbought due to abnormal volatility.
-
     * Accumulation Distribution Line is increasing,
     indicating that the buying pressure is increasing
     and, therefore, has the potential to reverse back to the mean.
+
+    In both scenarios, the Bollinger Bands must be within the Keltner Channel
+    to ensure that the instrument is not oversold/bought due to abnormal volatility.
 
     NOTE: we use Accumulation Distribution Line as OR condition
     in order to avoid unnecessary signal scrutiny
