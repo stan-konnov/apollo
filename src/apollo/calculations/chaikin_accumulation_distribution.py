@@ -11,7 +11,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
     Chaikin Accumulation Distribution Line is a momentum indicator
     that determines the flow of liquidity into or out of an instrument.
 
-    The Chaikin Accumulation Distribution Line is calculated as follows:
+    Chaikin Accumulation Distribution Line is calculated as follows:
 
     Calculate Money Flow Multiplier expressed as
     difference between close and low minus difference between
