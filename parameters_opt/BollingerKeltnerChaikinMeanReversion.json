@@ -3,7 +3,7 @@
     "cash_size": 1000,
     "window_size": 5.0,
     "sl_volatility_multiplier": 0.1,
-    "tp_volatility_multiplier": 0.2,
-    "channel_sd_spread": 0.5,
-    "volatility_multiplier": 0.1
+    "tp_volatility_multiplier": 0.3,
+    "channel_sd_spread": 0.1,
+    "volatility_multiplier": 0.6
 }

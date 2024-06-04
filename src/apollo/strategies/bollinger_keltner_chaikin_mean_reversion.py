@@ -1,6 +1,5 @@
 from pandas import DataFrame
 
-from apollo.calculations.bollinger_bands import BollingerBandsCalculator
 from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
@@ -80,12 +79,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
             window_size=window_size,
         )
 
-        self.bb_calculator = BollingerBandsCalculator(
-            dataframe=dataframe,
-            window_size=window_size,
-            channel_sd_spread=channel_sd_spread,
-        )
-
         self.kc_calculator = KeltnerChannelCalculator(
             dataframe=dataframe,
             window_size=window_size,
@@ -109,24 +102,19 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
 
         self.mnma_calculator.calculate_mcnicholl_moving_average()
         self.kc_calculator.calculate_keltner_channel()
-        self.bb_calculator.calculate_bollinger_bands()
         self.cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (
-            (self.dataframe["adj close"] < self.dataframe["lb_band"])
-            & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
-            & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-        ) | (self.dataframe["adl"] < self.dataframe["prev_adl"])
+        long = (self.dataframe["adj close"] > self.dataframe["lkc_bound"]) & (
+            self.dataframe["adl"] > self.dataframe["prev_adl"]
+        )
 
         self.dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (
-            (self.dataframe["adj close"] > self.dataframe["ub_band"])
-            & (self.dataframe["lb_band"] > self.dataframe["lkc_bound"])
-            & (self.dataframe["ub_band"] < self.dataframe["ukc_bound"])
-        ) | (self.dataframe["adl"] > self.dataframe["prev_adl"])
+        short = (self.dataframe["adj close"] < self.dataframe["ukc_bound"]) & (
+            self.dataframe["adl"] < self.dataframe["prev_adl"]
+        )
 
         self.dataframe.loc[short, "signal"] = SHORT_SIGNAL

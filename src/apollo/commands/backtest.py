@@ -33,8 +33,8 @@ def main() -> None:
     strategy = BollingerKeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        channel_sd_spread=0.5,
-        volatility_multiplier=0.1,
+        channel_sd_spread=0.1,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()

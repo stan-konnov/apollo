@@ -1,6 +1,11 @@
 import pandas as pd
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 from apollo.calculations.base_calculator import BaseCalculator
+
+"""
+Please use DEMA instead of McNicholl Moving Average.
+"""
 
 
 class McNichollMovingAverageCalculator(BaseCalculator):
@@ -22,47 +27,38 @@ class McNichollMovingAverageCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        # Calculate the smoothing factor
-        # by using the constant of two to achieve
-        # double smoothing similar to the Double Exponential Moving Average
-        self.smoothing_factor = 2 / (window_size + 1)
-
     def calculate_mcnicholl_moving_average(self) -> None:
         """Calculate McNicholl Moving Average."""
 
         # Calculate initial SMA
-        simple_moving_average = (
+        ema_1 = (
             self.dataframe["adj close"]
-            .rolling(window=self.window_size, min_periods=self.window_size)
+            .ewm(
+                alpha=1 / self.window_size,
+                min_periods=self.window_size,
+                adjust=False,
+            )
             .mean()
         )
 
-        # Calculate the weight for every data point
-        weights = (1 - self.smoothing_factor) ** pd.Series(
-            len(self.dataframe.index),
-            index=self.dataframe.index,
-        )
+        ema_2 = ema_1.ewm(
+            alpha=1 / self.window_size,
+            min_periods=self.window_size,
+            adjust=False,
+        ).mean()
 
-        # Reverse the weights so that the most
-        # recent point gets the highest weight
-        # achieving exponential smoothing
-        weights = weights[::-1]
+        dema = 2 * ema_1 - ema_2
 
-        # Apply the weights to the simple moving average
-        weighted_close = simple_moving_average * self.smoothing_factor * weights
+        self.dataframe["mnma"] = dema
 
-        # Calculate cumulative sum of weighted close prices
-        close_cumulative_sum = weighted_close.cumsum()
+    def _calc_trix(self, series: pd.Series) -> float:
+        """Calculate Triple Exponential Smoothing."""
 
-        # Calculate cumulative sum of the weights
-        weights_cumulative_sum = weights.cumsum()
+        model = ExponentialSmoothing(series)
 
-        # Calculate the McNicholl Moving Average by dividing
-        # the close cumulative sum by the weights cumulative sum
-        mcnicholl_ma = close_cumulative_sum / weights_cumulative_sum
+        fit = model.fit()
 
-        # Finally, use the initial SMA values for the first N data points
-        mcnicholl_ma[: self.window_size] = simple_moving_average[: self.window_size]
+        # Get the fitted values and forecasts
+        triple_exp_smoothing_values = fit.fittedvalues
 
-        # Preserve the McNicholl Moving Average on the dataframe
-        self.dataframe["mnma"] = mcnicholl_ma
+        return triple_exp_smoothing_values.iloc[-1]
