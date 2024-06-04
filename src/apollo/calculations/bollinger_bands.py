@@ -69,18 +69,15 @@ class BollingerBandsCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = dataframe.loc[series.index]
 
-        # Grab McNicholl Moving Average
-        mnma = rolling_df["mnma"][-1]
-
         # Calculate standard deviation of adjusted close
         std = series.std()
 
         # Calculate lower and upper bands
-        l_band = mnma - std * self.channel_sd_spread
-        u_band = mnma + std * self.channel_sd_spread
+        l_band = rolling_df["mnma"] - std * self.channel_sd_spread
+        u_band = rolling_df["mnma"] + std * self.channel_sd_spread
 
-        self.lb_band.append(l_band)
-        self.ub_band.append(u_band)
+        self.lb_band.append(l_band[-1])
+        self.ub_band.append(u_band[-1])
 
         # Return dummy float
         return 0.0
