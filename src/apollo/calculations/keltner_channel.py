@@ -31,8 +31,8 @@ class KeltnerChannelCalculator(BaseCalculator):
         """
         Construct Keltner Channel calculator.
 
-        :param dataframe: Dataframe to calculate Bollinger Bands for.
-        :param window_size: Window size for rolling Bollinger Bands calculation.
+        :param dataframe: Dataframe to calculate Keltner Channel for.
+        :param window_size: Window size for rolling Keltner Channel calculation.
         :param volatility_multiplier: ATR multiplier for channel bounds.
         """
 
