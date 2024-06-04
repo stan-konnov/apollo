@@ -48,18 +48,14 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         # achieving exponential smoothing
         weights = weights[::-1]
 
-        # Apply the weights to the adjusted close price
-        weighted_close = self.dataframe["adj close"] * self.smoothing_factor * weights
+        # Apply the weights to the simple moving average
+        weighted_close = simple_moving_average * self.smoothing_factor * weights
 
-        # Calculate cumulative sum of close prices in reverse order
-        # to ensure that we sum up the smoothed values from
-        # the oldest to the most recent data point
-        close_cumulative_sum = weighted_close[::-1].expanding().sum()[::-1]
+        # Calculate cumulative sum of weighted close prices
+        close_cumulative_sum = weighted_close.cumsum()
 
-        # Calculate cumulative sum of the weights in reverse order
-        # to ensure that we sum up the weights values from
-        # the oldest to the most recent data point
-        weights_cumulative_sum = weights.expanding().sum()[::-1]
+        # Calculate cumulative sum of the weights
+        weights_cumulative_sum = weights.cumsum()
 
         # Calculate the McNicholl Moving Average by dividing
         # the close cumulative sum by the weights cumulative sum
