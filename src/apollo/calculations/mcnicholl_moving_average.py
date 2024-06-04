@@ -8,7 +8,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 # ruff: noqa
 
 """
-Please use DEMA instead of McNicholl Moving Average.
+Please use HMA instead of McNicholl Moving Average.
 
 Simple Moving Average (SMA): The SMA is the average of a set of prices over a specified
 time period, with equal weight given to each price.
@@ -113,15 +113,3 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         hma = wma(diff, sqrt_window)
 
         self.dataframe["mnma"] = hma
-
-    def _calc_trix(self, series: pd.Series) -> float:
-        """Calculate Triple Exponential Smoothing."""
-
-        model = ExponentialSmoothing(series)
-
-        fit = model.fit()
-
-        # Get the fitted values and forecasts
-        triple_exp_smoothing_values = fit.fittedvalues
-
-        return triple_exp_smoothing_values.iloc[-1]
