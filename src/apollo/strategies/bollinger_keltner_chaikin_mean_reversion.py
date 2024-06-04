@@ -53,7 +53,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        channel_sd_spread: float,
         volatility_multiplier: float,
     ) -> None:
         """
@@ -67,7 +66,6 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
 
         self._validate_parameters(
             [
-                ("channel_sd_spread", channel_sd_spread, float),
                 ("volatility_multiplier", volatility_multiplier, float),
             ],
         )

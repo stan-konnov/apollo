@@ -5,31 +5,25 @@
 
     "window_size": {
         "step": 5,
-        "range": [5, 10]
+        "range": [5, 20]
     },
 
     "sl_volatility_multiplier": {
         "step": 0.1,
-        "range": [0.1, 0.5]
+        "range": [0.1, 1.0]
     },
 
     "tp_volatility_multiplier": {
         "step": 0.1,
-        "range": [0.1, 0.5]
-    },
-
-    "channel_sd_spread": {
-        "step": 0.1,
-        "range": [0.1, 0.5]
+        "range": [0.1, 1.0]
     },
 
     "volatility_multiplier": {
         "step": 0.5,
-        "range": [0.1, 0.5]
+        "range": [0.1, 1.0]
     },
 
     "strategy_specific_parameters": [
-        "channel_sd_spread",
         "volatility_multiplier"
     ]
 }
