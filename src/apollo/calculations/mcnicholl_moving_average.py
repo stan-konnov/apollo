@@ -69,6 +69,7 @@ class McNichollMovingAverageCalculator(BaseCalculator):
     def calculate_mcnicholl_moving_average(self) -> None:
         """Calculate McNicholl Moving Average."""
 
+        # DEMA!
         # Calculate initial SMA
         # ema_1 = (
         #     self.dataframe["adj close"]
@@ -88,6 +89,7 @@ class McNichollMovingAverageCalculator(BaseCalculator):
 
         # dema = 2 * ema_1 - ema_2
 
+        # HMA!
         def wma(data: pd.Series, window: int) -> pd.Series:
             weights = np.arange(1, window + 1)
 

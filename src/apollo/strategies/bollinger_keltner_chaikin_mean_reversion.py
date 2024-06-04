@@ -105,6 +105,8 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
+        """I am actually trend following"""
+
         long = (self.dataframe["adj close"] > self.dataframe["lkc_bound"]) & (
             self.dataframe["adl"] > self.dataframe["prev_adl"]
         )
