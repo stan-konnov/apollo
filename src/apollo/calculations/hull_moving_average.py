@@ -20,7 +20,7 @@ class HullMovingAverageCalculator(BaseCalculator):
         """Calculate Hull Moving Average."""
 
         # Calculate weighed moving average of
-        # the close prices using provided window size
+        # the close using provided window size
         standard_window_wma = self._calculate_weighted_moving_average(
             self.dataframe["adj close"],
             self.window_size,
