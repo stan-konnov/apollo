@@ -6,7 +6,17 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 class HullMovingAverageCalculator(BaseCalculator):
     """
-    Work in progress.
+    Hull Moving Average Calculator.
+
+    Hull Moving Average is a weighted moving average
+    designed by Alan Hull to reduce lag and increase
+    responsiveness to short-term price movements.
+
+    Calculation consists of three steps:
+
+    1. Calculate WMA of the close using standard window size
+    2. Calculate shorter WMA of the close using half window size
+    3. Calculate HMA of the difference between two using square root of the window size
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
