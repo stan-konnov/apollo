@@ -37,7 +37,7 @@ class HullMovingAverageCalculator(BaseCalculator):
             half_window,
         )
 
-        # Calculate the difference standard weighted moving average
+        # Calculate the difference between standard weighted moving average
         # and the shorter weighted moving average multiplied by 2
         # to emphasize shorter-term price movements
         wma_difference = 2 * half_window_wma - standard_window_wma
