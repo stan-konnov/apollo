@@ -5,10 +5,8 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
+from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
-from apollo.calculations.mcnicholl_moving_average import (
-    McNichollMovingAverageCalculator,
-)
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.bollinger_keltner_chaikin_mean_reversion import (
     BollingerKeltnerChaikinMeanReversion,
@@ -37,11 +35,11 @@ def test__bollinger_keltner_chaikin_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
     kc_calculator = KeltnerChannelCalculator(
         dataframe=control_dataframe,

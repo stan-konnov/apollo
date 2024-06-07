@@ -3,10 +3,10 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.keltner_channel import KeltnerChannelCalculator
-from apollo.calculations.mcnicholl_moving_average import (
-    McNichollMovingAverageCalculator,
+from apollo.calculations.hull_moving_average import (
+    HullMovingAverageCalculator,
 )
+from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 
 VOLATILITY_MULTIPLIER = 0.5
 
@@ -22,11 +22,11 @@ def test__calculate_keltner_channel__for_correct_columns(
     Resulting dataframe must have columns "lkc_bound" and "ukc_bound".
     """
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -60,11 +60,11 @@ def test__calculate_keltner_channel__for_correct_rolling_window(
     ATR calculation that is based on TR calculation.
     """
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -99,11 +99,11 @@ def test__calculate_keltner_channel__for_correct_kc_calculation(
 
     control_dataframe = dataframe.copy()
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=control_dataframe,
@@ -124,11 +124,11 @@ def test__calculate_keltner_channel__for_correct_kc_calculation(
     control_dataframe["lkc_bound"] = lkc_bound
     control_dataframe["ukc_bound"] = ukc_bound
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -169,8 +169,8 @@ def mimic_calc_chan(
 
     rolling_df = dataframe.loc[series.index]
 
-    l_band = rolling_df["mnma"] - rolling_df["atr"] * volatility_multiplier
-    u_band = rolling_df["mnma"] + rolling_df["atr"] * volatility_multiplier
+    l_band = rolling_df["hma"] - rolling_df["atr"] * volatility_multiplier
+    u_band = rolling_df["hma"] + rolling_df["atr"] * volatility_multiplier
 
     lkc_bound.append(l_band[-1])
     ukc_bound.append(u_band[-1])

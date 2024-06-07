@@ -1,63 +1,63 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.mcnicholl_moving_average import (
-    McNichollMovingAverageCalculator,
+from apollo.calculations.hull_moving_average import (
+    HullMovingAverageCalculator,
 )
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_mcnicholl_moving_average__for_correct_columns(
+def test__calculate_hull_moving_average__for_correct_columns(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_mcnicholl_moving_average method for correct columns.
+    Test calculate_hull_moving_average method for correct columns.
 
-    Resulting dataframe must have "mnma" column.
+    Resulting dataframe must have "hma" column.
     """
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
-    assert "mnma" in mnma_calculator.dataframe.columns
+    assert "hma" in hma_calculator.dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_mcnicholl_moving_average__for_correct_rolling_window(
+def test__calculate_hull_moving_average__for_correct_rolling_window(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_mcnicholl_moving_average method for correct rolling window.
+    Test calculate_hull_moving_average method for correct rolling window.
 
     Where N = WINDOW_SIZE.
 
-    Resulting dataframe must skip WINDOW_SIZE - 1 rows for mnma column
+    Resulting dataframe must skip WINDOW_SIZE - 1 rows for hma column
     Since McNicholl Moving Average must have at least N rows to be calculated.
     """
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
-    assert dataframe["mnma"].isna().sum() == window_size - 1
+    assert dataframe["hma"].isna().sum() == window_size - 1
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_mcnicholl_moving_average__for_correct_mnma_calculation(
+def test__calculate_hull_moving_average__for_correct_hma_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_mcnicholl_moving_average method for correct calculation.
+    Test calculate_hull_moving_average method for correct calculation.
 
-    Resulting "mnma" column must have correct values for each row.
+    Resulting "hma" column must have correct values for each row.
     """
 
     control_dataframe = dataframe.copy()
@@ -87,12 +87,12 @@ def test__calculate_mcnicholl_moving_average__for_correct_mnma_calculation(
 
     mcnicholl_ma[:window_size] = simple_moving_average[:window_size]
 
-    control_dataframe["mnma"] = mcnicholl_ma
+    control_dataframe["hma"] = mcnicholl_ma
 
-    mnma_calculator = McNichollMovingAverageCalculator(
+    hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
     )
-    mnma_calculator.calculate_mcnicholl_moving_average()
+    hma_calculator.calculate_hull_moving_average()
 
-    pd.testing.assert_series_equal(dataframe["mnma"], control_dataframe["mnma"])
+    pd.testing.assert_series_equal(dataframe["hma"], control_dataframe["hma"])

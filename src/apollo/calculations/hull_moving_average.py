@@ -47,27 +47,20 @@ aiming to adapt to changes in volatility and trend.
 """
 
 
-class McNichollMovingAverageCalculator(BaseCalculator):
+class HullMovingAverageCalculator(BaseCalculator):
     """
-    McNicholl Moving Average Calculator.
-
-    McNicholl Moving Average is a variation of the Exponential Moving Average
-    that uses a smoothing factor to calculate the weighted average of the data.
-
-    Is an extension of the Double Exponential Moving Average (DEMA), therefore,
-    the smoothing factor is calculated by dividing 2 by the window size plus 1,
-    instead of regular Wilders smoothing factor of 1 / window size.
+    Work in progress.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
-        """Construct McNicholl Moving Average calculator."""
+        """Construct Hull Moving Average calculator."""
 
         super().__init__(dataframe, window_size)
 
-    def calculate_mcnicholl_moving_average(self) -> None:
-        """Calculate McNicholl Moving Average."""
+    def calculate_hull_moving_average(self) -> None:
+        """Calculate Hull Moving Average."""
 
         # DEMA!
         # Calculate initial SMA
@@ -112,4 +105,4 @@ class McNichollMovingAverageCalculator(BaseCalculator):
         sqrt_window = int(np.sqrt(self.window_size))
         hma = wma(diff, sqrt_window)
 
-        self.dataframe["mnma"] = hma
+        self.dataframe["hma"] = hma

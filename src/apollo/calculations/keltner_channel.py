@@ -74,8 +74,8 @@ class KeltnerChannelCalculator(BaseCalculator):
 
         # Calculate lower and upper channel bounds
         # expressed as +/- ATR * multiplier from the moving average
-        lkc_bound = rolling_df["mnma"] - rolling_df["atr"] * self.volatility_multiplier
-        ukc_bound = rolling_df["mnma"] + rolling_df["atr"] * self.volatility_multiplier
+        lkc_bound = rolling_df["hma"] - rolling_df["atr"] * self.volatility_multiplier
+        ukc_bound = rolling_df["hma"] + rolling_df["atr"] * self.volatility_multiplier
 
         self.lkc_bound.append(lkc_bound[-1])
         self.ukc_bound.append(ukc_bound[-1])

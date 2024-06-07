@@ -3,10 +3,10 @@ from pandas import DataFrame
 from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
-from apollo.calculations.keltner_channel import KeltnerChannelCalculator
-from apollo.calculations.mcnicholl_moving_average import (
-    McNichollMovingAverageCalculator,
+from apollo.calculations.hull_moving_average import (
+    HullMovingAverageCalculator,
 )
+from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
@@ -72,7 +72,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.mnma_calculator = McNichollMovingAverageCalculator(
+        self.hma_calculator = HullMovingAverageCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -98,7 +98,7 @@ class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
     def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.mnma_calculator.calculate_mcnicholl_moving_average()
+        self.hma_calculator.calculate_hull_moving_average()
         self.kc_calculator.calculate_keltner_channel()
         self.cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
