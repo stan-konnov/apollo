@@ -12,9 +12,9 @@ class KeltnerChannelCalculator(BaseCalculator):
     consists of bands around moving average of the price
     and are calculated based off ATR and supplied multiplier.
 
-    NOTE: this calculator uses McNicholl Moving Average
+    NOTE: this calculator uses Hull Moving Average
     in order to make the channel more responsive
-    to the volatility of the instrument.
+    to short-term price movements.
 
     NOTE: since all of our strategies are volatility-based,
     this calculator implicitly has access to calculated ATR values.
