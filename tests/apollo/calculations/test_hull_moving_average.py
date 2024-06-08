@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -36,8 +37,9 @@ def test__calculate_hull_moving_average__for_correct_rolling_window(
 
     Where N = WINDOW_SIZE.
 
-    Resulting dataframe must skip WINDOW_SIZE - 1 rows for hma column
-    Since McNicholl Moving Average must have at least N rows to be calculated.
+    Resulting dataframe must equal to N, since Hull Moving Average
+    is calculated on top of weighted moving average that requires
+    exactly N elements to calculate the weights for the window.
     """
 
     hma_calculator = HullMovingAverageCalculator(
@@ -46,7 +48,7 @@ def test__calculate_hull_moving_average__for_correct_rolling_window(
     )
     hma_calculator.calculate_hull_moving_average()
 
-    assert dataframe["hma"].isna().sum() == window_size - 1
+    assert dataframe["hma"].isna().sum() == window_size
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -62,32 +64,29 @@ def test__calculate_hull_moving_average__for_correct_hma_calculation(
 
     control_dataframe = dataframe.copy()
 
-    smoothing_factor = 2 / (window_size + 1)
-
-    simple_moving_average = (
-        control_dataframe["adj close"]
-        .rolling(window=window_size, min_periods=window_size)
-        .mean()
+    standard_window_wma = _calc_wma(
+        control_dataframe["adj close"],
+        window_size,
     )
 
-    weights = (1 - smoothing_factor) ** pd.Series(
-        len(dataframe.index),
-        index=dataframe.index,
+    half_window = window_size // 2
+
+    half_window_wma = _calc_wma(
+        control_dataframe["adj close"],
+        half_window,
     )
 
-    weights = weights[::-1]
+    wma_difference = 2 * half_window_wma - standard_window_wma
 
-    weighted_close = control_dataframe["adj close"] * smoothing_factor * weights
+    sqrt_window = int(np.sqrt(window_size))
 
-    close_cumulative_sum = weighted_close[::-1].expanding().sum()[::-1]
+    hull_moving_average = _calc_wma(
+        wma_difference,
+        sqrt_window,
+    )
 
-    weights_cumulative_sum = weights.expanding().sum()[::-1]
-
-    mcnicholl_ma = close_cumulative_sum / weights_cumulative_sum
-
-    mcnicholl_ma[:window_size] = simple_moving_average[:window_size]
-
-    control_dataframe["hma"] = mcnicholl_ma
+    # Write to the dataframe
+    control_dataframe["hma"] = hull_moving_average
 
     hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
@@ -96,3 +95,22 @@ def test__calculate_hull_moving_average__for_correct_hma_calculation(
     hma_calculator.calculate_hull_moving_average()
 
     pd.testing.assert_series_equal(dataframe["hma"], control_dataframe["hma"])
+
+
+def _calc_wma(
+    series: pd.Series,
+    window_size: int,
+) -> pd.Series:
+    """
+    Mimicry of Weighted Moving Average calculation for testing purposes.
+
+    Please see HullMovingAverageCalculator for
+    detailed explanation of Weighted Moving Average calculation.
+    """
+
+    weights = np.arange(1, window_size + 1)
+
+    return series.rolling(window=window_size).apply(
+        lambda x: np.sum(x * weights) / np.sum(weights),
+        raw=True,
+    )
