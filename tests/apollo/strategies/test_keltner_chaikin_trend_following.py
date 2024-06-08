@@ -14,12 +14,12 @@ from apollo.strategies.keltner_chaikin_trend_following import (
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__bollinger_keltner_chaikin_mean_reversion__with_valid_parameters(
+def test__keltner_chaikin_trend_following__with_valid_parameters(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test Bollinger Keltner Chaikin Mean Reversion with valid parameters.
+    Test Keltner Chaikin Trend Following with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
@@ -68,12 +68,12 @@ def test__bollinger_keltner_chaikin_mean_reversion__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    bollinger_keltner_chaikin_mean_reversion = KeltnerChaikinTrendFollowing(
+    keltner_chaikin_trend_following = KeltnerChaikinTrendFollowing(
         dataframe=dataframe,
         window_size=window_size,
         volatility_multiplier=volatility_multiplier,
     )
 
-    bollinger_keltner_chaikin_mean_reversion.model_trading_signals()
+    keltner_chaikin_trend_following.model_trading_signals()
 
     pd.testing.assert_series_equal(dataframe["signal"], control_dataframe["signal"])
