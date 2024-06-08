@@ -21,16 +21,16 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
 
     This strategy takes long positions when:
 
-    * Adjusted close is above the upper Keltner Channel bound,
-    indicating that instrument is entering bullish trend.
+    * Adjusted close is above the lower Keltner Channel bound,
+    indicating that instrument is within the expected volatility range.
 
     * Accumulation Distribution Line is increasing,
     indicating that instrument is being accumulated.
 
     This strategy takes short positions when:
 
-    * Adjusted close is below the lower Keltner Channel bound,
-    indicating that instrument is entering bearish trend.
+    * Adjusted close is below the upper Keltner Channel bound,
+    indicating that instrument is within the expected volatility range.
 
     * Accumulation Distribution Line is decreasing,
     indicating that instrument is being distributed.
