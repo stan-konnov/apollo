@@ -45,11 +45,10 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
         volatility_multiplier: float,
     ) -> None:
         """
-        Construct Bollinger Keltner Chaikin Mean Reversion Strategy.
+        Construct Keltner Chaikin Trend Following Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
-        :param channel_sd_spread: Standard deviation spread for Bollinger Bands.
         :param volatility_multiplier: ATR multiplier for Keltner Channel.
         """
 
@@ -93,8 +92,6 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
 
     def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
-
-        """I am actually trend following"""
 
         long = (self.dataframe["adj close"] > self.dataframe["lkc_bound"]) & (
             self.dataframe["adl"] > self.dataframe["prev_adl"]
