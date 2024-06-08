@@ -1,7 +1,6 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.bollinger_bands import BollingerBandsCalculator
 from apollo.settings import END_DATE, START_DATE, TICKER
 
 logging.basicConfig(
@@ -21,15 +20,7 @@ def main() -> None:
         end_date=str(END_DATE),
     )
 
-    dataframe = yahoo_api_connector.request_or_read_prices()
-
-    bb_calculator = BollingerBandsCalculator(
-        dataframe=dataframe,
-        window_size=5,
-        channel_sd_spread=0.3,
-    )
-
-    bb_calculator.calculate_bollinger_bands()
+    yahoo_api_connector.request_or_read_prices()
 
 
 if __name__ == "__main__":
