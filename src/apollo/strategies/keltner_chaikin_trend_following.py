@@ -11,42 +11,31 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class BollingerKeltnerChaikinMeanReversion(BaseStrategy):
+class KeltnerChaikinTrendFollowing(BaseStrategy):
     """
-    Bollinger Keltner Chaikin Mean Reversion.
+    Keltner Chaikin Trend Following.
 
-    NOTE: this strategy uses McNicholl Moving Average as input
-    for calculation of the Bollinger Bands and Keltner Channel
-    in order to make the bands and the channel more responsive
-    to the volatility of the instrument.
+    NOTE: this strategy uses Hull Moving Average as input for
+    calculation of the Keltner Channel to make the channel
+    more responsive to short-term price movements.
 
     This strategy takes long positions when:
 
-    * Adjusted close is below the lower Bollinger Band,
-    indicating that the instrument is oversold.
+    * Adjusted close is above the upper Keltner Channel bound,
+    indicating that instrument is entering bullish trend.
 
-    * Accumulation Distribution Line is decreasing,
-    indicating that the selling pressure is increasing
-    and, therefore, has the potential to reverse back to the mean.
+    * Accumulation Distribution Line is increasing,
+    indicating that instrument is being accumulated.
 
     This strategy takes short positions when:
 
-    * Adjusted close is above the upper Bollinger Band,
-    indicating that the instrument is overbought.
+    * Adjusted close is below the lower Keltner Channel bound,
+    indicating that instrument is entering bearish trend.
 
-    * Accumulation Distribution Line is increasing,
-    indicating that the buying pressure is increasing
-    and, therefore, has the potential to reverse back to the mean.
-
-    In both scenarios, the Bollinger Bands must be within the Keltner Channel
-    to ensure that the instrument is not oversold/bought due to abnormal volatility.
-
-    NOTE: we use Accumulation Distribution Line as OR condition
-    in order to avoid unnecessary signal scrutiny
-    that can lead to missed opportunities.
+    * Accumulation Distribution Line is decreasing,
+    indicating that instrument is being distributed.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
-    Donadio and Ghosh, Algorithmic Trading, 2019, 1st ed.
     """
 
     def __init__(

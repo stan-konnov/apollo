@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.bollinger_keltner_chaikin_mean_reversion import (
-    BollingerKeltnerChaikinMeanReversion,
+from apollo.strategies.keltner_chaikin_trend_following import (
+    KeltnerChaikinTrendFollowing,
 )
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = BollingerKeltnerChaikinMeanReversion(
+    strategy = KeltnerChaikinTrendFollowing(
         dataframe=dataframe,
         window_size=20,
         volatility_multiplier=1.1,

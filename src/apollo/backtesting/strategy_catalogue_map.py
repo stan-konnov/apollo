@@ -10,8 +10,8 @@ Acts as a central registry for all available strategies.
 """
 
 from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
-from apollo.strategies.bollinger_keltner_chaikin_mean_reversion import (
-    BollingerKeltnerChaikinMeanReversion,
+from apollo.strategies.keltner_chaikin_trend_following import (
+    KeltnerChaikinTrendFollowing,
 )
 from apollo.strategies.lin_reg_chan_mean_reversion import (
     LinearRegressionChannelMeanReversion,
@@ -28,6 +28,6 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
     "LogisticRegressionForecast": LogisticRegressionForecast,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
-    "BollingerKeltnerChaikinMeanReversion": BollingerKeltnerChaikinMeanReversion,
+    "KeltnerChaikinTrendFollowing": KeltnerChaikinTrendFollowing,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
 }

@@ -8,8 +8,8 @@ from apollo.calculations.chaikin_accumulation_distribution import (
 from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.bollinger_keltner_chaikin_mean_reversion import (
-    BollingerKeltnerChaikinMeanReversion,
+from apollo.strategies.keltner_chaikin_trend_following import (
+    KeltnerChaikinTrendFollowing,
 )
 
 
@@ -68,7 +68,7 @@ def test__bollinger_keltner_chaikin_mean_reversion__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    bollinger_keltner_chaikin_mean_reversion = BollingerKeltnerChaikinMeanReversion(
+    bollinger_keltner_chaikin_mean_reversion = KeltnerChaikinTrendFollowing(
         dataframe=dataframe,
         window_size=window_size,
         volatility_multiplier=volatility_multiplier,
