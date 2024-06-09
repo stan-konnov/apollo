@@ -58,12 +58,7 @@ class SwingEventsCalculator(BaseCalculator):
 
         # Fill swing events array with N NaN, where N = window size
         self.swing_events = (
-            np.full(
-                (1, self.window_size - 1),
-                np.nan,
-            )
-            .flatten()
-            .tolist()
+            np.full((1, self.window_size - 1), np.nan).flatten().tolist()
         )
 
         # Calculate swings

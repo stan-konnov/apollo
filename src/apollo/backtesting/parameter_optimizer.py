@@ -2,7 +2,6 @@ from json import dump, loads
 from logging import getLogger
 from pathlib import Path
 from sys import exit
-from typing import ClassVar
 
 import pandas as pd
 from numpy import arange
@@ -10,21 +9,12 @@ from tqdm.contrib.itertools import product
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
-from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
-from apollo.strategies.lin_reg_chan_mean_reversion import (
-    LinearRegressionChannelMeanReversion,
-)
-from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
-from apollo.strategies.skew_kurt_vol_trend_following import (
-    SkewnessKurtosisVolatilityTrendFollowing,
-)
-from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
     ParameterKeysAndCombinations,
     ParameterSet,
-    StrategyNameToClassMap,
 )
 
 logger = getLogger(__name__)
@@ -40,21 +30,6 @@ class ParameterOptimizer:
     Writes backtesting results and trades into files for further analysis.
     Writes optimized parameter set from sorted backtesting results.
     """
-
-    # Represents a mapping between strategy name and strategy class
-    # Is used to instantiate the strategy class based on configured name
-    _strategy_name_to_class_map: ClassVar[StrategyNameToClassMap] = {
-        "ARIMATrendMeanReversion":
-            ARIMATrendMeanReversion,
-        "SwingEventsMeanReversion":
-            SwingEventsMeanReversion,
-        "LogisticRegressionForecast":
-            LogisticRegressionForecast,
-        "LinearRegressionChannelMeanReversion":
-            LinearRegressionChannelMeanReversion,
-        "SkewnessKurtosisVolatilityTrendFollowing":
-            SkewnessKurtosisVolatilityTrendFollowing,
-    }
 
     def __init__(self) -> None:
         """
@@ -104,7 +79,7 @@ class ParameterOptimizer:
         strategy_name = self._configuration.strategy
         strategy_class = type(
             strategy_name,
-            (self._strategy_name_to_class_map[strategy_name],),
+            (STRATEGY_CATALOGUE_MAP[strategy_name],),
             {},
         )
 

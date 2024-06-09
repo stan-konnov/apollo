@@ -1,5 +1,6 @@
 {
     "editor.tabSize": 4,
+    "editor.defaultFormatter": "charliermarsh.ruff",
 
     "files.exclude": {
         "**/.pytest_cache": true,
@@ -7,6 +8,7 @@
         "**/.coverage*": true,
         "**/venv": true,
         "**/__init__.py": true,
+        "**/.ruff_cache": true,
     },
 
     "python.analysis.autoImportCompletions": true,
@@ -19,4 +21,10 @@
             "source.fixAll": "always"
         },
     },
+
+    "notebook.formatOnSave.enabled": true,
+    "notebook.codeActionsOnSave": {
+        "notebook.source.fixAll": "explicit",
+        "notebook.source.organizeImports": "explicit"
+    }
 }
