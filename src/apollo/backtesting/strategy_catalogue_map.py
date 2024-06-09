@@ -27,7 +27,7 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "ARIMATrendMeanReversion": ARIMATrendMeanReversion,
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
     "LogisticRegressionForecast": LogisticRegressionForecast,
-    "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "KeltnerChaikinTrendFollowing": KeltnerChaikinTrendFollowing,
+    "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
 }
