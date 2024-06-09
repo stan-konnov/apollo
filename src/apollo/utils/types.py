@@ -34,4 +34,4 @@ ParameterCombinations = Iterable[tuple[float, ...]]
 ParameterKeysAndCombinations = tuple[ParameterKeys, ParameterCombinations]
 
 
-StrategyNameToClassMap = dict[str, type[BaseStrategy]]
+StrategyCatalogueMap = dict[str, type[BaseStrategy]]

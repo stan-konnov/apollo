@@ -53,7 +53,7 @@ class AverageTrueRangeCalculator(BaseCalculator):
         # Drop previous close as we no longer need it
         self.dataframe.drop(columns=["prev_close"], inplace=True)
 
-    def __calc_tr(self, series: pd.Series, dataframe: pd.DataFrame) -> None:
+    def __calc_tr(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
         """
         Calculate rolling TR for a given window.
 

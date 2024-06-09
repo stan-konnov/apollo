@@ -45,7 +45,6 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
         end: str,  # noqa: ARG001
         interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
-
         return pd.DataFrame()
 
     with patch("apollo.api.yahoo_api_connector.download", download):

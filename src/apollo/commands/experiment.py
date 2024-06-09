@@ -1,7 +1,6 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.calculations.models.arima_regression import ARIMARegressionModelCalculator
 from apollo.settings import END_DATE, START_DATE, TICKER
 
 logging.basicConfig(
@@ -21,13 +20,7 @@ def main() -> None:
         end_date=str(END_DATE),
     )
 
-    dataframe = yahoo_api_connector.request_or_read_prices()
-
-    arm_calculator = ARIMARegressionModelCalculator(dataframe=dataframe, window_size=5)
-
-    arm_calculator.forecast_periods()
-
-    print(dataframe)
+    yahoo_api_connector.request_or_read_prices()
 
 
 if __name__ == "__main__":
