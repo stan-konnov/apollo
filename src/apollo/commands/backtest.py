@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
+from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,10 +28,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = LogisticRegressionForecast(
+    strategy = ARIMATrendMeanReversion(
         dataframe=dataframe,
-        window_size=15,
-        train_size=0.4,
+        window_size=10,
     )
 
     strategy.model_trading_signals()

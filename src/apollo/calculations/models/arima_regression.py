@@ -65,24 +65,34 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         # Decompose the time series into
         # trend, seasonal, and residual components
-        # within the period equaling our window size
+        # within the period equaling half our window size
         time_series = seasonal_decompose(
             self.dataframe["adj close"],
             model="multiplicative",
             period=self.window_size,
         )
 
-        # Create ARIMA model for the trend component
-        model = ARIMA(
-            time_series.trend,
-            order=(self.window_size, self.window_size, self.window_size),
+        # Forecast the trend component
+        # using rolling ARIMA regression
+        self.dataframe["artf"] = (
+            pd.Series(time_series.trend)
+            .rolling(
+                window=self.window_size,
+            )
+            .apply(self._run_rolling_forecast)
         )
+
+        # Reset indices back to date
+        self.dataframe.set_index("date", inplace=True)
+
+    def _run_rolling_forecast(self, series: pd.Series) -> float:
+        """Work in progress."""
+
+        # Create ARIMA model for the trend component
+        model = ARIMA(series, order=(1, 1, 0))
 
         # Fit the model and gauge the results
         results: ARIMAResults = model.fit()
 
-        # Write back to the dataframe
-        self.dataframe["artf"] = results.fittedvalues
-
-        # Reset indices back to date
-        self.dataframe.set_index("date", inplace=True)
+        # Return out of sample forecast
+        return results.forecast(steps=1)
