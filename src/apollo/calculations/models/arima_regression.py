@@ -79,6 +79,11 @@ class ARIMARegressionModelCalculator(BaseCalculator):
     def _run_rolling_forecast(self, series: pd.Series) -> float:
         """Work in progress."""
 
+        """
+        TODO: USE auto_arima INSTEAD OF ARIMA
+        for automatic parameter selection.
+        """
+
         # Decompose the time series into
         # trend, seasonal, and residual components
         # within the period equaling half our window size
