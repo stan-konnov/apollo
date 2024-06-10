@@ -90,7 +90,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         time_series = seasonal_decompose(
             series,
             model="multiplicative",
-            period=self.window_size // 2,
+            period=1,
             two_sided=False,
         )
 
