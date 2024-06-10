@@ -30,7 +30,7 @@ def main() -> None:
 
     strategy = ARIMATrendMeanReversion(
         dataframe=dataframe,
-        window_size=10,
+        window_size=5,
     )
 
     strategy.model_trading_signals()
@@ -40,7 +40,7 @@ def main() -> None:
         strategy_name="BollingerBandsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.2,
+        tp_volatility_multiplier=0.1,
         write_result_plot=True,
     )
 
