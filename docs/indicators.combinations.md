@@ -4,3 +4,4 @@ TODO: Please write me as a proper doc
 2. Price Channels (close < lb where lb = lbf - N std)
 3. Swing Moments (up swing + vol or within lb)
 4. McClellan Volume Oscillator
+5. Kelly Criterion
