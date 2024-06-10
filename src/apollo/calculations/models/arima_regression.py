@@ -90,7 +90,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         )
 
         # Create ARIMA model for the trend component
-        model = ARIMA(time_series.trend, order=(1, 1, 0))
+        model = ARIMA(time_series.trend, order=(1, 1, 1))
 
         # Fit the model and gauge the results
         results: ARIMAResults = model.fit()
