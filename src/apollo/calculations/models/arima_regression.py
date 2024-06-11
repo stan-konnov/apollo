@@ -82,6 +82,9 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         """
         TODO: USE auto_arima INSTEAD OF ARIMA
         for automatic parameter selection.
+
+        Implement expanding training window
+        Experiment with predicting in sample vs out of sample.
         """
 
         # Decompose the time series into

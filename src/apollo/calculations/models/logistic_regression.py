@@ -66,6 +66,14 @@ class LogisticRegressionModelCalculator:
         Create trading conditions, fit the model, and forecast future periods.
         """
 
+        """
+        TODO:
+
+        1. Create trading conditions
+        2. Implement prediction in rolling window
+        3. Implement expanding training window
+        """
+
         # Initialize the model
         model = LogisticRegression()
 
