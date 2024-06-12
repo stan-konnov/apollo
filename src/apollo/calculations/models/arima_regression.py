@@ -35,7 +35,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
     Yet, after running experiments with different datasets and parameters,
     it has been discovered that the optimal parameters specifically
-    for our case are the same as the window size.
+    for our case equal one observation for each parameter.
 
     Additionally, it has been discovered that forecasting the prices
     of the time series is not the best approach, backtesting wise.
@@ -52,12 +52,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         super().__init__(dataframe, window_size)
 
     def forecast_trend_periods(self) -> None:
-        """
-        Forecast trend periods using ARIMA regression model.
-
-        Decompose the time series into trend, seasonal, and residual.
-        Forecast the trend component using ARIMA regression.
-        """
+        """Forecast trend periods using ARIMA regression model."""
 
         # Reset the indices to integer values
         # to avoid issues with the ARIMA model
@@ -77,19 +72,11 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         self.dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
-        """Work in progress."""
-
-        """
-        TODO: USE auto_arima INSTEAD OF ARIMA
-        for automatic parameter selection.
-
-        Implement expanding training window
-        Experiment with predicting in sample vs out of sample.
-        """
+        """Run rolling forecast using ARIMA regression model."""
 
         # Decompose the time series into
-        # trend, seasonal, and residual components
-        # within the period equaling half our window size
+        # trend, seasonal, and residual components within the
+        # period of one observation (since we are forecasting one period)
         time_series = seasonal_decompose(
             series,
             model="multiplicative",
@@ -97,7 +84,8 @@ class ARIMARegressionModelCalculator(BaseCalculator):
             two_sided=False,
         )
 
-        # Create ARIMA model for the trend component
+        # Create ARIMA model for the trend component with
+        # one lag observation, one differencing, and one moving average
         model = ARIMA(time_series.trend, order=(1, 1, 1))
 
         # Fit the model and gauge the results

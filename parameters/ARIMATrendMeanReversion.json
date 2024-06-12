@@ -5,7 +5,7 @@
 
     "window_size": {
         "step": 1,
-        "range": [2, 6]
+        "range": [3, 6]
     },
 
     "sl_volatility_multiplier": {
