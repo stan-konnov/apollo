@@ -57,7 +57,11 @@ class LogisticRegressionModelCalculator:
         self.window_size = window_size
 
         # Initialize the model
-        self.model = LogisticRegression()
+        self.model = LogisticRegression(
+            penalty="elasticnet",
+            solver="saga",
+            l1_ratio=0.5,
+        )
 
     def forecast_periods(self) -> None:
         """Forecast future periods using logistic regression model."""
