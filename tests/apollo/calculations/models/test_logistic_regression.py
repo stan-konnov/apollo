@@ -115,9 +115,10 @@ def test__create_regression_trading_conditions__for_creating_correct_y_variable(
     pd.testing.assert_series_equal(y, control_y)
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "window_size")
 def test__forecast_periods__for_correct_forecast(
     dataframe: pd.DataFrame,
+    window_size: int,
 ) -> None:
     """
     Test forecast_periods method for correct forecast.
@@ -127,23 +128,74 @@ def test__forecast_periods__for_correct_forecast(
 
     control_dataframe = dataframe.copy()
 
+    control_dataframe.reset_index(inplace=True)
+
+    control_model = LogisticRegression(
+        penalty="elasticnet",
+        solver="saga",
+        l1_ratio=1.0,
+    )
+
+    control_lrm_calculator = LogisticRegressionModelCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
+
+    control_dataframe["lrf"] = (
+        control_dataframe["close"]
+        .rolling(window=window_size)
+        .apply(
+            mimic_rolling_forecast,
+            args=(
+                control_dataframe,
+                [],
+                control_model,
+                control_lrm_calculator,
+            ),
+        )
+    )
+
+    control_dataframe.set_index("date", inplace=True)
+
     lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=dataframe,
-        train_size=TRAIN_SIZE,
+        window_size=window_size,
     )
-
-    control_x, control_y = lrm_calculator._create_regression_trading_conditions(  # noqa: SLF001
-        control_dataframe,
-    )
-    control_x_train, control_y_train = lrm_calculator._create_train_split_group(  # noqa: SLF001
-        control_x,
-        control_y,
-    )
-
-    model = LogisticRegression()
-    model.fit(control_x_train, control_y_train)
-    control_dataframe["lrf"] = model.predict(control_x)
 
     lrm_calculator.forecast_periods()
 
     pd.testing.assert_series_equal(dataframe["lrf"], control_dataframe["lrf"])
+
+
+def mimic_rolling_forecast(
+    series: pd.Series,
+    dataframe: pd.DataFrame,
+    expanding_indices: list[int],
+    model: LogisticRegression,
+    lrm_calculator: LogisticRegressionModelCalculator,
+) -> None:
+    """
+    Mimicry of rolling Logistic Regression forecast for testing purposes.
+
+    Please see LogisticRegressionModelCalculator for detailed explanation.
+    """
+
+    rolling_indices = series.index.to_list()
+
+    if len(expanding_indices) == 0:
+        expanding_indices = rolling_indices
+
+    else:
+        expanding_indices.append(rolling_indices[-1])
+
+    # Slice out a chunk of dataframe to work with
+    rolling_df = dataframe.loc[expanding_indices]
+
+    # Create trading conditions
+    x, y = lrm_calculator._create_regression_trading_conditions(rolling_df)  # noqa: SLF001
+
+    # Fit the model
+    model.fit(x, y)
+
+    # Forecast future periods
+    return model.predict(x)[-1]
