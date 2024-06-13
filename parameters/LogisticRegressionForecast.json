@@ -5,7 +5,7 @@
 
     "window_size": {
         "step": 5,
-        "range": [5, 20]
+        "range": [10, 20]
     },
 
     "sl_volatility_multiplier": {
@@ -18,12 +18,5 @@
         "range": [0.1, 1.0]
     },
 
-    "train_size": {
-        "step": 0.1,
-        "range": [0.1, 0.9]
-    },
-
-    "strategy_specific_parameters": [
-        "train_size"
-    ]
+    "strategy_specific_parameters": []
 }

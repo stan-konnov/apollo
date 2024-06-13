@@ -30,7 +30,7 @@ def test__logistic_regression_forecast__with_valid_parameters(
 
     lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
-        train_size=TRAIN_SIZE,
+        window_size=window_size,
     )
     lrm_calculator.forecast_periods()
 
@@ -42,7 +42,6 @@ def test__logistic_regression_forecast__with_valid_parameters(
     logistic_regression_forecast = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=window_size,
-        train_size=TRAIN_SIZE,
     )
 
     logistic_regression_forecast.model_trading_signals()
