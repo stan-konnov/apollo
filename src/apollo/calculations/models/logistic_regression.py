@@ -68,14 +68,6 @@ class LogisticRegressionModelCalculator:
         Create trading conditions, fit the model, and forecast future periods.
         """
 
-        """
-        TODO:
-
-        1. Create trading conditions
-        2. Implement prediction in rolling window
-        3. Implement expanding training window
-        """
-
         self.dataframe.reset_index(inplace=True)
 
         self.indices: list[int] = []

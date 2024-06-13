@@ -1,7 +1,7 @@
 {
     "frequency": "1d",
     "cash_size": 1000,
-    "window_size": 10.0,
+    "window_size": 15.0,
     "sl_volatility_multiplier": 0.1,
-    "tp_volatility_multiplier": 0.1
+    "tp_volatility_multiplier": 0.2
 }
