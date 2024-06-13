@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Union
 from unittest.mock import patch
 
 import pandas as pd
@@ -12,7 +12,7 @@ def _yahoo_api_response() -> Generator[None, None, None]:
     """Simulate raw Yahoo API OHLCV response."""
 
     def download(
-        tickers: str | list[str],  # noqa: ARG001
+        tickers: Union[str, list[str]],  # noqa: ARG001
         start: str,
         end: str,
         interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
@@ -40,7 +40,7 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
     """Simulate empty Yahoo API OHLCV response."""
 
     def download(
-        tickers: str | list[str],  # noqa: ARG001
+        tickers: Union[str, list[str]],  # noqa: ARG001
         start: str,  # noqa: ARG001
         end: str,  # noqa: ARG001
         interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001

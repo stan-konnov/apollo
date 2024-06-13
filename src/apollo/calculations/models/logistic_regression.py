@@ -1,12 +1,8 @@
-import logging
 from typing import ClassVar
 
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-
-logger = logging.getLogger(__name__)
 
 
 class LogisticRegressionModelCalculator:
@@ -45,41 +41,83 @@ class LogisticRegressionModelCalculator:
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        train_size: float,
+        window_size: int,
     ) -> None:
         """
         Construct Logistic Regression Model Calculator.
 
         :param dataframe: Dataframe to model linear regression on.
-        :param train_size: Size of the train set.
-
-        NOTE: Logistic Regression Model Calculator does not require window size.
+        :param window_size: Size of the rolling window to forecast future periods.
         """
 
         self.dataframe = dataframe
-        self.train_size = train_size
+        self.window_size = window_size
+
+        # NOTE: we use elasticnet penalty
+        # with l1 ratio of 1.0 to enforce LASSO
+        # regularization, and, thus, feature reduction
+        # since we do not know beforehand which features are important
+        self.model = LogisticRegression(
+            penalty="elasticnet",
+            solver="saga",
+            l1_ratio=1.0,
+        )
+
+        # List of indices to expand the window
+        self.expanding_indices: list[int] = []
 
     def forecast_periods(self) -> None:
-        """
-        Forecast future periods using logistic regression model.
+        """Forecast future periods using logistic regression model."""
 
-        Create trading conditions, fit the model, and forecast future periods.
-        """
+        # Reset the indices to allow for cleaner expanding window
+        self.dataframe.reset_index(inplace=True)
 
-        # Initialize the model
-        model = LogisticRegression()
+        # Forecast future periods using rolling logistic regression
+        self.dataframe["lrf"] = (
+            self.dataframe["close"]
+            .rolling(
+                window=self.window_size,
+            )
+            .apply(
+                self._run_rolling_forecast,
+                args=(self.dataframe,),
+            )
+        )
+
+        # Reset indices back to date
+        self.dataframe.set_index("date", inplace=True)
+
+    def _run_rolling_forecast(
+        self,
+        series: pd.Series,
+        dataframe: pd.DataFrame,
+    ) -> float:
+        """Run rolling forecast using logistic regression model."""
+
+        # Get indices from the current window
+        rolling_indices = series.index.to_list()
+
+        # If expanding indices are empty
+        # use indices from the current window
+        if len(self.expanding_indices) == 0:
+            self.expanding_indices = rolling_indices
+
+        # Otherwise, append the last
+        # index from the current window
+        else:
+            self.expanding_indices.append(rolling_indices[-1])
+
+        # Slice out a chunk of dataframe to work with
+        rolling_df = dataframe.loc[self.expanding_indices]
 
         # Create trading conditions
-        x, y = self._create_regression_trading_conditions(self.dataframe)
-
-        # Create train split group
-        x_train, y_train = self._create_train_split_group(x, y)
+        x, y = self._create_regression_trading_conditions(rolling_df)
 
         # Fit the model
-        model.fit(x_train, y_train)
+        self.model.fit(x, y)
 
         # Forecast future periods
-        self.dataframe["lrf"] = model.predict(x)
+        return self.model.predict(x)[-1]
 
     def _create_regression_trading_conditions(
         self,
@@ -107,7 +145,7 @@ class LogisticRegressionModelCalculator:
         # Calculate dependent variable (Y)
         y = pd.Series(
             np.where(
-                self.dataframe["close"].shift(-1) > self.dataframe["close"],
+                dataframe["close"].shift(-1) > dataframe["close"],
                 1,
                 -1,
             ),
@@ -144,30 +182,3 @@ class LogisticRegressionModelCalculator:
 
         # Return only the columns we are interested in
         return dataframe[variables_to_apply]
-
-    def _create_train_split_group(
-        self,
-        x: pd.DataFrame,
-        y: pd.Series,
-    ) -> tuple[pd.DataFrame, pd.Series]:
-        """
-        Create train split for given X and Y variables.
-
-        :param x: explanatory variable.
-        :param y: dependent variable.
-
-        :returns: Train split.
-        """
-
-        # Split into train and test
-        # NOTE: we do not shuffle, since:
-        # our time series is already ordered by date
-        # we want to forecast future values based on past values
-        x_train, _, y_train, _ = train_test_split(
-            x,
-            y,
-            shuffle=False,
-            train_size=self.train_size,
-        )
-
-        return x_train, y_train

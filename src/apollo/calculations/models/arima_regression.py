@@ -35,7 +35,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
     Yet, after running experiments with different datasets and parameters,
     it has been discovered that the optimal parameters specifically
-    for our case are the same as the window size.
+    for our case equal one observation for each parameter.
 
     Additionally, it has been discovered that forecasting the prices
     of the time series is not the best approach, backtesting wise.
@@ -52,37 +52,44 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         super().__init__(dataframe, window_size)
 
     def forecast_trend_periods(self) -> None:
-        """
-        Forecast trend periods using ARIMA regression model.
-
-        Decompose the time series into trend, seasonal, and residual.
-        Forecast the trend component using ARIMA regression.
-        """
+        """Forecast trend periods using ARIMA regression model."""
 
         # Reset the indices to integer values
         # to avoid issues with the ARIMA model
         self.dataframe.reset_index(inplace=True)
 
-        # Decompose the time series into
-        # trend, seasonal, and residual components
-        # within the period equaling our window size
-        time_series = seasonal_decompose(
-            self.dataframe["adj close"],
-            model="multiplicative",
-            period=self.window_size,
+        # Forecast the trend component
+        # using rolling ARIMA regression
+        self.dataframe["artf"] = (
+            self.dataframe["adj close"]
+            .rolling(
+                window=self.window_size,
+            )
+            .apply(self._run_rolling_forecast)
         )
 
-        # Create ARIMA model for the trend component
-        model = ARIMA(
-            time_series.trend,
-            order=(self.window_size, self.window_size, self.window_size),
+        # Reset indices back to date
+        self.dataframe.set_index("date", inplace=True)
+
+    def _run_rolling_forecast(self, series: pd.Series) -> float:
+        """Run rolling forecast using ARIMA regression model."""
+
+        # Decompose the time series into
+        # trend, seasonal, and residual components within the
+        # period of one observation (since we are forecasting one period)
+        time_series = seasonal_decompose(
+            series,
+            model="multiplicative",
+            period=1,
+            two_sided=False,
         )
+
+        # Create ARIMA model for the trend component with
+        # one lag observation, one differencing, and one moving average
+        model = ARIMA(time_series.trend, order=(1, 1, 1))
 
         # Fit the model and gauge the results
         results: ARIMAResults = model.fit()
 
-        # Write back to the dataframe
-        self.dataframe["artf"] = results.fittedvalues
-
-        # Reset indices back to date
-        self.dataframe.set_index("date", inplace=True)
+        # Return out of sample forecast
+        return results.forecast(steps=1)
