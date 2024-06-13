@@ -56,10 +56,9 @@ class LogisticRegressionModelCalculator:
         self.dataframe = dataframe
         self.window_size = window_size
 
-        # Initialize the model
-        # NOTE: we use elasticnet penalty to
+        # NOTE: we use elasticnet penalty
         # with l1 ratio of 1.0 to enforce LASSO
-        # regularization, and, thus, feature selection
+        # regularization, and, thus, feature reduction
         # since we do not know beforehand which features are important
         self.model = LogisticRegression(
             penalty="elasticnet",
