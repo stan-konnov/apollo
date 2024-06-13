@@ -50,9 +50,7 @@ class LogisticRegressionModelCalculator:
         Construct Logistic Regression Model Calculator.
 
         :param dataframe: Dataframe to model linear regression on.
-        :param train_size: Size of the train set.
-
-        NOTE: Logistic Regression Model Calculator does not require window size.
+        :param window_size: Size of the rolling window to forecast future periods.
         """
 
         self.dataframe = dataframe
@@ -62,16 +60,15 @@ class LogisticRegressionModelCalculator:
         self.model = LogisticRegression()
 
     def forecast_periods(self) -> None:
-        """
-        Forecast future periods using logistic regression model.
+        """Forecast future periods using logistic regression model."""
 
-        Create trading conditions, fit the model, and forecast future periods.
-        """
-
+        # Reset the indices to allow for cleaner expanding window
         self.dataframe.reset_index(inplace=True)
 
-        self.indices: list[int] = []
+        # Initialize list of expanding indices
+        self.expanding_indices: list[int] = []
 
+        # Forecast future periods using rolling logistic regression
         self.dataframe["lrf"] = (
             self.dataframe["close"]
             .rolling(
@@ -83,6 +80,7 @@ class LogisticRegressionModelCalculator:
             )
         )
 
+        # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(
@@ -90,18 +88,23 @@ class LogisticRegressionModelCalculator:
         series: pd.Series,
         dataframe: pd.DataFrame,
     ) -> float:
-        """Work in progress."""
+        """Run rolling forecast using logistic regression model."""
 
+        # Get indices from the current window
         rolling_indices = series.index.to_list()
 
-        if len(self.indices) == 0:
-            self.indices = rolling_indices
+        # If expanding indices are empty
+        # use indices from the current window
+        if len(self.expanding_indices) == 0:
+            self.expanding_indices = rolling_indices
 
+        # Otherwise, append the last
+        # index from the current window
         else:
-            self.indices.append(rolling_indices[-1])
+            self.expanding_indices.append(rolling_indices[-1])
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[self.indices]
+        rolling_df = dataframe.loc[self.expanding_indices]
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(rolling_df)
