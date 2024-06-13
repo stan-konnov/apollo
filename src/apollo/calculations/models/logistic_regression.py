@@ -1,11 +1,8 @@
-import logging
 from typing import ClassVar
 
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-
-logger = logging.getLogger(__name__)
 
 
 class LogisticRegressionModelCalculator:
