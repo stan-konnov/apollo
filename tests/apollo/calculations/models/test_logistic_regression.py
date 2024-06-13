@@ -1,3 +1,5 @@
+from contextvars import ContextVar
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -6,6 +8,8 @@ from sklearn.linear_model import LogisticRegression
 from apollo.calculations.models.logistic_regression import (
     LogisticRegressionModelCalculator,
 )
+
+EXPANDING_INDICES: ContextVar[list[int]] = ContextVar("expanding_indices", default=[])
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -127,7 +131,6 @@ def test__forecast_periods__for_correct_forecast(
     """
 
     control_dataframe = dataframe.copy()
-
     control_dataframe.reset_index(inplace=True)
 
     control_model = LogisticRegression(
@@ -135,7 +138,6 @@ def test__forecast_periods__for_correct_forecast(
         solver="saga",
         l1_ratio=1.0,
     )
-
     control_lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
@@ -148,7 +150,6 @@ def test__forecast_periods__for_correct_forecast(
             mimic_rolling_forecast,
             args=(
                 control_dataframe,
-                [],
                 control_model,
                 control_lrm_calculator,
             ),
@@ -170,7 +171,6 @@ def test__forecast_periods__for_correct_forecast(
 def mimic_rolling_forecast(
     series: pd.Series,
     dataframe: pd.DataFrame,
-    expanding_indices: list[int],
     model: LogisticRegression,
     lrm_calculator: LogisticRegressionModelCalculator,
 ) -> None:
@@ -182,20 +182,18 @@ def mimic_rolling_forecast(
 
     rolling_indices = series.index.to_list()
 
-    if len(expanding_indices) == 0:
-        expanding_indices = rolling_indices
+    if len(EXPANDING_INDICES.get()) == 0:
+        EXPANDING_INDICES.set(rolling_indices)
 
     else:
-        expanding_indices.append(rolling_indices[-1])
+        this_run_expanding_indices = EXPANDING_INDICES.get()
+        this_run_expanding_indices.append(rolling_indices[-1])
+        EXPANDING_INDICES.set(this_run_expanding_indices)
 
-    # Slice out a chunk of dataframe to work with
-    rolling_df = dataframe.loc[expanding_indices]
+    rolling_df = dataframe.loc[EXPANDING_INDICES.get()]
 
-    # Create trading conditions
     x, y = lrm_calculator._create_regression_trading_conditions(rolling_df)  # noqa: SLF001
 
-    # Fit the model
     model.fit(x, y)
 
-    # Forecast future periods
     return model.predict(x)[-1]
