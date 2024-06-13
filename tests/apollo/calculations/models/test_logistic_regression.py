@@ -131,6 +131,7 @@ def test__forecast_periods__for_correct_forecast(
     """
 
     control_dataframe = dataframe.copy()
+
     control_dataframe.reset_index(inplace=True)
 
     control_model = LogisticRegression(
@@ -138,6 +139,7 @@ def test__forecast_periods__for_correct_forecast(
         solver="saga",
         l1_ratio=1.0,
     )
+
     control_lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
@@ -188,6 +190,7 @@ def mimic_rolling_forecast(
     else:
         this_run_expanding_indices = EXPANDING_INDICES.get()
         this_run_expanding_indices.append(rolling_indices[-1])
+
         EXPANDING_INDICES.set(this_run_expanding_indices)
 
     rolling_df = dataframe.loc[EXPANDING_INDICES.get()]
