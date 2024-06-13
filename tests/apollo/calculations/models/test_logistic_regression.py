@@ -131,7 +131,6 @@ def test__forecast_periods__for_correct_forecast(
     """
 
     control_dataframe = dataframe.copy()
-
     control_dataframe.reset_index(inplace=True)
 
     control_model = LogisticRegression(
@@ -139,7 +138,6 @@ def test__forecast_periods__for_correct_forecast(
         solver="saga",
         l1_ratio=1.0,
     )
-
     control_lrm_calculator = LogisticRegressionModelCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
@@ -164,7 +162,6 @@ def test__forecast_periods__for_correct_forecast(
         dataframe=dataframe,
         window_size=window_size,
     )
-
     lrm_calculator.forecast_periods()
 
     pd.testing.assert_series_equal(dataframe["lrf"], control_dataframe["lrf"])
