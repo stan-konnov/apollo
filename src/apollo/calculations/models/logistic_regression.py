@@ -59,6 +59,7 @@ class LogisticRegressionModelCalculator:
         # Initialize the model
         self.model = LogisticRegression(
             penalty="elasticnet",
+            multi_class="ovr",
             solver="saga",
             l1_ratio=0.6,
         )
