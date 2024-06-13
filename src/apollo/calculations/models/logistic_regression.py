@@ -63,14 +63,14 @@ class LogisticRegressionModelCalculator:
             l1_ratio=1.0,
         )
 
+        # List of indices to expand the window
+        self.expanding_indices: list[int] = []
+
     def forecast_periods(self) -> None:
         """Forecast future periods using logistic regression model."""
 
         # Reset the indices to allow for cleaner expanding window
         self.dataframe.reset_index(inplace=True)
-
-        # Initialize list of expanding indices
-        self.expanding_indices: list[int] = []
 
         # Forecast future periods using rolling logistic regression
         self.dataframe["lrf"] = (
