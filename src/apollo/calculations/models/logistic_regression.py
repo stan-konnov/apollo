@@ -76,6 +76,10 @@ class LogisticRegressionModelCalculator:
         3. Implement expanding training window
         """
 
+        self.dataframe.reset_index(inplace=True)
+
+        self.indices: list[int] = []
+
         self.dataframe["lrf"] = (
             self.dataframe["close"]
             .rolling(
@@ -87,6 +91,8 @@ class LogisticRegressionModelCalculator:
             )
         )
 
+        self.dataframe.set_index("date", inplace=True)
+
     def _run_rolling_forecast(
         self,
         series: pd.Series,
@@ -94,8 +100,16 @@ class LogisticRegressionModelCalculator:
     ) -> float:
         """Work in progress."""
 
+        rolling_indices = series.index.to_list()
+
+        if len(self.indices) == 0:
+            self.indices = rolling_indices
+
+        else:
+            self.indices.append(rolling_indices[-1])
+
         # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[series.index]
+        rolling_df = dataframe.loc[self.indices]
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(rolling_df)
