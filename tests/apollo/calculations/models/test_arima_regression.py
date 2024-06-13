@@ -41,19 +41,15 @@ def test__forecast_trend_periods__for_correct_forecast(
     control_dataframe = dataframe.copy()
     control_dataframe.reset_index(inplace=True)
 
-    control_time_series = seasonal_decompose(
-        control_dataframe["adj close"],
-        model="multiplicative",
-        period=window_size,
+    control_dataframe["artf"] = (
+        control_dataframe["adj close"]
+        .rolling(
+            window=window_size,
+        )
+        .apply(
+            _run_rolling_forecast,
+        )
     )
-
-    model = ARIMA(
-        control_time_series.trend,
-        order=(window_size, window_size, window_size),
-    )
-
-    control_results: ARIMAResults = model.fit()
-    control_dataframe["artf"] = control_results.fittedvalues
 
     control_dataframe.set_index("date", inplace=True)
 
@@ -65,3 +61,24 @@ def test__forecast_trend_periods__for_correct_forecast(
     arm_calculator.forecast_trend_periods()
 
     pd.testing.assert_series_equal(dataframe["artf"], control_dataframe["artf"])
+
+
+def _run_rolling_forecast(series: pd.Series) -> float:
+    """
+    Mimicry of rolling ARIMA forecast for testing purposes.
+
+    Please see ARIMARegressionModelCalculator for detailed explanation.
+    """
+
+    time_series = seasonal_decompose(
+        series,
+        model="multiplicative",
+        period=1,
+        two_sided=False,
+    )
+
+    model = ARIMA(time_series.trend, order=(1, 1, 1))
+
+    results: ARIMAResults = model.fit()
+
+    return results.forecast(steps=1)
