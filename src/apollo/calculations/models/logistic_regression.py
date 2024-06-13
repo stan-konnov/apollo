@@ -57,11 +57,14 @@ class LogisticRegressionModelCalculator:
         self.window_size = window_size
 
         # Initialize the model
+        # NOTE: we use elasticnet penalty to
+        # with l1 ratio of 1.0 to enforce LASSO
+        # regularization, and, thus, feature selection
+        # since we do not know beforehand which features are important
         self.model = LogisticRegression(
             penalty="elasticnet",
-            multi_class="ovr",
             solver="saga",
-            l1_ratio=0.6,
+            l1_ratio=1.0,
         )
 
     def forecast_periods(self) -> None:
