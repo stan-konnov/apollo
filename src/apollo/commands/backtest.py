@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,9 +28,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = ARIMATrendMeanReversion(
+    strategy = LogisticRegressionForecast(
         dataframe=dataframe,
-        window_size=5,
+        window_size=10,
     )
 
     strategy.model_trading_signals()
@@ -40,7 +40,7 @@ def main() -> None:
         strategy_name="BollingerBandsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.3,
+        tp_volatility_multiplier=0.1,
         write_result_plot=True,
     )
 

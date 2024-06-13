@@ -26,7 +26,6 @@ class LogisticRegressionForecast(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
-        train_size: float,
     ) -> None:
         """
         Construct Logistic Regression Forecast Strategy.
@@ -36,17 +35,11 @@ class LogisticRegressionForecast(BaseStrategy):
         :param train_size: Size of the train set.
         """
 
-        self._validate_parameters(
-            [
-                ("test_size", train_size, float),
-            ],
-        )
-
         super().__init__(dataframe, window_size)
 
         self.lrm_calculator = LogisticRegressionModelCalculator(
             dataframe=dataframe,
-            train_size=train_size,
+            window_size=window_size,
         )
 
     def model_trading_signals(self) -> None:

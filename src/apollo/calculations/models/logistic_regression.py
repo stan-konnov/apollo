@@ -4,7 +4,6 @@ from typing import ClassVar
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,7 @@ class LogisticRegressionModelCalculator:
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        train_size: float,
+        window_size: int,
     ) -> None:
         """
         Construct Logistic Regression Model Calculator.
@@ -57,7 +56,10 @@ class LogisticRegressionModelCalculator:
         """
 
         self.dataframe = dataframe
-        self.train_size = train_size
+        self.window_size = window_size
+
+        # Initialize the model
+        self.model = LogisticRegression()
 
     def forecast_periods(self) -> None:
         """
@@ -74,20 +76,35 @@ class LogisticRegressionModelCalculator:
         3. Implement expanding training window
         """
 
-        # Initialize the model
-        model = LogisticRegression()
+        self.dataframe["lrf"] = (
+            self.dataframe["close"]
+            .rolling(
+                window=self.window_size,
+            )
+            .apply(
+                self._run_rolling_forecast,
+                args=(self.dataframe,),
+            )
+        )
+
+    def _run_rolling_forecast(
+        self,
+        series: pd.Series,
+        dataframe: pd.DataFrame,
+    ) -> float:
+        """Work in progress."""
+
+        # Slice out a chunk of dataframe to work with
+        rolling_df = dataframe.loc[series.index]
 
         # Create trading conditions
-        x, y = self._create_regression_trading_conditions(self.dataframe)
-
-        # Create train split group
-        x_train, y_train = self._create_train_split_group(x, y)
+        x, y = self._create_regression_trading_conditions(rolling_df)
 
         # Fit the model
-        model.fit(x_train, y_train)
+        self.model.fit(x, y)
 
         # Forecast future periods
-        self.dataframe["lrf"] = model.predict(x)
+        return self.model.predict(x)[-1]
 
     def _create_regression_trading_conditions(
         self,
@@ -115,7 +132,7 @@ class LogisticRegressionModelCalculator:
         # Calculate dependent variable (Y)
         y = pd.Series(
             np.where(
-                self.dataframe["close"].shift(-1) > self.dataframe["close"],
+                dataframe["close"].shift(-1) > dataframe["close"],
                 1,
                 -1,
             ),
@@ -152,30 +169,3 @@ class LogisticRegressionModelCalculator:
 
         # Return only the columns we are interested in
         return dataframe[variables_to_apply]
-
-    def _create_train_split_group(
-        self,
-        x: pd.DataFrame,
-        y: pd.Series,
-    ) -> tuple[pd.DataFrame, pd.Series]:
-        """
-        Create train split for given X and Y variables.
-
-        :param x: explanatory variable.
-        :param y: dependent variable.
-
-        :returns: Train split.
-        """
-
-        # Split into train and test
-        # NOTE: we do not shuffle, since:
-        # our time series is already ordered by date
-        # we want to forecast future values based on past values
-        x_train, _, y_train, _ = train_test_split(
-            x,
-            y,
-            shuffle=False,
-            train_size=self.train_size,
-        )
-
-        return x_train, y_train
