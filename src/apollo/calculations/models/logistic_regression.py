@@ -60,7 +60,7 @@ class LogisticRegressionModelCalculator:
         self.model = LogisticRegression(
             penalty="elasticnet",
             solver="saga",
-            l1_ratio=0.5,
+            l1_ratio=0.6,
         )
 
     def forecast_periods(self) -> None:
