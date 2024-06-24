@@ -32,6 +32,16 @@ class ParameterOptimizer:
     Writes optimized parameter set from sorted backtesting results.
     """
 
+    """
+    TODO:
+
+        1. split scenarios into equal batches
+        2. check number of cores available for parallel processing
+        3. run each batch in parallel to produce results
+        4. collect results into single dataframe
+        5. write results to file
+    """
+
     def __init__(self) -> None:
         """
         Construct Parameter Optimizer.
