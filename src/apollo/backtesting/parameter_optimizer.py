@@ -1,3 +1,4 @@
+import multiprocessing
 from json import dump, loads
 from logging import getLogger
 from pathlib import Path
@@ -19,6 +20,9 @@ from apollo.utils.types import (
 )
 
 logger = getLogger(__name__)
+
+# WIP
+# ruff: noqa
 
 
 class ParameterOptimizer:
@@ -67,6 +71,23 @@ class ParameterOptimizer:
         )
 
         self._create_output_directories()
+
+    def process_in_parallel(self) -> None:
+        """Run the optimization process in parallel."""
+
+        available_cpu_count = multiprocessing.cpu_count()
+
+        # Initialize the results dataframe
+        # to supply to each backtesting process
+        backtesting_results_dataframe = pd.DataFrame()
+
+        # Extract the parameter set from the configuration
+        parameter_set = self._configuration.parameter_set
+
+        # Build keys and combinations of parameters to optimize
+        keys, combinations = self._construct_parameter_combinations(
+            parameter_set,
+        )
 
     def process(self) -> None:
         """Run the optimization process."""
