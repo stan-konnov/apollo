@@ -40,11 +40,9 @@ class ParameterOptimizer:
     """
     TODO:
 
-        1. split scenarios into equal batches
-        2. check number of cores available for parallel processing
-        3. run each batch in parallel to produce results
-        4. collect results into single dataframe
-        5. write results to file
+        1. run each batch in parallel to produce results
+        2. collect results into single dataframe
+        3. write results to file
     """
 
     def __init__(self) -> None:
