@@ -3,7 +3,7 @@ from json import dump, loads
 from logging import getLogger
 from pathlib import Path
 from sys import exit
-from typing import Union
+from typing import Iterator, Union
 
 import pandas as pd
 from numpy import arange
@@ -15,6 +15,7 @@ from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
+    ParameterCombinations,
     ParameterKeysAndCombinations,
     ParameterSet,
 )
@@ -88,6 +89,51 @@ class ParameterOptimizer:
         keys, combinations = self._construct_parameter_combinations(
             parameter_set,
         )
+
+        # Break down combinations into equal batches
+        # and create a process for each batch
+        for batch in self._batch_combinations(available_cpu_count, combinations):
+            print(len(list(batch)))
+
+    def _batch_combinations(
+        self,
+        batch_count: int,
+        combinations: ParameterCombinations,
+    ) -> Iterator[ParameterCombinations]:
+        """
+        Split combinations into equal batches.
+
+        :param batch_count: Number of batches to split combinations into.
+        :param combinations: Iterable of tuples with parameter combinations.
+        :returns: Iterator with parameter combinations.
+        """
+
+        # Cast the product to a list
+        combinations = list(combinations)
+
+        # Calculate the total number of combinations
+        combinations_counts = len(list(combinations))
+
+        # Calculate the base size of each batch
+        batch_base_size = combinations_counts // batch_count
+
+        # Calculate the size of the remainder batch
+        remainder_batch_size = combinations_counts % batch_count
+
+        start_index = 0
+
+        # Iterate over the number of batches
+        for i in range(batch_count):
+            # Calculate the current batch size
+            current_batch_size = batch_base_size + (
+                1 if i < remainder_batch_size else 0
+            )
+
+            # Slice and yield the current batch
+            yield combinations[start_index : start_index + current_batch_size]
+
+            # Update the start index for the next batch
+            start_index += current_batch_size
 
     def process(self) -> None:
         """Run the optimization process."""
