@@ -22,9 +22,6 @@ from apollo.utils.types import (
 
 logger = getLogger(__name__)
 
-# WIP
-# ruff: noqa
-
 
 class ParameterOptimizer:
     """
@@ -35,13 +32,6 @@ class ParameterOptimizer:
     Runs series of backtesting processes each for each set of parameters to optimize.
     Writes backtesting results and trades into files for further analysis.
     Writes optimized parameter set from sorted backtesting results.
-    """
-
-    """
-    TODO:
-
-        1. collect results into single dataframe
-        2. write results to file
     """
 
     def __init__(self) -> None:
@@ -243,8 +233,6 @@ class ParameterOptimizer:
             )
 
             stats = backtesting_runner.run()
-
-            print(stats)
 
             # Construct a Dataframe with the results of this run
             this_run_results = pd.DataFrame(stats).transpose()
