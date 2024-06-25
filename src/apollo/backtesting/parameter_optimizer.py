@@ -7,7 +7,7 @@ from typing import Union
 
 import pandas as pd
 from numpy import arange
-from tqdm.contrib.itertools import product
+from itertools import product
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
@@ -102,7 +102,9 @@ class ParameterOptimizer:
 
         # Process each batch in parallel
         with multiprocessing.Pool(processes=available_cores) as pool:
-            pool.starmap(self.process_batch, batch_arguments)
+            results = pool.starmap(self.process_batch, batch_arguments)
+
+            print(results)
 
     def process_batch(
         self,
@@ -110,8 +112,8 @@ class ParameterOptimizer:
         results_dataframe: pd.DataFrame,
         parameter_set: ParameterSet,
         keys: ParameterKeys,
-    ) -> None:
-        print(keys)
+    ) -> list[str]:
+        return list(keys)
 
     def _batch_combinations(
         self,
