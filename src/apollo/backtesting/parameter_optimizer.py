@@ -76,7 +76,8 @@ class ParameterOptimizer:
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
-        available_cpu_count = multiprocessing.cpu_count()
+        # Get the number of available CPU cores
+        available_cores = multiprocessing.cpu_count()
 
         # Initialize the results dataframe
         # to supply to each backtesting process
@@ -92,7 +93,7 @@ class ParameterOptimizer:
 
         # Break down combinations into equal batches
         # and create a process for each batch
-        for batch in self._batch_combinations(available_cpu_count, combinations):
+        for batch in self._batch_combinations(available_cores, combinations):
             print(len(list(batch)))
 
     def _batch_combinations(
