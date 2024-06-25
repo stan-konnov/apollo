@@ -1,4 +1,5 @@
 import multiprocessing
+from itertools import product
 from json import dump, loads
 from logging import getLogger
 from pathlib import Path
@@ -7,7 +8,6 @@ from typing import Union
 
 import pandas as pd
 from numpy import arange
-from itertools import product
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
@@ -16,7 +16,6 @@ from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
     ParameterCombinations,
-    ParameterKeys,
     ParameterKeysAndCombinations,
     ParameterSet,
 )
@@ -101,15 +100,18 @@ class ParameterOptimizer:
 
         # Create arguments to supply to each process
         batch_arguments = [
-            (batch, price_dataframe, parameter_set, list(keys))
-            for batch in batches
+            (batch, price_dataframe, parameter_set, list(keys)) for batch in batches
         ]
 
         # Process each batch in parallel
         with multiprocessing.Pool(processes=available_cores) as pool:
             results = pool.starmap(self._process, batch_arguments)
 
-            print(results)
+            # Concatenate the results from each process
+            combined_results = pd.concat(results)
+
+            # Output the results to a file and create optimized parameters file
+            self._output_results(combined_results)
 
     def _batch_combinations(
         self,
@@ -256,7 +258,7 @@ class ParameterOptimizer:
                 },
             )
 
-            # Append the results of this run to the backtesting results dataframe
+            # Append the results of this run to the results dataframe
             if results_dataframe.empty:
                 results_dataframe = this_run_results
 
@@ -264,9 +266,6 @@ class ParameterOptimizer:
                 results_dataframe = pd.concat(
                     [results_dataframe, this_run_results],
                 )
-
-        # Output the results to a file and create optimized parameters file
-        # self._output_results(backtesting_results_dataframe)
 
         return results_dataframe
 
