@@ -85,7 +85,6 @@ class ParameterOptimizer:
         )
 
         # Break down combinations into equal batches
-        # and create a process for each batch
         batches = self._batch_combinations(available_cores, combinations)
 
         # Create arguments to supply to each process
