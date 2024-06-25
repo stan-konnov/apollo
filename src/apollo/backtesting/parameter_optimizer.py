@@ -41,9 +41,8 @@ class ParameterOptimizer:
     """
     TODO:
 
-        1. run each batch in parallel to produce results
-        2. collect results into single dataframe
-        3. write results to file
+        1. collect results into single dataframe
+        2. write results to file
     """
 
     def __init__(self) -> None:
@@ -75,12 +74,18 @@ class ParameterOptimizer:
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
+        # Instantiate the API connector
+        api_connector = YahooApiConnector(
+            ticker=self._configuration.ticker,
+            start_date=self._configuration.start_date,
+            end_date=self._configuration.end_date,
+        )
+
+        # Request or read the prices
+        price_dataframe = api_connector.request_or_read_prices()
+
         # Get the number of available CPU cores
         available_cores = multiprocessing.cpu_count()
-
-        # Initialize the results dataframe
-        # to supply to each backtesting process
-        backtesting_results_dataframe = pd.DataFrame()
 
         # Extract the parameter set from the configuration
         parameter_set = self._configuration.parameter_set
@@ -96,24 +101,15 @@ class ParameterOptimizer:
 
         # Create arguments to supply to each process
         batch_arguments = [
-            (batch, backtesting_results_dataframe, parameter_set, list(keys))
+            (batch, price_dataframe, parameter_set, list(keys))
             for batch in batches
         ]
 
         # Process each batch in parallel
         with multiprocessing.Pool(processes=available_cores) as pool:
-            results = pool.starmap(self.process_batch, batch_arguments)
+            results = pool.starmap(self._process, batch_arguments)
 
             print(results)
-
-    def process_batch(
-        self,
-        combinations: ParameterCombinations,
-        results_dataframe: pd.DataFrame,
-        parameter_set: ParameterSet,
-        keys: ParameterKeys,
-    ) -> list[str]:
-        return list(keys)
 
     def _batch_combinations(
         self,
@@ -160,22 +156,18 @@ class ParameterOptimizer:
 
         return batches_to_return
 
-    def process(self) -> None:
+    def _process(
+        self,
+        combinations: ParameterCombinations,
+        price_dataframe: pd.DataFrame,
+        parameter_set: ParameterSet,
+        keys: list[str],
+    ) -> pd.DataFrame:
         """Run the optimization process."""
 
-        # Initialize the backtesting results dataframe
-        # to populate with results of each backtesting run
-        backtesting_results_dataframe = pd.DataFrame()
-
-        # Instantiate the API connector
-        api_connector = YahooApiConnector(
-            ticker=self._configuration.ticker,
-            start_date=self._configuration.start_date,
-            end_date=self._configuration.end_date,
-        )
-
-        # Request or read the prices
-        dataframe = api_connector.request_or_read_prices()
+        # Initialize the results dataframe
+        # to supply to each backtesting process
+        results_dataframe = pd.DataFrame()
 
         # Instantiate the strategy class by typecasting
         # the strategy name from configuration to the corresponding class
@@ -186,19 +178,11 @@ class ParameterOptimizer:
             {},
         )
 
-        # Extract the parameter set from the configuration
-        parameter_set = self._configuration.parameter_set
-
-        # Build keys and combinations of parameters to optimize
-        keys, combinations = self._construct_parameter_combinations(
-            parameter_set,
-        )
-
         # Iterate over each combination of parameters
         for combination in combinations:
             # We copy the dataframe to have a clean
             # set of prices for each combination we are testing
-            dataframe_to_test = dataframe.copy()
+            dataframe_to_test = price_dataframe.copy()
 
             # Construct back a dictionary with parameter names and values
             combination_to_test = {
@@ -258,6 +242,8 @@ class ParameterOptimizer:
 
             stats = backtesting_runner.run()
 
+            print(stats)
+
             # Construct a Dataframe with the results of this run
             this_run_results = pd.DataFrame(stats).transpose()
 
@@ -271,16 +257,18 @@ class ParameterOptimizer:
             )
 
             # Append the results of this run to the backtesting results dataframe
-            if backtesting_results_dataframe.empty:
-                backtesting_results_dataframe = this_run_results
+            if results_dataframe.empty:
+                results_dataframe = this_run_results
 
             else:
-                backtesting_results_dataframe = pd.concat(
-                    [backtesting_results_dataframe, this_run_results],
+                results_dataframe = pd.concat(
+                    [results_dataframe, this_run_results],
                 )
 
         # Output the results to a file and create optimized parameters file
-        self._output_results(backtesting_results_dataframe)
+        # self._output_results(backtesting_results_dataframe)
+
+        return results_dataframe
 
     def _construct_parameter_combinations(
         self,
