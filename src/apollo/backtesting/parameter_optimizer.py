@@ -89,7 +89,7 @@ class ParameterOptimizer:
 
         # Create arguments to supply to each process
         batch_arguments = [
-            (batch, price_dataframe, parameter_set, list(keys)) for batch in batches
+            (batch, price_dataframe, parameter_set, keys) for batch in batches
         ]
 
         # Process each batch in parallel
@@ -279,7 +279,7 @@ class ParameterOptimizer:
         }
 
         # Generate all possible combinations of parameter values
-        return parameter_ranges.keys(), product(*parameter_ranges.values())
+        return list(parameter_ranges.keys()), product(*parameter_ranges.values())
 
     def _get_combination_ranges(
         self,

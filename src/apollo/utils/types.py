@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import KeysView, TypedDict
+from typing import TypedDict
 
 from apollo.strategies.base_strategy import BaseStrategy
 
@@ -29,9 +29,8 @@ class ParameterSet(TypedDict):
     strategy_specific_parameters: list[str]
 
 
-ParameterKeys = KeysView[str]
 ParameterCombinations = Iterable[tuple[float, ...]]
-ParameterKeysAndCombinations = tuple[ParameterKeys, ParameterCombinations]
+ParameterKeysAndCombinations = tuple[list[str], ParameterCombinations]
 
 
 StrategyCatalogueMap = dict[str, type[BaseStrategy]]
