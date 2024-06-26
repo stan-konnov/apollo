@@ -275,7 +275,7 @@ class ParameterOptimizer:
         Construct parameter sets for each combination of parameters.
 
         :param parameters: TypedDict with parameter specifications.
-        :returns: Iterable of tuples where each tuple contains a set of parameters.
+        :returns: Tuple with parameter keys and combinations.
         """
 
         # Extract the parameter ranges
