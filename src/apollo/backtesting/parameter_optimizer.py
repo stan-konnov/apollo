@@ -114,7 +114,7 @@ class ParameterOptimizer:
 
         :param batch_count: Number of batches to split combinations into.
         :param combinations: Iterable of tuples with parameter combinations.
-        :returns: Iterator with parameter combinations.
+        :returns: List of batches with parameter combinations.
         """
 
         # Cast the product to a list
@@ -156,7 +156,16 @@ class ParameterOptimizer:
         parameter_set: ParameterSet,
         keys: list[str],
     ) -> pd.DataFrame:
-        """Run the optimization process."""
+        """
+        Run the optimization process.
+
+        :param combinations: Iterable of tuples with parameter combinations.
+        :param price_dataframe: Dataframe with price data.
+        :param parameter_set: parameter specifications.
+        :param keys: List of parameter keys.
+
+        :returns: DataFrame with backtesting results.
+        """
 
         # Initialize the results dataframe
         # to supply to each backtesting process
