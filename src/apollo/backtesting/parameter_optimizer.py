@@ -1,7 +1,7 @@
-import multiprocessing
 from itertools import product
 from json import dump, loads
 from logging import getLogger
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from sys import exit
 from typing import Union
@@ -74,7 +74,7 @@ class ParameterOptimizer:
         price_dataframe = api_connector.request_or_read_prices()
 
         # Get the number of available CPU cores
-        available_cores = multiprocessing.cpu_count()
+        available_cores = cpu_count()
 
         # Extract the parameter set from the configuration
         parameter_set = self._configuration.parameter_set
@@ -93,7 +93,7 @@ class ParameterOptimizer:
         ]
 
         # Process each batch in parallel
-        with multiprocessing.Pool(processes=available_cores) as pool:
+        with Pool(processes=available_cores) as pool:
             results = pool.starmap(self._process, batch_arguments)
 
             # Concatenate the results from each process
