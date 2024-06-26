@@ -4,7 +4,7 @@
     "cash_size": 1000,
 
     "window_size": {
-        "step": 5,
+        "step": 1,
         "range": [5, 20]
     },
 

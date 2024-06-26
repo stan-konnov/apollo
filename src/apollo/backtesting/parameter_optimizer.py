@@ -121,13 +121,13 @@ class ParameterOptimizer:
         combinations = list(combinations)
 
         # Calculate the total number of combinations
-        combinations_counts = len(list(combinations))
+        combinations_count = len(combinations)
 
         # Calculate the base size of each batch
-        batch_base_size = combinations_counts // batch_count
+        batch_base_size = combinations_count // batch_count
 
         # Calculate the size of the remainder batch
-        remainder_batch_size = combinations_counts % batch_count
+        remainder_batch_size = combinations_count % batch_count
 
         start_index = 0
         batches_to_return = []
