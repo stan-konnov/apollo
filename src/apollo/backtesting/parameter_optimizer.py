@@ -32,6 +32,8 @@ class ParameterOptimizer:
     Runs series of backtesting processes each for each set of parameters to optimize.
     Writes backtesting results and trades into files for further analysis.
     Writes optimized parameter set from sorted backtesting results.
+
+    Is multiprocessing capable and runs in parallel.
     """
 
     def __init__(self) -> None:
