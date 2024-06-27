@@ -82,7 +82,7 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
         cast(ParameterSet, parameters),
     )
 
-    assert keys == parameters.keys()
+    assert keys == (list(parameters.keys()))
     assert control_combinations == list(combinations)
 
 
