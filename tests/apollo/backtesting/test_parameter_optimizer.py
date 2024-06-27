@@ -86,10 +86,11 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
-@pytest.mark.usefixtures("yahoo_api_response")
+@pytest.mark.usefixtures("dataframe")
 @patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 def test__parameter_optimizer__for_correct_error_handling(
+    dataframe: pd.DataFrame,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
@@ -99,27 +100,40 @@ def test__parameter_optimizer__for_correct_error_handling(
     """
 
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration.parameter_set = {  # type: ignore  # noqa: PGH003, SLF001
-        "window_size": {
-            "step": 5,
-            "range": [5, 10],
+
+    parameter_set = cast(
+        ParameterSet,
+        {
+            "window_size": {
+                "step": 5,
+                "range": [5, 10],
+            },
+            "kurtosis_thresh": {
+                "step": 0.1,
+                "range": [1.0, 2.0],
+            },
+            "volatility_multiplier": {
+                "step": 0.1,
+                "range": [1.0, 2.0],
+            },
+            "strategy_specific_parameters": [
+                "kurtosis_thresh",
+                "volatility_multiplier",
+            ],
         },
-        "kurtosis_thresh": {
-            "step": 0.1,
-            "range": [1.0, 2.0],
-        },
-        "volatility_multiplier": {
-            "step": 0.1,
-            "range": [1.0, 2.0],
-        },
-        "strategy_specific_parameters": [
-            "kurtosis_thresh",
-            "volatility_multiplier",
-        ],
-    }
+    )
+
+    keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
+        parameter_set,
+    )
 
     with pytest.raises(SystemExit) as exception:
-        parameter_optimizer.process()
+        parameter_optimizer._process(  # noqa: SLF001
+            combinations=combinations,
+            price_dataframe=dataframe,
+            parameter_set=parameter_set,
+            keys=keys,
+        )
 
     assert "Parameters misconfigured, see traceback" in caplog.text
     assert exception.value.code == 1
