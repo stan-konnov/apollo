@@ -28,6 +28,7 @@ RANGE_MAX = 2.0
 RANGE_STEP = 1.0
 
 
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -48,6 +49,7 @@ def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     pd.testing.assert_series_equal(control_combination_ranges, combination_ranges)
 
 
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -84,6 +86,7 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combinations_batching() -> None:
     """
     Test Parameter Optimizer for correct combinations batching.
@@ -115,6 +118,7 @@ def test__parameter_optimizer__for_correct_combinations_batching() -> None:
 
 @pytest.mark.usefixtures("dataframe")
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_error_handling(
     dataframe: pd.DataFrame,
     caplog: pytest.LogCaptureFixture,
