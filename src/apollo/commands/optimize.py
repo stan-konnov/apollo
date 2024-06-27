@@ -14,7 +14,7 @@ def main() -> None:
     """Run optimization process."""
 
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.process()
+    parameter_optimizer.process_in_parallel()
 
 
 if __name__ == "__main__":
