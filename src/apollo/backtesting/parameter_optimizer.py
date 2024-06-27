@@ -1,12 +1,13 @@
+from itertools import product
 from json import dump, loads
 from logging import getLogger
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from sys import exit
 from typing import Union
 
 import pandas as pd
 from numpy import arange
-from tqdm.contrib.itertools import product
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
@@ -14,6 +15,7 @@ from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
+    ParameterCombinations,
     ParameterKeysAndCombinations,
     ParameterSet,
 )
@@ -30,6 +32,8 @@ class ParameterOptimizer:
     Runs series of backtesting processes each for each set of parameters to optimize.
     Writes backtesting results and trades into files for further analysis.
     Writes optimized parameter set from sorted backtesting results.
+
+    Is multiprocessing capable and runs in parallel.
     """
 
     def __init__(self) -> None:
@@ -58,12 +62,8 @@ class ParameterOptimizer:
 
         self._create_output_directories()
 
-    def process(self) -> None:
-        """Run the optimization process."""
-
-        # Initialize the backtesting results dataframe
-        # to populate with results of each backtesting run
-        backtesting_results_dataframe = pd.DataFrame()
+    def process_in_parallel(self) -> None:
+        """Run the optimization process in parallel."""
 
         # Instantiate the API connector
         api_connector = YahooApiConnector(
@@ -73,7 +73,103 @@ class ParameterOptimizer:
         )
 
         # Request or read the prices
-        dataframe = api_connector.request_or_read_prices()
+        price_dataframe = api_connector.request_or_read_prices()
+
+        # Get the number of available CPU cores
+        available_cores = cpu_count()
+
+        # Extract the parameter set from the configuration
+        parameter_set = self._configuration.parameter_set
+
+        # Build keys and combinations of parameters to optimize
+        keys, combinations = self._construct_parameter_combinations(
+            parameter_set,
+        )
+
+        # Break down combinations into equal batches
+        batches = self._batch_combinations(available_cores, combinations)
+
+        # Create arguments to supply to each process
+        batch_arguments = [
+            (batch, price_dataframe, parameter_set, keys) for batch in batches
+        ]
+
+        # Process each batch in parallel
+        with Pool(processes=available_cores) as pool:
+            results = pool.starmap(self._process, batch_arguments)
+
+            # Concatenate the results from each process
+            combined_results = pd.concat(results)
+
+            # Output the results to a file and create optimized parameters file
+            self._output_results(combined_results)
+
+    def _batch_combinations(
+        self,
+        batch_count: int,
+        combinations: ParameterCombinations,
+    ) -> list[ParameterCombinations]:
+        """
+        Split combinations into equal batches.
+
+        :param batch_count: Number of batches to split combinations into.
+        :param combinations: Iterable of tuples with parameter combinations.
+        :returns: List of batches with parameter combinations.
+        """
+
+        # Cast the product to a list
+        combinations = list(combinations)
+
+        # Calculate the total number of combinations
+        combinations_count = len(combinations)
+
+        # Calculate the base size of each batch
+        batch_base_size = combinations_count // batch_count
+
+        # Calculate the size of the remainder batch
+        remainder_batch_size = combinations_count % batch_count
+
+        start_index = 0
+        batches_to_return = []
+
+        # Iterate over the number of batches
+        for i in range(batch_count):
+            # Calculate the current batch size
+            current_batch_size = batch_base_size + (
+                1 if i < remainder_batch_size else 0
+            )
+
+            # Slice and append the current batch
+            batches_to_return.append(
+                combinations[start_index : start_index + current_batch_size],
+            )
+
+            # Update the start index for the next batch
+            start_index += current_batch_size
+
+        return batches_to_return
+
+    def _process(
+        self,
+        combinations: ParameterCombinations,
+        price_dataframe: pd.DataFrame,
+        parameter_set: ParameterSet,
+        keys: list[str],
+    ) -> pd.DataFrame:
+        """
+        Run the optimization process.
+
+        :param combinations: Iterable of tuples with parameter combinations.
+        :param price_dataframe: Dataframe with price data.
+        :param parameter_set: parameter specifications.
+        :param keys: List of parameter keys.
+
+        :returns: DataFrame with backtesting results.
+        """
+
+        # Initialize the results dataframe
+        # to supply to each backtesting process
+        results_dataframe = pd.DataFrame()
 
         # Instantiate the strategy class by typecasting
         # the strategy name from configuration to the corresponding class
@@ -84,19 +180,11 @@ class ParameterOptimizer:
             {},
         )
 
-        # Extract the parameter set from the configuration
-        parameter_set = self._configuration.parameter_set
-
-        # Build keys and combinations of parameters to optimize
-        keys, combinations = self._construct_parameter_combinations(
-            parameter_set,
-        )
-
         # Iterate over each combination of parameters
         for combination in combinations:
             # We copy the dataframe to have a clean
             # set of prices for each combination we are testing
-            dataframe_to_test = dataframe.copy()
+            dataframe_to_test = price_dataframe.copy()
 
             # Construct back a dictionary with parameter names and values
             combination_to_test = {
@@ -168,17 +256,16 @@ class ParameterOptimizer:
                 },
             )
 
-            # Append the results of this run to the backtesting results dataframe
-            if backtesting_results_dataframe.empty:
-                backtesting_results_dataframe = this_run_results
+            # Append the results of this run to the results dataframe
+            if results_dataframe.empty:
+                results_dataframe = this_run_results
 
             else:
-                backtesting_results_dataframe = pd.concat(
-                    [backtesting_results_dataframe, this_run_results],
+                results_dataframe = pd.concat(
+                    [results_dataframe, this_run_results],
                 )
 
-        # Output the results to a file and create optimized parameters file
-        self._output_results(backtesting_results_dataframe)
+        return results_dataframe
 
     def _construct_parameter_combinations(
         self,
@@ -188,7 +275,7 @@ class ParameterOptimizer:
         Construct parameter sets for each combination of parameters.
 
         :param parameters: TypedDict with parameter specifications.
-        :returns: Iterable of tuples where each tuple contains a set of parameters.
+        :returns: Tuple with parameter keys and combinations.
         """
 
         # Extract the parameter ranges
@@ -203,7 +290,7 @@ class ParameterOptimizer:
         }
 
         # Generate all possible combinations of parameter values
-        return parameter_ranges.keys(), product(*parameter_ranges.values())
+        return list(parameter_ranges.keys()), product(*parameter_ranges.values())
 
     def _get_combination_ranges(
         self,
