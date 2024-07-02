@@ -51,26 +51,22 @@ class KeltnerChannelCalculator(BaseCalculator):
         self.ukc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
 
         # Calculate bounds by using SMA and ATR
-        self.dataframe["adj close"].rolling(self.window_size).apply(
-            self._calc_chan,
-            args=(self.dataframe,),
-        )
+        self.dataframe["adj close"].rolling(self.window_size).apply(self._calc_chan)
 
         # Preserve bounds on the dataframe
         self.dataframe["lkc_bound"] = self.lkc_bound
         self.dataframe["ukc_bound"] = self.ukc_bound
 
-    def _calc_chan(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
+    def _calc_chan(self, series: pd.Series) -> float:
         """
         Calculate rolling Keltner Channel.
 
         :param series: Series which is used for indexing out rolling window.
-        :param dataframe: Original dataframe acting as a source of rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[series.index]
+        rolling_df = self.dataframe.loc[series.index]
 
         # Calculate lower and upper channel bounds
         # expressed as +/- ATR * multiplier from the moving average

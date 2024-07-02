@@ -75,6 +75,7 @@ class HullMovingAverageCalculator(BaseCalculator):
         Calculate Weighted Moving Average.
 
         :param series: Series to calculate WMA for.
+        :param window_size: Window size for WMA calculation.
         :returns: Weighted moving average series.
         """
 
