@@ -73,7 +73,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         """
         Run rolling forecast using ARIMA regression model.
 
-        :param series: Series which is used for indexing out rolling window.
+        :param series: Series to decompose and forecast trend for.
         :returns: Forecasted trend for the next period.
         """
 
