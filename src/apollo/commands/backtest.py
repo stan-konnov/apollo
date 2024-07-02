@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
+from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,10 +28,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SwingEventsMeanReversion(
+    strategy = LogisticRegressionForecast(
         dataframe=dataframe,
         window_size=5,
-        swing_filter=0.01,
     )
 
     strategy.model_trading_signals()
