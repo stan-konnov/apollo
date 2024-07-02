@@ -62,9 +62,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # using rolling ARIMA regression
         self.dataframe["artf"] = (
             self.dataframe["adj close"]
-            .rolling(
-                window=self.window_size,
-            )
+            .rolling(window=self.window_size)
             .apply(self._run_rolling_forecast)
         )
 
@@ -72,7 +70,12 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         self.dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
-        """Run rolling forecast using ARIMA regression model."""
+        """
+        Run rolling forecast using ARIMA regression model.
+
+        :param series: Series to decompose and forecast trend for.
+        :returns: Forecasted trend for the next period.
+        """
 
         # Decompose the time series into
         # trend, seasonal, and residual components within the

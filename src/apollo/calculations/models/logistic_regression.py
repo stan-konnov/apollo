@@ -75,24 +75,20 @@ class LogisticRegressionModelCalculator:
         # Forecast future periods using rolling logistic regression
         self.dataframe["lrf"] = (
             self.dataframe["close"]
-            .rolling(
-                window=self.window_size,
-            )
-            .apply(
-                self._run_rolling_forecast,
-                args=(self.dataframe,),
-            )
+            .rolling(window=self.window_size)
+            .apply(self._run_rolling_forecast)
         )
 
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
 
-    def _run_rolling_forecast(
-        self,
-        series: pd.Series,
-        dataframe: pd.DataFrame,
-    ) -> float:
-        """Run rolling forecast using logistic regression model."""
+    def _run_rolling_forecast(self, series: pd.Series) -> float:
+        """
+        Run rolling forecast using logistic regression model.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Forecasted close for the next period.
+        """
 
         # Get indices from the current window
         rolling_indices = series.index.to_list()
@@ -108,7 +104,7 @@ class LogisticRegressionModelCalculator:
             self.expanding_indices.append(rolling_indices[-1])
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[self.expanding_indices]
+        rolling_df = self.dataframe.loc[self.expanding_indices]
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(rolling_df)
