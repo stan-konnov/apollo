@@ -50,10 +50,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         )
 
         # Calculate rolling AD line
-        self.dataframe["close"].rolling(self.window_size).apply(
-            self._calc_adl,
-            args=(self.dataframe,),
-        )
+        self.dataframe["close"].rolling(self.window_size).apply(self._calc_adl)
 
         # Preserve AD line on the dataframe
         self.dataframe["adl"] = self.accumulation_distribution_line
@@ -61,7 +58,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         # Preserve previous AD line on the dataframe
         self.dataframe["prev_adl"] = self.dataframe["adl"].shift(1)
 
-    def _calc_adl(self, series: pd.Series, dataframe: pd.DataFrame) -> float:
+    def _calc_adl(self, series: pd.Series) -> float:
         """
         Calculate rolling Chaikin Accumulation Distribution.
 
@@ -71,7 +68,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = dataframe.loc[series.index]
+        rolling_df = self.dataframe.loc[series.index]
 
         # Calculate money flow multiplier
         money_flow_multiplier = (

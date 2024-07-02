@@ -75,9 +75,7 @@ class LogisticRegressionModelCalculator:
         # Forecast future periods using rolling logistic regression
         self.dataframe["lrf"] = (
             self.dataframe["close"]
-            .rolling(
-                window=self.window_size,
-            )
+            .rolling(window=self.window_size)
             .apply(self._run_rolling_forecast)
         )
 

@@ -29,11 +29,7 @@ class AverageTrueRangeCalculator(BaseCalculator):
 
         # Calculate rolling True Range
         self.dataframe["tr"] = (
-            self.dataframe["close"]
-            .rolling(
-                self.window_size,
-            )
-            .apply(self.__calc_tr)
+            self.dataframe["close"].rolling(self.window_size).apply(self.__calc_tr)
         )
 
         # Calculate Average True Range using J. Welles Wilder's WMA of TR
