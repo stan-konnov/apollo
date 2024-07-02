@@ -33,9 +33,7 @@ class AverageTrueRangeCalculator(BaseCalculator):
             .rolling(
                 self.window_size,
             )
-            .apply(
-                self.__calc_tr,
-            )
+            .apply(self.__calc_tr)
         )
 
         # Calculate Average True Range using J. Welles Wilder's WMA of TR
