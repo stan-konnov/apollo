@@ -63,7 +63,6 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         Calculate rolling Chaikin Accumulation Distribution.
 
         :param series: Series which is used for indexing out rolling window.
-        :param dataframe: Original dataframe acting as a source of rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
         """
 

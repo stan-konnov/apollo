@@ -83,7 +83,12 @@ class LogisticRegressionModelCalculator:
         self.dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
-        """Run rolling forecast using logistic regression model."""
+        """
+        Run rolling forecast using logistic regression model.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Forecasted close for the next period.
+        """
 
         # Get indices from the current window
         rolling_indices = series.index.to_list()

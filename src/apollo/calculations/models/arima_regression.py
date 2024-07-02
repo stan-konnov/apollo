@@ -70,7 +70,12 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         self.dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
-        """Run rolling forecast using ARIMA regression model."""
+        """
+        Run rolling forecast using ARIMA regression model.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Forecasted trend for the next period.
+        """
 
         # Decompose the time series into
         # trend, seasonal, and residual components within the
