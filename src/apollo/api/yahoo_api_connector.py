@@ -21,24 +21,27 @@ class YahooApiConnector(BaseApiConnector):
     def __init__(
         self,
         ticker: str,
-        start_date: str,
-        end_date: str,
         frequency: str = ValidYahooApiFrequencies.ONE_DAY.value,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        max_period: bool = False,
     ) -> None:
         """
         Construct Yahoo API connector.
 
         :param ticker: Ticker to request prices for.
+        :param frequency: Frequency of requested prices.
         :param start_date: Start point to request prices from (inclusive).
         :param end_date: End point until which to request prices (exclusive).
-        :param frequency: Frequency of requested prices.
+        :param max_period: Flag to request the maximum available period of prices.
         """
 
         super().__init__(
             ticker,
+            frequency,
             start_date,
             end_date,
-            frequency,
+            max_period,
         )
 
         # Name of the file to store the data
