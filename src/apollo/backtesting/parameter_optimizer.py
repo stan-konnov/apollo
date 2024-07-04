@@ -70,6 +70,7 @@ class ParameterOptimizer:
             ticker=self._configuration.ticker,
             start_date=self._configuration.start_date,
             end_date=self._configuration.end_date,
+            max_period=self._configuration.max_period,
         )
 
         # Request or read the prices
