@@ -145,9 +145,9 @@ def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     rolling_df = dataframe.loc[series.index]
 
-    high = rolling_df["high"][-1]
-    low = rolling_df["low"][-1]
-    prev_close = rolling_df["prev_close"][-1]
+    high = rolling_df.iloc[-1]["high"]
+    low = rolling_df.iloc[-1]["low"]
+    prev_close = rolling_df.iloc[-1]["prev_close"]
 
     true_range = [high - low, high - prev_close, prev_close - low]
 

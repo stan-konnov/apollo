@@ -94,5 +94,7 @@ class ARIMARegressionModelCalculator(BaseCalculator):
         # Fit the model and gauge the results
         results: ARIMAResults = model.fit()
 
-        # Return out of sample forecast
-        return results.forecast(steps=1)
+        # Forecast out of sample
+        forecast: pd.Series = results.forecast(steps=1)
+
+        return forecast.iloc[0]

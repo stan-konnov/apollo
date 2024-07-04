@@ -73,8 +73,8 @@ class KeltnerChannelCalculator(BaseCalculator):
         lkc_bound = rolling_df["hma"] - rolling_df["atr"] * self.volatility_multiplier
         ukc_bound = rolling_df["hma"] + rolling_df["atr"] * self.volatility_multiplier
 
-        self.lkc_bound.append(lkc_bound[-1])
-        self.ukc_bound.append(ukc_bound[-1])
+        self.lkc_bound.append(lkc_bound.iloc[-1])
+        self.ukc_bound.append(ukc_bound.iloc[-1])
 
         # Return dummy float
         return 0.0
