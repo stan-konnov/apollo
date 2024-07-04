@@ -4,7 +4,6 @@ from logging import getLogger
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from sys import exit
-from typing import Union
 
 import pandas as pd
 from numpy import arange
@@ -383,7 +382,7 @@ class ParameterOptimizer:
         self,
         trades_dataframe: pd.DataFrame,
         results_dataframe: pd.DataFrame,
-        optimized_parameters: dict[str, Union[str, int, float]],
+        optimized_parameters: dict[str, str | int | float],
     ) -> None:
         """
         Write the results, trades and parameters to files.
