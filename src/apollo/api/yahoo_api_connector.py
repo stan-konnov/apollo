@@ -6,7 +6,7 @@ from yfinance import download
 
 from apollo.api.base_api_connector import BaseApiConnector
 from apollo.errors.api import EmptyApiResponseError
-from apollo.settings import DATA_DIR, ValidYahooApiFrequencies
+from apollo.settings import DATA_DIR, YahooApiFrequencies
 
 logger = getLogger(__name__)
 
@@ -24,7 +24,7 @@ class YahooApiConnector(BaseApiConnector):
         start_date: str,
         end_date: str,
         max_period: bool = False,
-        frequency: str = ValidYahooApiFrequencies.ONE_DAY.value,
+        frequency: str = YahooApiFrequencies.ONE_DAY.value,
     ) -> None:
         """
         Construct Yahoo API connector.

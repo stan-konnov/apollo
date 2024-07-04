@@ -26,7 +26,7 @@ BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 
 
-class ValidYahooApiFrequencies(Enum):
+class YahooApiFrequencies(Enum):
     """Frequency values accepted by Yahoo Finance API."""
 
     ONE_MINUTE = "1m"
