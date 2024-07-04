@@ -58,9 +58,9 @@ class AverageTrueRangeCalculator(BaseCalculator):
         rolling_df = self.dataframe.loc[series.index]
 
         # Get high, low, and previous close
-        high = rolling_df["high"][-1]
-        low = rolling_df["low"][-1]
-        prev_close = rolling_df["prev_close"][-1]
+        high = rolling_df.iloc[-1]["high"]
+        low = rolling_df.iloc[-1]["low"]
+        prev_close = rolling_df.iloc[-1]["prev_close"]
 
         # Calculate True Range for each row, where TR is:
         # max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)

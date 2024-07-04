@@ -172,7 +172,7 @@ def mimic_calc_chan(
     l_band = rolling_df["hma"] - rolling_df["atr"] * volatility_multiplier
     u_band = rolling_df["hma"] + rolling_df["atr"] * volatility_multiplier
 
-    lkc_bound.append(l_band[-1])
-    ukc_bound.append(u_band[-1])
+    lkc_bound.append(l_band.iloc[-1])
+    ukc_bound.append(u_band.iloc[-1])
 
     return 0.0
