@@ -24,15 +24,18 @@ def test__configuration__with_missing_environment_variables() -> None:
     Configuration must raise a ValueError when environment variables are missing.
     """
 
+    exception_message = (
+        "TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD "
+        "variables must be present in environment."
+    )
+
     with pytest.raises(
         ValueError,
-        match="TICKER, STRATEGY, START_DATE, END_DATE variables must be set.",
+        match=exception_message,
     ) as exception:
         Configuration()
 
-    assert str(exception.value) == (
-        "TICKER, STRATEGY, START_DATE, END_DATE variables must be set."
-    )
+    assert str(exception.value) == exception_message
 
 
 @patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
@@ -85,4 +88,4 @@ def test__configuration__with_existing_parameter_set_file() -> None:
     assert configuration.end_date == END_DATE
 
     assert configuration.parameter_set == parameter_set
-    assert type(configuration.parameter_set) == type(parameter_set)
+    assert type(configuration.parameter_set) is type(parameter_set)
