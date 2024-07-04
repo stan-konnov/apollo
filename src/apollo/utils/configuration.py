@@ -23,6 +23,11 @@ class Configuration:
 
         Check if all required variables are set and preserve them.
         Look up strategy parameters file and parse it into a typed object.
+
+        TODO: adapt me to factor in max period of prices
+
+        Question: how to know that we need to query again?
+        Something to think about when rebuilding storage.
         """
 
         if None in (TICKER, STRATEGY, START_DATE, END_DATE):
