@@ -81,4 +81,6 @@ def _run_rolling_forecast(series: pd.Series) -> float:
 
     results: ARIMAResults = model.fit()
 
-    return results.forecast(steps=1)
+    forecast = results.forecast(steps=1)
+
+    return forecast.iloc[0]
