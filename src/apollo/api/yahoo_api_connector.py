@@ -45,10 +45,8 @@ class YahooApiConnector(BaseApiConnector):
         )
 
         # Name of the file to store the data
-        self.data_file: str = (
-            f"{DATA_DIR}/{self.ticker}-{self.frequency}-"
-            f"{self.start_date}-{self.end_date}.csv"
-        )
+        period = "max" if max_period else f"{start_date}-{end_date}"
+        self.data_file: str = f"{DATA_DIR}/{self.ticker}-{self.frequency}-{period}.csv"
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
@@ -71,12 +69,19 @@ class YahooApiConnector(BaseApiConnector):
             logger.info("Price data read from storage.")
 
         except FileNotFoundError:
-            price_data = download(
-                tickers=self.ticker,
-                start=self.start_date,
-                end=self.end_date,
-                interval=self.frequency,
-            )
+            request_arguments = {
+                "tickers": self.ticker,
+                "interval": self.frequency,
+            }
+
+            if self.max_period:
+                request_arguments["period"] = "max"
+
+            else:
+                request_arguments["start"] = self.start_date
+                request_arguments["end"] = self.end_date
+
+            price_data = download(**request_arguments)
 
             # Make sure we have data to work with
             if price_data.empty:
