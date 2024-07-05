@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from apollo.settings import END_DATE, START_DATE, TICKER
-from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
+from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -24,23 +26,26 @@ def main() -> None:
         ticker=str(TICKER),
         start_date=str(START_DATE),
         end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
     )
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = LogisticRegressionForecast(
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
-        window_size=10,
+        window_size=5,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=0.5,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="BollingerBandsMeanReversion",
+        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
         write_result_plot=True,
     )
 
