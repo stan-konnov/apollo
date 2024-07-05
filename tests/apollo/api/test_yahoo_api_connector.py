@@ -65,6 +65,43 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     assert Path.exists(DATA_FILE)
 
 
+@pytest.mark.usefixtures("yahoo_api_response")
+def test__request_or_read_prices__with_max_period() -> None:
+    """
+    Test request_or_read_prices method with max_period.
+
+    API Connector must construct request arguments with period=max.
+    """
+
+    api_connector = YahooApiConnector(
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
+        max_period=True,
+    )
+
+    assert api_connector.request_arguments["period"] == "max"
+
+
+@pytest.mark.usefixtures("yahoo_api_response")
+def test__request_or_read_prices__with_start_and_end_date() -> None:
+    """
+    Test request_or_read_prices method with start and end date.
+
+    API Connector must construct request arguments with start and end date.
+    """
+
+    api_connector = YahooApiConnector(
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
+        max_period=False,
+    )
+
+    assert api_connector.request_arguments["start"] == START_DATE
+    assert api_connector.request_arguments["end"] == END_DATE
+
+
 @patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__when_prices_already_requested_before() -> None:
     """
