@@ -1,0 +1,18 @@
+name: apollo
+
+services:
+  postgres:
+    container_name: apollo_postgres
+    image: postgres:16.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: apollo
+      POSTGRES_PASSWORD: apollo
+      POSTGRES_DB: apollo
+    ports:
+      - 5432:5432
+    volumes:
+      - apollo_postgres_data_container:/var/lib/postgresql/data
+
+volumes:
+  apollo_postgres_data_container:

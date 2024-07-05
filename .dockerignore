@@ -4,4 +4,6 @@
 **/backtesting_results
 
 **/__pycache__
+**/.pytest_cache
 **/.coverage*
+**/.ruff_cache
