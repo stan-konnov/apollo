@@ -43,7 +43,14 @@ class YahooApiConnector(BaseApiConnector):
             frequency,
         )
 
-        self.max_period = max_period
+        self.request_arguments = {}
+
+        if max_period:
+            self.request_arguments["period"] = "max"
+
+        else:
+            self.request_arguments["end"] = self.end_date
+            self.request_arguments["start"] = self.start_date
 
         # Name of the file to store the data
         period = "max" if max_period else f"{start_date}-{end_date}"
@@ -70,19 +77,10 @@ class YahooApiConnector(BaseApiConnector):
             logger.info("Price data read from storage.")
 
         except FileNotFoundError:
-            period_arguments = {}
-
-            if self.max_period:
-                period_arguments["period"] = "max"
-
-            else:
-                period_arguments["end"] = self.end_date
-                period_arguments["start"] = self.start_date
-
             price_data = download(
                 tickers=self.ticker,
                 interval=self.frequency,
-                **period_arguments,
+                **self.request_arguments,
             )
 
             # Make sure we have data to work with
