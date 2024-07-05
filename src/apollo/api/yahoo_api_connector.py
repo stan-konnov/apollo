@@ -53,7 +53,7 @@ class YahooApiConnector(BaseApiConnector):
             self.request_arguments["start"] = self.start_date
 
         # Name of the file to store the data
-        period = "max" if max_period else f"{start_date}-{end_date}"
+        period = "max-period" if max_period else f"{start_date}-{end_date}"
         self.data_file: str = f"{DATA_DIR}/{self.ticker}-{self.frequency}-{period}.csv"
 
     def request_or_read_prices(self) -> pd.DataFrame:

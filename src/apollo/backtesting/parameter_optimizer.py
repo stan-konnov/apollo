@@ -51,12 +51,17 @@ class ParameterOptimizer:
 
         self._configuration = Configuration()
 
+        period = (
+            "max-period"
+            if self._configuration.max_period
+            else f"{self._configuration.start_date}-{self._configuration.end_date}"
+        )
+
         self.strategy_dir = Path(
             f"{BRES_DIR}/"
             f"{self._configuration.ticker}-"
             f"{self._configuration.strategy}-"
-            f"{self._configuration.start_date}-"
-            f"{self._configuration.end_date}",
+            f"{period}",
         )
 
         self._create_output_directories()
