@@ -22,7 +22,7 @@ services:
       DOCKER_INFLUXDB_INIT_USERNAME: apollo
       DOCKER_INFLUXDB_INIT_PASSWORD: apollo
       DOCKER_INFLUXDB_INIT_ORG: apollo
-      DOCKER_INFLUXDB_INIT_BUCKET: apollo
+      DOCKER_INFLUXDB_INIT_BUCKET: prices
     ports:
       - '8086:8086'
     volumes:
