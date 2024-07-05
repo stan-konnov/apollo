@@ -1,7 +1,7 @@
 import logging
 
 from apollo.api.yahoo_api_connector import YahooApiConnector
-from apollo.settings import END_DATE, START_DATE, TICKER
+from apollo.settings import TICKER
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,8 +16,7 @@ def main() -> None:
 
     yahoo_api_connector = YahooApiConnector(
         ticker=str(TICKER),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
+        max_period=True,
     )
 
     yahoo_api_connector.request_or_read_prices()

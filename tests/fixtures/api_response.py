@@ -1,10 +1,10 @@
-from typing import Generator, Union
+from typing import Generator
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
-from apollo.settings import ValidYahooApiFrequencies
+from apollo.settings import YahooApiFrequencies
 
 
 @pytest.fixture(name="yahoo_api_response", scope="session")
@@ -12,10 +12,10 @@ def _yahoo_api_response() -> Generator[None, None, None]:
     """Simulate raw Yahoo API OHLCV response."""
 
     def download(
-        tickers: Union[str, list[str]],  # noqa: ARG001
+        tickers: str | list[str],  # noqa: ARG001
         start: str,
         end: str,
-        interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
+        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
         raw_yahoo_api_response = pd.DataFrame(
             {
@@ -40,10 +40,10 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
     """Simulate empty Yahoo API OHLCV response."""
 
     def download(
-        tickers: Union[str, list[str]],  # noqa: ARG001
+        tickers: str | list[str],  # noqa: ARG001
         start: str,  # noqa: ARG001
         end: str,  # noqa: ARG001
-        interval: str = ValidYahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
+        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
         return pd.DataFrame()
 
