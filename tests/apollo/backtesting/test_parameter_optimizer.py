@@ -10,7 +10,6 @@ from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.utils.configuration import Configuration
 from apollo.utils.types import ParameterSet
 from tests.fixtures.env_and_constants import (
     END_DATE,
@@ -26,6 +25,11 @@ from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
 RANGE_STEP = 1.0
+
+"""
+NOTE: this will change significantly with moving away from files
+as lots of logic revolving around writing to and from file system will be removed
+"""
 
 
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
@@ -185,14 +189,10 @@ def test__parameter_optimizer__for_creating_start_end_results_directories() -> N
         f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
     )
 
-    # Initialize ParameterOptimizer with Configuration
+    # Initialize ParameterOptimizer with strategy directory
+    # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
-    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
-    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
-    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.max_period = False  # noqa: SLF001
+    parameter_optimizer.strategy_dir = strategy_dir
 
     parameter_optimizer._create_output_directories()  # noqa: SLF001
 
@@ -217,14 +217,10 @@ def test__parameter_optimizer__for_creating_max_period_results_directories() -> 
         f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
     )
 
-    # Initialize ParameterOptimizer with Configuration
+    # Initialize ParameterOptimizer with strategy directory
+    # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
-    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
-    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
-    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
+    parameter_optimizer.strategy_dir = strategy_dir
 
     parameter_optimizer._create_output_directories()  # noqa: SLF001
 
@@ -249,14 +245,10 @@ def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
         f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
     )
 
-    # Initialize ParameterOptimizer with Configuration
+    # Initialize ParameterOptimizer with strategy directory
+    # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
-    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
-    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
-    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
+    parameter_optimizer.strategy_dir = strategy_dir
 
     trades_dataframe = pd.DataFrame({"ReturnPct": [1.0]})
     results_dataframe = pd.DataFrame({"Return [%]": [1.0]})
@@ -303,14 +295,15 @@ def test__parameter_optimizer__for_correct_result_output(
     # Drop NaNs after rolling calculations
     dataframe.dropna(inplace=True)
 
-    # Initialize ParameterOptimizer with Configuration
+    # Define the individual strategy directory
+    individual_strategy_directory = Path(
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
+    )
+
+    # Initialize ParameterOptimizer with strategy directory
+    # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
-    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
-    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
-    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
-    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
+    parameter_optimizer.strategy_dir = individual_strategy_directory
 
     # Insert signal column
     dataframe["signal"] = 0
@@ -403,11 +396,6 @@ def test__parameter_optimizer__for_correct_result_output(
 
     # Now, run the _output_results method
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
-
-    # Define the individual strategy directory
-    individual_strategy_directory = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
 
     # Read back the results
     results_dataframe = pd.read_csv(

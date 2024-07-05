@@ -377,6 +377,8 @@ class ParameterOptimizer:
         Create main results directory.
         Create individual strategy directory.
         Create optimized parameters directory.
+
+        NOTE: this method will be deprecated with moving away from files.
         """
 
         for path in [BRES_DIR, self.strategy_dir, OPTP_DIR]:
@@ -395,6 +397,8 @@ class ParameterOptimizer:
         :param trades_dataframe: Dataframe with trades.
         :param results_dataframe: Dataframe with backtesting results.
         :param optimized_parameters: Dictionary with optimized parameters.
+
+        NOTE: this method will be deprecated with moving away from files.
         """
 
         trades_dataframe.to_csv(f"{self.strategy_dir}/trades.csv")
