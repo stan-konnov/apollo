@@ -172,7 +172,7 @@ def test__parameter_optimizer__for_correct_error_handling(
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 @patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 @patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_correctly_creating_results_directories() -> None:
+def test__parameter_optimizer__for_creating_start_end_results_directories() -> None:
     """
     Test Parameter Optimizer for correctly creating results directories.
 
@@ -192,6 +192,39 @@ def test__parameter_optimizer__for_correctly_creating_results_directories() -> N
     parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.max_period = False  # noqa: SLF001
+
+    parameter_optimizer._create_output_directories()  # noqa: SLF001
+
+    assert Path.exists(BRES_DIR)
+    assert Path.exists(strategy_dir)
+    assert Path.exists(OPTP_DIR)
+
+
+@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
+@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
+@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
+def test__parameter_optimizer__for_creating_max_period_results_directories() -> None:
+    """
+    Test Parameter Optimizer for correctly creating results directories.
+
+    Parameter Optimizer must create main backtesting results directory.
+    Parameter Optimizer must create individual strategy directory.
+    Parameter Optimizer must create optimized parameters directory.
+    """
+
+    strategy_dir = Path(
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
+    )
+
+    # Initialize ParameterOptimizer with Configuration
+    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer._configuration = Configuration()  # noqa: SLF001
+    parameter_optimizer._configuration.ticker = TICKER  # noqa: SLF001
+    parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
+    parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
 
     parameter_optimizer._create_output_directories()  # noqa: SLF001
 
@@ -213,7 +246,7 @@ def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
     """
 
     strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
     )
 
     # Initialize ParameterOptimizer with Configuration
@@ -223,6 +256,7 @@ def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
     parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
 
     trades_dataframe = pd.DataFrame({"ReturnPct": [1.0]})
     results_dataframe = pd.DataFrame({"Return [%]": [1.0]})
@@ -276,6 +310,7 @@ def test__parameter_optimizer__for_correct_result_output(
     parameter_optimizer._configuration.strategy = STRATEGY  # noqa: SLF001
     parameter_optimizer._configuration.start_date = START_DATE  # noqa: SLF001
     parameter_optimizer._configuration.end_date = END_DATE  # noqa: SLF001
+    parameter_optimizer._configuration.max_period = True  # noqa: SLF001
 
     # Insert signal column
     dataframe["signal"] = 0
@@ -371,7 +406,7 @@ def test__parameter_optimizer__for_correct_result_output(
 
     # Define the individual strategy directory
     individual_strategy_directory = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
+        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
     )
 
     # Read back the results
