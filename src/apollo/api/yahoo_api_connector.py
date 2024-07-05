@@ -6,7 +6,7 @@ from yfinance import download
 
 from apollo.api.base_api_connector import BaseApiConnector
 from apollo.errors.api import EmptyApiResponseError
-from apollo.settings import DATA_DIR, ValidYahooApiFrequencies
+from apollo.settings import DATA_DIR, YahooApiFrequencies
 
 logger = getLogger(__name__)
 
@@ -23,7 +23,8 @@ class YahooApiConnector(BaseApiConnector):
         ticker: str,
         start_date: str,
         end_date: str,
-        frequency: str = ValidYahooApiFrequencies.ONE_DAY.value,
+        max_period: bool = False,
+        frequency: str = YahooApiFrequencies.ONE_DAY.value,
     ) -> None:
         """
         Construct Yahoo API connector.
@@ -31,6 +32,7 @@ class YahooApiConnector(BaseApiConnector):
         :param ticker: Ticker to request prices for.
         :param start_date: Start point to request prices from (inclusive).
         :param end_date: End point until which to request prices (exclusive).
+        :param max_period: Flag to request the maximum available period of prices.
         :param frequency: Frequency of requested prices.
         """
 
@@ -41,11 +43,18 @@ class YahooApiConnector(BaseApiConnector):
             frequency,
         )
 
+        self.request_arguments = {}
+
+        if max_period:
+            self.request_arguments["period"] = "max"
+
+        else:
+            self.request_arguments["end"] = self.end_date
+            self.request_arguments["start"] = self.start_date
+
         # Name of the file to store the data
-        self.data_file: str = (
-            f"{DATA_DIR}/{self.ticker}-{self.frequency}-"
-            f"{self.start_date}-{self.end_date}.csv"
-        )
+        period = "max-period" if max_period else f"{start_date}-{end_date}"
+        self.data_file: str = f"{DATA_DIR}/{self.ticker}-{self.frequency}-{period}.csv"
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
@@ -70,9 +79,8 @@ class YahooApiConnector(BaseApiConnector):
         except FileNotFoundError:
             price_data = download(
                 tickers=self.ticker,
-                start=self.start_date,
-                end=self.end_date,
                 interval=self.frequency,
+                **self.request_arguments,
             )
 
             # Make sure we have data to work with

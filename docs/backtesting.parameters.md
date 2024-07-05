@@ -7,7 +7,7 @@ FREQUENCY
 
 One day (1d) as per Yahoo API. Test all possible variations.
 
-Interval: ValidYahooApiFrequencies.
+Interval: YahooApiFrequencies.
 ```
 
 

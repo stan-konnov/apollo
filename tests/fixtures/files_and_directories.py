@@ -6,7 +6,7 @@ from typing import Generator
 import pytest
 
 from apollo.settings import (
-    ValidYahooApiFrequencies,
+    YahooApiFrequencies,
 )
 from tests.fixtures.env_and_constants import (
     END_DATE,
@@ -22,7 +22,7 @@ DATA_DIR = Path(f"{TEMP_TEST_DIR}/data")
 DATA_FILE = Path(
     str(
         f"{DATA_DIR}/{TICKER}-"
-        f"{ValidYahooApiFrequencies.ONE_DAY.value}-"
+        f"{YahooApiFrequencies.ONE_DAY.value}-"
         f"{START_DATE}-{END_DATE}.csv",
     ),
 )

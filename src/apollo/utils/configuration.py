@@ -3,7 +3,7 @@ from json import dumps, load
 from pathlib import Path
 from sys import exit
 
-from apollo.settings import END_DATE, PARM_DIR, START_DATE, STRATEGY, TICKER
+from apollo.settings import END_DATE, MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
 from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
@@ -25,21 +25,29 @@ class Configuration:
         Look up strategy parameters file and parse it into a typed object.
         """
 
-        if None in (TICKER, STRATEGY, START_DATE, END_DATE):
+        if None in (TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD):
             raise ValueError(
-                "TICKER, STRATEGY, START_DATE, END_DATE variables must be set.",
+                "TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD "
+                "variables must be present in environment.",
             )
 
         self.ticker = str(TICKER)
         self.strategy = str(STRATEGY)
         self.start_date = str(START_DATE)
         self.end_date = str(END_DATE)
+        self.max_period = bool(MAX_PERIOD)
 
         self.parameter_set = self._get_parameter_set()
 
+        period = (
+            "Maximum available"
+            if self.max_period
+            else f"{self.start_date} - {self.end_date}"
+        )
+
         logger.info(
             f"Running {self.strategy} for {self.ticker}\n\n"
-            f"Dates: {self.start_date} - {self.end_date}\n\n"
+            f"Period: {period}\n\n"
             "Parameters:\n\n"
             f"{dumps(self.parameter_set, indent=4)}",
         )

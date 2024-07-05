@@ -10,6 +10,7 @@ TICKER = getenv("TICKER", None)
 STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
+MAX_PERIOD = getenv("MAX_PERIOD", None)
 
 NO_SIGNAL = 0
 LONG_SIGNAL = 1
@@ -25,7 +26,7 @@ BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 
 
-class ValidYahooApiFrequencies(Enum):
+class YahooApiFrequencies(Enum):
     """Frequency values accepted by Yahoo Finance API."""
 
     ONE_MINUTE = "1m"

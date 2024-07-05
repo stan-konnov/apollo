@@ -4,7 +4,6 @@ from logging import getLogger
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from sys import exit
-from typing import Union
 
 import pandas as pd
 from numpy import arange
@@ -52,12 +51,17 @@ class ParameterOptimizer:
 
         self._configuration = Configuration()
 
+        period = (
+            "max-period"
+            if self._configuration.max_period
+            else f"{self._configuration.start_date}-{self._configuration.end_date}"
+        )
+
         self.strategy_dir = Path(
             f"{BRES_DIR}/"
             f"{self._configuration.ticker}-"
             f"{self._configuration.strategy}-"
-            f"{self._configuration.start_date}-"
-            f"{self._configuration.end_date}",
+            f"{period}",
         )
 
         self._create_output_directories()
@@ -70,6 +74,7 @@ class ParameterOptimizer:
             ticker=self._configuration.ticker,
             start_date=self._configuration.start_date,
             end_date=self._configuration.end_date,
+            max_period=self._configuration.max_period,
         )
 
         # Request or read the prices
@@ -372,6 +377,8 @@ class ParameterOptimizer:
         Create main results directory.
         Create individual strategy directory.
         Create optimized parameters directory.
+
+        NOTE: this method will be deprecated with moving away from files.
         """
 
         for path in [BRES_DIR, self.strategy_dir, OPTP_DIR]:
@@ -382,7 +389,7 @@ class ParameterOptimizer:
         self,
         trades_dataframe: pd.DataFrame,
         results_dataframe: pd.DataFrame,
-        optimized_parameters: dict[str, Union[str, int, float]],
+        optimized_parameters: dict[str, str | int | float],
     ) -> None:
         """
         Write the results, trades and parameters to files.
@@ -390,6 +397,8 @@ class ParameterOptimizer:
         :param trades_dataframe: Dataframe with trades.
         :param results_dataframe: Dataframe with backtesting results.
         :param optimized_parameters: Dictionary with optimized parameters.
+
+        NOTE: this method will be deprecated with moving away from files.
         """
 
         trades_dataframe.to_csv(f"{self.strategy_dir}/trades.csv")
