@@ -26,6 +26,8 @@ TODO:
                 database_connector.py
 
 5. Do I want to separate influx and postgres connector or keep it in one class?
+
+Then environment variables validation can move to base_database_connector.
 """
 
 
