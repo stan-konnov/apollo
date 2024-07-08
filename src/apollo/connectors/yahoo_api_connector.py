@@ -6,7 +6,7 @@ from yfinance import download
 from apollo.connectors.base_api_connector import BaseApiConnector
 from apollo.connectors.database_connector import DatabaseConnector
 from apollo.errors.api import EmptyApiResponseError
-from apollo.settings import DATA_DIR, YahooApiFrequencies
+from apollo.settings import YahooApiFrequencies
 
 logger = getLogger(__name__)
 
@@ -53,10 +53,6 @@ class YahooApiConnector(BaseApiConnector):
             self.request_arguments["start"] = self.start_date
 
         self.database_connector = DatabaseConnector()
-
-        # Name of the file to store the data
-        period = "max-period" if max_period else f"{start_date}-{end_date}"
-        self.data_file: str = f"{DATA_DIR}/{self.ticker}-{self.frequency}-{period}.csv"
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """

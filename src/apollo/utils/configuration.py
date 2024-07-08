@@ -13,7 +13,7 @@ class Configuration:
     """
     Configuration class.
 
-    Takes in environment variables to supply them to other components.
+    Takes in environment variables to supply to parameter optimizer.
     Looks up strategy parameters file and parses it into a typed object.
     """
 
