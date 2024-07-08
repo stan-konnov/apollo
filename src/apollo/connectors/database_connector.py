@@ -7,6 +7,9 @@ from pytz import timezone
 
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
+    DEFAULT_TIME_FORMAT,
+    EXCHANGE,
+    EXCHANGE_TIME_ZONE_AND_HOURS,
     INFLUXDB_BUCKET,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
@@ -15,6 +18,8 @@ from apollo.settings import (
 
 """
 TODO:
+
+https://stackoverflow.com/a/63628816/11675550
 
 2. Identifying if we need to query data or read based on the API.
 
@@ -46,7 +51,7 @@ class DatabaseConnector:
 
         if None in (INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN):
             raise ValueError(
-                "INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN "
+                "EXCHANGE, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN "
                 "environment variables must be set.",
             )
 
@@ -94,11 +99,18 @@ class DatabaseConnector:
         if not last_record_date:
             return True
 
-        current_date = datetime.now(tz=timezone("UTC")).strftime("%Y-%m-%d")
+        # Get current date and time
+        current_date = datetime.now(tz=timezone("UTC")).strftime(DEFAULT_DATE_FORMAT)
+        current_time = datetime.now(tz=timezone("UTC")).strftime(DEFAULT_TIME_FORMAT)
 
-        # A simple string compare will do
-        # as currently we only work with daily prices
-        return current_date > last_record_date
+        # Get the time in configured exchange
+        time_in_relevant_exchange = datetime.now(
+            tz=timezone(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        ).strftime(DEFAULT_TIME_FORMAT)
+
+        return (
+            current_date > last_record_date and current_time > time_in_relevant_exchange
+        )
 
     def write_price_data(
         self,

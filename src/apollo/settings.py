@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TICKER = getenv("TICKER", None)
+EXCHANGE = getenv("EXCHANGE", None)
 STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
@@ -24,6 +25,12 @@ PLOT_DIR = Path(f"{ROOT_DIR}/backtesting_plots")
 BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
+DEFAULT_TIME_FORMAT = "%H:%M:%S"
+
+INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
+INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
+INFLUXDB_URL = getenv("INFLUXDB_URL", None)
+INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN", None)
 
 
 class YahooApiFrequencies(Enum):
@@ -43,7 +50,12 @@ class YahooApiFrequencies(Enum):
     THREE_MONTHS = "3mo"
 
 
-INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
-INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
-INFLUXDB_URL = getenv("INFLUXDB_URL", None)
-INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN", None)
+EXCHANGE_TIME_ZONE_AND_HOURS = {
+    "NYSE": {
+        "timezone": "America/New_York",
+        "hours": {
+            "open": "09:30",
+            "close": "16:00",
+        },
+    },
+}
