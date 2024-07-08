@@ -59,7 +59,7 @@ class DatabaseConnector:
         * No records are available in the database.
         * The last record is not from today and market is closed (data available).
 
-        :return: Boolean indicating if prices need to be re-queried.
+        :returns: Boolean indicating if prices need to be re-queried.
         """
 
         last_record_date: str | None
