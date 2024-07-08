@@ -39,7 +39,7 @@ class DatabaseConnector:
         """
         Write price data to InfluxDB.
 
-        :param data: Price data to write to InfluxDB.
+        :param price_data: Price dataframe to write to InfluxDB.
         """
 
         # Drop ticker column since we consider it as a tag
