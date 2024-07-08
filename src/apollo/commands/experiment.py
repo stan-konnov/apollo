@@ -1,6 +1,6 @@
 import logging
 
-from apollo.api.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.yahoo_api_connector import YahooApiConnector
 from apollo.settings import TICKER
 
 logging.basicConfig(

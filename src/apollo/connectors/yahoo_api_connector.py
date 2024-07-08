@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from yfinance import download
 
-from apollo.api.base_api_connector import BaseApiConnector
+from apollo.connectors.base_api_connector import BaseApiConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import DATA_DIR, YahooApiFrequencies
 

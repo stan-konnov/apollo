@@ -1,8 +1,8 @@
 import logging
 from typing import TYPE_CHECKING
 
-from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.connectors.yahoo_api_connector import YahooApiConnector
 from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,

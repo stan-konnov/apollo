@@ -8,9 +8,9 @@ from sys import exit
 import pandas as pd
 from numpy import arange
 
-from apollo.api.yahoo_api_connector import YahooApiConnector
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.connectors.yahoo_api_connector import YahooApiConnector
 from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
