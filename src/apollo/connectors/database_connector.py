@@ -7,32 +7,28 @@ from zoneinfo import ZoneInfo
 
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
-    DEFAULT_TIME_FORMAT,
-    EXCHANGE,
-    EXCHANGE_TIME_ZONE_AND_HOURS,
     INFLUXDB_BUCKET,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
 )
+from apollo.utils.market_hours import check_if_configured_exchange_is_closed
 
 """
 TODO:
 
 1. Reading prices back.
 
-2. Move checks against env variables into centralized place!
+2. Comments in API Connector.
 
-3. Move market closing hours check into util method.
-
-4. File structure:
+2. File structure:
         connectors/
             api/
                 api_connector.py
             database/
                 database_connector.py
 
-5. Separate influx and postgres connectors (no need for inheritance).
+3. Separate influx and postgres connectors (no need for inheritance).
 """
 
 
@@ -89,34 +85,27 @@ class DatabaseConnector:
             # Execute the query
             tables = query_api.query(query=query_statement, org="apollo")
 
-            # Get the last record time if any
+            # Get the last record date string if any
             last_record_date = (
                 (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
                 if tables and tables[0].records
                 else None
             )
 
+        # If no records are available
+        # we need to re-query the prices
         if not last_record_date:
             return True
 
-        # Get current date
+        # Get current date string
         current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(DEFAULT_DATE_FORMAT)
 
-        # Get the time in configured exchange
-        # NOTE: ZoneInfo handles daylight saving time
-        configured_exchange_time = datetime.now(
-            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
-        ).strftime(DEFAULT_TIME_FORMAT)
+        # Check if the configured exchange is closed
+        exchange_is_closed = check_if_configured_exchange_is_closed()
 
-        # Get configured exchange closing hours
-        configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)][
-            "hours"
-        ]["close"]
-
-        return (
-            current_date > last_record_date
-            and configured_exchange_time > configured_exchange_close
-        )
+        # If the last record is not from today
+        # and the exchange is closed, we need to re-query the prices
+        return current_date > last_record_date and exchange_is_closed
 
     def write_price_data(
         self,

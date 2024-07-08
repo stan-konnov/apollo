@@ -69,16 +69,12 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        try:
-            price_data = pd.read_csv(self.data_file, index_col=0)
+        price_data_needs_update = (
+            self.database_connector.check_if_price_data_needs_update()
+        )
 
-            # We always index by date,
-            # therefore, we cast indices to datetime.
-            price_data.index = pd.to_datetime(price_data.index)
-
-            logger.info("Price data read from storage.")
-
-        except FileNotFoundError:
+        # Re-query prices if needed
+        if price_data_needs_update:
             price_data = download(
                 tickers=self.ticker,
                 interval=self.frequency,
@@ -95,6 +91,12 @@ class YahooApiConnector(BaseApiConnector):
             self._save_dataframe(price_data)
 
             logger.info("Requested price data from Yahoo Finance API.")
+
+        # Otherwise, read from disk
+        else:
+            price_data = pd.read_csv(self.data_file, index_col=0)
+
+            logger.info("Price data read from storage.")
 
         return price_data
 
@@ -126,7 +128,5 @@ class YahooApiConnector(BaseApiConnector):
 
         :param dataframe: Requested Dataframe.
         """
-
-        self.database_connector.check_if_price_data_needs_update()
 
         self.database_connector.write_price_data(self.frequency, dataframe)
