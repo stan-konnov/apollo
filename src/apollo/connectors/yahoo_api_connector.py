@@ -5,6 +5,7 @@ import pandas as pd
 from yfinance import download
 
 from apollo.connectors.base_api_connector import BaseApiConnector
+from apollo.connectors.database_connector import DatabaseConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import DATA_DIR, YahooApiFrequencies
 
@@ -51,6 +52,8 @@ class YahooApiConnector(BaseApiConnector):
         else:
             self.request_arguments["end"] = self.end_date
             self.request_arguments["start"] = self.start_date
+
+        self.database_connector = DatabaseConnector()
 
         # Name of the file to store the data
         period = "max-period" if max_period else f"{start_date}-{end_date}"

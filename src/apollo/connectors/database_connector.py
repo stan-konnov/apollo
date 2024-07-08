@@ -10,7 +10,7 @@ from apollo.settings import (
 
 class DatabaseConnector:
     """
-    Data Access Layer class.
+    Database Connector class.
 
     Is responsible for handling database
     operations to-from relational and time-series databases.
@@ -19,7 +19,7 @@ class DatabaseConnector:
     """
 
     def __init__(self) -> None:
-        """Construct Data Access Layer."""
+        """Construct Database Connector."""
 
         if None in (INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN):
             raise ValueError(
