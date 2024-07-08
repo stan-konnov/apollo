@@ -84,17 +84,16 @@ class DatabaseConnector:
             # Execute the query
             tables = query_api.query(query=query_statement, org="apollo")
 
-            # Get the latest available record time if any
+            # Get the last record time if any
             last_record_date = (
                 (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
-                if tables
+                if tables and tables[0].records
                 else None
             )
 
         if not last_record_date:
             return True
 
-        # Get current date string in UTC
         current_date = datetime.now(tz=timezone("UTC")).strftime("%Y-%m-%d")
 
         # A simple string compare will do
