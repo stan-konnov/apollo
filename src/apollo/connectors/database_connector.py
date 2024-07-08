@@ -50,17 +50,17 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
-    def check_if_price_data_need_refresh(self) -> bool:
+    def check_if_price_data_exists(self) -> bool:
         """
         Identify if prices need to be re-queried.
 
-        Check if current date is after the
-        last available record in the database.
+        We re-query prices if either:
+
+        * No records are available in the database.
+        * The latest record is not from today and marked is closed (data available).
 
         :return: Boolean indicating if prices need to be re-queried.
         """
-
-        latest_available_record = None
 
         with InfluxDBClient(
             org=INFLUXDB_ORG,
