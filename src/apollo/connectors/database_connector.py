@@ -17,7 +17,7 @@ from apollo.utils.market_hours import check_if_configured_exchange_is_closed
 """
 TODO:
 
-1. Reading prices back.
+1. Reading prices back (https://github.com/influxdata/influxdb-client-python) as DF!
 
 2. Comments in API Connector.
 
@@ -132,11 +132,10 @@ class DatabaseConnector:
             dataframe_to_write["frequency"] = frequency
 
             # Create write API and write incoming dataframe
-            write_api = client.write_api(write_options=SYNCHRONOUS)
-
-            write_api.write(
-                bucket=str(INFLUXDB_BUCKET),
-                record=dataframe_to_write,
-                data_frame_measurement_name="ohlcv",
-                data_frame_tag_columns=["ticker", "frequency"],
-            )
+            with client.write_api(write_options=SYNCHRONOUS) as write_api:
+                write_api.write(
+                    bucket=str(INFLUXDB_BUCKET),
+                    record=dataframe_to_write,
+                    data_frame_measurement_name="ohlcv",
+                    data_frame_tag_columns=["ticker", "frequency"],
+                )

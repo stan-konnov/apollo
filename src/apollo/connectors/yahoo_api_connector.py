@@ -94,7 +94,7 @@ class YahooApiConnector(BaseApiConnector):
 
         # Otherwise, read from disk
         else:
-            price_data = pd.read_csv(self.data_file, index_col=0)
+            price_data = pd.DataFrame()
 
             logger.info("Price data read from storage.")
 
