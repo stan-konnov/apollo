@@ -21,14 +21,18 @@ TODO:
 
 1. Reading prices back.
 
-2. File structure:
+2. Move checks against env variables into centralized place!
+
+3. Move market closing hours check into util method.
+
+4. File structure:
         connectors/
             api/
                 api_connector.py
             database/
                 database_connector.py
 
-3. Separate influx and postgres connectors (no need for inheritance).
+5. Separate influx and postgres connectors (no need for inheritance).
 """
 
 
