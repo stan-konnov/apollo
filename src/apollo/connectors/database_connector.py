@@ -21,6 +21,8 @@ TODO:
 
 2. Comments in API Connector.
 
+3. Better configuration for client to consume env vars. (from_env_file())
+
 3. Comments here.
 
 4. File structure:
@@ -99,7 +101,7 @@ class DatabaseConnector:
         if not last_record_date:
             return True
 
-        # Get current date string
+        # Otherwise, get current date string
         current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(DEFAULT_DATE_FORMAT)
 
         # Check if the configured exchange is closed
