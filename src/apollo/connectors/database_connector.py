@@ -60,7 +60,7 @@ class DatabaseConnector:
         We re-query prices if either:
 
         * No records are available in the database.
-        * The last record is not from today and market is closed (data available).
+        * The last record is before today and market is closed (data available).
 
         :returns: Boolean indicating if prices need to be re-queried.
         """
@@ -105,7 +105,7 @@ class DatabaseConnector:
         # Check if the configured exchange is closed
         exchange_is_closed = check_if_configured_exchange_is_closed()
 
-        # If the last record is not from today
+        # If the last record is before today
         # and the exchange is closed, we need to re-query the prices
         return current_date > last_record_date and exchange_is_closed
 

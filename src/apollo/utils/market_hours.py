@@ -19,13 +19,11 @@ def check_if_configured_exchange_is_closed() -> bool:
 
     # Get the time in configured exchange
     configured_exchange_time = datetime.now(
-        tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[EXCHANGE]["timezone"]),
     ).strftime(DEFAULT_TIME_FORMAT)
 
     # Get configured exchange closing hours
-    configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"][
-        "close"
-    ]
+    configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[EXCHANGE]["hours"]["close"]
 
     # Check if the exchange is closed
     return configured_exchange_time > configured_exchange_close
