@@ -132,3 +132,5 @@ class YahooApiConnector(BaseApiConnector):
             DATA_DIR.mkdir(parents=True, exist_ok=True)
 
         dataframe.to_csv(self.data_file)
+
+        self.database_connector.write_price_data(dataframe)
