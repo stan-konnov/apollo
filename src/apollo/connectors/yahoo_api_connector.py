@@ -133,4 +133,4 @@ class YahooApiConnector(BaseApiConnector):
 
         dataframe.to_csv(self.data_file)
 
-        self.database_connector.write_price_data(dataframe)
+        self.database_connector.write_price_data(self.frequency, dataframe)

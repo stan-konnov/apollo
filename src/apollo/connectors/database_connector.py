@@ -34,21 +34,30 @@ class DatabaseConnector:
             org=INFLUXDB_ORG,
             url=str(INFLUXDB_URL),
             token=INFLUXDB_TOKEN,
-            timeout=30_000,  # Please make me environment variable
         )
 
-    def write_price_data(self, price_data: pd.DataFrame) -> None:
+    def write_price_data(
+        self,
+        frequency: str,
+        dataframe: pd.DataFrame,
+    ) -> None:
         """
         Write price data to InfluxDB.
 
-        :param price_data: Price dataframe to write to InfluxDB.
+        :param frequency: Frequency of the price data.
+        :param dataframe: Price dataframe to write to InfluxDB.
         """
+
+        dataframe_to_write = dataframe.copy()
+        dataframe_to_write["frequency"] = frequency
 
         write_api = self.influxdb_client.write_api(write_options=SYNCHRONOUS)
 
         write_api.write(
             bucket=str(INFLUXDB_BUCKET),
-            record=price_data,
+            record=dataframe_to_write,
             data_frame_measurement_name="ohlcv",
-            data_frame_tag_columns=["ticker"],
+            data_frame_tag_columns=["ticker", "frequency"],
         )
+
+        self.influxdb_client.close()
