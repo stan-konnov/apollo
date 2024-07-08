@@ -48,7 +48,6 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
-        # Use me with "with" statement
         self.influxdb_client = InfluxDBClient(
             org=INFLUXDB_ORG,
             url=str(INFLUXDB_URL),
