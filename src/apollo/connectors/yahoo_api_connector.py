@@ -1,5 +1,4 @@
 from logging import getLogger
-from pathlib import Path
 
 import pandas as pd
 from yfinance import download
@@ -127,10 +126,5 @@ class YahooApiConnector(BaseApiConnector):
 
         :param dataframe: Requested Dataframe.
         """
-
-        if not Path.is_dir(DATA_DIR):
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        dataframe.to_csv(self.data_file)
 
         self.database_connector.write_price_data(self.frequency, dataframe)
