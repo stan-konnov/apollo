@@ -1,8 +1,12 @@
+from datetime import datetime
+
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
+from pytz import timezone
 
 from apollo.settings import (
+    DEFAULT_DATE_FORMAT,
     INFLUXDB_BUCKET,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
@@ -11,8 +15,6 @@ from apollo.settings import (
 
 """
 TODO:
-
-1. Connection time out on the first write.
 
 2. Identifying if we need to query data or read based on the API.
 
@@ -48,11 +50,51 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
-        self.influxdb_client = InfluxDBClient(
+    def check_if_price_data_need_refresh(self) -> bool:
+        """
+        Identify if prices need to be re-queried.
+
+        Check if current date is after the
+        last available record in the database.
+
+        :return: Boolean indicating if prices need to be re-queried.
+        """
+
+        latest_available_record = None
+
+        with InfluxDBClient(
             org=INFLUXDB_ORG,
             url=str(INFLUXDB_URL),
             token=INFLUXDB_TOKEN,
-        )
+        ) as client:
+            # Create query API
+            query_api = client.query_api()
+
+            # Query the last record in the database
+            query_statement = f"""
+                from(bucket:"{INFLUXDB_BUCKET}")
+                |> range(start:0)
+                |> filter(fn: (r) =>
+                    r._measurement == "ohlcv")
+                |> last()
+                """
+
+            # Execute the query
+            tables = query_api.query(query=query_statement, org="apollo")
+
+            # Get the latest available record time if any
+            latest_available_record = (
+                (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
+                if tables
+                else None
+            )
+
+        if not latest_available_record:
+            return True
+
+        current_date = datetime.now(tz=timezone("UTC")).strftime("%Y-%m-%d")
+
+        return current_date > latest_available_record
 
     def write_price_data(
         self,
@@ -66,16 +108,22 @@ class DatabaseConnector:
         :param dataframe: Price dataframe to write to InfluxDB.
         """
 
-        dataframe_to_write = dataframe.copy()
-        dataframe_to_write["frequency"] = frequency
+        with InfluxDBClient(
+            org=INFLUXDB_ORG,
+            url=str(INFLUXDB_URL),
+            token=INFLUXDB_TOKEN,
+        ) as client:
+            # Copy and add frequency to the
+            # dataframe to use as a tag value
+            dataframe_to_write = dataframe.copy()
+            dataframe_to_write["frequency"] = frequency
 
-        write_api = self.influxdb_client.write_api(write_options=SYNCHRONOUS)
+            # Create write API and write incoming dataframe
+            write_api = client.write_api(write_options=SYNCHRONOUS)
 
-        write_api.write(
-            bucket=str(INFLUXDB_BUCKET),
-            record=dataframe_to_write,
-            data_frame_measurement_name="ohlcv",
-            data_frame_tag_columns=["ticker", "frequency"],
-        )
-
-        self.influxdb_client.close()
+            write_api.write(
+                bucket=str(INFLUXDB_BUCKET),
+                record=dataframe_to_write,
+                data_frame_measurement_name="ohlcv",
+                data_frame_tag_columns=["ticker", "frequency"],
+            )
