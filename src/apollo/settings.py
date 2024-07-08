@@ -41,3 +41,9 @@ class YahooApiFrequencies(Enum):
     ONE_WEEK = "1wk"
     ONE_MONTH = "1mo"
     THREE_MONTHS = "3mo"
+
+
+INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
+INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
+INFLUXDB_URL = getenv("INFLUXDB_URL", None)
+INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN", None)
