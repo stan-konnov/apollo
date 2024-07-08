@@ -25,9 +25,7 @@ TODO:
             database/
                 database_connector.py
 
-5. Separate influx and postgres connectors.
-
-Then environment variables validation can move to base_database_connector.
+5. Separate influx and postgres connectors (no need for inheritance).
 """
 
 
