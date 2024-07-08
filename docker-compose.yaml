@@ -26,7 +26,7 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: prices
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: apollo-influxdb-auth-token
     ports:
-      - '8086:8086'
+      - 8086:8086
     volumes:
       - influxdb_data_container:/var/lib/influxdb2
       - influxdb_conf_container:/etc/influxdb2
