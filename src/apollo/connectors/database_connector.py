@@ -21,14 +21,16 @@ TODO:
 
 2. Comments in API Connector.
 
-2. File structure:
+3. Comments here.
+
+4. File structure:
         connectors/
             api/
                 api_connector.py
             database/
                 database_connector.py
 
-3. Separate influx and postgres connectors (no need for inheritance).
+5. Separate influx and postgres connectors (no need for inheritance).
 """
 
 
