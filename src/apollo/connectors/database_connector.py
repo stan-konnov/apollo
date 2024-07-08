@@ -47,7 +47,11 @@ class DatabaseConnector:
     """
 
     def __init__(self) -> None:
-        """Construct Database Connector."""
+        """
+        Construct Database Connector.
+
+        :raises ValueError: If required environment variables are not set.
+        """
 
         if None in (INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN):
             raise ValueError(
