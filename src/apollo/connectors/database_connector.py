@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
-from pytz import timezone
+from zoneinfo import ZoneInfo
 
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
@@ -19,20 +19,16 @@ from apollo.settings import (
 """
 TODO:
 
-https://stackoverflow.com/a/63628816/11675550
+1. Reading prices back.
 
-2. Identifying if we need to query data or read based on the API.
-
-3. Reading prices back.
-
-4. File structure:
+2. File structure:
         connectors/
             api/
                 api_connector.py
             database/
                 database_connector.py
 
-5. Separate influx and postgres connectors (no need for inheritance).
+3. Separate influx and postgres connectors (no need for inheritance).
 """
 
 
@@ -99,17 +95,23 @@ class DatabaseConnector:
         if not last_record_date:
             return True
 
-        # Get current date and time
-        current_date = datetime.now(tz=timezone("UTC")).strftime(DEFAULT_DATE_FORMAT)
-        current_time = datetime.now(tz=timezone("UTC")).strftime(DEFAULT_TIME_FORMAT)
+        # Get current date
+        current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(DEFAULT_DATE_FORMAT)
 
         # Get the time in configured exchange
-        time_in_relevant_exchange = datetime.now(
-            tz=timezone(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        # NOTE: ZoneInfo handles daylight saving time
+        configured_exchange_time = datetime.now(
+            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
         ).strftime(DEFAULT_TIME_FORMAT)
 
+        # Get configured exchange closing hours
+        configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)][
+            "hours"
+        ]["close"]
+
         return (
-            current_date > last_record_date and current_time > time_in_relevant_exchange
+            current_date > last_record_date
+            and configured_exchange_time > configured_exchange_close
         )
 
     def write_price_data(
