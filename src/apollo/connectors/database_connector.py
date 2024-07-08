@@ -50,17 +50,19 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
-    def check_if_price_data_exists(self) -> bool:
+    def check_if_price_data_needs_update(self) -> bool:
         """
         Identify if prices need to be re-queried.
 
         We re-query prices if either:
 
         * No records are available in the database.
-        * The latest record is not from today and marked is closed (data available).
+        * The last record is not from today and market is closed (data available).
 
         :return: Boolean indicating if prices need to be re-queried.
         """
+
+        last_record_date: str | None
 
         with InfluxDBClient(
             org=INFLUXDB_ORG,
@@ -83,18 +85,21 @@ class DatabaseConnector:
             tables = query_api.query(query=query_statement, org="apollo")
 
             # Get the latest available record time if any
-            latest_available_record = (
+            last_record_date = (
                 (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
                 if tables
                 else None
             )
 
-        if not latest_available_record:
+        if not last_record_date:
             return True
 
+        # Get current date string in UTC
         current_date = datetime.now(tz=timezone("UTC")).strftime("%Y-%m-%d")
 
-        return current_date > latest_available_record
+        # A simple string compare will do
+        # as currently we only work with daily prices
+        return current_date > last_record_date
 
     def write_price_data(
         self,
