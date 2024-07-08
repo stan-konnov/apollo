@@ -1,16 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from influxdb_client import InfluxDBClient
 from pandas import DataFrame
 
-from apollo.settings import (
-    DEFAULT_DATE_FORMAT,
-    INFLUXDB_BUCKET,
-    INFLUXDB_ORG,
-    INFLUXDB_TOKEN,
-    INFLUXDB_URL,
-)
+from apollo.settings import DEFAULT_DATE_FORMAT
 
 
 class BaseApiConnector(ABC):
@@ -59,18 +52,6 @@ class BaseApiConnector(ABC):
         self.start_date = start_date
         self.end_date = end_date
         self.frequency = frequency
-
-        if None in (INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN):
-            raise ValueError(
-                "INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN "
-                "environment must be set.",
-            )
-
-        self.influxdb_client = InfluxDBClient(
-            org=INFLUXDB_ORG,
-            url=str(INFLUXDB_URL),
-            token=INFLUXDB_TOKEN,
-        )
 
     @abstractmethod
     def request_or_read_prices(self) -> DataFrame:
