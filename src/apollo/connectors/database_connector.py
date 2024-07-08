@@ -29,10 +29,12 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
+        # Use me with "with" statement
         self.influxdb_client = InfluxDBClient(
             org=INFLUXDB_ORG,
             url=str(INFLUXDB_URL),
             token=INFLUXDB_TOKEN,
+            timeout=30_000,  # Please make me environment variable
         )
 
     def write_price_data(self, price_data: pd.DataFrame) -> None:
@@ -42,13 +44,11 @@ class DatabaseConnector:
         :param price_data: Price dataframe to write to InfluxDB.
         """
 
-        # Drop ticker column since we consider it as a tag
-        clean_price_data = price_data.drop(columns=["ticker"])
-
         write_api = self.influxdb_client.write_api(write_options=SYNCHRONOUS)
 
         write_api.write(
             bucket=str(INFLUXDB_BUCKET),
-            record=clean_price_data,
+            record=price_data,
             data_frame_measurement_name="ohlcv",
+            data_frame_tag_columns=["ticker"],
         )
