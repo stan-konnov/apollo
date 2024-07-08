@@ -9,6 +9,25 @@ from apollo.settings import (
     INFLUXDB_URL,
 )
 
+"""
+TODO:
+
+1. Connection time out on the first write.
+
+2. Identifying if we need to query data or read based on the API.
+
+3. Reading prices back.
+
+4. File structure:
+        connectors/
+            api/
+                api_connector.py
+            database/
+                database_connector.py
+
+5. Do I want to separate influx and postgres connector or keep it in one class?
+"""
+
 
 class DatabaseConnector:
     """
