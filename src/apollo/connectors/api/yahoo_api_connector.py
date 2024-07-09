@@ -85,6 +85,7 @@ class YahooApiConnector(BaseApiConnector):
                 **self.request_arguments,
             )
 
+            # NOTE: this might not work over weekend, check!
             # At this point in time, if prices were requested
             # intraday, yahoo finance API will return intraday close
             # which is undesirable as it can lead to data inconsistency
