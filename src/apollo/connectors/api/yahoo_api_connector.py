@@ -68,6 +68,9 @@ class YahooApiConnector(BaseApiConnector):
 
         last_record_date = self.database_connector.get_last_record_date()
 
+        # NOTE: yfinance includes intraday close in the response
+        # this needs to be avoided as it leads to data inconsistency
+
         # Re-query prices
         # if no records are available
         # or last record date is before previous business day
