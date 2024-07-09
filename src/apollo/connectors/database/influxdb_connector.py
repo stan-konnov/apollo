@@ -18,6 +18,8 @@ TODO:
 2. Better configuration for client to consume env vars. (from_env_file())
 
 3. Manage intraday prices from Yahoo API.
+
+4. Factor in start and end date if requested.
 """
 
 
