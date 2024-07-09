@@ -114,17 +114,13 @@ class DatabaseConnector:
         # Get current point in time
         now = datetime.now(tz=ZoneInfo("UTC"))
 
-        # If now is business day, get previous business day
-        # This will fail on weekends
-        if is_busday(now.date()):
-            previous_business_day = now - timedelta(days=1)
+        # Get previous business day
+        previous_business_day = now - timedelta(days=1)
 
-        # If now is not business day, get last business day
-        else:
-            previous_business_day = now
-
-            while not is_busday(previous_business_day.date()):
-                previous_business_day -= timedelta(days=1)
+        # If minus one day offset falls on weekend
+        # loop back until we get to the previous business day
+        while not is_busday(previous_business_day.date()):
+            previous_business_day -= timedelta(days=1)
 
         # Get date string from previous business day
         previous_business_day = previous_business_day.strftime(
