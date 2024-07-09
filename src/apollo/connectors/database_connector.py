@@ -65,11 +65,13 @@ class DatabaseConnector:
         """
         Identify if prices need to be re-queried.
 
+        data available from exchange = exchange is closed and it's business day
+
         We re-query prices if either:
 
         * No records are available in the database.
-        * Last available record date is before previous business day.
-        * Last available record date is previous business day and exchange closed.
+        * Last record date is before previous business day.
+        * Last record date is previous business day and data available from exchange.
 
         :returns: Boolean indicating if prices need to be re-queried.
         """
