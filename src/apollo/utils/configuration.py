@@ -3,7 +3,7 @@ from json import dumps, load
 from pathlib import Path
 from sys import exit
 
-from apollo.settings import MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
+from apollo.settings import END_DATE, MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
 from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class Configuration:
 
         self.parameter_set = self._get_parameter_set()
 
-        period = "Maximum available" if MAX_PERIOD else f"{START_DATE} - {START_DATE}"
+        period = "Maximum available" if MAX_PERIOD else f"{START_DATE} - {END_DATE}"
 
         logger.info(
             f"Running {STRATEGY} for {TICKER}\n\n"
