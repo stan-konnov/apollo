@@ -13,11 +13,11 @@ from apollo.settings import (
 """
 TODO:
 
-1. Reading prices back (https://github.com/influxdata/influxdb-client-python) as DF!
+1. Comments in API Connector.
 
-2. Comments in API Connector.
+2. Better configuration for client to consume env vars. (from_env_file())
 
-3. Better configuration for client to consume env vars. (from_env_file())
+3. Manage intraday prices from Yahoo API.
 """
 
 
