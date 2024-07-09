@@ -34,28 +34,15 @@ TODO:
 """
 
 
-class DatabaseConnector:
+class InfluxDbConnector:
     """
-    Database Connector class.
+    Influx Database Connector class.
 
     Is responsible for handling database
-    operations to-from relational and time-series databases.
+    operations to-from time-series databases.
 
-    Uses InfluxDB Client for time-series database operations.
+    Acts as a wrapper around the InfluxDB Python client.
     """
-
-    def __init__(self) -> None:
-        """
-        Construct Database Connector.
-
-        :raises ValueError: If required environment variables are not set.
-        """
-
-        if None in (INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN):
-            raise ValueError(
-                "INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_URL, INFLUXDB_TOKEN "
-                "environment variables must be set.",
-            )
 
     def write_price_data(
         self,
@@ -92,7 +79,7 @@ class DatabaseConnector:
         """
         Get the last record date from the database.
 
-        :returns: Last record date string if any.
+        :returns: Last record date string or None if no records are found.
         """
 
         with InfluxDBClient(

@@ -4,7 +4,7 @@ import pandas as pd
 from yfinance import download
 
 from apollo.connectors.base_api_connector import BaseApiConnector
-from apollo.connectors.database_connector import DatabaseConnector
+from apollo.connectors.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
@@ -53,7 +53,7 @@ class YahooApiConnector(BaseApiConnector):
             self.request_arguments["end"] = self.end_date
             self.request_arguments["start"] = self.start_date
 
-        self.database_connector = DatabaseConnector()
+        self.database_connector = InfluxDbConnector()
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
