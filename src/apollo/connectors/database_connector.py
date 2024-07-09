@@ -67,7 +67,7 @@ class DatabaseConnector:
 
         * No records are available in the database.
         * The last available record date is before today.
-        * The last available record date is today and exchange is closed.
+        * The last record is before today and right now exchange is closed.
 
         :returns: Boolean indicating if prices need to be re-queried.
         """
@@ -114,7 +114,9 @@ class DatabaseConnector:
 
         # If the last record is before today
         # and the exchange is closed, we need to re-query the prices
-        return current_date > last_record_date and exchange_is_closed
+        return current_date > last_record_date or (
+            current_date > last_record_date and exchange_is_closed
+        )
 
     def write_price_data(
         self,
