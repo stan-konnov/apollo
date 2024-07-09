@@ -1,6 +1,6 @@
 import logging
 
-from apollo.connectors.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
 from apollo.utils.common import ensure_environment_is_configured
 

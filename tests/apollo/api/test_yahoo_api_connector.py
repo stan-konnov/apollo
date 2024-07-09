@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from apollo.connectors.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,

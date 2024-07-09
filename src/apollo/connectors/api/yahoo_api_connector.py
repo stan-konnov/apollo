@@ -3,8 +3,8 @@ from logging import getLogger
 import pandas as pd
 from yfinance import download
 
-from apollo.connectors.base_api_connector import BaseApiConnector
-from apollo.connectors.influxdb_connector import InfluxDbConnector
+from apollo.connectors.api.base_api_connector import BaseApiConnector
+from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper

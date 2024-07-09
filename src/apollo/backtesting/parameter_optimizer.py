@@ -10,7 +10,7 @@ from numpy import arange
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.connectors.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.settings import (
     BRES_DIR,
     END_DATE,
