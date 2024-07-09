@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
+from numpy import is_busday
 from zoneinfo import ZoneInfo
 
 from apollo.settings import (
@@ -108,8 +109,23 @@ class DatabaseConnector:
         if not last_record_date:
             return True
 
-        # Otherwise, get current date string
-        current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(
+        # Get current point in time
+        now = datetime.now(tz=ZoneInfo("UTC"))
+
+        # If now is business day, get previous business day
+        # This will fail on weekends
+        if is_busday(now.date()):
+            previous_business_day = now - timedelta(days=1)
+
+        # If now is not business day, get last business day
+        else:
+            previous_business_day = now
+
+            while not is_busday(previous_business_day.date()):
+                previous_business_day -= timedelta(days=1)
+
+        # Get date string from previous business day
+        previous_business_day = previous_business_day.strftime(
             DEFAULT_DATE_FORMAT,
         )
 
@@ -117,8 +133,10 @@ class DatabaseConnector:
         data_available_from_exchange = check_if_data_available_from_exchange()
 
         # Re-query prices
-        return last_record_date < current_date or (
-            last_record_date == current_date and data_available_from_exchange
+        # If last record date is before previous business day
+        # or last record date is previous business day and data available from exchange
+        return last_record_date < previous_business_day or (
+            last_record_date == previous_business_day and data_available_from_exchange
         )
 
     def write_price_data(
