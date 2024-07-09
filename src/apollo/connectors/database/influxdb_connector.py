@@ -29,9 +29,6 @@ class InfluxDbConnector:
     """
     Influx Database Connector class.
 
-    Is responsible for handling database
-    operations to-from time-series databases.
-
     Acts as a wrapper around the InfluxDB Python client.
     """
 
