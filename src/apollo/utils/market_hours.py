@@ -4,6 +4,12 @@ from zoneinfo import ZoneInfo
 
 from apollo.settings import DEFAULT_TIME_FORMAT, EXCHANGE, EXCHANGE_TIME_ZONE_AND_HOURS
 
+"""
+data available from exchange = exchange is closed and it's business day
+
+Rename me to something like data should be available from exchange
+"""
+
 
 def check_if_configured_exchange_is_closed() -> bool:
     """
