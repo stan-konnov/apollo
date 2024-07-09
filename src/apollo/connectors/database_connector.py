@@ -71,9 +71,9 @@ class DatabaseConnector:
 
         Today is not weekend AND
 
-        Time delta between last record and today is more than 1 day OR
+        Time delta between last record and today is more than 1 business day OR
 
-        Time delta between last record and today is 1 day AND exchange is closed
+        Time delta between last record and today is 1 business day AND exchange closed
 
         :returns: Boolean indicating if prices need to be re-queried.
         """
