@@ -115,9 +115,6 @@ class InfluxDbConnector:
             # Drop unnecessary influx columns
             dataframe.drop(columns=["result", "table"], inplace=True)
 
-            # Remove time information from the date column
-            dataframe["date"] = dataframe["date"].dt.date
-
             # Set the date column as index
             dataframe.set_index("date", inplace=True)
 
