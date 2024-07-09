@@ -19,18 +19,9 @@ TODO:
 
 3. Better configuration for client to consume env vars. (from_env_file())
 
-3. Comments here.
+4. Comments here.
 
-4. File structure:
-        connectors/
-            api/
-                api_connector.py
-            database/
-                database_connector.py
-
-5. Separate influx and postgres connectors (no need for inheritance).
-
-6. Measurement as class variable.
+5. Measurement as class variable.
 """
 
 
