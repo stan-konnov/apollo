@@ -62,6 +62,8 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
+    # This, ideally, should be decoupled and moved
+    # into helper class together with check_if_data_available_from_exchange
     def check_if_price_data_needs_update(self) -> bool:
         """
         Identify if prices need to be re-queried.
