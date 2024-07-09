@@ -63,10 +63,11 @@ class InfluxDbConnector:
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
-    def read_price_data(self, frequency: str) -> pd.DataFrame:
+    def read_price_data(self, ticker: str, frequency: str) -> pd.DataFrame:
         """
         Read price data from the database.
 
+        :param ticker: Ticker of the price data.
         :param frequency: Frequency of the price data.
         :returns: Price dataframe read from the database.
         """
@@ -84,8 +85,10 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
-                        r._measurement == "{self.measurement}" and
-                        r.frequency == "{frequency}")
+                        r.ticker == "{ticker}" and
+                        r.frequency == "{frequency}" and
+                        r._measurement == "{self.measurement}"
+                    )
                 |> pivot(
                         rowKey: ["_time"],
                         columnKey: ["_field"],
@@ -145,7 +148,8 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
-                    r._measurement == "ohlcv")
+                        r._measurement == "ohlcv"
+                    )
                 |> last()
                 """
 
