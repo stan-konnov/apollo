@@ -63,6 +63,67 @@ class InfluxDbConnector:
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
+    def read_price_data(self, frequency: str) -> pd.DataFrame:
+        """
+        Read price data from the database.
+
+        :param frequency: Frequency of the price data.
+        :returns: Price dataframe read from the database.
+        """
+
+        with InfluxDBClient(
+            org=INFLUXDB_ORG,
+            url=str(INFLUXDB_URL),
+            token=INFLUXDB_TOKEN,
+        ) as client:
+            # Create query API
+            query_api = client.query_api()
+
+            # Query the price data from the database
+            query_statement = f"""
+                from(bucket:"{INFLUXDB_BUCKET}")
+                |> range(start:0)
+                |> filter(fn: (r) =>
+                        r._measurement == "{self.measurement}" and
+                        r.frequency == "{frequency}")
+                |> pivot(
+                        rowKey: ["_time"],
+                        columnKey: ["_field"],
+                        valueColumn: "_value"
+                    )
+                |> keep(
+                        columns: [
+                            "ticker",
+                            "open",
+                            "high",
+                            "low",
+                            "close",
+                            "adj close",
+                            "volume",
+                            "_time",
+                        ]
+                    )
+                |> rename(columns: {'{_time: "date"}'})
+                """
+
+            # Execute the query
+            dataframe: pd.DataFrame = query_api.query_data_frame(
+                query=query_statement,
+                org="apollo",
+            )
+
+            # Drop unnecessary influx columns
+            dataframe.drop(columns=["result", "table"], inplace=True)
+
+            # Remove time information from the date column
+            dataframe["date"] = dataframe["date"].dt.date
+
+            # Set the date column as index
+            dataframe.set_index("date", inplace=True)
+
+            # Execute the query and return
+            return dataframe
+
     def get_last_record_date(self) -> str | None:
         """
         Get the last record date from the database.

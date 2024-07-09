@@ -866,6 +866,8 @@ files = [
 
 [package.dependencies]
 certifi = ">=14.05.14"
+numpy = {version = "*", optional = true, markers = "extra == \"extra\""}
+pandas = {version = ">=1.0.0", optional = true, markers = "extra == \"extra\""}
 python-dateutil = ">=2.5.3"
 reactivex = ">=4.0.4"
 setuptools = ">=21.0.0"
@@ -3321,4 +3323,4 @@ repair = ["scipy (>=1.6.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "a0ebcec680a4f784ee91b684bfc212cb7330d6ac4093d7635e4457fbeac285b2"
+content-hash = "0db5de6b266c032353ea5e41676c79efd7c710a9fc07ebb560b26efdc6d7e85f"

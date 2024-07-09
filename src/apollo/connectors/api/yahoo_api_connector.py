@@ -96,7 +96,7 @@ class YahooApiConnector(BaseApiConnector):
 
         # Otherwise, read from disk
         else:
-            price_data = pd.DataFrame()
+            price_data = self.database_connector.read_price_data(self.frequency)
 
             logger.info("Price data read from storage.")
 
