@@ -16,7 +16,12 @@ from apollo.settings import (
 
 
 def to_default_date_string(date: datetime64) -> str:
-    """Convert a numpy datetime64 object to a string in the YYYY-MM-DD format."""
+    """
+    Convert a numpy datetime64 object to a string in the YYYY-MM-DD format.
+
+    :param date: The date to convert.
+    :returns: The date as a string in the YYYY-MM-DD format.
+    """
 
     timestamp = to_datetime(str(date))
 
