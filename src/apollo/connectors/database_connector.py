@@ -12,7 +12,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
 )
-from apollo.utils.market_hours import check_if_configured_exchange_is_closed
+from apollo.utils.market_hours import check_if_data_available_from_exchange
 
 """
 TODO:
@@ -65,8 +65,6 @@ class DatabaseConnector:
         """
         Identify if prices need to be re-queried.
 
-        data available from exchange = exchange is closed and it's business day
-
         We re-query prices if either:
 
         * No records are available in the database.
@@ -116,13 +114,11 @@ class DatabaseConnector:
         )
 
         # Check if the configured exchange is closed
-        exchange_is_closed = check_if_configured_exchange_is_closed()
+        data_available_from_exchange = check_if_data_available_from_exchange()
 
         # Re-query prices
-        # If the last record is before today
-        # or the last record is today and the exchange is closed
         return last_record_date < current_date or (
-            last_record_date == current_date and exchange_is_closed
+            last_record_date == current_date and data_available_from_exchange
         )
 
     def write_price_data(
