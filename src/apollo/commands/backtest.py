@@ -7,6 +7,7 @@ from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
+from apollo.utils.common import ensure_environment_is_configured
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -21,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 def main() -> None:
     """Run backtesting process for individual strategy."""
+
+    ensure_environment_is_configured()
 
     yahoo_api_connector = YahooApiConnector(
         ticker=str(TICKER),
