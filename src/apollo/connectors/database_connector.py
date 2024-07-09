@@ -1,10 +1,6 @@
-from datetime import datetime, timedelta
-
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
-from numpy import is_busday
-from zoneinfo import ZoneInfo
 
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
@@ -13,7 +9,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
 )
-from apollo.utils.market_hours import check_if_data_available_from_exchange
+from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 """
 TODO:
@@ -68,7 +64,7 @@ class DatabaseConnector:
         """
         Identify if prices need to be re-queried.
 
-        We re-query prices if either:
+        Re-query prices if either:
 
         * No records are available in the database.
         * Last record date is before previous business day.
@@ -111,31 +107,10 @@ class DatabaseConnector:
         if not last_record_date:
             return True
 
-        # Get current point in time
-        now = datetime.now(tz=ZoneInfo("UTC"))
-
-        # Get previous business day
-        previous_business_day = now - timedelta(days=1)
-
-        # If minus one day offset falls on weekend
-        # loop back until we get to the previous business day
-        while not is_busday(previous_business_day.date()):
-            previous_business_day -= timedelta(days=1)
-
-        # Get date string from previous business day
-        previous_business_day = previous_business_day.strftime(
-            DEFAULT_DATE_FORMAT,
-        )
-
-        # Check if the configured exchange is closed
-        data_available_from_exchange = check_if_data_available_from_exchange()
-
         # Re-query prices
-        # If last record date is before previous business day
+        # if last record date is before previous business day
         # or last record date is previous business day and data available from exchange
-        return last_record_date < previous_business_day or (
-            last_record_date == previous_business_day and data_available_from_exchange
-        )
+        return DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
 
     def write_price_data(
         self,
