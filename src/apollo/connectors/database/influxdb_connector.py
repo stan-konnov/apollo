@@ -109,7 +109,7 @@ class InfluxDbConnector:
             # Execute the query
             dataframe: pd.DataFrame = query_api.query_data_frame(
                 query=query_statement,
-                org="apollo",
+                org=INFLUXDB_ORG,
             )
 
             # Drop unnecessary influx columns
@@ -149,7 +149,7 @@ class InfluxDbConnector:
                 """
 
             # Execute the query
-            tables = query_api.query(query=query_statement, org="apollo")
+            tables = query_api.query(query=query_statement, org=INFLUXDB_ORG)
 
             # Get the last record date string if any
             return (
