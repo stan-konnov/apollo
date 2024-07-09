@@ -11,7 +11,16 @@ from numpy import arange
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.connectors.yahoo_api_connector import YahooApiConnector
-from apollo.settings import BRES_DIR, NO_SIGNAL, OPTP_DIR
+from apollo.settings import (
+    BRES_DIR,
+    END_DATE,
+    MAX_PERIOD,
+    NO_SIGNAL,
+    OPTP_DIR,
+    START_DATE,
+    STRATEGY,
+    TICKER,
+)
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
     ParameterCombinations,
@@ -51,17 +60,10 @@ class ParameterOptimizer:
 
         self._configuration = Configuration()
 
-        period = (
-            "max-period"
-            if self._configuration.max_period
-            else f"{self._configuration.start_date}-{self._configuration.end_date}"
-        )
+        period = "max-period" if MAX_PERIOD else f"{START_DATE}-{END_DATE}"
 
         self.strategy_dir = Path(
-            f"{BRES_DIR}/"
-            f"{self._configuration.ticker}-"
-            f"{self._configuration.strategy}-"
-            f"{period}",
+            f"{BRES_DIR}/{TICKER}-{STRATEGY}-{period}",
         )
 
         self._create_output_directories()
@@ -71,10 +73,10 @@ class ParameterOptimizer:
 
         # Instantiate the API connector
         api_connector = YahooApiConnector(
-            ticker=self._configuration.ticker,
-            start_date=self._configuration.start_date,
-            end_date=self._configuration.end_date,
-            max_period=self._configuration.max_period,
+            ticker=str(TICKER),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
         )
 
         # Request or read the prices
@@ -178,7 +180,7 @@ class ParameterOptimizer:
 
         # Instantiate the strategy class by typecasting
         # the strategy name from configuration to the corresponding class
-        strategy_name = self._configuration.strategy
+        strategy_name = str(STRATEGY)
         strategy_class = type(
             strategy_name,
             (STRATEGY_CATALOGUE_MAP[strategy_name],),
@@ -405,7 +407,7 @@ class ParameterOptimizer:
         results_dataframe.to_csv(f"{self.strategy_dir}/results.csv")
 
         with Path.open(
-            Path(f"{OPTP_DIR}/{self._configuration.strategy}.json"),
+            Path(f"{OPTP_DIR}/{STRATEGY}.json"),
             "w",
         ) as file:
             dump(optimized_parameters, file, indent=4)

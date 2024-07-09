@@ -3,18 +3,10 @@ from json import dumps, load
 from pathlib import Path
 from sys import exit
 
-from apollo.settings import END_DATE, MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
+from apollo.settings import MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
 from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
-
-
-"""
-TODO:
-
-Move all environment variables check to a single util function
-that is called with every command.
-"""
 
 
 class Configuration:
@@ -29,32 +21,15 @@ class Configuration:
         """
         Construct Configuration.
 
-        Check if all required variables are set and preserve them.
         Look up strategy parameters file and parse it into a typed object.
         """
 
-        if None in (TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD):
-            raise ValueError(
-                "TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD "
-                "variables must be present in environment.",
-            )
-
-        self.ticker = str(TICKER)
-        self.strategy = str(STRATEGY)
-        self.start_date = str(START_DATE)
-        self.end_date = str(END_DATE)
-        self.max_period = bool(MAX_PERIOD)
-
         self.parameter_set = self._get_parameter_set()
 
-        period = (
-            "Maximum available"
-            if self.max_period
-            else f"{self.start_date} - {self.end_date}"
-        )
+        period = "Maximum available" if MAX_PERIOD else f"{START_DATE} - {START_DATE}"
 
         logger.info(
-            f"Running {self.strategy} for {self.ticker}\n\n"
+            f"Running {STRATEGY} for {TICKER}\n\n"
             f"Period: {period}\n\n"
             "Parameters:\n\n"
             f"{dumps(self.parameter_set, indent=4)}",
@@ -67,7 +42,7 @@ class Configuration:
         Catch potential FileNotFoundError, log exception and exit with code 1.
         """
 
-        parameters_file_path = f"{PARM_DIR}/{self.strategy}.json"
+        parameters_file_path = f"{PARM_DIR}/{STRATEGY}.json"
 
         try:
             with Path.open(Path(parameters_file_path)) as file:
