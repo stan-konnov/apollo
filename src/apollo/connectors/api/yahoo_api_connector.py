@@ -1,7 +1,9 @@
+from datetime import datetime
 from logging import getLogger
 
 import pandas as pd
 from yfinance import download
+from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.base_api_connector import BaseApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
@@ -68,9 +70,6 @@ class YahooApiConnector(BaseApiConnector):
 
         last_record_date = self.database_connector.get_last_record_date()
 
-        # NOTE: yfinance includes intraday close in the response
-        # this needs to be avoided as it leads to data inconsistency
-
         # Re-query prices
         # if no records are available
         # or last record date is before previous business day
@@ -85,6 +84,15 @@ class YahooApiConnector(BaseApiConnector):
                 interval=self.frequency,
                 **self.request_arguments,
             )
+
+            # At this point in time, if prices were requested
+            # intraday, yahoo finance API will return intraday close
+            # which is undesirable as it can lead to data inconsistency
+            # Therefore, we can check if data should be available and drop last row
+            if not DataAvailabilityHelper.check_if_data_available_from_exchange(
+                datetime.now(ZoneInfo("UTC")),
+            ):
+                price_data = price_data.iloc[: price_data.shape[0] - 2]
 
             # Make sure we have data to work with
             if price_data.empty:

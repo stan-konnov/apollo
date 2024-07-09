@@ -61,7 +61,7 @@ class DataAvailabilityHelper:
 
         # Check if the data is available from the exchange
         data_available_from_exchange = (
-            DataAvailabilityHelper._check_if_data_available_from_exchange(now)
+            DataAvailabilityHelper.check_if_data_available_from_exchange(now)
         )
 
         # Re-query prices
@@ -72,7 +72,7 @@ class DataAvailabilityHelper:
         )
 
     @staticmethod
-    def _check_if_data_available_from_exchange(now: datetime) -> bool:
+    def check_if_data_available_from_exchange(now: datetime) -> bool:
         """
         Check if price data is available from the exchange.
 
