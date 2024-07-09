@@ -7,7 +7,7 @@ from apollo.settings import DEFAULT_TIME_FORMAT, EXCHANGE, EXCHANGE_TIME_ZONE_AN
 """
 data available from exchange = exchange is closed and it's business day
 
-Rename me to something like data should be available from exchange
+Rename me to something like data is available from exchange
 """
 
 
