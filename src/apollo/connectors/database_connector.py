@@ -33,6 +33,8 @@ TODO:
                 database_connector.py
 
 5. Separate influx and postgres connectors (no need for inheritance).
+
+6. Measurement as class variable.
 """
 
 
