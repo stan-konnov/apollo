@@ -30,8 +30,9 @@ class InfluxDbConnector:
     Acts as a wrapper around the InfluxDB Python client.
     """
 
-    # Measurement name for the price data
-    measurement_name = "ohlcv"
+    # Measurement name
+    # for the price data
+    measurement = "ohlcv"
 
     def write_price_data(
         self,
@@ -60,7 +61,7 @@ class InfluxDbConnector:
                 write_api.write(
                     bucket=str(INFLUXDB_BUCKET),
                     record=dataframe_to_write,
-                    data_frame_measurement_name=self.measurement_name,
+                    data_frame_measurement_name=self.measurement,
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
