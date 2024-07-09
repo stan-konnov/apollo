@@ -32,16 +32,19 @@ def ensure_environment_is_configured() -> None:
     :raises ValueError: If any of the environment variables are not configured.
     """
 
-    if None or "" in (
-        TICKER,
-        EXCHANGE,
-        STRATEGY,
-        START_DATE,
-        END_DATE,
-        INFLUXDB_BUCKET,
-        INFLUXDB_ORG,
-        INFLUXDB_TOKEN,
-        INFLUXDB_URL,
+    if any(
+        not variable
+        for variable in [
+            TICKER,
+            EXCHANGE,
+            STRATEGY,
+            START_DATE,
+            END_DATE,
+            INFLUXDB_BUCKET,
+            INFLUXDB_ORG,
+            INFLUXDB_TOKEN,
+            INFLUXDB_URL,
+        ]
     ):
         raise ValueError(
             "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
