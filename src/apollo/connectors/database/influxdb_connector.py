@@ -18,8 +18,6 @@ TODO:
 2. Comments in API Connector.
 
 3. Better configuration for client to consume env vars. (from_env_file())
-
-4. Comments here.
 """
 
 
