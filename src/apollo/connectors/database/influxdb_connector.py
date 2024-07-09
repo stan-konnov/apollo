@@ -121,6 +121,10 @@ class InfluxDbConnector:
             # Set the date column as index
             dataframe.set_index("date", inplace=True)
 
+            # We always index by date,
+            # therefore, we cast indices to datetime.
+            dataframe.index = pd.to_datetime(dataframe.index)
+
             # Execute the query and return
             return dataframe
 
