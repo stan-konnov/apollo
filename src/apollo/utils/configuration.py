@@ -12,11 +12,8 @@ logger = logging.getLogger(__name__)
 """
 TODO:
 
-Move environment variables check into parameter optimizer.
-
-Since now multiple components are responsible for checking environment variables.
-
-The responsibility of this class is to only parse parameters file.
+Move all environment variables check to a single util function
+that is called with every command.
 """
 
 
