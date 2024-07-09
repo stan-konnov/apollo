@@ -15,8 +15,8 @@ class DataAvailabilityHelper:
     """
     Data Availability Helper class.
 
-    Works in conjunction with the InfluxDB Connector
-    to determine if data should be re-queried from the source.
+    Determines if data should be re-queried from the source
+    based on provided last record date and current point in time.
     """
 
     @staticmethod

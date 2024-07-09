@@ -9,7 +9,6 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
 )
-from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 """
 TODO:
@@ -58,60 +57,6 @@ class DatabaseConnector:
                 "environment variables must be set.",
             )
 
-    # This, ideally, should be decoupled and moved
-    # into helper class together with check_if_data_available_from_exchange
-    def check_if_price_data_needs_update(self) -> bool:
-        """
-        Identify if prices need to be re-queried.
-
-        Re-query prices if either:
-
-        * No records are available in the database.
-        * Last record date is before previous business day.
-        * Last record date is previous business day and data available from exchange.
-
-        :returns: Boolean indicating if prices need to be re-queried.
-        """
-
-        last_record_date: str | None
-
-        with InfluxDBClient(
-            org=INFLUXDB_ORG,
-            url=str(INFLUXDB_URL),
-            token=INFLUXDB_TOKEN,
-        ) as client:
-            # Create query API
-            query_api = client.query_api()
-
-            # Query the last record in the database
-            query_statement = f"""
-                from(bucket:"{INFLUXDB_BUCKET}")
-                |> range(start:0)
-                |> filter(fn: (r) =>
-                    r._measurement == "ohlcv")
-                |> last()
-                """
-
-            # Execute the query
-            tables = query_api.query(query=query_statement, org="apollo")
-
-            # Get the last record date string if any
-            last_record_date = (
-                (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
-                if tables and tables[0].records
-                else None
-            )
-
-        # Re-query prices
-        # if no records are available
-        if not last_record_date:
-            return True
-
-        # Re-query prices
-        # if last record date is before previous business day
-        # or last record date is previous business day and data available from exchange
-        return DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
-
     def write_price_data(
         self,
         frequency: str,
@@ -142,3 +87,37 @@ class DatabaseConnector:
                     data_frame_measurement_name="ohlcv",
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
+
+    def get_last_record_date(self) -> str | None:
+        """
+        Get the last record date from the database.
+
+        :returns: Last record date string if any.
+        """
+
+        with InfluxDBClient(
+            org=INFLUXDB_ORG,
+            url=str(INFLUXDB_URL),
+            token=INFLUXDB_TOKEN,
+        ) as client:
+            # Create query API
+            query_api = client.query_api()
+
+            # Query the last record in the database
+            query_statement = f"""
+                from(bucket:"{INFLUXDB_BUCKET}")
+                |> range(start:0)
+                |> filter(fn: (r) =>
+                    r._measurement == "ohlcv")
+                |> last()
+                """
+
+            # Execute the query
+            tables = query_api.query(query=query_statement, org="apollo")
+
+            # Get the last record date string if any
+            return (
+                (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
+                if tables and tables[0].records
+                else None
+            )

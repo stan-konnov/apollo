@@ -7,6 +7,7 @@ from apollo.connectors.base_api_connector import BaseApiConnector
 from apollo.connectors.database_connector import DatabaseConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
+from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 logger = getLogger(__name__)
 
@@ -65,11 +66,16 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        price_data_needs_update = (
-            self.database_connector.check_if_price_data_needs_update()
+        last_record_date = self.database_connector.get_last_record_date()
+
+        # Re-query prices
+        # if no records are available
+        # or last record date is before previous business day
+        # or last record date is previous business day and data available from exchange
+        price_data_needs_update = last_record_date is None or (
+            DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
         )
 
-        # Re-query prices if needed
         if price_data_needs_update:
             price_data = download(
                 tickers=self.ticker,
