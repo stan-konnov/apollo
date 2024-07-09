@@ -9,6 +9,17 @@ from apollo.utils.types import ParameterSet
 logger = logging.getLogger(__name__)
 
 
+"""
+TODO:
+
+Move environment variables check into parameter optimizer.
+
+Since now multiple components are responsible for checking environment variables.
+
+The responsibility of this class is to only parse parameters file.
+"""
+
+
 class Configuration:
     """
     Configuration class.

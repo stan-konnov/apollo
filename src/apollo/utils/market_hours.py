@@ -26,4 +26,4 @@ def check_if_configured_exchange_is_closed() -> bool:
     configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[EXCHANGE]["hours"]["close"]
 
     # Check if the exchange is closed
-    return configured_exchange_time > configured_exchange_close
+    return configured_exchange_time >= configured_exchange_close
