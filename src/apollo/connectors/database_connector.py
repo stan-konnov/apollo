@@ -69,6 +69,10 @@ class DatabaseConnector:
         * The last available record date is before today.
         * The last available record date is today and exchange is closed.
 
+        If time delta between last record and today is more than 1 day
+
+        If time delta between last record and today is 1 day and exchange is closed
+
         :returns: Boolean indicating if prices need to be re-queried.
         """
 
@@ -107,7 +111,9 @@ class DatabaseConnector:
             return True
 
         # Otherwise, get current date string
-        current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(DEFAULT_DATE_FORMAT)
+        current_date = datetime.now(tz=ZoneInfo("UTC")).strftime(
+            DEFAULT_DATE_FORMAT,
+        )
 
         # Check if the configured exchange is closed
         exchange_is_closed = check_if_configured_exchange_is_closed()
