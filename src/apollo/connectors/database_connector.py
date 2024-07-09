@@ -69,9 +69,11 @@ class DatabaseConnector:
         * The last available record date is before today.
         * The last available record date is today and exchange is closed.
 
-        If time delta between last record and today is more than 1 day
+        Today is not weekend AND
 
-        If time delta between last record and today is 1 day and exchange is closed
+        Time delta between last record and today is more than 1 day OR
+
+        Time delta between last record and today is 1 day AND exchange is closed
 
         :returns: Boolean indicating if prices need to be re-queried.
         """
