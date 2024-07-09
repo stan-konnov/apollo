@@ -20,8 +20,6 @@ TODO:
 3. Better configuration for client to consume env vars. (from_env_file())
 
 4. Comments here.
-
-5. Measurement as class variable.
 """
 
 
@@ -32,16 +30,19 @@ class InfluxDbConnector:
     Acts as a wrapper around the InfluxDB Python client.
     """
 
+    # Measurement name for the price data
+    measurement_name = "ohlcv"
+
     def write_price_data(
         self,
         frequency: str,
         dataframe: pd.DataFrame,
     ) -> None:
         """
-        Write price data to InfluxDB.
+        Write price data to the database.
 
         :param frequency: Frequency of the price data.
-        :param dataframe: Price dataframe to write to InfluxDB.
+        :param dataframe: Price dataframe to write to the database.
         """
 
         with InfluxDBClient(
@@ -59,7 +60,7 @@ class InfluxDbConnector:
                 write_api.write(
                     bucket=str(INFLUXDB_BUCKET),
                     record=dataframe_to_write,
-                    data_frame_measurement_name="ohlcv",
+                    data_frame_measurement_name=self.measurement_name,
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
