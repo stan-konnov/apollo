@@ -101,7 +101,7 @@ class DataAvailabilityHelper:
         now = datetime.now(tz=ZoneInfo("UTC"))
 
         # Check if today is a business day
-        is_business_day = bool(is_busday(now))
+        is_business_day = bool(is_busday(now.date()))
 
         # Get the time in configured exchange
         configured_exchange_time = datetime.now(
