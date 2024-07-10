@@ -10,6 +10,10 @@ from apollo.settings import (
     EXCHANGE_TIME_ZONE_AND_HOURS,
 )
 
+"""
+TODO: avoid string compare and use datetime compare.
+"""
+
 
 class DataAvailabilityHelper:
     """
