@@ -160,7 +160,7 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
-                        r._measurement == "ohlcv"
+                        r._measurement == "{self.measurement}"
                     )
                 |> last()
                 """
