@@ -8,4 +8,6 @@
 
 5. Install pre-commit hooks: `pre-commit install`
 
-6. Add ruff linter extension: `https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff`
+6. Configure environment `cat .env.default | tee .env .env.test`
+
+7. Add ruff linter extension: `https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff`
