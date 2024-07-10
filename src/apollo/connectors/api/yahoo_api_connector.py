@@ -11,7 +11,7 @@ from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 if TYPE_CHECKING:
-    from datetime import date
+    from datetime import datetime
 
 logger = getLogger(__name__)
 
@@ -105,7 +105,8 @@ class YahooApiConnector(BaseApiConnector):
             # Yahoo Finance API sporadically returns an intraday close
             # which is undesirable, since it leads to data inconsistency.
             # If it is the case, we remove the last record from the dataframe.
-            last_queried_date: date = price_data.index[-1]
+            last_queried_datetime: datetime = price_data.index[-1]
+            last_queried_date = last_queried_datetime.date()
 
             price_data_includes_intraday = (
                 DataAvailabilityHelper.check_if_price_data_includes_intraday(
