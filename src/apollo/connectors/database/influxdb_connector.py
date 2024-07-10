@@ -18,8 +18,6 @@ TODO:
 2. Better configuration for client to consume env vars. (from_env_file())
 
 3. Manage intraday prices from Yahoo API.
-
-4. Factor in start and end date if requested.
 """
 
 
@@ -65,12 +63,20 @@ class InfluxDbConnector:
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
-    def read_price_data(self, ticker: str, frequency: str) -> pd.DataFrame:
+    def read_price_data(
+        self,
+        ticker: str,
+        frequency: str,
+        start_date: str | None,
+        end_date: str | None,
+    ) -> pd.DataFrame:
         """
         Read price data from the database.
 
         :param ticker: Ticker of the price data.
         :param frequency: Frequency of the price data.
+        :param start_date: Start date of the price data (inclusive).
+        :param end_date: End date of the price data (exclusive).
         :returns: Price dataframe read from the database.
         """
 
@@ -82,10 +88,15 @@ class InfluxDbConnector:
             # Create query API
             query_api = client.query_api()
 
+            # Define query range
+            query_range = "start:0"
+            if start_date and end_date:
+                query_range = f"start: {start_date}, stop: {end_date}"
+
             # Query the price data from the database
             query_statement = f"""
                 from(bucket:"{INFLUXDB_BUCKET}")
-                |> range(start:0)
+                |> range({query_range})
                 |> filter(fn: (r) =>
                         r.ticker == "{ticker}" and
                         r.frequency == "{frequency}" and
