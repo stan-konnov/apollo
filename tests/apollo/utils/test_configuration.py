@@ -7,35 +7,13 @@ from unittest.mock import patch
 import pytest
 
 from apollo.utils.configuration import Configuration
-from tests.fixtures.env_and_constants import END_DATE, START_DATE, STRATEGY, TICKER
+from tests.fixtures.env_and_constants import STRATEGY
 from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH
 
 if TYPE_CHECKING:
     from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
-
-
-@patch("apollo.utils.configuration.TICKER", None)
-def test__configuration__with_missing_environment_variables() -> None:
-    """
-    Test Configuration construction with missing environment variables.
-
-    Configuration must raise a ValueError when environment variables are missing.
-    """
-
-    exception_message = (
-        "TICKER, STRATEGY, START_DATE, END_DATE, MAX_PERIOD "
-        "variables must be present in environment."
-    )
-
-    with pytest.raises(
-        ValueError,
-        match=exception_message,
-    ) as exception:
-        Configuration()
-
-    assert str(exception.value) == exception_message
 
 
 @patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
@@ -71,7 +49,6 @@ def test__configuration__with_existing_parameter_set_file() -> None:
     """
     Test Configuration construction with existing parameter set file.
 
-    Configuration must properly consume environment variables.
     Configuration must parse the parameter set file into a typed object.
     """
 
@@ -81,11 +58,6 @@ def test__configuration__with_existing_parameter_set_file() -> None:
 
     with Path.open(Path(PARM_FILE_PATH)) as file:
         parameter_set = load(file)
-
-    assert configuration.ticker == TICKER
-    assert configuration.strategy == STRATEGY
-    assert configuration.start_date == START_DATE
-    assert configuration.end_date == END_DATE
 
     assert configuration.parameter_set == parameter_set
     assert type(configuration.parameter_set) is type(parameter_set)
