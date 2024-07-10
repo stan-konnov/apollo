@@ -11,12 +11,6 @@ from apollo.settings import (
     INFLUXDB_URL,
 )
 
-"""
-TODO:
-
-1. Comments in API Connector.
-"""
-
 
 class InfluxDbConnector:
     """

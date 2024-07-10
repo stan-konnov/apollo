@@ -153,10 +153,6 @@ class YahooApiConnector(BaseApiConnector):
         """
         Save dataframe as CSV to storage.
 
-        Use "Ticker-Frequency-Start-End" format for filename.
-        In the current state of things, local file system
-        serves well as storage, move to S3 or database with time.
-
         :param dataframe: Requested Dataframe.
         """
 
