@@ -15,8 +15,6 @@ from apollo.settings import (
 TODO:
 
 1. Comments in API Connector.
-
-2. Manage intraday prices from Yahoo API.
 """
 
 
