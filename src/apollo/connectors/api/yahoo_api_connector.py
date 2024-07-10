@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from yfinance import download
@@ -8,6 +9,9 @@ from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 logger = getLogger(__name__)
 
@@ -95,6 +99,24 @@ class YahooApiConnector(BaseApiConnector):
                 raise EmptyApiResponseError(
                     "API response returned empty dataframe.",
                 ) from None
+
+            # Please move me to helper
+
+            # At this point in time,
+            # if prices were requested intraday
+            # Yahoo Finance API sporadically returns an intraday close
+            # which is undesirable, since it leads to data inconsistency.
+            # If it is the case, we remove the last record from the dataframe.
+            last_queried_date: datetime = price_data.index[-1]
+
+            price_data_includes_intraday = (
+                DataAvailabilityHelper.check_if_price_data_includes_intraday(
+                    last_queried_date,
+                )
+            )
+
+            if price_data_includes_intraday:
+                price_data.drop(index=last_queried_date, inplace=True)
 
             self._prep_dataframe(price_data)
             self._save_dataframe(price_data)

@@ -61,7 +61,7 @@ class DataAvailabilityHelper:
 
         # Check if the data is available from the exchange
         data_available_from_exchange = (
-            DataAvailabilityHelper.check_if_data_available_from_exchange(now)
+            DataAvailabilityHelper.check_if_price_data_available_from_exchange(now)
         )
 
         # Re-query prices
@@ -72,7 +72,7 @@ class DataAvailabilityHelper:
         )
 
     @staticmethod
-    def check_if_data_available_from_exchange(now: datetime) -> bool:
+    def check_if_price_data_available_from_exchange(now: datetime) -> bool:
         """
         Check if price data is available from the exchange.
 
@@ -96,3 +96,40 @@ class DataAvailabilityHelper:
         # Check if it is after hours on business day
         # assuming that, therefore, data is available from exchange
         return is_business_day and configured_exchange_time >= configured_exchange_close
+
+    @staticmethod
+    def check_if_price_data_includes_intraday(last_queried_date: datetime) -> bool:
+        """
+        Check if queried price data includes intraday.
+
+        :param last_queried_date: Last queried date in string format.
+        :returns: Boolean indicating if queried price data includes intraday.
+        """
+
+        now = datetime.now(tz=ZoneInfo("UTC"))
+
+        # Check if today is a business day
+        is_business_day = bool(is_busday(now))
+
+        # Get the time in configured exchange
+        configured_exchange_time = datetime.now(
+            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        ).strftime(DEFAULT_TIME_FORMAT)
+
+        # Get configured exchange opening hours
+        configured_exchange_open = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"][
+            "open"
+        ]
+
+        # Get configured exchange closing hours
+        configured_exchange_close = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)][
+            "hours"
+        ]["close"]
+
+        # Check if now is within trading hours on business day
+        return last_queried_date.date() == now.date() and (
+            is_business_day
+            and configured_exchange_open
+            <= configured_exchange_time
+            <= configured_exchange_close
+        )
