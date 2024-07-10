@@ -1,5 +1,9 @@
 from os import curdir
 from pathlib import Path
+from shutil import rmtree
+from typing import Generator
+
+import pytest
 
 from apollo.settings import (
     YahooApiFrequencies,
@@ -36,8 +40,8 @@ BRES_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_results")
 OPTP_DIR = Path(f"{TEMP_TEST_DIR}/parameters_opt")
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def _clean_data() -> Generator[None, None, None]:
-#     """Clean temp test data directory after tests."""
-#     yield
-#     rmtree(TEMP_TEST_DIR)  # noqa: ERA001
+@pytest.fixture(scope="session", autouse=True)
+def _clean_data() -> Generator[None, None, None]:
+    """Clean temp test data directory after tests."""
+    yield
+    rmtree(TEMP_TEST_DIR)
