@@ -1,9 +1,10 @@
+from datetime import date
+
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from apollo.settings import (
-    DEFAULT_DATE_FORMAT,
     INFLUXDB_BUCKET,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
@@ -144,11 +145,11 @@ class InfluxDbConnector:
             # Execute the query and return
             return dataframe
 
-    def get_last_record_date(self) -> str | None:
+    def get_last_record_date(self) -> date | None:
         """
         Get the last record date from the database.
 
-        :returns: Last record date string or None if no records are found.
+        :returns: Last record date or None if no records are found.
         """
 
         with InfluxDBClient(**self.client_parameters) as client:
@@ -170,7 +171,7 @@ class InfluxDbConnector:
 
             # Get the last record date string if any
             return (
-                (tables[0].records[0]).get_time().strftime(DEFAULT_DATE_FORMAT)
+                (tables[0].records[0]).get_time().date()
                 if tables and tables[0].records
                 else None
             )
