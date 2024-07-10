@@ -15,9 +15,7 @@ TODO:
 
 1. Comments in API Connector.
 
-2. Better configuration for client to consume env vars. (from_env_file())
-
-3. Manage intraday prices from Yahoo API.
+2. Manage intraday prices from Yahoo API.
 """
 
 
