@@ -34,23 +34,20 @@ class DataAvailabilityHelper:
         :returns: Boolean indicating if prices need to be re-queried.
         """
 
-        # Get current point in time
-        now = datetime.now(tz=ZoneInfo("UTC"))
+        # Get current date
+        now_date = datetime.now(tz=ZoneInfo("UTC")).date()
 
         # Get previous business day
-        previous_business_day = now - timedelta(days=1)
+        previous_business_day = now_date - timedelta(days=1)
 
         # If minus one day offset falls on weekend
         # loop back until we get to the previous business day
-        while not is_busday(previous_business_day.date()):
+        while not is_busday(previous_business_day):
             previous_business_day -= timedelta(days=1)
-
-        # Get date from previous business day
-        previous_business_day = previous_business_day.date()
 
         # Check if the data is available from the exchange
         data_available_from_exchange = (
-            DataAvailabilityHelper.check_if_price_data_available_from_exchange(now)
+            DataAvailabilityHelper.check_if_price_data_available_from_exchange(now_date)
         )
 
         # Re-query prices
@@ -61,16 +58,16 @@ class DataAvailabilityHelper:
         )
 
     @staticmethod
-    def check_if_price_data_available_from_exchange(now: datetime) -> bool:
+    def check_if_price_data_available_from_exchange(now_date: date) -> bool:
         """
         Check if price data is available from the exchange.
 
-        :param now: Current point in time.
+        :param now_date: Current date.
         :returns: Boolean indicating if data available from exchange.
         """
 
         # Check if today is a business day
-        is_business_day = bool(is_busday(now.date()))
+        is_business_day = bool(is_busday(now_date))
 
         # Get the time in configured exchange
         configured_exchange_time = datetime.now(
@@ -88,7 +85,7 @@ class DataAvailabilityHelper:
         return is_business_day and configured_exchange_time >= configured_exchange_close
 
     @staticmethod
-    def check_if_price_data_includes_intraday(last_queried_date: datetime) -> bool:
+    def check_if_price_data_includes_intraday(last_queried_date: date) -> bool:
         """
         Check if queried price data includes intraday.
 
@@ -97,10 +94,10 @@ class DataAvailabilityHelper:
         """
 
         # Get current point in time
-        now = datetime.now(tz=ZoneInfo("UTC"))
+        now_date = datetime.now(tz=ZoneInfo("UTC")).date()
 
         # Check if today is a business day
-        is_business_day = bool(is_busday(now.date()))
+        is_business_day = bool(is_busday(now_date))
 
         # Get the time in configured exchange
         configured_exchange_time = datetime.now(
@@ -119,8 +116,9 @@ class DataAvailabilityHelper:
             DEFAULT_TIME_FORMAT,
         ).time()
 
-        # Check if now is within trading hours on business day
-        return last_queried_date.date() == now.date() and (
+        # Check if last queried date is today
+        # and if the data was queried during exchange hours
+        return last_queried_date == now_date and (
             is_business_day
             and configured_exchange_open
             <= configured_exchange_time
