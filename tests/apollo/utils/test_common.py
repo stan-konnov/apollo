@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from numpy import datetime64
 
@@ -14,16 +16,15 @@ def test__to_default_date_string__with_proper_inputs() -> None:
     assert to_default_date_string(datetime64("2021-01-01")) == "2021-01-01"
 
 
-def test__ensure_environment_is_configured__for_correctly_checking_env_variables(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+@patch("apollo.utils.common.TICKER", None)
+def test__ensure_environment_is_configured__for_correctly_checking_env_variables() -> (
+    None
+):
     """
     Test ensure_environment_is_configured for properly checking env variables.
 
     Function must raise an exception if any of the required variables are not set.
     """
-
-    monkeypatch.setenv("TICKER", "")
 
     exception_message = str(
         "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
