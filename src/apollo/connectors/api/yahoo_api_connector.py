@@ -100,8 +100,6 @@ class YahooApiConnector(BaseApiConnector):
                     "API response returned empty dataframe.",
                 ) from None
 
-            # Please move me to helper
-
             # At this point in time,
             # if prices were requested intraday
             # Yahoo Finance API sporadically returns an intraday close
