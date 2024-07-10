@@ -32,6 +32,19 @@ class InfluxDbConnector:
     # for the price data
     measurement = "ohlcv"
 
+    def __init__(self) -> None:
+        """
+        Construct InfluxDB Connector.
+
+        Define InfluxDB Client initialization parameters.
+        """
+
+        self.client_parameters = {
+            "org": INFLUXDB_ORG,
+            "url": str(INFLUXDB_URL),
+            "token": INFLUXDB_TOKEN,
+        }
+
     def write_price_data(
         self,
         frequency: str,
@@ -44,11 +57,7 @@ class InfluxDbConnector:
         :param dataframe: Price dataframe to write to the database.
         """
 
-        with InfluxDBClient(
-            org=INFLUXDB_ORG,
-            url=str(INFLUXDB_URL),
-            token=INFLUXDB_TOKEN,
-        ) as client:
+        with InfluxDBClient(**self.client_parameters) as client:
             # Copy and add frequency to the
             # dataframe to use as a tag value
             dataframe_to_write = dataframe.copy()
@@ -67,8 +76,8 @@ class InfluxDbConnector:
         self,
         ticker: str,
         frequency: str,
-        start_date: str | None,
-        end_date: str | None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> pd.DataFrame:
         """
         Read price data from the database.
@@ -80,11 +89,7 @@ class InfluxDbConnector:
         :returns: Price dataframe read from the database.
         """
 
-        with InfluxDBClient(
-            org=INFLUXDB_ORG,
-            url=str(INFLUXDB_URL),
-            token=INFLUXDB_TOKEN,
-        ) as client:
+        with InfluxDBClient(**self.client_parameters) as client:
             # Create query API
             query_api = client.query_api()
 
@@ -148,11 +153,7 @@ class InfluxDbConnector:
         :returns: Last record date string or None if no records are found.
         """
 
-        with InfluxDBClient(
-            org=INFLUXDB_ORG,
-            url=str(INFLUXDB_URL),
-            token=INFLUXDB_TOKEN,
-        ) as client:
+        with InfluxDBClient(**self.client_parameters) as client:
             # Create query API
             query_api = client.query_api()
 
