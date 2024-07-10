@@ -93,7 +93,7 @@ class DataAvailabilityHelper:
         :returns: Boolean indicating if queried price data includes intraday.
         """
 
-        # Get current point in time
+        # Get current date
         now_date = datetime.now(tz=ZoneInfo("UTC")).date()
 
         # Check if today is a business day
