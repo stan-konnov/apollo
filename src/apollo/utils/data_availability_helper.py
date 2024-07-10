@@ -75,6 +75,7 @@ class DataAvailabilityHelper:
             last_record_date == previous_business_day and data_available_from_exchange
         )
 
+    # I can be adapted to replace includes intraday
     @staticmethod
     def check_if_price_data_available_from_exchange(now: datetime) -> bool:
         """
