@@ -122,7 +122,7 @@ def test__check_if_price_data_needs_update__with_last_record_before_prev_b_day_w
     """
     Test check_if_price_data_needs_update with last record before previous business day.
 
-    And current date is weekend = data should be available.
+    And current date is weekend = data (for Friday) should be available.
 
     Function should return True.
     """
@@ -161,7 +161,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_awe() ->
 
 # Assume today date is Monday, 2024-07-15
 # Assume current time is after 16:00 ET >= 20:00 UTC
-@freeze_time("2024-07-15 20:00")
+@freeze_time("2024-07-15 21:00")
 def test__check_if_price_data_needs_update__with_last_record_prev_b_day_awe_ah() -> (
     None
 ):
@@ -170,7 +170,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_awe_ah()
 
     And current date is business day after weekend, after close = data available.
 
-    Function should return False.
+    Function should return True.
     """
 
     # Assume last available record date is Friday, 2024-07-12
