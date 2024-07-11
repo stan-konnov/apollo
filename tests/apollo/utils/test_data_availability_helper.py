@@ -69,3 +69,46 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_id() -> 
     )
 
     assert result is False
+
+
+# Assume today date is Saturday, 2024-07-13
+@freeze_time("2024-07-13")
+def test__check_if_price_data_needs_update__with_last_record_prev_b_day_we() -> None:
+    """
+    Test check_if_price_data_needs_update with last record being previous business day.
+
+    And current date is weekend = data should not be available.
+
+    Function should return False.
+    """
+
+    # Assume last available record date is Friday, 2024-07-12
+    last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
+
+    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+        last_record_date,
+    )
+
+    assert result is False
+
+
+# Assume today date is Saturday, 2024-07-13
+# Assume current time is after 16:00 ET >= 20:00 UTC
+@freeze_time("2024-07-13, 21:00:00")
+def test__check_if_price_data_needs_update__with_last_record_prev_b_day_we_ah() -> None:
+    """
+    Test check_if_price_data_needs_update with last record being previous business day.
+
+    And current date is weekend after exchange closed = data should not be available.
+
+    Function should return False.
+    """
+
+    # Assume last available record date is Friday, 2024-07-12
+    last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
+
+    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+        last_record_date,
+    )
+
+    assert result is False
