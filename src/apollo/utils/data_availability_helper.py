@@ -18,6 +18,8 @@ class DataAvailabilityHelper:
     based on provided last record date and current point in time.
 
     Determines if queried price data includes intraday values that should be avoided.
+
+    NOTE: This does not yet factor in exchange holidays or partial trading days.
     """
 
     @staticmethod
