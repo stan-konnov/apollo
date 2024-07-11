@@ -28,7 +28,7 @@ def test__check_if_price_data_needs_update__with_last_record_before_prev_b_day()
 
 
 # Assume today date is Friday, 2024-07-12
-# Assume current time is after 16:00 ET = 20:00 UTC
+# Assume current time is after 16:00 ET >= 20:00 UTC
 @freeze_time("2024-07-12 21:00:00")
 def test__check_if_price_data_needs_update__with_last_record_prev_b_day_ah() -> None:
     """
