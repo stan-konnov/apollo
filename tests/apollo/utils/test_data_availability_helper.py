@@ -40,7 +40,7 @@ def test__check_if_price_data_needs_update__with_last_record_being_prev_b_day() 
     """
 
     # Assume last available record date is Thursday, 2024-07-11
-    last_record_date = datetime(2024, 7, 1, tzinfo=ZoneInfo("UTC")).date()
+    last_record_date = datetime(2024, 7, 11, tzinfo=ZoneInfo("UTC")).date()
 
     result = DataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
