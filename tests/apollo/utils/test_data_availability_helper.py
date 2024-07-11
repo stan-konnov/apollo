@@ -210,11 +210,31 @@ def test__check_if_price_data_includes_intraday__with_last_query_after_hours() -
     """
     Test check_if_price_data_includes_intraday with last query today after hours.
 
-    Function should return True.
+    Function should return False.
     """
 
     # Assume last queried record date is Monday, 2024-07-15
     last_queried_date = datetime(2024, 7, 15, tzinfo=ZoneInfo("UTC")).date()
+
+    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+        last_queried_date,
+    )
+
+    assert result is False
+
+
+# Assume today date is Monday, 2024-07-15
+# Assume current time is trading hours 13:00 ET = 17:00 UTC
+@freeze_time("2024-07-15 17:00")
+def test__check_if_price_data_includes_intraday__with_last_query_before_today() -> None:
+    """
+    Test check_if_price_data_includes_intraday with last query before today.
+
+    Function should return False.
+    """
+
+    # Assume last queried record date is Friday, 2024-07-12
+    last_queried_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
     result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
