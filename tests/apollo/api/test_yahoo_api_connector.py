@@ -62,7 +62,6 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
     )
 
     api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.write_price_data.return_value = None
     api_connector.database_connector.get_last_record_date.return_value = None
 
     price_dataframe = api_connector.request_or_read_prices()
@@ -74,7 +73,7 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
 
 
 @pytest.mark.usefixtures("yahoo_api_response", "dataframe")
-def test__request_or_read_prices__with_valid_parameters_and_data_present(
+def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refresh(
     dataframe: pd.DataFrame,
 ) -> None:
     """
@@ -83,7 +82,7 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present(
     And data present in the database and needs no refresh.
 
     API Connector must call InfluxDB connector to get last record date.
-    API Connector must call InfluxDB connector to write price data.
+    API Connector must call InfluxDB connector to read price data.
     API Connector must return a pandas Dataframe with price data.
     """
 
@@ -105,6 +104,42 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present(
     api_connector.database_connector.read_price_data.assert_called_once()
 
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
+
+
+@pytest.mark.usefixtures("yahoo_api_response", "dataframe")
+def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refresh(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test request_or_read_prices method with valid parameters.
+
+    And data present in the database and needs refresh.
+
+    API Connector must call InfluxDB connector to get last record date.
+    API Connector must call InfluxDB connector to write price data.
+    API Connector must return a pandas Dataframe with price data.
+    """
+
+    api_connector = YahooApiConnector(
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
+    )
+
+    last_queried_datetime: datetime = dataframe.index[-1]
+    last_queried_date = last_queried_datetime.date()
+
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.get_last_record_date.return_value = (
+        last_queried_date
+    )
+
+    price_dataframe = api_connector.request_or_read_prices()
+
+    api_connector.database_connector.get_last_record_date.assert_called_once()
+    api_connector.database_connector.write_price_data.assert_called_once()
+
+    assert price_dataframe is not None
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
@@ -142,32 +177,6 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
 
     assert api_connector.request_arguments["start"] == START_DATE
     assert api_connector.request_arguments["end"] == END_DATE
-
-
-@pytest.mark.usefixtures("yahoo_api_response")
-def test__request_or_read_prices__when_prices_already_requested_before() -> None:
-    """
-    Test request_or_read_prices when prices have already been requested before.
-
-    API Connector must return a pandas Dataframe with price data read from file.
-    API Connector must reindex the dataframe to date column.
-    The type of index column must be datetime.
-    """
-
-    api_connector = YahooApiConnector(
-        ticker=TICKER,
-        start_date=START_DATE,
-        end_date=END_DATE,
-    )
-
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.write_price_data.return_value = None
-    api_connector.database_connector.get_last_record_date.return_value = None
-    api_connector.database_connector.read_price_data.return_value = pd.DataFrame()
-
-    api_connector.request_or_read_prices()
-
-    api_connector.database_connector.get_last_record_date.assert_called_once()
 
 
 def test__request_or_read_prices__with_invalid_date_format() -> None:
