@@ -18,13 +18,12 @@ that adjusted close prices are not retroactively updated with new data
 
 Therefore, this should be handled!
 
-One obvious solution is to introduce retention policy (that influx supports)
+We need a mechanism to flush the database and re-write the data.
 
-Say, 1 week.
+Perhaps, flushing the series for particular ticker before/on the date
+of stock split or dividend payment and re-writing the data.
 
-Another way is to flush data on corporate events (this will get complex really fast)
-
-Anyhow, start with retention policy and see how it goes
+Also, handle timeout on the first connection to the database.
 """
 
 
