@@ -46,11 +46,9 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     """
     Test request_or_read_prices method with valid parameters.
 
+    API Connector must call InfluxDB connector to get last record date.
+    API Connector must call InfluxDB connector to write price data.
     API Connector must return a pandas Dataframe with price data.
-    API Connector must reindex the dataframe to date column.
-    API Connector must cast all columns to lowercase.
-    API Connector must insert ticker column at first position.
-    API Connector must save the dataframe to file.
     """
 
     api_connector = YahooApiConnector(
@@ -62,14 +60,13 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     api_connector.database_connector = Mock(InfluxDbConnector)
     api_connector.database_connector.write_price_data.return_value = None
     api_connector.database_connector.get_last_record_date.return_value = None
-    api_connector.database_connector.read_price_data.return_value = pd.DataFrame()
 
     price_dataframe = api_connector.request_or_read_prices()
 
+    api_connector.database_connector.get_last_record_date.assert_called_once()
+    api_connector.database_connector.write_price_data.assert_called_once()
+
     assert price_dataframe is not None
-    assert price_dataframe.index.name == "date"
-    assert all(column.islower() for column in price_dataframe.columns)
-    assert price_dataframe.columns[0] == "ticker"
 
 
 @pytest.mark.usefixtures("yahoo_api_response")

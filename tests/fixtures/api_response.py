@@ -1,10 +1,11 @@
+from datetime import datetime
 from typing import Generator
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
-from apollo.settings import YahooApiFrequencies
+from apollo.settings import DEFAULT_DATE_FORMAT, YahooApiFrequencies
 
 
 @pytest.fixture(name="yahoo_api_response", scope="session")
@@ -19,7 +20,10 @@ def _yahoo_api_response() -> Generator[None, None, None]:
     ) -> pd.DataFrame:
         raw_yahoo_api_response = pd.DataFrame(
             {
-                "Date": [start, end],
+                "Date": [
+                    datetime.strptime(start, DEFAULT_DATE_FORMAT),
+                    datetime.strptime(end, DEFAULT_DATE_FORMAT),
+                ],
                 "Open": [100.0, 101.0],
                 "High": [105.0, 106.0],
                 "Low": [95.0, 96.0],

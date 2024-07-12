@@ -22,7 +22,7 @@ def test__get_last_record_date__with_no_data_available() -> None:
     """
     Test get_last_record_date when no data is available.
 
-    Function should return None.
+    InfluxDbConnector should return None.
     """
 
     influxdb_connector = InfluxDbConnector()
@@ -40,7 +40,7 @@ def test__get_last_record_date__with_data_available(
     """
     Test get_last_record_date when data is available.
 
-    Function should return last available record date.
+    InfluxDbConnector should return last available record date.
     """
 
     control_last_record: datetime = dataframe.index[-1]
@@ -133,7 +133,7 @@ def test__read_price_data__for_reading_all_available_data(
     """
     Test read_price_data for reading all available data.
 
-    Function should return all available data in the database.
+    InfluxDbConnector should return all available data in the database.
     """
 
     frequency = YahooApiFrequencies.ONE_DAY.value
@@ -169,7 +169,7 @@ def test__read_price_data__for_reading_data_slice(
     """
     Test read_price_data for reading data slice.
 
-    Function should return data slice from the database.
+    InfluxDbConnector should return data slice from the database.
     """
 
     start_date = "2007-01-10"
