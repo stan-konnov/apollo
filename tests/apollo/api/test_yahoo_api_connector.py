@@ -13,6 +13,7 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
 )
 from tests.fixtures.env_and_constants import END_DATE, START_DATE, TICKER
+from tests.fixtures.window_size_and_dataframe import SameDataframe
 
 
 @pytest.mark.usefixtures("empty_yahoo_api_response")
@@ -259,7 +260,9 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
     api_connector.database_connector.get_last_record_date.assert_called_once()
     api_connector.database_connector.write_price_data.assert_called_once_with(
         frequency=api_connector.frequency,
-        dataframe=expected_dataframe_to_write,
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        dataframe=SameDataframe(expected_dataframe_to_write),
     )
 
     assert price_dataframe is not None
