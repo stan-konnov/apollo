@@ -134,6 +134,7 @@ def test__read_price_data__for_reading_all_available_data(
     Test read_price_data for reading all available data.
 
     InfluxDbConnector should return all available data in the database.
+    InfluxDbConnector should remove influx columns.
     """
 
     frequency = YahooApiFrequencies.ONE_DAY.value
@@ -156,6 +157,9 @@ def test__read_price_data__for_reading_all_available_data(
         frequency=frequency,
     )
 
+    assert "table" not in control_dataframe.columns
+    assert "result" not in control_dataframe.columns
+
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
@@ -170,6 +174,7 @@ def test__read_price_data__for_reading_data_slice(
     Test read_price_data for reading data slice.
 
     InfluxDbConnector should return data slice from the database.
+    InfluxDbConnector should remove influx columns.
     """
 
     start_date = "2007-01-10"
@@ -197,6 +202,9 @@ def test__read_price_data__for_reading_data_slice(
         start_date=start_date,
         end_date=end_date,
     )
+
+    assert "table" not in control_dataframe.columns
+    assert "result" not in control_dataframe.columns
 
     control_dataframe = control_dataframe[dataframe.columns]
 
