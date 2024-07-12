@@ -31,7 +31,28 @@ services:
       - influxdb_data_container:/var/lib/influxdb2
       - influxdb_conf_container:/etc/influxdb2
 
+  influxdb_test:
+    container_name: apollo_influxdb_test
+    image: influxdb:latest
+    restart: unless-stopped
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: apollo-test
+      DOCKER_INFLUXDB_INIT_PASSWORD: apollo-test-influxdb-password
+      DOCKER_INFLUXDB_INIT_ORG: apollo-test
+      DOCKER_INFLUXDB_INIT_BUCKET: prices
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: apollo-test-influxdb-auth-token
+    ports:
+      - 8087:8086
+    volumes:
+      - influxdb_test_data_container:/var/lib/influxdb2
+      - influxdb_test_conf_container:/etc/influxdb2
+
 volumes:
   postgres_data_container:
+
   influxdb_data_container:
   influxdb_conf_container:
+
+  influxdb_test_data_container:
+  influxdb_test_conf_container:
