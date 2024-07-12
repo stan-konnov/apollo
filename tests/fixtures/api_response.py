@@ -31,7 +31,7 @@ def _yahoo_api_response() -> Generator[None, None, None]:
 
         return raw_yahoo_api_response
 
-    with patch("apollo.api.yahoo_api_connector.download", download):
+    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
         yield
 
 
@@ -47,5 +47,5 @@ def _empty_yahoo_api_response() -> Generator[None, None, None]:
     ) -> pd.DataFrame:
         return pd.DataFrame()
 
-    with patch("apollo.api.yahoo_api_connector.download", download):
+    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
         yield

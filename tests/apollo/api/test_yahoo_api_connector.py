@@ -1,24 +1,23 @@
-from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock
 
 import pandas as pd
 import pytest
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
 )
 from tests.fixtures.env_and_constants import END_DATE, START_DATE, TICKER
-from tests.fixtures.files_and_directories import DATA_DIR, DATA_FILE
 
 
 @pytest.mark.usefixtures("empty_yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__with_empty_api_response() -> None:
     """
     Test request_or_read_prices method with empty yahoo API response.
 
+    API Connector must call InfluxDB connector to get last record date.
     API Connector must raise am EmptyApiResponseError when API response is empty.
     """
 
@@ -28,17 +27,21 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
         end_date=END_DATE,
     )
 
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.get_last_record_date.return_value = None
+
     with pytest.raises(
         EmptyApiResponseError,
         match="API response returned empty dataframe.",
     ) as exception:
         api_connector.request_or_read_prices()
 
+    api_connector.database_connector.get_last_record_date.assert_called_once()
+
     assert str(exception.value) == "API response returned empty dataframe."
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
 def test__request_or_read_prices__with_valid_parameters() -> None:
     """
     Test request_or_read_prices method with valid parameters.
@@ -56,13 +59,17 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
         end_date=END_DATE,
     )
 
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.write_price_data.return_value = None
+    api_connector.database_connector.get_last_record_date.return_value = None
+    api_connector.database_connector.read_price_data.return_value = pd.DataFrame()
+
     price_dataframe = api_connector.request_or_read_prices()
 
     assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
     assert all(column.islower() for column in price_dataframe.columns)
     assert price_dataframe.columns[0] == "ticker"
-    assert Path.exists(DATA_FILE)
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
@@ -102,7 +109,7 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
     assert api_connector.request_arguments["end"] == END_DATE
 
 
-@patch("apollo.api.yahoo_api_connector.DATA_DIR", DATA_DIR)
+@pytest.mark.usefixtures("yahoo_api_response")
 def test__request_or_read_prices__when_prices_already_requested_before() -> None:
     """
     Test request_or_read_prices when prices have already been requested before.
@@ -118,14 +125,14 @@ def test__request_or_read_prices__when_prices_already_requested_before() -> None
         end_date=END_DATE,
     )
 
-    price_dataframe = api_connector.request_or_read_prices()
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.write_price_data.return_value = None
+    api_connector.database_connector.get_last_record_date.return_value = None
+    api_connector.database_connector.read_price_data.return_value = pd.DataFrame()
 
-    price_data_file = pd.read_csv(DATA_FILE, index_col=0)
-    price_data_file.index = pd.to_datetime(price_data_file.index)
+    api_connector.request_or_read_prices()
 
-    pd.testing.assert_frame_equal(price_data_file, price_dataframe)
-    assert price_dataframe.index.name == price_data_file.index.name
-    assert price_dataframe.index.dtype == price_data_file.index.dtype
+    api_connector.database_connector.get_last_record_date.assert_called_once()
 
 
 def test__request_or_read_prices__with_invalid_date_format() -> None:
