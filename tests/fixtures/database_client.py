@@ -42,7 +42,7 @@ def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
     delete_api.delete(
         start,
         stop,
-        '_measurement="test_measurement"',
+        '_measurement="ohlcv"',
         bucket=str(INFLUXDB_BUCKET),
         org=INFLUXDB_ORG,
     )
