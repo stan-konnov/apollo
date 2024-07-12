@@ -159,3 +159,45 @@ def test__read_price_data__for_reading_all_available_data(
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
+
+
+@pytest.mark.usefixtures("influxdb_client", "flush_influxdb_bucket", "dataframe")
+def test__read_price_data__for_reading_data_slice(
+    influxdb_client: InfluxDBClient,
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test read_price_data for reading data slice.
+
+    Function should return data slice from the database.
+    """
+
+    start_date = "2007-01-10"
+    end_date = "2007-01-20"
+
+    frequency = YahooApiFrequencies.ONE_DAY.value
+    dataframe["frequency"] = frequency
+
+    with influxdb_client.write_api(write_options=SYNCHRONOUS) as write_api:
+        write_api.write(
+            bucket=str(INFLUXDB_BUCKET),
+            record=dataframe,
+            data_frame_measurement_name=INFLUXDB_MEASUREMENT,
+            data_frame_tag_columns=["ticker", "frequency"],
+        )
+
+    dataframe.drop(columns=["frequency"], inplace=True)
+    dataframe = dataframe.loc[start_date:end_date]
+
+    influxdb_connector = InfluxDbConnector()
+
+    control_dataframe = influxdb_connector.read_price_data(
+        ticker=str(TICKER),
+        frequency=frequency,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    control_dataframe = control_dataframe[dataframe.columns]
+
+    pd.testing.assert_frame_equal(dataframe, control_dataframe)
