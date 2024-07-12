@@ -123,3 +123,39 @@ def test__write_price_data__for_correctly_writing_dataframe(
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
+
+
+@pytest.mark.usefixtures("influxdb_client", "flush_influxdb_bucket", "dataframe")
+def test__read_price_data__for_reading_all_available_data(
+    influxdb_client: InfluxDBClient,
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test read_price_data for reading all available data.
+
+    Function should return all available data in the database.
+    """
+
+    frequency = YahooApiFrequencies.ONE_DAY.value
+    dataframe["frequency"] = frequency
+
+    with influxdb_client.write_api(write_options=SYNCHRONOUS) as write_api:
+        write_api.write(
+            bucket=str(INFLUXDB_BUCKET),
+            record=dataframe,
+            data_frame_measurement_name=INFLUXDB_MEASUREMENT,
+            data_frame_tag_columns=["ticker", "frequency"],
+        )
+
+    dataframe.drop(columns=["frequency"], inplace=True)
+
+    influxdb_connector = InfluxDbConnector()
+
+    control_dataframe = influxdb_connector.read_price_data(
+        ticker=str(TICKER),
+        frequency=frequency,
+    )
+
+    control_dataframe = control_dataframe[dataframe.columns]
+
+    pd.testing.assert_frame_equal(dataframe, control_dataframe)
