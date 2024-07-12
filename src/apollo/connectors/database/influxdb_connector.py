@@ -12,6 +12,21 @@ from apollo.settings import (
     INFLUXDB_URL,
 )
 
+"""
+TODO: since influx data points are immutable, it means
+that adjusted close prices are not retroactively updated with new data
+
+Therefore, this should be handled!
+
+One obvious solution is to introduce retention policy (that influx supports)
+
+Say, 1 week.
+
+Another way is to flush data on corporate events (this will get complex really fast)
+
+Anyhow, start with retention policy and see how it goes
+"""
+
 
 class InfluxDbConnector:
     """
