@@ -148,6 +148,7 @@ def test__request_or_read_prices__with_max_period() -> None:
     Test request_or_read_prices method with max_period.
 
     API Connector must construct request arguments with period=max.
+    API Connector must call InfluxDB connector without start and end date.
     """
 
     api_connector = YahooApiConnector(
@@ -155,6 +156,18 @@ def test__request_or_read_prices__with_max_period() -> None:
         start_date=START_DATE,
         end_date=END_DATE,
         max_period=True,
+    )
+
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+        tz=ZoneInfo("UTC"),
+    ).date()
+
+    api_connector.request_or_read_prices()
+
+    api_connector.database_connector.read_price_data.assert_called_once_with(
+        ticker=TICKER,
+        frequency=api_connector.frequency,
     )
 
     assert api_connector.request_arguments["period"] == "max"
@@ -166,6 +179,7 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
     Test request_or_read_prices method with start and end date.
 
     API Connector must construct request arguments with start and end date.
+    API Connector must call InfluxDB connector with start and end date.
     """
 
     api_connector = YahooApiConnector(
@@ -173,6 +187,20 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
         start_date=START_DATE,
         end_date=END_DATE,
         max_period=False,
+    )
+
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+        tz=ZoneInfo("UTC"),
+    ).date()
+
+    api_connector.request_or_read_prices()
+
+    api_connector.database_connector.read_price_data.assert_called_once_with(
+        ticker=TICKER,
+        frequency=api_connector.frequency,
+        start_date=START_DATE,
+        end_date=END_DATE,
     )
 
     assert api_connector.request_arguments["start"] == START_DATE
