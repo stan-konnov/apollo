@@ -30,7 +30,8 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
 
     exception_message = str(
         "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
-        "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, INFLUXDB_URL "
+        "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, "
+        "INFLUXDB_URL, INFLUXDB_MEASUREMENT "
         "environment variables must be set.",
     )
 

@@ -6,6 +6,7 @@ from apollo.settings import (
     END_DATE,
     EXCHANGE,
     INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
@@ -49,10 +50,12 @@ def ensure_environment_is_configured() -> None:
             INFLUXDB_ORG,
             INFLUXDB_TOKEN,
             INFLUXDB_URL,
+            INFLUXDB_MEASUREMENT,
         ]
     ):
         raise ValueError(
             "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
-            "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, INFLUXDB_URL "
+            "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, "
+            "INFLUXDB_URL, INFLUXDB_MEASUREMENT "
             "environment variables must be set.",
         )

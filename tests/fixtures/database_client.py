@@ -11,7 +11,7 @@ from apollo.settings import (
 )
 
 
-@pytest.fixture(name="influxdb_client", scope="module")
+@pytest.fixture(name="influxdb_client", scope="session")
 def influxdb_client() -> Generator[InfluxDBClient, None, None]:
     """Initialize InfluxDB client to use in tests."""
 
@@ -36,13 +36,10 @@ def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
 
     delete_api = influxdb_client.delete_api()
 
-    start = "1970-01-01T00:00:00Z"
-    stop = "2100-01-01T00:00:00Z"
-
     delete_api.delete(
-        start,
-        stop,
-        '_measurement="ohlcv"',
+        start="1970-01-01T00:00:00Z",
+        stop="2100-01-01T00:00:00Z",
+        predicate='_measurement="ohlcv"',
         bucket=str(INFLUXDB_BUCKET),
         org=INFLUXDB_ORG,
     )

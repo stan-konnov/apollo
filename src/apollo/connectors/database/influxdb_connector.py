@@ -6,6 +6,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 from apollo.settings import (
     INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
@@ -18,10 +19,6 @@ class InfluxDbConnector:
 
     Acts as a wrapper around the InfluxDB Python client.
     """
-
-    # Measurement name
-    # for the price data
-    measurement = "ohlcv"
 
     def __init__(self) -> None:
         """
@@ -59,7 +56,7 @@ class InfluxDbConnector:
                 write_api.write(
                     bucket=str(INFLUXDB_BUCKET),
                     record=dataframe_to_write,
-                    data_frame_measurement_name=self.measurement,
+                    data_frame_measurement_name=INFLUXDB_MEASUREMENT,
                     data_frame_tag_columns=["ticker", "frequency"],
                 )
 
@@ -96,7 +93,7 @@ class InfluxDbConnector:
                 |> filter(fn: (r) =>
                         r.ticker == "{ticker}" and
                         r.frequency == "{frequency}" and
-                        r._measurement == "{self.measurement}"
+                        r._measurement == "{INFLUXDB_MEASUREMENT}"
                     )
                 |> pivot(
                         rowKey: ["_time"],
@@ -153,7 +150,7 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
-                        r._measurement == "{self.measurement}"
+                        r._measurement == "{INFLUXDB_MEASUREMENT}"
                     )
                 |> last()
                 """

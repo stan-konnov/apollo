@@ -31,6 +31,7 @@ INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
 INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
 INFLUXDB_URL = getenv("INFLUXDB_URL", None)
 INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN", None)
+INFLUXDB_MEASUREMENT = getenv("INFLUXDB_MEASUREMENT", None)
 
 
 class YahooApiFrequencies(Enum):
