@@ -6,7 +6,13 @@ from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
-from apollo.settings import INFLUXDB_BUCKET, INFLUXDB_MEASUREMENT
+from apollo.settings import (
+    INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
+    INFLUXDB_ORG,
+    TICKER,
+    YahooApiFrequencies,
+)
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -53,3 +59,63 @@ def test__get_last_record_date__with_data_available(
     last_record_date = influxdb_connector.get_last_record_date()
 
     assert last_record_date == control_last_record_date
+
+
+@pytest.mark.usefixtures("influxdb_client", "flush_influxdb_bucket", "dataframe")
+def test__write_price_data__for_correctly_writing_dataframe(
+    influxdb_client: InfluxDBClient,
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test write_price_data for correctly writing dataframe.
+
+    Dataframe must be available in the database after writing.
+    """
+
+    frequency = YahooApiFrequencies.ONE_DAY.value
+
+    influxdb_connector = InfluxDbConnector()
+    influxdb_connector.write_price_data(
+        frequency=frequency,
+        dataframe=dataframe,
+    )
+
+    query_api = influxdb_client.query_api()
+    query_statement = f"""
+        from(bucket:"{INFLUXDB_BUCKET}")
+        |> range(start:0)
+        |> filter(fn: (r) =>
+                r.ticker == "{TICKER}" and
+                r.frequency == "{frequency}" and
+                r._measurement == "{INFLUXDB_MEASUREMENT}"
+            )
+        |> pivot(
+                rowKey: ["_time"],
+                columnKey: ["_field"],
+                valueColumn: "_value"
+            )
+        |> keep(
+                columns: [
+                    "ticker",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "adj close",
+                    "volume",
+                    "_time",
+                ]
+            )
+        |> rename(columns: {'{_time: "date"}'})
+        """
+
+    control_dataframe: pd.DataFrame = query_api.query_data_frame(
+        query=query_statement,
+        org=INFLUXDB_ORG,
+    )
+
+    control_dataframe.drop(columns=["result", "table"], inplace=True)
+    control_dataframe.set_index("date", inplace=True)
+    control_dataframe.index = pd.to_datetime(control_dataframe.index)
+
+    pd.testing.assert_frame_equal(dataframe, control_dataframe)
