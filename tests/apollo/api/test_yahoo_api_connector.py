@@ -1,7 +1,9 @@
+from datetime import datetime
 from unittest.mock import Mock
 
 import pandas as pd
 import pytest
+from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
@@ -42,9 +44,11 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
-def test__request_or_read_prices__with_valid_parameters() -> None:
+def test__request_or_read_prices__with_valid_parameters_and_no_data_present() -> None:
     """
     Test request_or_read_prices method with valid parameters.
+
+    And no data present in the database.
 
     API Connector must call InfluxDB connector to get last record date.
     API Connector must call InfluxDB connector to write price data.
@@ -67,6 +71,40 @@ def test__request_or_read_prices__with_valid_parameters() -> None:
     api_connector.database_connector.write_price_data.assert_called_once()
 
     assert price_dataframe is not None
+
+
+@pytest.mark.usefixtures("yahoo_api_response", "dataframe")
+def test__request_or_read_prices__with_valid_parameters_and_data_present(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test request_or_read_prices method with valid parameters.
+
+    And data present in the database and needs no refresh.
+
+    API Connector must call InfluxDB connector to get last record date.
+    API Connector must call InfluxDB connector to write price data.
+    API Connector must return a pandas Dataframe with price data.
+    """
+
+    api_connector = YahooApiConnector(
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
+    )
+
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.read_price_data.return_value = dataframe
+    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+        tz=ZoneInfo("UTC"),
+    ).date()
+
+    price_dataframe = api_connector.request_or_read_prices()
+
+    api_connector.database_connector.get_last_record_date.assert_called_once()
+    api_connector.database_connector.read_price_data.assert_called_once()
+
+    pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
