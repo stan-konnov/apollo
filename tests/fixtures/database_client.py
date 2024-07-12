@@ -27,7 +27,7 @@ def influxdb_client() -> Generator[InfluxDBClient, None, None]:
     client.close()
 
 
-@pytest.fixture(name="flush_influxdb_bucket")
+@pytest.fixture(name="flush_influxdb_bucket", autouse=True)
 def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
     """
     Flush the InfluxDB bucket after each test.
