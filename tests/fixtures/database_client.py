@@ -5,6 +5,7 @@ from influxdb_client import InfluxDBClient
 
 from apollo.settings import (
     INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
@@ -39,7 +40,7 @@ def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
     delete_api.delete(
         start="1970-01-01T00:00:00Z",
         stop="2100-01-01T00:00:00Z",
-        predicate='_measurement="ohlcv"',
+        predicate=f'_measurement="{INFLUXDB_MEASUREMENT}"',
         bucket=str(INFLUXDB_BUCKET),
         org=INFLUXDB_ORG,
     )
