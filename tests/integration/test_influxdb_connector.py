@@ -1,6 +1,9 @@
+import pytest
+
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 
 
+@pytest.mark.usefixtures("influxdb_client")
 def test__get_last_record_date__with_no_data_available() -> None:
     """
     Test get_last_record_date when no data is available.
