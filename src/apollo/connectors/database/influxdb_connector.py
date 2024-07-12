@@ -124,12 +124,12 @@ class InfluxDbConnector:
             # Drop unnecessary influx columns
             dataframe.drop(columns=["result", "table"], inplace=True)
 
+            # Remove time and timezone information from date
+            # as we do not yet work with multiple frequencies and exchanges
+            dataframe["date"] = dataframe["date"].dt.tz_localize(None)
+
             # Set the date column as index
             dataframe.set_index("date", inplace=True)
-
-            # We always index by date,
-            # therefore, we cast indices to date
-            dataframe.index = pd.to_datetime(dataframe.index)
 
             # Execute the query and return
             return dataframe

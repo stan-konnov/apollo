@@ -115,7 +115,11 @@ def test__write_price_data__for_correctly_writing_dataframe(
     )
 
     control_dataframe.drop(columns=["result", "table"], inplace=True)
+    control_dataframe["date"] = control_dataframe["date"].dt.tz_localize(None)
     control_dataframe.set_index("date", inplace=True)
-    control_dataframe.index = pd.to_datetime(control_dataframe.index)
+
+    # Reset columns on control dataframe to
+    # factor in influx sorting columns alphabetically
+    control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
