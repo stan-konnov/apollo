@@ -157,4 +157,7 @@ class YahooApiConnector(BaseApiConnector):
         :param dataframe: Requested Dataframe.
         """
 
-        self.database_connector.write_price_data(self.frequency, dataframe)
+        self.database_connector.write_price_data(
+            frequency=self.frequency,
+            dataframe=dataframe,
+        )

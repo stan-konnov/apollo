@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pandas as pd
 import pytest
+from freezegun import freeze_time
 from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
@@ -209,6 +210,59 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
 
     assert api_connector.request_arguments["start"] == START_DATE
     assert api_connector.request_arguments["end"] == END_DATE
+
+
+@freeze_time(f"{END_DATE} 17:00:00")
+@pytest.mark.usefixtures("yahoo_api_response")
+def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> None:
+    """
+    Test request_or_read_prices method with valid parameters.
+
+    And requested data is intraday.
+
+    API Connector must parse last queried date.
+
+    API Connector must call InfluxDB connector to get last record date.
+    API Connector must call InfluxDB connector to write price data without intraday.
+    API Connector must return a pandas Dataframe with price data.
+    """
+
+    api_connector = YahooApiConnector(
+        ticker=TICKER,
+        start_date=START_DATE,
+        end_date=END_DATE,
+    )
+
+    api_connector.database_connector = Mock(InfluxDbConnector)
+    api_connector.database_connector.get_last_record_date.return_value = None
+
+    price_dataframe = api_connector.request_or_read_prices()
+
+    # Please see tests/fixtures/api_response.py
+    # which this assignment mimics
+    expected_dataframe_to_write = pd.DataFrame(
+        {
+            "date": [
+                datetime.strptime(START_DATE, DEFAULT_DATE_FORMAT),
+            ],
+            "ticker": [TICKER],
+            "open": [100.0],
+            "high": [105.0],
+            "low": [95.0],
+            "close": [99.0],
+            "volume": [1000],
+        },
+    )
+
+    expected_dataframe_to_write.set_index("date", inplace=True)
+
+    api_connector.database_connector.get_last_record_date.assert_called_once()
+    api_connector.database_connector.write_price_data.assert_called_once_with(
+        frequency=api_connector.frequency,
+        dataframe=expected_dataframe_to_write,
+    )
+
+    assert price_dataframe is not None
 
 
 def test__request_or_read_prices__with_invalid_date_format() -> None:
