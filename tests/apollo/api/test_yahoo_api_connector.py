@@ -12,6 +12,7 @@ from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
 )
+from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 from tests.fixtures.env_and_constants import END_DATE, START_DATE, TICKER
 from tests.fixtures.window_size_and_dataframe import SameDataframe
 
@@ -55,10 +56,10 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
     API Connector must call InfluxDB connector to get last record date.
     API Connector must call InfluxDB connector to write price data.
 
-    API Connector must return a pandas Dataframe with price data.
     API Connector must reindex the dataframe to date column.
-    API Connector must cast all columns to lowercase.
     API Connector must insert ticker column at first position.
+    API Connector must cast all columns to lowercase.
+    API Connector must return a pandas Dataframe with price data.
     """
 
     api_connector = YahooApiConnector(
@@ -70,15 +71,32 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
     api_connector.database_connector = Mock(InfluxDbConnector)
     api_connector.database_connector.get_last_record_date.return_value = None
 
+    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+
+    expected_dataframe_to_write.reset_index(inplace=True)
+    expected_dataframe_to_write.drop(columns="index", inplace=True)
+    expected_dataframe_to_write.columns = (
+        expected_dataframe_to_write.columns.str.lower()
+    )
+
+    expected_dataframe_to_write.set_index("date", inplace=True)
+    expected_dataframe_to_write.insert(0, "ticker", TICKER)
+
     price_dataframe = api_connector.request_or_read_prices()
 
     api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.write_price_data.assert_called_once()
+    api_connector.database_connector.write_price_data.assert_called_once_with(
+        frequency=api_connector.frequency,
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        dataframe=SameDataframe(expected_dataframe_to_write),
+    )
 
-    assert price_dataframe is not None
     assert price_dataframe.index.name == "date"
-    assert all(column.islower() for column in price_dataframe.columns)
     assert price_dataframe.columns[0] == "ticker"
+    assert all(column.islower() for column in price_dataframe.columns)
+
+    pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
 @pytest.mark.usefixtures("yahoo_api_response", "dataframe")

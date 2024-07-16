@@ -160,6 +160,8 @@ def test__read_price_data__for_reading_all_available_data(
     assert "table" not in control_dataframe.columns
     assert "result" not in control_dataframe.columns
 
+    # Reset columns on control dataframe to
+    # factor in influx sorting columns alphabetically
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
@@ -206,6 +208,8 @@ def test__read_price_data__for_reading_data_slice(
     assert "table" not in control_dataframe.columns
     assert "result" not in control_dataframe.columns
 
+    # Reset columns on control dataframe to
+    # factor in influx sorting columns alphabetically
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
