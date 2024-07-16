@@ -31,7 +31,6 @@ class BaseApiConnector(ABC):
 
         :raises ValueError: If start_date or end_date are not in the correct format.
         :raises ValueError: If start_date is greater than end_date.
-        :raises ValueError: If InfluxDB environment variables are not set.
         """
 
         try:
