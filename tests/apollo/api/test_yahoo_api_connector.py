@@ -59,7 +59,7 @@ def test__request_or_read_prices__with_non_date_index_api_response() -> None:
     Returned dataframe is not indexed by datetime.
 
     API Connector must call InfluxDB connector to get last record date.
-    API Connector must raise ApiResponseEmptyDataframeError when API response is empty.
+    API Connector must raise ApiResponseDatetimeIndexError when index is not datetime.
     """
 
     api_connector = YahooApiConnector(
