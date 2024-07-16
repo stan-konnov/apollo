@@ -5,27 +5,11 @@ from typing import Generator
 
 import pytest
 
-from apollo.settings import (
-    YahooApiFrequencies,
-)
 from tests.fixtures.env_and_constants import (
-    END_DATE,
-    START_DATE,
     STRATEGY,
-    TICKER,
 )
 
 TEMP_TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
-
-DATA_DIR = Path(f"{TEMP_TEST_DIR}/data")
-
-DATA_FILE = Path(
-    str(
-        f"{DATA_DIR}/{TICKER}-"
-        f"{YahooApiFrequencies.ONE_DAY.value}-"
-        f"{START_DATE}-{END_DATE}.csv",
-    ),
-)
 
 PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
 

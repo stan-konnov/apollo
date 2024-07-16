@@ -7,9 +7,6 @@ packages = [
   { include = "apollo", from = "src" }
 ]
 
-# Bump packages to newer versions
-# and adapt code to the new API (if needed)
-
 [tool.poetry.dependencies]
 python = "^3.12"
 pandas = "^2.2.2"
@@ -27,6 +24,9 @@ scikit-learn = "^1.5.1"
 statsmodels = "^0.14.2"
 ruff = "^0.5.0"
 pre-commit = "^3.7.1"
+influxdb-client = {extras = ["extra"], version = "^1.44.0"}
+pytest-dotenv = "^0.5.2"
+freezegun = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
 

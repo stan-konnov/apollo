@@ -1,12 +1,17 @@
+from datetime import datetime
 from logging import getLogger
-from pathlib import Path
 
 import pandas as pd
 from yfinance import download
 
-from apollo.api.base_api_connector import BaseApiConnector
-from apollo.errors.api import EmptyApiResponseError
-from apollo.settings import DATA_DIR, YahooApiFrequencies
+from apollo.connectors.api.base_api_connector import BaseApiConnector
+from apollo.connectors.database.influxdb_connector import InfluxDbConnector
+from apollo.errors.api import (
+    ApiResponseDatetimeIndexError,
+    ApiResponseEmptyDataframeError,
+)
+from apollo.settings import YahooApiFrequencies
+from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 logger = getLogger(__name__)
 
@@ -44,6 +49,10 @@ class YahooApiConnector(BaseApiConnector):
         )
 
         self.request_arguments = {}
+        self.querydb_arguments = {
+            "ticker": self.ticker,
+            "frequency": self.frequency,
+        }
 
         if max_period:
             self.request_arguments["period"] = "max"
@@ -52,9 +61,10 @@ class YahooApiConnector(BaseApiConnector):
             self.request_arguments["end"] = self.end_date
             self.request_arguments["start"] = self.start_date
 
-        # Name of the file to store the data
-        period = "max-period" if max_period else f"{start_date}-{end_date}"
-        self.data_file: str = f"{DATA_DIR}/{self.ticker}-{self.frequency}-{period}.csv"
+            self.querydb_arguments["end_date"] = self.end_date
+            self.querydb_arguments["start_date"] = self.start_date
+
+        self.database_connector = InfluxDbConnector()
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
@@ -67,16 +77,17 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        try:
-            price_data = pd.read_csv(self.data_file, index_col=0)
+        last_record_date = self.database_connector.get_last_record_date()
 
-            # We always index by date,
-            # therefore, we cast indices to datetime.
-            price_data.index = pd.to_datetime(price_data.index)
+        # Re-query prices
+        # if no records are available
+        # or last record date is before previous business day
+        # or last record date is previous business day and data available from exchange
+        price_data_needs_update = last_record_date is None or (
+            DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
+        )
 
-            logger.info("Price data read from storage.")
-
-        except FileNotFoundError:
+        if price_data_needs_update:
             price_data = download(
                 tickers=self.ticker,
                 interval=self.frequency,
@@ -85,14 +96,42 @@ class YahooApiConnector(BaseApiConnector):
 
             # Make sure we have data to work with
             if price_data.empty:
-                raise EmptyApiResponseError(
-                    "API response returned empty dataframe.",
-                ) from None
+                raise ApiResponseEmptyDataframeError
+
+            # At this point in time,
+            # if prices were requested intraday
+            # Yahoo Finance API sporadically returns an intraday close
+            # which is undesirable, since it leads to data inconsistency.
+            # If it is the case, we remove the last record from the dataframe.
+            last_queried_datetime = price_data.index[-1]
+
+            # Make sure data is indexed by datetime
+            if not isinstance(last_queried_datetime, datetime):
+                raise ApiResponseDatetimeIndexError
+
+            last_queried_date = last_queried_datetime.date()
+
+            price_data_includes_intraday = (
+                DataAvailabilityHelper.check_if_price_data_includes_intraday(
+                    last_queried_date,
+                )
+            )
+
+            if price_data_includes_intraday:
+                price_data.drop(index=last_queried_date, inplace=True)
 
             self._prep_dataframe(price_data)
             self._save_dataframe(price_data)
 
             logger.info("Requested price data from Yahoo Finance API.")
+
+        # Otherwise, read from disk
+        else:
+            price_data = self.database_connector.read_price_data(
+                **self.querydb_arguments,
+            )
+
+            logger.info("Price data read from storage.")
 
         return price_data
 
@@ -118,14 +157,10 @@ class YahooApiConnector(BaseApiConnector):
         """
         Save dataframe as CSV to storage.
 
-        Use "Ticker-Frequency-Start-End" format for filename.
-        In the current state of things, local file system
-        serves well as storage, move to S3 or database with time.
-
         :param dataframe: Requested Dataframe.
         """
 
-        if not Path.is_dir(DATA_DIR):
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        dataframe.to_csv(self.data_file)
+        self.database_connector.write_price_data(
+            frequency=self.frequency,
+            dataframe=dataframe,
+        )
