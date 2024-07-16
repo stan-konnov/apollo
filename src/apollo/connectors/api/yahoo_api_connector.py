@@ -1,5 +1,5 @@
+from datetime import datetime
 from logging import getLogger
-from typing import TYPE_CHECKING
 
 import pandas as pd
 from yfinance import download
@@ -9,9 +9,6 @@ from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 logger = getLogger(__name__)
 
@@ -105,7 +102,14 @@ class YahooApiConnector(BaseApiConnector):
             # Yahoo Finance API sporadically returns an intraday close
             # which is undesirable, since it leads to data inconsistency.
             # If it is the case, we remove the last record from the dataframe.
-            last_queried_datetime: datetime = price_data.index[-1]
+            last_queried_datetime = price_data.index[-1]
+
+            # Make sure data is indexed by datetime
+            assert isinstance(
+                last_queried_datetime,
+                datetime,
+            ), "Dataframe received from API is not indexed by datetime."
+
             last_queried_date = last_queried_datetime.date()
 
             price_data_includes_intraday = (
