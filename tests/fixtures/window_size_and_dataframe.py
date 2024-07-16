@@ -28,3 +28,25 @@ def get_window_size() -> int:
     """Fixture to define window size for calculations."""
 
     return WINDOW_SIZE
+
+
+class SameDataframe:
+    """
+    SameDataframe class.
+
+    Compares two pandas Dataframes using equals method
+    to avoid logical comparison operations used by unittest.mock.
+
+    On unit tests argument comparison limitation:
+    https://stackoverflow.com/a/69010217/11675550
+    """
+
+    def __init__(self, dataframe: pd.DataFrame) -> None:
+        """Construct SameDataframe class."""
+
+        self.dataframe = dataframe
+
+    def __eq__(self, other: object) -> bool:
+        """Override equals method to compare two pandas Dataframes."""
+
+        return isinstance(other, pd.DataFrame) and other.equals(self.dataframe)

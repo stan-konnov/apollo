@@ -73,7 +73,5 @@ class BaseApiConnector(ABC):
         """
         Save dataframe to disk based on specifics of the child connector.
 
-        Can be file or remote storage.
-
         :param dataframe: Prepped dataframe for saving.
         """
