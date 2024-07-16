@@ -33,6 +33,7 @@ prisma = "^0.13.1"
 
 [tool.poe.tasks]
 test = "pytest -v --cov=src --cov-report term-missing"
+migrate = "prisma migrate dev"
 
 optimize = "python3 src/apollo/commands/optimize.py"
 backtest = "python3 src/apollo/commands/backtest.py"

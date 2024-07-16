@@ -10,7 +10,7 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model BacktestingResult {
+model backtesting_results {
   id                        String   @id @default(uuid())
 
   ticker                    String
@@ -25,7 +25,7 @@ model BacktestingResult {
   exposure_time             Float
   equity_final              Float
   equity_peak               Float
-  return                    Float
+  total_return              Float
   buy_and_hold_return       Float
   annualized_return         Float
   annualized_volatility     Float
@@ -45,6 +45,6 @@ model BacktestingResult {
   average_trade_duration    String
   system_quality_number     Float
 
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
 }
