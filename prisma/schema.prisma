@@ -18,8 +18,8 @@ model backtesting_results {
   frequency                 String
   parameters                Json
 
-  start_date                DateTime
-  end_date                  DateTime
+  start_date                DateTime?
+  end_date                  DateTime?
   max_period                Boolean
 
   exposure_time             Float
