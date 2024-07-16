@@ -13,20 +13,7 @@ from apollo.settings import (
 )
 
 """
-TODO: since influx data points are immutable, it means
-that adjusted close prices are not retroactively updated with new data
-
-Therefore, this should be handled!
-
-We need a mechanism to flush the database and re-write the data.
-
-Perhaps, flushing the series for particular ticker before/on the date
-of stock split or dividend payment and re-writing the data.
-
-BRO: you're overthinking, this will work, since influx will update
-the old data points for the same timestamp and tags, no need to flush it.
-
-Also, handle timeout on the first connection to the database.
+TODO: Handle timeout on the first connection to the database.
 """
 
 
