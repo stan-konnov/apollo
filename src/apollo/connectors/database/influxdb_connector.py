@@ -1,4 +1,5 @@
 from datetime import date
+from logging import getLogger
 
 import pandas as pd
 from influxdb_client import InfluxDBClient
@@ -12,9 +13,7 @@ from apollo.settings import (
     INFLUXDB_URL,
 )
 
-"""
-TODO: Handle timeout on the first connection to the database.
-"""
+logger = getLogger(__name__)
 
 
 class InfluxDbConnector:
@@ -49,20 +48,32 @@ class InfluxDbConnector:
         :param dataframe: Price dataframe to write to the database.
         """
 
-        with InfluxDBClient(**self.client_parameters) as client:
-            # Copy and add frequency to the
-            # dataframe to use as a tag value
-            dataframe_to_write = dataframe.copy()
-            dataframe_to_write["frequency"] = frequency
+        try:
+            with InfluxDBClient(**self.client_parameters) as client:
+                # Copy and add frequency to the
+                # dataframe to use as a tag value
+                dataframe_to_write = dataframe.copy()
+                dataframe_to_write["frequency"] = frequency
 
-            # Create write API and write incoming dataframe
-            with client.write_api(write_options=SYNCHRONOUS) as write_api:
-                write_api.write(
-                    bucket=str(INFLUXDB_BUCKET),
-                    record=dataframe_to_write,
-                    data_frame_measurement_name=INFLUXDB_MEASUREMENT,
-                    data_frame_tag_columns=["ticker", "frequency"],
-                )
+                # Create write API and write incoming dataframe
+                with client.write_api(write_options=SYNCHRONOUS) as write_api:
+                    write_api.write(
+                        bucket=str(INFLUXDB_BUCKET),
+                        record=dataframe_to_write,
+                        data_frame_measurement_name=INFLUXDB_MEASUREMENT,
+                        data_frame_tag_columns=["ticker", "frequency"],
+                    )
+
+        except Exception:  # noqa: BLE001
+            # NOTE: on first-time write InfluxDB may raise a ReadTimeoutError
+            # due to the internals of it's interaction with urllib3
+            # This is a known issue, yet, solutions provided
+            # in influxdb client documentation do not work
+            # This does not affect the write operation
+            # and, therefore, can be ignored
+            logger.info(
+                "Hitting ReadTimeoutError on InfluxDB write. Passing through.",
+            )
 
     def read_price_data(
         self,
