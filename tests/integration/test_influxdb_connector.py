@@ -213,3 +213,68 @@ def test__read_price_data__for_reading_data_slice(
     control_dataframe = control_dataframe[dataframe.columns]
 
     pd.testing.assert_frame_equal(dataframe, control_dataframe)
+
+
+# Please throttle me via proxy to simulate timeout from influxdb
+@pytest.mark.usefixtures("influxdb_client", "flush_influxdb_bucket", "dataframe")
+def test__write_price_data__for_handling_timeout(
+    influxdb_client: InfluxDBClient,
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test write_price_data for handling timeout on writing.
+
+    Dataframe must be available in the database after writing.
+    """
+
+    frequency = YahooApiFrequencies.ONE_DAY.value
+
+    influxdb_connector = InfluxDbConnector()
+    influxdb_connector.write_price_data(
+        frequency=frequency,
+        dataframe=dataframe,
+    )
+
+    query_api = influxdb_client.query_api()
+    query_statement = f"""
+        from(bucket:"{INFLUXDB_BUCKET}")
+        |> range(start:0)
+        |> filter(fn: (r) =>
+                r.ticker == "{TICKER}" and
+                r.frequency == "{frequency}" and
+                r._measurement == "{INFLUXDB_MEASUREMENT}"
+            )
+        |> pivot(
+                rowKey: ["_time"],
+                columnKey: ["_field"],
+                valueColumn: "_value"
+            )
+        |> keep(
+                columns: [
+                    "ticker",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "adj close",
+                    "volume",
+                    "_time",
+                ]
+            )
+        |> rename(columns: {'{_time: "date"}'})
+        """
+
+    control_dataframe: pd.DataFrame = query_api.query_data_frame(
+        query=query_statement,
+        org=INFLUXDB_ORG,
+    )
+
+    control_dataframe.drop(columns=["result", "table"], inplace=True)
+    control_dataframe["date"] = control_dataframe["date"].dt.tz_localize(None)
+    control_dataframe.set_index("date", inplace=True)
+
+    # Reset columns on control dataframe to
+    # factor in influx sorting columns alphabetically
+    control_dataframe = control_dataframe[dataframe.columns]
+
+    pd.testing.assert_frame_equal(dataframe, control_dataframe)
