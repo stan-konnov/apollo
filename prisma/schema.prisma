@@ -11,8 +11,6 @@ datasource db {
 }
 
 model backtesting_results {
-  id                        String   @id @default(uuid())
-
   ticker                    String
   strategy                  String
   frequency                 String
@@ -47,4 +45,10 @@ model backtesting_results {
 
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
+
+  // The uniqueness of backtesting results
+  // is determined by ticker, strategy,
+  // frequency of processed data,
+  // and backtesting period
+  @@id([ticker, strategy, frequency, max_period])
 }
