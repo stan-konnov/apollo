@@ -4,6 +4,7 @@ from logging import getLogger
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
+from urllib3.exceptions import ReadTimeoutError
 
 from apollo.settings import (
     INFLUXDB_BUCKET,
@@ -64,7 +65,7 @@ class InfluxDbConnector:
                         data_frame_tag_columns=["ticker", "frequency"],
                     )
 
-        except Exception:  # noqa: BLE001
+        except ReadTimeoutError:
             # NOTE: on first-time write InfluxDB may raise a ReadTimeoutError
             # due to the internals of it's interaction with urllib3
             # This is a known issue, yet, solutions provided
