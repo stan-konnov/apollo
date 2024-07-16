@@ -46,6 +46,26 @@ def _yahoo_api_response() -> Generator[None, None, None]:
         yield
 
 
+@pytest.fixture(name="non_date_index_yahoo_api_response", scope="session")
+def _non_date_index_yahoo_api_response_() -> Generator[None, None, None]:
+    """Simulate raw Yahoo API OHLCV response with datetime index."""
+
+    def download(
+        tickers: str | list[str],  # noqa: ARG001
+        start: str,  # noqa: ARG001
+        end: str,  # noqa: ARG001
+        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
+    ) -> pd.DataFrame:
+        raw_yahoo_api_response = API_RESPONSE_DATAFRAME.copy()
+        raw_yahoo_api_response["Date"] = raw_yahoo_api_response["Date"].astype(str)
+        raw_yahoo_api_response.set_index("Date", inplace=True)
+
+        return raw_yahoo_api_response
+
+    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
+        yield
+
+
 @pytest.fixture(name="empty_yahoo_api_response", scope="session")
 def _empty_yahoo_api_response() -> Generator[None, None, None]:
     """Simulate empty Yahoo API OHLCV response."""

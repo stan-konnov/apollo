@@ -6,7 +6,10 @@ from yfinance import download
 
 from apollo.connectors.api.base_api_connector import BaseApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import (
+    ApiResponseDatetimeIndexError,
+    ApiResponseEmptyDataframeError,
+)
 from apollo.settings import YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
@@ -93,9 +96,9 @@ class YahooApiConnector(BaseApiConnector):
 
             # Make sure we have data to work with
             if price_data.empty:
-                raise EmptyApiResponseError(
+                raise ApiResponseEmptyDataframeError(
                     "API response returned empty dataframe.",
-                ) from None
+                )
 
             # At this point in time,
             # if prices were requested intraday
@@ -105,10 +108,10 @@ class YahooApiConnector(BaseApiConnector):
             last_queried_datetime = price_data.index[-1]
 
             # Make sure data is indexed by datetime
-            assert isinstance(
-                last_queried_datetime,
-                datetime,
-            ), "Dataframe received from API is not indexed by datetime."
+            if not isinstance(last_queried_datetime, datetime):
+                raise ApiResponseDatetimeIndexError(
+                    "Dataframe received from API is not indexed by datetime.",
+                )
 
             last_queried_date = last_queried_datetime.date()
 
