@@ -262,25 +262,23 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
     api_connector.database_connector = Mock(InfluxDbConnector)
     api_connector.database_connector.get_last_record_date.return_value = None
 
-    price_dataframe = api_connector.request_or_read_prices()
+    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
-    # Please see tests/fixtures/api_response.py
-    # which this assignment mimics
-    expected_dataframe_to_write = pd.DataFrame(
-        {
-            "date": [
-                datetime.strptime(START_DATE, DEFAULT_DATE_FORMAT),
-            ],
-            "ticker": [TICKER],
-            "open": [100.0],
-            "high": [105.0],
-            "low": [95.0],
-            "close": [99.0],
-            "volume": [1000],
-        },
+    expected_dataframe_to_write.reset_index(inplace=True)
+    expected_dataframe_to_write.drop(columns="index", inplace=True)
+    expected_dataframe_to_write.columns = (
+        expected_dataframe_to_write.columns.str.lower()
     )
 
     expected_dataframe_to_write.set_index("date", inplace=True)
+    expected_dataframe_to_write.insert(0, "ticker", TICKER)
+
+    expected_dataframe_to_write.drop(
+        index=expected_dataframe_to_write.index[-1],
+        inplace=True,
+    )
+
+    price_dataframe = api_connector.request_or_read_prices()
 
     api_connector.database_connector.get_last_record_date.assert_called_once()
     api_connector.database_connector.write_price_data.assert_called_once_with(
@@ -290,7 +288,7 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
         dataframe=SameDataframe(expected_dataframe_to_write),
     )
 
-    assert price_dataframe is not None
+    pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
 def test__request_or_read_prices__with_invalid_date_format() -> None:
