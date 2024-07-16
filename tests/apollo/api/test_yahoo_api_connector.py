@@ -133,10 +133,10 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refr
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
-@pytest.mark.usefixtures("yahoo_api_response", "dataframe")
-def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refresh(
-    dataframe: pd.DataFrame,
-) -> None:
+@pytest.mark.usefixtures("yahoo_api_response")
+def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
+    None
+):
     """
     Test request_or_read_prices method with valid parameters.
 
@@ -153,7 +153,18 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refr
         end_date=END_DATE,
     )
 
-    last_queried_datetime: datetime = dataframe.index[-1]
+    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+
+    expected_dataframe_to_write.reset_index(inplace=True)
+    expected_dataframe_to_write.drop(columns="index", inplace=True)
+    expected_dataframe_to_write.columns = (
+        expected_dataframe_to_write.columns.str.lower()
+    )
+
+    expected_dataframe_to_write.set_index("date", inplace=True)
+    expected_dataframe_to_write.insert(0, "ticker", TICKER)
+
+    last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
     last_queried_date = last_queried_datetime.date()
 
     api_connector.database_connector = Mock(InfluxDbConnector)
@@ -164,9 +175,14 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refr
     price_dataframe = api_connector.request_or_read_prices()
 
     api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.write_price_data.assert_called_once()
+    api_connector.database_connector.write_price_data.assert_called_once_with(
+        frequency=api_connector.frequency,
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        dataframe=SameDataframe(expected_dataframe_to_write),
+    )
 
-    assert price_dataframe is not None
+    pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
