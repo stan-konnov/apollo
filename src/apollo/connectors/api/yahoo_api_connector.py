@@ -96,9 +96,7 @@ class YahooApiConnector(BaseApiConnector):
 
             # Make sure we have data to work with
             if price_data.empty:
-                raise ApiResponseEmptyDataframeError(
-                    "API response returned empty dataframe.",
-                )
+                raise ApiResponseEmptyDataframeError
 
             # At this point in time,
             # if prices were requested intraday
@@ -109,9 +107,7 @@ class YahooApiConnector(BaseApiConnector):
 
             # Make sure data is indexed by datetime
             if not isinstance(last_queried_datetime, datetime):
-                raise ApiResponseDatetimeIndexError(
-                    "Dataframe received from API is not indexed by datetime.",
-                )
+                raise ApiResponseDatetimeIndexError
 
             last_queried_date = last_queried_datetime.date()
 
