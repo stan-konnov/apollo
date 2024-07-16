@@ -27,6 +27,7 @@ pre-commit = "^3.7.1"
 influxdb-client = {extras = ["extra"], version = "^1.44.0"}
 pytest-dotenv = "^0.5.2"
 freezegun = "^1.5.1"
+prisma = "^0.13.1"
 
 [tool.poetry.dev-dependencies]
 
