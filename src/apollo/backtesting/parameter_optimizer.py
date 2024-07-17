@@ -1,8 +1,6 @@
 from itertools import product
-from json import dump, loads
 from logging import getLogger
 from multiprocessing import Pool, cpu_count
-from pathlib import Path
 from sys import exit
 
 import pandas as pd
@@ -11,12 +9,12 @@ from numpy import arange
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
-    BRES_DIR,
     END_DATE,
+    FREQUENCY,
     MAX_PERIOD,
     NO_SIGNAL,
-    OPTP_DIR,
     START_DATE,
     STRATEGY,
     TICKER,
@@ -29,6 +27,12 @@ from apollo.utils.types import (
 )
 
 logger = getLogger(__name__)
+
+"""
+TODO:
+
+1. Comments here.
+"""
 
 
 class ParameterOptimizer:
@@ -59,14 +63,7 @@ class ParameterOptimizer:
         """
 
         self._configuration = Configuration()
-
-        period = "max-period" if MAX_PERIOD else f"{START_DATE}-{END_DATE}"
-
-        self.strategy_dir = Path(
-            f"{BRES_DIR}/{TICKER}-{STRATEGY}-{period}",
-        )
-
-        self._create_output_directories()
+        self._database_connector = PostgresConnector()
 
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
@@ -77,6 +74,7 @@ class ParameterOptimizer:
             start_date=str(START_DATE),
             end_date=str(END_DATE),
             max_period=bool(MAX_PERIOD),
+            frequency=str(FREQUENCY),
         )
 
         # Request or read the prices
@@ -255,14 +253,7 @@ class ParameterOptimizer:
             this_run_results = pd.DataFrame(stats).transpose()
 
             # Preserve the parameters used for this run
-            this_run_results["parameters"] = str(
-                {
-                    # Remove us when writing to database
-                    "frequency": parameter_set["frequency"],
-                    "cash_size": parameter_set["cash_size"],
-                    **combination_to_test,
-                },
-            )
+            this_run_results["parameters"] = str(combination_to_test)
 
             # Append the results of this run to the results dataframe
             if results_dataframe.empty:
@@ -339,11 +330,10 @@ class ParameterOptimizer:
         # Reset the indices to clean up the dataframe after concatenation
         results_dataframe.reset_index(drop=True, inplace=True)
 
-        # Grab the best performing trades
-        trades_dataframe = results_dataframe.iloc[0]["_trades"]
-
-        # Bring returns to more human readable format
-        trades_dataframe["ReturnPct"] = trades_dataframe["ReturnPct"] * 100
+        # Extract the best performing parameters
+        # as JSON string and prepare them for writing to a file
+        optimized_parameters = results_dataframe.iloc[0]["parameters"]
+        optimized_parameters = str(optimized_parameters).replace("'", '"')
 
         # Drop columns that are not needed for further analysis
         results_dataframe.drop(
@@ -356,43 +346,21 @@ class ParameterOptimizer:
                 "_strategy",
                 "_equity_curve",
                 "_trades",
+                "parameters",
             ],
             inplace=True,
         )
 
-        # Extract the best performing parameters as JSON
-        # and prepare them for writing to a file
-        optimized_parameters = results_dataframe.iloc[0]["parameters"]
-        optimized_parameters = str(optimized_parameters).replace("'", '"')
-        optimized_parameters = loads(optimized_parameters)
-
         # Write the results and parameters to files
         self._write_result_files(
-            trades_dataframe,
             results_dataframe,
             optimized_parameters,
         )
 
-    def _create_output_directories(self) -> None:
-        """
-        Create output directories if they do not exist.
-
-        Create main results directory.
-        Create individual strategy directory.
-        Create optimized parameters directory.
-
-        NOTE: this method will be deprecated with moving away from files.
-        """
-
-        for path in [BRES_DIR, self.strategy_dir, OPTP_DIR]:
-            if not Path.is_dir(path):
-                path.mkdir(parents=True, exist_ok=True)
-
     def _write_result_files(
         self,
-        trades_dataframe: pd.DataFrame,
         results_dataframe: pd.DataFrame,
-        optimized_parameters: dict[str, str | int | float],
+        optimized_parameters: str,
     ) -> None:
         """
         Write the results, trades and parameters to files.
@@ -404,11 +372,13 @@ class ParameterOptimizer:
         NOTE: this method will be deprecated with moving away from files.
         """
 
-        trades_dataframe.to_csv(f"{self.strategy_dir}/trades.csv")
-        results_dataframe.to_csv(f"{self.strategy_dir}/results.csv")
-
-        with Path.open(
-            Path(f"{OPTP_DIR}/{STRATEGY}.json"),
-            "w",
-        ) as file:
-            dump(optimized_parameters, file, indent=4)
+        self._database_connector.write_backtesting_results(
+            ticker=str(TICKER),
+            strategy=str(STRATEGY),
+            frequency=str(FREQUENCY),
+            max_period=bool(MAX_PERIOD),
+            parameters=optimized_parameters,
+            backtesting_results=results_dataframe,
+            backtesting_end_date=str(END_DATE),
+            backtesting_start_date=str(START_DATE),
+        )

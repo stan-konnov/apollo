@@ -1,5 +1,4 @@
 import logging
-from json import dumps
 
 import pandas as pd
 
@@ -74,6 +73,17 @@ def main() -> None:
         inplace=True,
     )
 
+    this_run_results["parameters"] = str(
+        {
+            "window_size": 5,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+        },
+    )
+
+    optimized_parameters = this_run_results.iloc[0]["parameters"]
+    optimized_parameters = str(optimized_parameters).replace("'", '"')
+
     logger.info(this_run_results)
 
     database_connector = PostgresConnector()
@@ -83,13 +93,7 @@ def main() -> None:
         strategy="SkewnessKurtosisVolatilityTrendFollowing",
         frequency="1d",
         max_period=bool(MAX_PERIOD),
-        parameters=dumps(
-            {
-                "window_size": 5,
-                "kurtosis_threshold": 0.0,
-                "volatility_multiplier": 0.5,
-            },
-        ),
+        parameters=optimized_parameters,
         backtesting_results=this_run_results,
         backtesting_end_date=str(END_DATE),
         backtesting_start_date=str(START_DATE),
