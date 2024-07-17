@@ -1,7 +1,10 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 import pandas as pd
 from pydantic import BaseModel
+
+from apollo.settings import DEFAULT_DATE_FORMAT
 
 
 @dataclass
@@ -14,8 +17,8 @@ class BacktestingResult(BaseModel):
     parameters: str
     max_period: bool
 
-    end_date: str | None
-    start_date: str | None
+    end_date: datetime | None
+    start_date: datetime | None
 
     exposure_time: float
     equity_final: float
@@ -70,8 +73,14 @@ class BacktestingResult(BaseModel):
             end_date = None
             start_date = None
         else:
-            end_date = backtesting_end_date
-            start_date = backtesting_start_date
+            end_date = datetime.strptime(
+                str(backtesting_end_date),
+                DEFAULT_DATE_FORMAT,
+            )
+            start_date = datetime.strptime(
+                str(backtesting_start_date),
+                DEFAULT_DATE_FORMAT,
+            )
 
         # Parse the first (and single) row of results
         results_to_parse = backtesting_results.iloc[0]

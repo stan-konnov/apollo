@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 import pandas as pd
 from prisma import Prisma
 
 from apollo.models.backtesting_result import BacktestingResult
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class PostgresConnector:
@@ -28,8 +33,8 @@ class PostgresConnector:
         max_period: bool,
         parameters: str,
         backtesting_results: pd.DataFrame,
-        backtesting_end_date: str | None = None,
-        backtesting_start_date: str | None = None,
+        backtesting_end_date: str | None,
+        backtesting_start_date: str | None,
     ) -> None:
         """
         Write backtesting results to the database.
@@ -62,24 +67,32 @@ class PostgresConnector:
         # Map to dictionary acceptable by the client
         model_dump = backtesting_result.model_dump()
 
+        # Create default lookup arguments for the query
+        lookup_arguments: dict[str, str | bool | datetime | None] = {
+            "ticker": backtesting_result.ticker,
+            "strategy": backtesting_result.strategy,
+            "frequency": backtesting_result.frequency,
+        }
+
+        # Lookup either by max period or by start and end date
+        if backtesting_result.max_period:
+            lookup_arguments["max_period"] = backtesting_result.max_period
+
+        else:
+            lookup_arguments["end_date"] = backtesting_result.end_date
+            lookup_arguments["start_date"] = backtesting_result.start_date
+
+        # Query existing backtesting result
         existing_backtesting_result = (
             self.database_client.backtesting_results.find_first(
-                where={
-                    "ticker": backtesting_result.ticker,
-                    "strategy": backtesting_result.strategy,
-                    "frequency": backtesting_result.frequency,
-                    "max_period": backtesting_result.max_period,
-                },
+                where=lookup_arguments,
             )
         )
 
-        # NOTE: Prisma python client and pydantic
-        # models are not yet fully compatible due to
-        # pydantic exposing the dump as dict[str, Any]
-        # and, thus, messing with Prisma TypedDict approach
+        # Create or update the backtesting result
         if not existing_backtesting_result:
             self.database_client.backtesting_results.create(
-                data=model_dump,  # type: ignore  # noqa: PGH003
+                data=model_dump,
             )
 
         else:
@@ -87,7 +100,7 @@ class PostgresConnector:
                 where={
                     "id": existing_backtesting_result.id,
                 },
-                data=model_dump,  # type: ignore  # noqa: PGH003
+                data=model_dump,
             )
 
         # Disconnect from the database
