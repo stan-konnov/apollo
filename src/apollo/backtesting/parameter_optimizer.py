@@ -32,6 +32,7 @@ logger = getLogger(__name__)
 TODO:
 
 1. Comments here.
+2. Remove frequency and cash size from configuration files; move to environment.
 """
 
 
@@ -336,6 +337,7 @@ class ParameterOptimizer:
         optimized_parameters = str(optimized_parameters).replace("'", '"')
 
         # Drop columns that are not needed for further analysis
+        # NOTE: this might not be needed as we omit in the model
         results_dataframe.drop(
             columns=[
                 "Start",
@@ -351,27 +353,7 @@ class ParameterOptimizer:
             inplace=True,
         )
 
-        # Write the results and parameters to files
-        self._write_result_files(
-            results_dataframe,
-            optimized_parameters,
-        )
-
-    def _write_result_files(
-        self,
-        results_dataframe: pd.DataFrame,
-        optimized_parameters: str,
-    ) -> None:
-        """
-        Write the results, trades and parameters to files.
-
-        :param trades_dataframe: Dataframe with trades.
-        :param results_dataframe: Dataframe with backtesting results.
-        :param optimized_parameters: Dictionary with optimized parameters.
-
-        NOTE: this method will be deprecated with moving away from files.
-        """
-
+        # Write the results to the database
         self._database_connector.write_backtesting_results(
             ticker=str(TICKER),
             strategy=str(STRATEGY),
