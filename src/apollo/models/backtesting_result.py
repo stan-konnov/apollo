@@ -81,7 +81,7 @@ class BacktestingResult(BaseModel):
             )
 
         # Parse the first (and single) row of results
-        results_to_parse = backtesting_results.iloc[0]
+        result_to_parse = backtesting_results.iloc[0]
 
         # Populate the model with the parsed results
         super().__init__(
@@ -92,26 +92,26 @@ class BacktestingResult(BaseModel):
             parameters=parameters,
             end_date=end_date,
             start_date=start_date,
-            exposure_time=results_to_parse["Exposure Time [%]"],
-            equity_final=results_to_parse["Equity Final [$]"],
-            equity_peak=results_to_parse["Equity Peak [$]"],
-            total_return=results_to_parse["Return [%]"],
-            buy_and_hold_return=results_to_parse["Buy & Hold Return [%]"],
-            annualized_return=results_to_parse["Return (Ann.) [%]"],
-            annualized_volatility=results_to_parse["Volatility (Ann.) [%]"],
-            sharpe_ratio=results_to_parse["Sharpe Ratio"],
-            sortino_ratio=results_to_parse["Sortino Ratio"],
-            calmar_ratio=results_to_parse["Calmar Ratio"],
-            max_drawdown=results_to_parse["Max. Drawdown [%]"],
-            average_drawdown=results_to_parse["Avg. Drawdown [%]"],
-            max_drawdown_duration=str(results_to_parse["Max. Drawdown Duration"]),
-            average_drawdown_duration=str(results_to_parse["Avg. Drawdown Duration"]),
-            number_of_trades=results_to_parse["# Trades"],
-            win_rate=results_to_parse["Win Rate [%]"],
-            best_trade=results_to_parse["Best Trade [%]"],
-            worst_trade=results_to_parse["Worst Trade [%]"],
-            average_trade=results_to_parse["Avg. Trade [%]"],
-            max_trade_duration=str(results_to_parse["Max. Trade Duration"]),
-            average_trade_duration=str(results_to_parse["Avg. Trade Duration"]),
-            system_quality_number=results_to_parse["SQN"],
+            exposure_time=result_to_parse["Exposure Time [%]"],
+            equity_final=result_to_parse["Equity Final [$]"],
+            equity_peak=result_to_parse["Equity Peak [$]"],
+            total_return=result_to_parse["Return [%]"],
+            buy_and_hold_return=result_to_parse["Buy & Hold Return [%]"],
+            annualized_return=result_to_parse["Return (Ann.) [%]"],
+            annualized_volatility=result_to_parse["Volatility (Ann.) [%]"],
+            sharpe_ratio=result_to_parse["Sharpe Ratio"],
+            sortino_ratio=result_to_parse["Sortino Ratio"],
+            calmar_ratio=result_to_parse["Calmar Ratio"],
+            max_drawdown=result_to_parse["Max. Drawdown [%]"],
+            average_drawdown=result_to_parse["Avg. Drawdown [%]"],
+            max_drawdown_duration=str(result_to_parse["Max. Drawdown Duration"]),
+            average_drawdown_duration=str(result_to_parse["Avg. Drawdown Duration"]),
+            number_of_trades=result_to_parse["# Trades"],
+            win_rate=result_to_parse["Win Rate [%]"],
+            best_trade=result_to_parse["Best Trade [%]"],
+            worst_trade=result_to_parse["Worst Trade [%]"],
+            average_trade=result_to_parse["Avg. Trade [%]"],
+            max_trade_duration=str(result_to_parse["Max. Trade Duration"]),
+            average_trade_duration=str(result_to_parse["Avg. Trade Duration"]),
+            system_quality_number=result_to_parse["SQN"],
         )

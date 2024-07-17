@@ -75,13 +75,13 @@ class PostgresConnector:
             )
         )
 
-        # Map the model to a dictionary representation
-        model_dict_representation = backtesting_result.model_dump()
+        # Map the model to a writable representation
+        writable_model = backtesting_result.model_dump()
 
         # Create or update the backtesting result
         if not existing_backtesting_result:
             self.database_client.backtesting_results.create(
-                data=model_dict_representation,
+                data=writable_model,
             )
 
         else:
@@ -89,7 +89,7 @@ class PostgresConnector:
                 where={
                     "id": existing_backtesting_result.id,
                 },
-                data=model_dict_representation,
+                data=writable_model,
             )
 
         # Disconnect from the database
