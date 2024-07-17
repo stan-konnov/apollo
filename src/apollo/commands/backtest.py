@@ -1,16 +1,21 @@
 import logging
-from typing import TYPE_CHECKING
+
+import pandas as pd
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
-from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
+from apollo.models.backtesting_result import BacktestingResult
+from apollo.settings import (
+    END_DATE,
+    MAX_PERIOD,
+    START_DATE,
+    TICKER,
+    YahooApiFrequencies,
+)
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,12 +59,35 @@ def main() -> None:
 
     stats = backtesting_runner.run()
 
-    logger.info(stats)
+    this_run_results = pd.DataFrame(stats).transpose()
+    this_run_results.drop(
+        columns=[
+            "Start",
+            "End",
+            "Duration",
+            "Profit Factor",
+            "Expectancy [%]",
+            "_strategy",
+            "_equity_curve",
+            "_trades",
+        ],
+        inplace=True,
+    )
 
-    trades: pd.DataFrame = stats["_trades"]
-    trades["ReturnPct"] = trades["ReturnPct"] * 100
+    logger.info(this_run_results)
 
-    # trades.to_csv("trades.csv")  # noqa: ERA001
+    BacktestingResult(
+        ticker=str(TICKER),
+        strategy="SkewnessKurtosisVolatilityTrendFollowing",
+        frequency=YahooApiFrequencies.ONE_DAY.value,
+        max_period=bool(MAX_PERIOD),
+        parameters={
+            "window_size": 5,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+        },
+        backtesting_results=this_run_results,
+    )
 
 
 if __name__ == "__main__":
