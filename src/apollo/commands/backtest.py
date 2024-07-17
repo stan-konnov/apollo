@@ -1,17 +1,16 @@
 import logging
+from json import dumps
 
 import pandas as pd
-from prisma import Prisma
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
-from apollo.models.backtesting_result import BacktestingResult
+from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
     END_DATE,
     MAX_PERIOD,
     START_DATE,
     TICKER,
-    YahooApiFrequencies,
 )
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
@@ -77,44 +76,24 @@ def main() -> None:
 
     logger.info(this_run_results)
 
-    backtesting_result = BacktestingResult(
+    database_connector = PostgresConnector()
+
+    database_connector.write_backtesting_results(
         ticker=str(TICKER),
         strategy="SkewnessKurtosisVolatilityTrendFollowing",
-        frequency=YahooApiFrequencies.ONE_DAY.value,
+        frequency="1d",
         max_period=bool(MAX_PERIOD),
-        parameters={
-            "window_size": 5,
-            "kurtosis_threshold": 0.0,
-            "volatility_multiplier": 0.5,
-        },
-        backtesting_results=this_run_results,
-    )
-
-    database = Prisma()
-    database.connect()
-
-    model_dump = backtesting_result.model_dump()
-
-    database.backtesting_results.upsert(
-        where={
-            "ticker_strategy_frequency_max_period": {
-                "ticker": backtesting_result.ticker,
-                "strategy": backtesting_result.strategy,
-                "frequency": backtesting_result.frequency,
-                "max_period": backtesting_result.max_period,
+        parameters=dumps(
+            {
+                "window_size": 5,
+                "kurtosis_threshold": 0.0,
+                "volatility_multiplier": 0.5,
             },
-        },
-        # NOTE: Prisma python client and pydantic
-        # models are not yet fully compatible due to
-        # pydantic exposing the dump as dict[str, Any]
-        # and, thus, messing with Prisma TypedDict approach
-        data={
-            "create": model_dump,
-            "update": model_dump,
-        },  # type: ignore  # noqa: PGH003
+        ),
+        backtesting_results=this_run_results,
+        backtesting_end_date=str(END_DATE),
+        backtesting_start_date=str(START_DATE),
     )
-
-    database.disconnect()
 
 
 if __name__ == "__main__":
