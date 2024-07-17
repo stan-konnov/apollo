@@ -1,6 +1,8 @@
 import pandas as pd
 from prisma import Prisma
 
+from apollo.models.backtesting_result import BacktestingResult
+
 
 class PostgresConnector:
     """
@@ -35,12 +37,27 @@ class PostgresConnector:
         """
         Write backtesting results to the database.
 
-        :param ticker: Instrument ticker symbol.
+        :param ticker: Ticker symbol.
         :param strategy: Strategy name.
         :param frequency: Frequency of the data.
-        :param max_period: Flag indicating if maximum available data was used.
+        :param max_period: If all available data was used.
         :param parameters: Best performing strategy parameters.
-        :param backtesting_results: Backtesting results.
-        :param backtesting_start_date: Start date of the backtesting period.
+        :param backtesting_results: Backtesting results Dataframe.
         :param backtesting_end_date: End date of the backtesting period.
+        :param backtesting_start_date: Start date of the backtesting period.
         """
+
+        self.database_client.connect()
+
+        BacktestingResult(
+            ticker=ticker,
+            strategy=strategy,
+            frequency=frequency,
+            max_period=max_period,
+            parameters=parameters,
+            end_date=backtesting_end_date,
+            start_date=backtesting_start_date,
+            backtesting_results=backtesting_results,
+        )
+
+        self.database_client.disconnect()
