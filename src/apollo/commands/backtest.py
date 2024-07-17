@@ -104,10 +104,14 @@ def main() -> None:
                 "max_period": backtesting_result.max_period,
             },
         },
+        # NOTE: Prisma python client and pydantic
+        # models are not yet not fully compatible
+        # due to pydantic exposing the dump as dict[str, Any]
+        # and, therefore, messing with Prisma TypedDict approach
         data={
             "create": model_dump,
             "update": model_dump,
-        },
+        },  # type: ignore  # noqa: PGH003
     )
 
     database.disconnect()
