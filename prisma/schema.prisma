@@ -11,6 +11,13 @@ datasource db {
 }
 
 model backtesting_results {
+  id                        String @id @unique @default(uuid())
+
+  // NOTE: we explicitly do not define unique constraints
+  // around seemingly unique fields like ticker, frequency, and strategy
+  // because we want to allow for multiple backtests of the same strategy
+  // on the same ticker at the same frequency, but different backtesting periods
+
   ticker                    String
   strategy                  String
   frequency                 String
@@ -45,12 +52,4 @@ model backtesting_results {
 
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
-
-  // TODO: this composite key will fail for slices
-
-  // The uniqueness of backtesting results
-  // is determined by ticker, strategy,
-  // frequency of processed data,
-  // and backtesting period
-  @@id([ticker, strategy, frequency, max_period])
 }

@@ -62,25 +62,33 @@ class PostgresConnector:
         # Map to dictionary acceptable by the client
         model_dump = backtesting_result.model_dump()
 
-        # Upsert the results based on the composite key
-        self.database_client.backtesting_results.upsert(
-            where={
-                "ticker_strategy_frequency_max_period": {
+        existing_backtesting_result = (
+            self.database_client.backtesting_results.find_first(
+                where={
                     "ticker": backtesting_result.ticker,
                     "strategy": backtesting_result.strategy,
                     "frequency": backtesting_result.frequency,
                     "max_period": backtesting_result.max_period,
                 },
-            },
-            # NOTE: Prisma python client and pydantic
-            # models are not yet fully compatible due to
-            # pydantic exposing the dump as dict[str, Any]
-            # and, thus, messing with Prisma TypedDict approach
-            data={
-                "create": model_dump,
-                "update": model_dump,
-            },  # type: ignore  # noqa: PGH003
+            )
         )
+
+        # NOTE: Prisma python client and pydantic
+        # models are not yet fully compatible due to
+        # pydantic exposing the dump as dict[str, Any]
+        # and, thus, messing with Prisma TypedDict approach
+        if not existing_backtesting_result:
+            self.database_client.backtesting_results.create(
+                data=model_dump,  # type: ignore  # noqa: PGH003
+            )
+
+        else:
+            self.database_client.backtesting_results.update(
+                where={
+                    "id": existing_backtesting_result.id,
+                },
+                data=model_dump,  # type: ignore  # noqa: PGH003
+            )
 
         # Disconnect from the database
         self.database_client.disconnect()

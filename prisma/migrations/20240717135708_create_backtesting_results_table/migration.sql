@@ -35,3 +35,6 @@ CREATE TABLE "backtesting_results" (
 
     CONSTRAINT "backtesting_results_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "backtesting_results_id_key" ON "backtesting_results"("id");
