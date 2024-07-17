@@ -47,9 +47,11 @@ class PostgresConnector:
         :param backtesting_start_date: Start date of the backtesting period.
         """
 
+        # Connect to the database
         self.database_client.connect()
 
-        BacktestingResult(
+        # Map incoming inputs to the database model
+        backtesting_result = BacktestingResult(
             ticker=ticker,
             strategy=strategy,
             frequency=frequency,
@@ -60,4 +62,28 @@ class PostgresConnector:
             backtesting_start_date=backtesting_start_date,
         )
 
+        # Map to dictionary acceptable by the client
+        model_dump = backtesting_result.model_dump()
+
+        # Upsert the results based on the composite key
+        self.database_client.backtesting_results.upsert(
+            where={
+                "ticker_strategy_frequency_max_period": {
+                    "ticker": backtesting_result.ticker,
+                    "strategy": backtesting_result.strategy,
+                    "frequency": backtesting_result.frequency,
+                    "max_period": backtesting_result.max_period,
+                },
+            },
+            # NOTE: Prisma python client and pydantic
+            # models are not yet fully compatible due to
+            # pydantic exposing the dump as dict[str, Any]
+            # and, thus, messing with Prisma TypedDict approach
+            data={
+                "create": model_dump,
+                "update": model_dump,
+            },  # type: ignore  # noqa: PGH003
+        )
+
+        # Disconnect from the database
         self.database_client.disconnect()
