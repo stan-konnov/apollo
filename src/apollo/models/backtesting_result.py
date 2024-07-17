@@ -14,8 +14,8 @@ class BacktestingResult(BaseModel):
     parameters: str
     max_period: bool
 
-    end_date: str | None = None
-    start_date: str | None = None
+    end_date: str | None
+    start_date: str | None
 
     exposure_time: float
     equity_final: float
@@ -48,8 +48,8 @@ class BacktestingResult(BaseModel):
         max_period: bool,
         parameters: str,
         backtesting_results: pd.DataFrame,
-        backtesting_end_date: str | None = None,
-        backtesting_start_date: str | None = None,
+        backtesting_end_date: str | None,
+        backtesting_start_date: str | None,
     ) -> None:
         """
         Construct a new Backtesting Result object.
@@ -64,13 +64,14 @@ class BacktestingResult(BaseModel):
         :param backtesting_start_date: Start date of the backtesting period.
         """
 
-        if not max_period:
-            end_date = backtesting_end_date
-            start_date = backtesting_start_date
-
-        else:
+        # Set the start and end date
+        # if maximum available data was not used
+        if max_period:
             end_date = None
             start_date = None
+        else:
+            end_date = backtesting_end_date
+            start_date = backtesting_start_date
 
         # Parse the first (and single) row of results
         results_to_parse = backtesting_results.iloc[0]
