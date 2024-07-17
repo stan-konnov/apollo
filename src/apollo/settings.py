@@ -11,6 +11,7 @@ EXCHANGE = getenv("EXCHANGE", None)
 STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
+FREQUENCY = getenv("FREQUENCY", None)
 MAX_PERIOD = getenv("MAX_PERIOD", None)
 
 NO_SIGNAL = 0
