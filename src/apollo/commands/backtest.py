@@ -93,7 +93,22 @@ def main() -> None:
     database = Prisma()
     database.connect()
 
-    database.backtesting_results.create(backtesting_result.model_dump())
+    model_dump = backtesting_result.model_dump()
+
+    database.backtesting_results.upsert(
+        where={
+            "ticker_strategy_frequency_max_period": {
+                "ticker": backtesting_result.ticker,
+                "strategy": backtesting_result.strategy,
+                "frequency": backtesting_result.frequency,
+                "max_period": backtesting_result.max_period,
+            },
+        },
+        data={
+            "create": model_dump,
+            "update": model_dump,
+        },
+    )
 
     database.disconnect()
 
