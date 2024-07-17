@@ -89,7 +89,6 @@ class PostgresConnector:
             self.database_client.backtesting_results.create(
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
-
         else:
             self.database_client.backtesting_results.update(
                 where={
