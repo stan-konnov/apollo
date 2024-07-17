@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import datetime
 
 import pandas as pd
@@ -7,7 +6,8 @@ from pydantic import BaseModel
 from apollo.settings import DEFAULT_DATE_FORMAT
 
 
-@dataclass
+# Make me a parser
+# Create separate typedDict for the model
 class BacktestingResult(BaseModel):
     """A data model to represent backtesting result."""
 
@@ -51,8 +51,8 @@ class BacktestingResult(BaseModel):
         max_period: bool,
         parameters: str,
         backtesting_results: pd.DataFrame,
-        backtesting_end_date: str | None,
-        backtesting_start_date: str | None,
+        backtesting_end_date: str,
+        backtesting_start_date: str,
     ) -> None:
         """
         Construct a new Backtesting Result object.

@@ -1,12 +1,21 @@
-from typing import TYPE_CHECKING
+from datetime import datetime
+from typing import NotRequired, TypedDict
 
 import pandas as pd
 from prisma import Prisma
 
 from apollo.models.backtesting_result import BacktestingResult
 
-if TYPE_CHECKING:
-    from datetime import datetime
+
+class QueryLookupArguments(TypedDict):
+    """Type definition for query lookup arguments."""
+
+    ticker: str
+    strategy: str
+    frequency: str
+    max_period: NotRequired[bool]
+    end_date: NotRequired[datetime | None]
+    start_date: NotRequired[datetime | None]
 
 
 class PostgresConnector:
@@ -33,8 +42,8 @@ class PostgresConnector:
         max_period: bool,
         parameters: str,
         backtesting_results: pd.DataFrame,
-        backtesting_end_date: str | None,
-        backtesting_start_date: str | None,
+        backtesting_end_date: str,
+        backtesting_start_date: str,
     ) -> None:
         """
         Write backtesting results to the database.
@@ -64,11 +73,8 @@ class PostgresConnector:
             backtesting_start_date=backtesting_start_date,
         )
 
-        # Map to dictionary acceptable by the client
-        model_dump = backtesting_result.model_dump()
-
         # Create default lookup arguments for the query
-        lookup_arguments: dict[str, str | bool | datetime | None] = {
+        lookup_arguments: QueryLookupArguments = {
             "ticker": backtesting_result.ticker,
             "strategy": backtesting_result.strategy,
             "frequency": backtesting_result.frequency,
@@ -89,10 +95,13 @@ class PostgresConnector:
             )
         )
 
+        # Map the model to a dictionary representation
+        model_dict_representation = backtesting_result.model_dump()
+
         # Create or update the backtesting result
         if not existing_backtesting_result:
             self.database_client.backtesting_results.create(
-                data=model_dump,
+                data=model_dict_representation,
             )
 
         else:
@@ -100,7 +109,7 @@ class PostgresConnector:
                 where={
                     "id": existing_backtesting_result.id,
                 },
-                data=model_dump,
+                data=model_dict_representation,
             )
 
         # Disconnect from the database
