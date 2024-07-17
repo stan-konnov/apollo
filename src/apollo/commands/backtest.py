@@ -105,9 +105,9 @@ def main() -> None:
             },
         },
         # NOTE: Prisma python client and pydantic
-        # models are not yet not fully compatible
-        # due to pydantic exposing the dump as dict[str, Any]
-        # and, therefore, messing with Prisma TypedDict approach
+        # models are not yet fully compatible due to
+        # pydantic exposing the dump as dict[str, Any]
+        # and, thus, messing with Prisma TypedDict approach
         data={
             "create": model_dump,
             "update": model_dump,
