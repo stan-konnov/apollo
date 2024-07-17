@@ -1,4 +1,5 @@
 import pandas as pd
+from prisma import Prisma
 
 
 class PostgresConnector:
@@ -7,6 +8,18 @@ class PostgresConnector:
 
     Acts as a wrapper around Prisma Python client.
     """
+
+    database_client: Prisma
+
+    def __init__(self) -> None:
+        """
+        Construct Postgres Database Connector.
+
+        Initialize Prisma client.
+        """
+
+        if not self.database_client:
+            self.database_client = Prisma()
 
     def write_backtesting_results(
         self,
