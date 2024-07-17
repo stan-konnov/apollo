@@ -6,8 +6,6 @@ from pydantic import BaseModel
 from apollo.settings import DEFAULT_DATE_FORMAT
 
 
-# Make me a parser
-# Create separate typedDict for the model
 class BacktestingResult(BaseModel):
     """A data model to represent backtesting result."""
 
@@ -74,11 +72,11 @@ class BacktestingResult(BaseModel):
             start_date = None
         else:
             end_date = datetime.strptime(
-                str(backtesting_end_date),
+                backtesting_end_date,
                 DEFAULT_DATE_FORMAT,
             )
             start_date = datetime.strptime(
-                str(backtesting_start_date),
+                backtesting_start_date,
                 DEFAULT_DATE_FORMAT,
             )
 

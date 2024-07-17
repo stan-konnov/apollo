@@ -1,21 +1,7 @@
-from datetime import datetime
-from typing import NotRequired, TypedDict
-
 import pandas as pd
 from prisma import Prisma
 
 from apollo.models.backtesting_result import BacktestingResult
-
-
-class QueryLookupArguments(TypedDict):
-    """Type definition for query lookup arguments."""
-
-    ticker: str
-    strategy: str
-    frequency: str
-    max_period: NotRequired[bool]
-    end_date: NotRequired[datetime | None]
-    start_date: NotRequired[datetime | None]
 
 
 class PostgresConnector:
@@ -73,25 +59,17 @@ class PostgresConnector:
             backtesting_start_date=backtesting_start_date,
         )
 
-        # Create default lookup arguments for the query
-        lookup_arguments: QueryLookupArguments = {
-            "ticker": backtesting_result.ticker,
-            "strategy": backtesting_result.strategy,
-            "frequency": backtesting_result.frequency,
-        }
-
-        # Lookup either by max period or by start and end date
-        if backtesting_result.max_period:
-            lookup_arguments["max_period"] = backtesting_result.max_period
-
-        else:
-            lookup_arguments["end_date"] = backtesting_result.end_date
-            lookup_arguments["start_date"] = backtesting_result.start_date
-
         # Query existing backtesting result
         existing_backtesting_result = (
             self.database_client.backtesting_results.find_first(
-                where=lookup_arguments,
+                where={
+                    "ticker": backtesting_result.ticker,
+                    "strategy": backtesting_result.strategy,
+                    "frequency": backtesting_result.frequency,
+                    "max_period": backtesting_result.max_period,
+                    "start_date": backtesting_result.start_date,
+                    "end_date": backtesting_result.end_date,
+                },
             )
         )
 
