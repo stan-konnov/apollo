@@ -60,6 +60,8 @@ class PostgresConnector:
         )
 
         # Query existing backtesting result
+        # Based on whether max period was used or not
+        # parameters of start and end date are either None or dates
         existing_backtesting_result = (
             self.database_client.backtesting_results.find_first(
                 where={
