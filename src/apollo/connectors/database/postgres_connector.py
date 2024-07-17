@@ -29,7 +29,7 @@ class PostgresConnector:
         strategy: str,
         frequency: str,
         max_period: bool,
-        parameters: dict[str, float],
+        parameters: str,
         backtesting_results: pd.DataFrame,
         backtesting_end_date: str | None = None,
         backtesting_start_date: str | None = None,
@@ -55,9 +55,9 @@ class PostgresConnector:
             frequency=frequency,
             max_period=max_period,
             parameters=parameters,
-            end_date=backtesting_end_date,
-            start_date=backtesting_start_date,
             backtesting_results=backtesting_results,
+            backtesting_end_date=backtesting_end_date,
+            backtesting_start_date=backtesting_start_date,
         )
 
         self.database_client.disconnect()
