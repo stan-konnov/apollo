@@ -1,17 +1,19 @@
 from dataclasses import dataclass
+from json import dumps
 
 import pandas as pd
+from pydantic import BaseModel
 
 
 @dataclass
-class BacktestingResult:
+class BacktestingResult(BaseModel):
     """A data model to represent backtesting result."""
 
     ticker: str
     strategy: str
     frequency: str
+    parameters: str
     max_period: bool
-    parameters: dict[str, float]
 
     exposure_time: float
     equity_final: float
@@ -67,35 +69,36 @@ class BacktestingResult:
                 "Either start_date and end_date or max_period should be provided.",
             )
 
-        self.ticker = ticker
-        self.strategy = strategy
-        self.frequency = frequency
-        self.max_period = max_period
-        self.parameters = parameters
-
         # Parse the first (and single) row of results
         results_to_parse = backtesting_results.iloc[0]
 
         # Populate the model with the parsed results
-        self.exposure_time = results_to_parse["Exposure Time [%]"]
-        self.equity_final = results_to_parse["Equity Final [$]"]
-        self.equity_peak = results_to_parse["Equity Peak [$]"]
-        self.total_return = results_to_parse["Return [%]"]
-        self.buy_and_hold_return = results_to_parse["Buy & Hold Return [%]"]
-        self.annualized_return = results_to_parse["Return (Ann.) [%]"]
-        self.annualized_volatility = results_to_parse["Volatility (Ann.) [%]"]
-        self.sharpe_ratio = results_to_parse["Sharpe Ratio"]
-        self.sortino_ratio = results_to_parse["Sortino Ratio"]
-        self.calmar_ratio = results_to_parse["Calmar Ratio"]
-        self.max_drawdown = results_to_parse["Max. Drawdown [%]"]
-        self.average_drawdown = results_to_parse["Avg. Drawdown [%]"]
-        self.max_drawdown_duration = results_to_parse["Max. Drawdown Duration"]
-        self.average_drawdown_duration = results_to_parse["Avg. Drawdown Duration"]
-        self.number_of_trades = results_to_parse["# Trades"]
-        self.win_rate = results_to_parse["Win Rate [%]"]
-        self.best_trade = results_to_parse["Best Trade [%]"]
-        self.worst_trade = results_to_parse["Worst Trade [%]"]
-        self.average_trade = results_to_parse["Avg. Trade [%]"]
-        self.max_trade_duration = results_to_parse["Max. Trade Duration"]
-        self.average_trade_duration = results_to_parse["Avg. Trade Duration"]
-        self.system_quality_number = results_to_parse["SQN"]
+        super().__init__(
+            ticker=ticker,
+            strategy=strategy,
+            frequency=frequency,
+            max_period=max_period,
+            parameters=dumps(parameters),
+            exposure_time=results_to_parse["Exposure Time [%]"],
+            equity_final=results_to_parse["Equity Final [$]"],
+            equity_peak=results_to_parse["Equity Peak [$]"],
+            total_return=results_to_parse["Return [%]"],
+            buy_and_hold_return=results_to_parse["Buy & Hold Return [%]"],
+            annualized_return=results_to_parse["Return (Ann.) [%]"],
+            annualized_volatility=results_to_parse["Volatility (Ann.) [%]"],
+            sharpe_ratio=results_to_parse["Sharpe Ratio"],
+            sortino_ratio=results_to_parse["Sortino Ratio"],
+            calmar_ratio=results_to_parse["Calmar Ratio"],
+            max_drawdown=results_to_parse["Max. Drawdown [%]"],
+            average_drawdown=results_to_parse["Avg. Drawdown [%]"],
+            max_drawdown_duration=str(results_to_parse["Max. Drawdown Duration"]),
+            average_drawdown_duration=str(results_to_parse["Avg. Drawdown Duration"]),
+            number_of_trades=results_to_parse["# Trades"],
+            win_rate=results_to_parse["Win Rate [%]"],
+            best_trade=results_to_parse["Best Trade [%]"],
+            worst_trade=results_to_parse["Worst Trade [%]"],
+            average_trade=results_to_parse["Avg. Trade [%]"],
+            max_trade_duration=str(results_to_parse["Max. Trade Duration"]),
+            average_trade_duration=str(results_to_parse["Avg. Trade Duration"]),
+            system_quality_number=results_to_parse["SQN"],
+        )

@@ -257,6 +257,7 @@ class ParameterOptimizer:
             # Preserve the parameters used for this run
             this_run_results["parameters"] = str(
                 {
+                    # Remove us when writing to database
                     "frequency": parameter_set["frequency"],
                     "cash_size": parameter_set["cash_size"],
                     **combination_to_test,

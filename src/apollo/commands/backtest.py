@@ -1,6 +1,7 @@
 import logging
 
 import pandas as pd
+from prisma import Prisma
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
@@ -76,7 +77,7 @@ def main() -> None:
 
     logger.info(this_run_results)
 
-    BacktestingResult(
+    backtesting_result = BacktestingResult(
         ticker=str(TICKER),
         strategy="SkewnessKurtosisVolatilityTrendFollowing",
         frequency=YahooApiFrequencies.ONE_DAY.value,
@@ -88,6 +89,13 @@ def main() -> None:
         },
         backtesting_results=this_run_results,
     )
+
+    database = Prisma()
+    database.connect()
+
+    database.backtesting_results.create(backtesting_result.model_dump())
+
+    database.disconnect()
 
 
 if __name__ == "__main__":
