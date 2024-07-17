@@ -78,10 +78,16 @@ class PostgresConnector:
         # Map the model to a writable representation
         writable_model = backtesting_result.model_dump()
 
+        # NOTE: prisma python client and pydantic models
+        # are not yet fully compatible between each other
+        # due to the fact that pydantic produces dict[str, Any]
+        # while prisma client operates solely on TypedDict objects
+        # In such, we ignore the type check for the data parameter
+
         # Create or update the backtesting result
         if not existing_backtesting_result:
             self.database_client.backtesting_results.create(
-                data=writable_model,
+                data=writable_model,  # type: ignore  # noqa: PGH003
             )
 
         else:
@@ -89,7 +95,7 @@ class PostgresConnector:
                 where={
                     "id": existing_backtesting_result.id,
                 },
-                data=writable_model,
+                data=writable_model,  # type: ignore  # noqa: PGH003
             )
 
         # Disconnect from the database
