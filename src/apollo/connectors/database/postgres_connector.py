@@ -44,7 +44,6 @@ class PostgresConnector:
         :param backtesting_start_date: Start date of the backtesting period.
         """
 
-        # Connect to the database
         self.database_client.connect()
 
         # Map incoming inputs to the database model
@@ -97,5 +96,4 @@ class PostgresConnector:
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
 
-        # Disconnect from the database
         self.database_client.disconnect()
