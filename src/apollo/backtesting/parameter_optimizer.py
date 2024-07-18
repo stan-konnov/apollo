@@ -29,12 +29,6 @@ from apollo.utils.types import (
 
 logger = getLogger(__name__)
 
-"""
-TODO:
-
-1. Comments here.
-"""
-
 
 class ParameterOptimizer:
     """
@@ -43,8 +37,7 @@ class ParameterOptimizer:
     Consumes configuration object with various parameters that go into the strategy.
     Constructs ranges and combinations of parameters to optimize.
     Runs series of backtesting processes each for each set of parameters to optimize.
-    Writes backtesting results and trades into files for further analysis.
-    Writes optimized parameter set from sorted backtesting results.
+    Writes backtesting results into the database.
 
     Is multiprocessing capable and runs in parallel.
     """
@@ -53,14 +46,8 @@ class ParameterOptimizer:
         """
         Construct Parameter Optimizer.
 
-        Instantiate configuration that consumes environment
-        variables and parses strategy parameters file.
-
-        Define a path to individual strategy directory
-        to store backtesting results and trades.
-
-        Create output directories for results,
-        trades, and optimized parameters if they do not exist.
+        Instantiate configuration that parses strategy parameters file.
+        Instantiate database connector that writes backtesting results into database.
         """
 
         self._configuration = Configuration()
@@ -312,9 +299,7 @@ class ParameterOptimizer:
 
     def _output_results(self, results_dataframe: pd.DataFrame) -> None:
         """
-        Prepare and write the results and trades to a file system.
-
-        Write optimized parameters file.
+        Prepare and write the backtesting results to the database.
 
         :param results_dataframe: DataFrame with backtesting results.
         """
