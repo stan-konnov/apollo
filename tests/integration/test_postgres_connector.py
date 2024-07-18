@@ -1,13 +1,16 @@
+from datetime import datetime
 from json import dumps, loads
 
 import pandas as pd
 import pytest
 from prisma import Prisma
+from pytz import timezone
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
+    DEFAULT_DATE_FORMAT,
     END_DATE,
     FREQUENCY,
     START_DATE,
@@ -190,3 +193,96 @@ def test__write_backtesting_results__for_correctly_writing_results(
         backtesting_results_from_db.system_quality_number,
         round_factor,
     ) == round(backtesting_results["SQN"], round_factor)
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+    "dataframe",
+    "window_size",
+)
+def test__write_backtesting_results__for_writing_time_period(
+    prisma_client: Prisma,
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test write_backtesting_results for writing time period.
+
+    PostgresConnector should write backtesting results to the database.
+    Written backtesting results should have correct start and end dates.
+    """
+
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+        dataframe=dataframe,
+        window_size=window_size,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=0.5,
+    )
+
+    strategy.model_trading_signals()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
+    )
+
+    stats = backtesting_runner.run()
+
+    backtesting_results = pd.DataFrame(stats).transpose()
+    backtesting_results = backtesting_results.iloc[0]
+
+    parameters = dumps(
+        {
+            "window_size": window_size,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+            "sl_volatility_multiplier": 0.1,
+            "tp_volatility_multiplier": 0.3,
+        },
+    )
+
+    postgres_connector = PostgresConnector()
+
+    postgres_connector.write_backtesting_results(
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=False,
+        parameters=parameters,
+        backtesting_results=backtesting_results,
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
+    )
+
+    start_date = datetime.strptime(
+        str(END_DATE),
+        DEFAULT_DATE_FORMAT,
+    )
+    end_date = datetime.strptime(
+        str(START_DATE),
+        DEFAULT_DATE_FORMAT,
+    )
+
+    backtesting_results_from_db = prisma_client.backtesting_results.find_first(
+        where={
+            "ticker": str(TICKER),
+            "strategy": str(STRATEGY),
+            "frequency": str(FREQUENCY),
+            "max_period": False,
+            "start_date": start_date,
+            "end_date": end_date,
+        },
+    )
+
+    assert backtesting_results_from_db is not None
+    assert backtesting_results_from_db.max_period is False
+    assert backtesting_results_from_db.start_date == start_date.astimezone().replace(
+        tzinfo=timezone("UTC"),
+    )
+    assert backtesting_results_from_db.end_date == end_date.astimezone().replace(
+        tzinfo=timezone("UTC"),
+    )
