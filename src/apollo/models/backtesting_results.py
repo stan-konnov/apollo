@@ -58,7 +58,7 @@ class BacktestingResults(BaseModel):
         backtesting_start_date: str,
     ) -> None:
         """
-        Construct a new Backtesting Result object.
+        Construct a new Backtesting Results object.
 
         :param ticker: Ticker symbol.
         :param strategy: Strategy name.
