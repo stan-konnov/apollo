@@ -1,10 +1,7 @@
 import logging
 
-import pandas as pd
-
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
-from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
     END_DATE,
     MAX_PERIOD,
@@ -58,33 +55,7 @@ def main() -> None:
 
     stats = backtesting_runner.run()
 
-    this_run_results = pd.DataFrame(stats).transpose()
-    this_run_results["parameters"] = str(
-        {
-            "window_size": 5,
-            "kurtosis_threshold": 0.0,
-            "volatility_multiplier": 0.5,
-        },
-    )
-
-    logger.info(this_run_results)
-
-    optimized_parameters = this_run_results.iloc[0]["parameters"]
-    optimized_parameters = str(optimized_parameters).replace("'", '"')
-
-    backtesting_results = this_run_results.iloc[0]
-
-    database_connector = PostgresConnector()
-    database_connector.write_backtesting_results(
-        ticker=str(TICKER),
-        strategy="SkewnessKurtosisVolatilityTrendFollowing",
-        frequency="1d",
-        max_period=bool(MAX_PERIOD),
-        parameters=optimized_parameters,
-        backtesting_results=backtesting_results,
-        backtesting_end_date=str(END_DATE),
-        backtesting_start_date=str(START_DATE),
-    )
+    logger.info(stats)
 
 
 if __name__ == "__main__":
