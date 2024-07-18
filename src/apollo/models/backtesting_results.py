@@ -14,8 +14,15 @@ Not really, clean it
 """
 
 
-class BacktestingResult(BaseModel):
-    """A data model to represent backtesting result."""
+class BacktestingResults(BaseModel):
+    """
+    A data model to represent backtesting results.
+
+    Acts as a mapper between the table produced
+    by the backtesting library and the database table.
+
+    Parses incoming backtesting series into a writable database model.
+    """
 
     ticker: str
     strategy: str

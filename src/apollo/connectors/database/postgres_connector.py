@@ -1,7 +1,7 @@
 import pandas as pd
 from prisma import Prisma
 
-from apollo.models.backtesting_result import BacktestingResult
+from apollo.models.backtesting_results import BacktestingResults
 
 
 class PostgresConnector:
@@ -48,7 +48,7 @@ class PostgresConnector:
         self.database_client.connect()
 
         # Map incoming inputs to the database model
-        backtesting_results_model = BacktestingResult(
+        backtesting_results_model = BacktestingResults(
             ticker=ticker,
             strategy=strategy,
             frequency=frequency,
