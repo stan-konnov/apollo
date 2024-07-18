@@ -28,12 +28,13 @@ influxdb-client = {extras = ["extra"], version = "^1.44.0"}
 pytest-dotenv = "^0.5.2"
 freezegun = "^1.5.1"
 prisma = "^0.13.1"
+pydantic = "^2.8.2"
 
 [tool.poetry.dev-dependencies]
 
 [tool.poe.tasks]
-test = "pytest -v --cov=src --cov-report term-missing"
 migrate = "prisma migrate dev"
+test = "pytest -v --cov=src --cov-report term-missing"
 
 optimize = "python3 src/apollo/commands/optimize.py"
 backtest = "python3 src/apollo/commands/backtest.py"
