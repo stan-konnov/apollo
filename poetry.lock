@@ -680,6 +680,20 @@ files = [
 ]
 
 [[package]]
+name = "dotenv-cli"
+version = "3.3.1"
+description = "Simple dotenv CLI."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "dotenv_cli-3.3.1-py3-none-any.whl", hash = "sha256:fc6fa389750849d2fc3abbdf9f7b9f372a6a17bef9fb570175785ae19dd4a53f"},
+    {file = "dotenv_cli-3.3.1.tar.gz", hash = "sha256:ec57d75bbeea870d322c4f38455e1ec927286180ed859f2e5f05f6a1ed22b9f7"},
+]
+
+[package.extras]
+dev = ["build", "mkdocs", "mkdocs-material", "mypy", "pytest", "pytest-cov", "ruff", "twine"]
+
+[[package]]
 name = "executing"
 version = "2.0.1"
 description = "Get the currently executing AST node of a frame, and other information"
@@ -3536,4 +3550,4 @@ repair = ["scipy (>=1.6.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "adb4433e4fcbcc633e4fa7966098bdee85eb750505ea411a72f06f42c9ad3f80"
+content-hash = "831edff30e6273bc41758659d2c4908ac7ba11c4b1ba64aed2013ccc6e933cb9"
