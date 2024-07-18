@@ -33,7 +33,6 @@ logger = getLogger(__name__)
 TODO:
 
 1. Comments here.
-2. Remove frequency and cash size from configuration files; move to environment.
 """
 
 
