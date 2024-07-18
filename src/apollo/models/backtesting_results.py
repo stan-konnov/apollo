@@ -5,14 +5,6 @@ from pydantic import BaseModel
 
 from apollo.settings import DEFAULT_DATE_FORMAT
 
-"""
-TODO: please install pydantic as we go with it now
-
-
-Do we need equity final and peak?
-Not really, clean it
-"""
-
 
 class BacktestingResults(BaseModel):
     """
