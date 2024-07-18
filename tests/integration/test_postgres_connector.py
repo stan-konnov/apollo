@@ -2,6 +2,7 @@ from json import dumps
 
 import pandas as pd
 import pytest
+from prisma import Prisma
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
@@ -11,8 +12,14 @@ from apollo.strategies.skew_kurt_vol_trend_following import (
 )
 
 
-@pytest.mark.usefixtures("dataframe", "window_size")
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+    "dataframe",
+    "window_size",
+)
 def test__write_backtesting_results__for_correctly_writing_results(
+    prisma_client: Prisma,  # noqa: ARG001
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
