@@ -336,23 +336,6 @@ class ParameterOptimizer:
         optimized_parameters = results_dataframe.iloc[0]["parameters"]
         optimized_parameters = str(optimized_parameters).replace("'", '"')
 
-        # Drop columns that are not needed for further analysis
-        # NOTE: this might not be needed as we omit in the model
-        results_dataframe.drop(
-            columns=[
-                "Start",
-                "End",
-                "Duration",
-                "Profit Factor",
-                "Expectancy [%]",
-                "_strategy",
-                "_equity_curve",
-                "_trades",
-                "parameters",
-            ],
-            inplace=True,
-        )
-
         # Write the results to the database
         self._database_connector.write_backtesting_results(
             ticker=str(TICKER),

@@ -59,20 +59,6 @@ def main() -> None:
     stats = backtesting_runner.run()
 
     this_run_results = pd.DataFrame(stats).transpose()
-    this_run_results.drop(
-        columns=[
-            "Start",
-            "End",
-            "Duration",
-            "Profit Factor",
-            "Expectancy [%]",
-            "_strategy",
-            "_equity_curve",
-            "_trades",
-        ],
-        inplace=True,
-    )
-
     this_run_results["parameters"] = str(
         {
             "window_size": 5,
