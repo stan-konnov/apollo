@@ -11,6 +11,7 @@ from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
+    BACKTESTING_CASH_SIZE,
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
@@ -237,9 +238,7 @@ class ParameterOptimizer:
             backtesting_runner = BacktestingRunner(
                 dataframe=dataframe_to_test,
                 strategy_name=strategy_name,
-                # NOTE: cash_size is non-optimized parameter (yet)
-                # and therefore is hardcoded to the value from parameter set
-                lot_size_cash=parameter_set["cash_size"],
+                lot_size_cash=BACKTESTING_CASH_SIZE,
                 sl_volatility_multiplier=combination_to_test[
                     "sl_volatility_multiplier"
                 ],
