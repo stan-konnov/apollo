@@ -34,8 +34,6 @@ class BacktestingResults(BaseModel):
     start_date: datetime | None
 
     exposure_time: float
-    equity_final: float
-    equity_peak: float
     total_return: float
     buy_and_hold_return: float
     annualized_return: float
@@ -104,8 +102,6 @@ class BacktestingResults(BaseModel):
             end_date=end_date,
             start_date=start_date,
             exposure_time=backtesting_results["Exposure Time [%]"],
-            equity_final=backtesting_results["Equity Final [$]"],
-            equity_peak=backtesting_results["Equity Peak [$]"],
             total_return=backtesting_results["Return [%]"],
             buy_and_hold_return=backtesting_results["Buy & Hold Return [%]"],
             annualized_return=backtesting_results["Return (Ann.) [%]"],

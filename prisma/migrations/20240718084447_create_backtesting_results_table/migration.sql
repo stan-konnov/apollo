@@ -9,8 +9,6 @@ CREATE TABLE "backtesting_results" (
     "end_date" TIMESTAMP(3),
     "max_period" BOOLEAN NOT NULL,
     "exposure_time" DOUBLE PRECISION NOT NULL,
-    "equity_final" DOUBLE PRECISION NOT NULL,
-    "equity_peak" DOUBLE PRECISION NOT NULL,
     "total_return" DOUBLE PRECISION NOT NULL,
     "buy_and_hold_return" DOUBLE PRECISION NOT NULL,
     "annualized_return" DOUBLE PRECISION NOT NULL,

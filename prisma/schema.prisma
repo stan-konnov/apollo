@@ -28,8 +28,6 @@ model backtesting_results {
   max_period                Boolean
 
   exposure_time             Float
-  equity_final              Float
-  equity_peak               Float
   total_return              Float
   buy_and_hold_return       Float
   annualized_return         Float
