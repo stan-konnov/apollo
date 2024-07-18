@@ -5,11 +5,13 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
     EXCHANGE,
+    FREQUENCY,
     INFLUXDB_BUCKET,
     INFLUXDB_MEASUREMENT,
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
+    POSTGRES_URL,
     START_DATE,
     STRATEGY,
     TICKER,
@@ -38,24 +40,22 @@ def ensure_environment_is_configured() -> None:
     :raises ValueError: If any of the environment variables are not configured.
     """
 
-    if any(
-        not variable
-        for variable in [
-            TICKER,
-            EXCHANGE,
-            STRATEGY,
-            START_DATE,
-            END_DATE,
-            INFLUXDB_BUCKET,
-            INFLUXDB_ORG,
-            INFLUXDB_TOKEN,
-            INFLUXDB_URL,
-            INFLUXDB_MEASUREMENT,
-        ]
-    ):
+    required_variables = {
+        "TICKER": TICKER,
+        "EXCHANGE": EXCHANGE,
+        "STRATEGY": STRATEGY,
+        "START_DATE": START_DATE,
+        "END_DATE": END_DATE,
+        "FREQUENCY": FREQUENCY,
+        "POSTGRES_URL": POSTGRES_URL,
+        "INFLUXDB_BUCKET": INFLUXDB_BUCKET,
+        "INFLUXDB_ORG": INFLUXDB_ORG,
+        "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
+        "INFLUXDB_URL": INFLUXDB_URL,
+        "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+    }
+
+    if any(not variable for variable in required_variables.values()):
         raise ValueError(
-            "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
-            "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, "
-            "INFLUXDB_URL, INFLUXDB_MEASUREMENT "
-            "environment variables must be set.",
+            f"{', '.join(required_variables)} environment variables must be set.",
         )
