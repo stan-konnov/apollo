@@ -42,7 +42,6 @@ test = ["migrate_test", "run_test_suite"]
 
 optimize = "python3 src/apollo/commands/optimize.py"
 backtest = "python3 src/apollo/commands/backtest.py"
-experiment = "python3 src/apollo/commands/experiment.py"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
