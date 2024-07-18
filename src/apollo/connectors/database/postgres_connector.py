@@ -27,7 +27,7 @@ class PostgresConnector:
         frequency: str,
         max_period: bool,
         parameters: str,
-        backtesting_results: pd.DataFrame,
+        backtesting_results: pd.Series,
         backtesting_end_date: str,
         backtesting_start_date: str,
     ) -> None:
@@ -39,7 +39,7 @@ class PostgresConnector:
         :param frequency: Frequency of the data.
         :param max_period: If all available data was used.
         :param parameters: Best performing strategy parameters.
-        :param backtesting_results: Backtesting results Dataframe.
+        :param backtesting_results: Backtesting results Series.
         :param backtesting_end_date: End date of the backtesting period.
         :param backtesting_start_date: Start date of the backtesting period.
         """
@@ -48,7 +48,7 @@ class PostgresConnector:
         self.database_client.connect()
 
         # Map incoming inputs to the database model
-        backtesting_result = BacktestingResult(
+        backtesting_results_model = BacktestingResult(
             ticker=ticker,
             strategy=strategy,
             frequency=frequency,
@@ -65,18 +65,18 @@ class PostgresConnector:
         existing_backtesting_result = (
             self.database_client.backtesting_results.find_first(
                 where={
-                    "ticker": backtesting_result.ticker,
-                    "strategy": backtesting_result.strategy,
-                    "frequency": backtesting_result.frequency,
-                    "max_period": backtesting_result.max_period,
-                    "start_date": backtesting_result.start_date,
-                    "end_date": backtesting_result.end_date,
+                    "ticker": backtesting_results_model.ticker,
+                    "strategy": backtesting_results_model.strategy,
+                    "frequency": backtesting_results_model.frequency,
+                    "max_period": backtesting_results_model.max_period,
+                    "start_date": backtesting_results_model.start_date,
+                    "end_date": backtesting_results_model.end_date,
                 },
             )
         )
 
         # Map the model to a writable representation
-        writable_model_representation = backtesting_result.model_dump()
+        writable_model_representation = backtesting_results_model.model_dump()
 
         # NOTE: prisma python client and pydantic models
         # are not yet fully compatible between each other

@@ -56,7 +56,7 @@ class BacktestingResult(BaseModel):
         frequency: str,
         max_period: bool,
         parameters: str,
-        backtesting_results: pd.DataFrame,
+        backtesting_results: pd.Series,
         backtesting_end_date: str,
         backtesting_start_date: str,
     ) -> None:
@@ -68,7 +68,7 @@ class BacktestingResult(BaseModel):
         :param frequency: Frequency of the data.
         :param max_period: If all available data was used.
         :param parameters: Best performing strategy parameters.
-        :param backtesting_results: Backtesting results Dataframe.
+        :param backtesting_results: Backtesting results Series.
         :param backtesting_end_date: End date of the backtesting period.
         :param backtesting_start_date: Start date of the backtesting period.
         """
@@ -88,10 +88,6 @@ class BacktestingResult(BaseModel):
                 DEFAULT_DATE_FORMAT,
             )
 
-        # Parse the first (and single) row of results
-        result_to_parse = backtesting_results.iloc[0]
-
-        # Populate the model with the parsed results
         super().__init__(
             ticker=ticker,
             strategy=strategy,
@@ -100,26 +96,28 @@ class BacktestingResult(BaseModel):
             parameters=parameters,
             end_date=end_date,
             start_date=start_date,
-            exposure_time=result_to_parse["Exposure Time [%]"],
-            equity_final=result_to_parse["Equity Final [$]"],
-            equity_peak=result_to_parse["Equity Peak [$]"],
-            total_return=result_to_parse["Return [%]"],
-            buy_and_hold_return=result_to_parse["Buy & Hold Return [%]"],
-            annualized_return=result_to_parse["Return (Ann.) [%]"],
-            annualized_volatility=result_to_parse["Volatility (Ann.) [%]"],
-            sharpe_ratio=result_to_parse["Sharpe Ratio"],
-            sortino_ratio=result_to_parse["Sortino Ratio"],
-            calmar_ratio=result_to_parse["Calmar Ratio"],
-            max_drawdown=result_to_parse["Max. Drawdown [%]"],
-            average_drawdown=result_to_parse["Avg. Drawdown [%]"],
-            max_drawdown_duration=str(result_to_parse["Max. Drawdown Duration"]),
-            average_drawdown_duration=str(result_to_parse["Avg. Drawdown Duration"]),
-            number_of_trades=result_to_parse["# Trades"],
-            win_rate=result_to_parse["Win Rate [%]"],
-            best_trade=result_to_parse["Best Trade [%]"],
-            worst_trade=result_to_parse["Worst Trade [%]"],
-            average_trade=result_to_parse["Avg. Trade [%]"],
-            max_trade_duration=str(result_to_parse["Max. Trade Duration"]),
-            average_trade_duration=str(result_to_parse["Avg. Trade Duration"]),
-            system_quality_number=result_to_parse["SQN"],
+            exposure_time=backtesting_results["Exposure Time [%]"],
+            equity_final=backtesting_results["Equity Final [$]"],
+            equity_peak=backtesting_results["Equity Peak [$]"],
+            total_return=backtesting_results["Return [%]"],
+            buy_and_hold_return=backtesting_results["Buy & Hold Return [%]"],
+            annualized_return=backtesting_results["Return (Ann.) [%]"],
+            annualized_volatility=backtesting_results["Volatility (Ann.) [%]"],
+            sharpe_ratio=backtesting_results["Sharpe Ratio"],
+            sortino_ratio=backtesting_results["Sortino Ratio"],
+            calmar_ratio=backtesting_results["Calmar Ratio"],
+            max_drawdown=backtesting_results["Max. Drawdown [%]"],
+            average_drawdown=backtesting_results["Avg. Drawdown [%]"],
+            max_drawdown_duration=str(backtesting_results["Max. Drawdown Duration"]),
+            average_drawdown_duration=str(
+                backtesting_results["Avg. Drawdown Duration"],
+            ),
+            number_of_trades=backtesting_results["# Trades"],
+            win_rate=backtesting_results["Win Rate [%]"],
+            best_trade=backtesting_results["Best Trade [%]"],
+            worst_trade=backtesting_results["Worst Trade [%]"],
+            average_trade=backtesting_results["Avg. Trade [%]"],
+            max_trade_duration=str(backtesting_results["Max. Trade Duration"]),
+            average_trade_duration=str(backtesting_results["Avg. Trade Duration"]),
+            system_quality_number=backtesting_results["SQN"],
         )

@@ -67,20 +67,21 @@ def main() -> None:
         },
     )
 
+    logger.info(this_run_results)
+
     optimized_parameters = this_run_results.iloc[0]["parameters"]
     optimized_parameters = str(optimized_parameters).replace("'", '"')
 
-    logger.info(this_run_results)
+    backtesting_results = this_run_results.iloc[0]
 
     database_connector = PostgresConnector()
-
     database_connector.write_backtesting_results(
         ticker=str(TICKER),
         strategy="SkewnessKurtosisVolatilityTrendFollowing",
         frequency="1d",
         max_period=bool(MAX_PERIOD),
         parameters=optimized_parameters,
-        backtesting_results=this_run_results,
+        backtesting_results=backtesting_results,
         backtesting_end_date=str(END_DATE),
         backtesting_start_date=str(START_DATE),
     )

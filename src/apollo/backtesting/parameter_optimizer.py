@@ -336,6 +336,9 @@ class ParameterOptimizer:
         optimized_parameters = results_dataframe.iloc[0]["parameters"]
         optimized_parameters = str(optimized_parameters).replace("'", '"')
 
+        # Extract single backtesting results series to write
+        backtesting_results = results_dataframe.iloc[0]
+
         # Write the results to the database
         self._database_connector.write_backtesting_results(
             ticker=str(TICKER),
@@ -343,7 +346,7 @@ class ParameterOptimizer:
             frequency=str(FREQUENCY),
             max_period=bool(MAX_PERIOD),
             parameters=optimized_parameters,
-            backtesting_results=results_dataframe,
+            backtesting_results=backtesting_results,
             backtesting_end_date=str(END_DATE),
             backtesting_start_date=str(START_DATE),
         )
