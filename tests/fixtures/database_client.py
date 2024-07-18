@@ -29,15 +29,18 @@ def influxdb_client() -> Generator[InfluxDBClient, None, None]:
 
 
 @pytest.fixture(name="flush_influxdb_bucket", autouse=True)
-def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
+def _flush_influxdb_bucket(
+    influxdb_client: InfluxDBClient,
+) -> Generator[None, None, None]:
     """
     Flush the InfluxDB bucket after each test.
 
     :param influxdb_client: The InfluxDB client.
     """
 
-    delete_api = influxdb_client.delete_api()
+    yield
 
+    delete_api = influxdb_client.delete_api()
     delete_api.delete(
         start="1970-01-01T00:00:00Z",
         stop="2100-01-01T00:00:00Z",
@@ -48,21 +51,26 @@ def _flush_influxdb_bucket(influxdb_client: InfluxDBClient) -> None:
 
 
 @pytest.fixture(name="prisma_client", scope="session")
-def prisma_client() -> Prisma:
+def prisma_client() -> Generator[Prisma, None, None]:
     """Initialize Prisma client to use in tests."""
 
-    return Prisma()
+    prisma_client = Prisma()
+    prisma_client.connect()
+
+    yield prisma_client
+
+    prisma_client.disconnect()
 
 
 @pytest.fixture(name="flush_postgres_database", autouse=True)
-def _flush_postgres_database(prisma_client: Prisma) -> None:
+def _flush_postgres_database(prisma_client: Prisma) -> Generator[None, None, None]:
     """
     Flush the Postgres database after each test.
 
     :param prisma_client: The Prisma client.
     """
 
-    prisma_client.connect()
+    yield
 
     prisma_client.execute_raw(
         """
@@ -75,5 +83,3 @@ def _flush_postgres_database(prisma_client: Prisma) -> None:
             END $$;
         """,  # noqa: E501
     )
-
-    prisma_client.disconnect()

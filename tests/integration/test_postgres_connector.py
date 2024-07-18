@@ -6,7 +6,14 @@ from prisma import Prisma
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
-from apollo.settings import TICKER
+from apollo.settings import (
+    BACKTESTING_CASH_SIZE,
+    END_DATE,
+    FREQUENCY,
+    START_DATE,
+    STRATEGY,
+    TICKER,
+)
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
@@ -40,8 +47,8 @@ def test__write_backtesting_results__for_correctly_writing_results(
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
-        lot_size_cash=1000,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.3,
     )
@@ -65,11 +72,11 @@ def test__write_backtesting_results__for_correctly_writing_results(
 
     postgres_connector.write_backtesting_results(
         ticker=str(TICKER),
-        strategy="SkewnessKurtosisVolatilityTrendFollowing",
-        frequency="1d",
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
         max_period=True,
         parameters=parameters,
         backtesting_results=backtesting_results,
-        backtesting_end_date="2021-01-01",
-        backtesting_start_date="2020-01-01",
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
     )
