@@ -37,8 +37,11 @@ def test__write_backtesting_results__for_correctly_writing_results(
     Test write_backtesting_results for correctly writing results to the database.
 
     PostgresConnector should write backtesting results to the database.
-    All of the values written into database should match original backtesting results.
+    All of the values used for identification of backtesting results should be match.
+    All of the values produced by the backtesting library should be match.
     """
+
+    dataframe = dataframe.copy()
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
@@ -212,6 +215,8 @@ def test__write_backtesting_results__for_writing_time_period(
     PostgresConnector should write backtesting results to the database.
     Written backtesting results should have correct start and end dates.
     """
+
+    dataframe = dataframe.copy()
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
