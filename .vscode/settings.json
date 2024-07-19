@@ -26,8 +26,5 @@
     "notebook.codeActionsOnSave": {
         "notebook.source.fixAll": "explicit",
         "notebook.source.organizeImports": "explicit"
-    },
-    "cSpell.words": [
-        "schemaname"
-    ]
+    }
 }
