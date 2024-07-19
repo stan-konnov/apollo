@@ -1,7 +1,6 @@
 from json import load
 from pathlib import Path
 from typing import cast
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -12,10 +11,8 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.utils.types import ParameterSet
 from tests.fixtures.env_and_constants import (
-    END_DATE,
     LOT_SIZE_CASH,
     SL_VOL_MULT,
-    START_DATE,
     STRATEGY,
     TICKER,
     TP_VOL_MULT,
@@ -26,13 +23,7 @@ RANGE_MIN = 1.0
 RANGE_MAX = 2.0
 RANGE_STEP = 1.0
 
-"""
-NOTE: this will change significantly with moving away from files
-as lots of logic revolving around writing to and from file system will be removed
-"""
 
-
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -53,7 +44,6 @@ def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     pd.testing.assert_series_equal(control_combination_ranges, combination_ranges)
 
 
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -90,7 +80,6 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combinations_batching() -> None:
     """
     Test Parameter Optimizer for correct combinations batching.
@@ -121,8 +110,6 @@ def test__parameter_optimizer__for_correct_combinations_batching() -> None:
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_error_handling(
     dataframe: pd.DataFrame,
     caplog: pytest.LogCaptureFixture,
@@ -173,106 +160,7 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_creating_start_end_results_directories() -> None:
-    """
-    Test Parameter Optimizer for correctly creating results directories.
-
-    Parameter Optimizer must create main backtesting results directory.
-    Parameter Optimizer must create individual strategy directory.
-    Parameter Optimizer must create optimized parameters directory.
-    """
-
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
-
-    parameter_optimizer._create_output_directories()  # noqa: SLF001
-
-    assert Path.exists(BRES_DIR)
-    assert Path.exists(strategy_dir)
-    assert Path.exists(OPTP_DIR)
-
-
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_creating_max_period_results_directories() -> None:
-    """
-    Test Parameter Optimizer for correctly creating results directories.
-
-    Parameter Optimizer must create main backtesting results directory.
-    Parameter Optimizer must create individual strategy directory.
-    Parameter Optimizer must create optimized parameters directory.
-    """
-
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
-
-    parameter_optimizer._create_output_directories()  # noqa: SLF001
-
-    assert Path.exists(BRES_DIR)
-    assert Path.exists(strategy_dir)
-    assert Path.exists(OPTP_DIR)
-
-
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
-    """
-    Test Parameter Optimizer for correctly writing result files.
-
-    Parameter Optimizer must write trades CSV file.
-    Parameter Optimizer must write results CSV file.
-    Parameter Optimizer must write optimized parameters JSON file.
-    """
-
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
-
-    trades_dataframe = pd.DataFrame({"ReturnPct": [1.0]})
-    results_dataframe = pd.DataFrame({"Return [%]": [1.0]})
-    optimized_parameters = {
-        "frequency": "1d",
-        "window_size": 5,
-        "sl_volatility_multiplier": 0.01,
-    }
-
-    parameter_optimizer._write_result_files(  # noqa: SLF001
-        trades_dataframe,
-        results_dataframe,
-        optimized_parameters,
-    )
-
-    assert Path.exists(Path(f"{strategy_dir}/trades.csv"))
-    assert Path.exists(Path(f"{strategy_dir}/results.csv"))
-    assert Path.exists(Path(f"{OPTP_DIR}/{STRATEGY}.json"))
-
-
 @pytest.mark.usefixtures("dataframe", "window_size")
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
 def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
     window_size: int,
