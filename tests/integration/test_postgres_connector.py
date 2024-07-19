@@ -204,13 +204,13 @@ def test__write_backtesting_results__for_correctly_writing_results(
     "dataframe",
     "window_size",
 )
-def test__write_backtesting_results__for_writing_time_period(
+def test__write_backtesting_results__for_writing_results_with_defined_time_period(
     prisma_client: Prisma,
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test write_backtesting_results for writing time period.
+    Test write_backtesting_results for writing results with defined time period.
 
     PostgresConnector should write backtesting results to the database.
     Written backtesting results should have correct start and end dates.
