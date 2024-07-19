@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from numpy import datetime64
 
+from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     END_DATE,
     EXCHANGE,
@@ -59,6 +60,28 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
 
     exception_message = (
         f"{', '.join(required_variables)} environment variables must be set."
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=exception_message,
+    ) as exception:
+        ensure_environment_is_configured()
+
+    assert str(exception.value) == exception_message
+
+
+@patch("apollo.utils.common.STRATEGY", "SomeNonExistentStrategy")
+def test__ensure_environment_is_configured__for_invalidating_strategy() -> None:
+    """
+    Test ensure_environment_is_configured for invalidating strategy.
+
+    Function must raise an exception if the strategy is not a valid strategy.
+    """
+
+    exception_message = str(
+        "Invalid STRATEGY environment variable: SomeNonExistentStrategy. "
+        f"Accepted values: {', '.join(STRATEGY_CATALOGUE_MAP)}",
     )
 
     with pytest.raises(
