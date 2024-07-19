@@ -163,6 +163,61 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
+@pytest.mark.usefixtures("dataframe")
+def test__parameter_optimizer__for_correct_processing(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test Parameter Optimizer for correct processing.
+
+    Result must be dataframe.
+    Result must have "parameters" column.
+    """
+
+    parameter_optimizer = ParameterOptimizer()
+
+    parameters = {
+        "window_size": {
+            "range": [5, 10],
+            "step": 5,
+        },
+        "sl_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "tp_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "kurtosis_threshold": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "strategy_specific_parameters": [
+            "kurtosis_threshold",
+            "volatility_multiplier",
+        ],
+    }
+
+    keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
+        cast(ParameterSet, parameters),
+    )
+
+    backtested_dataframe = parameter_optimizer._process(  # noqa: SLF001
+        combinations=combinations,
+        price_dataframe=dataframe,
+        parameter_set=cast(ParameterSet, parameters),
+        keys=keys,
+    )
+
+    assert isinstance(backtested_dataframe, pd.DataFrame)
+    assert "parameters" in backtested_dataframe.columns
+
+
 @pytest.mark.usefixtures("dataframe", "window_size")
 def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
