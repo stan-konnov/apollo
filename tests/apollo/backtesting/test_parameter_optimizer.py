@@ -58,11 +58,11 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     parameter_optimizer = ParameterOptimizer()
 
     parameters = {
-        "stop_loss_level": {
+        "sl_volatility_multiplier": {
             "range": [RANGE_MIN, RANGE_MAX],
             "step": RANGE_STEP,
         },
-        "take_profit_level": {
+        "tp_volatility_multiplier": {
             "range": [RANGE_MIN, RANGE_MAX],
             "step": RANGE_STEP,
         },
