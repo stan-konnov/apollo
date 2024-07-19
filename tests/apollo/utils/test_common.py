@@ -3,6 +3,23 @@ from unittest.mock import patch
 import pytest
 from numpy import datetime64
 
+from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.settings import (
+    END_DATE,
+    EXCHANGE,
+    EXCHANGE_TIME_ZONE_AND_HOURS,
+    FREQUENCY,
+    INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
+    INFLUXDB_ORG,
+    INFLUXDB_TOKEN,
+    INFLUXDB_URL,
+    POSTGRES_URL,
+    START_DATE,
+    STRATEGY,
+    TICKER,
+    YahooApiFrequencies,
+)
 from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
 
 
@@ -28,11 +45,89 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
     Function must raise an exception if any of the required variables are not set.
     """
 
+    required_variables = {
+        "TICKER": TICKER,
+        "EXCHANGE": EXCHANGE,
+        "STRATEGY": STRATEGY,
+        "START_DATE": START_DATE,
+        "END_DATE": END_DATE,
+        "FREQUENCY": FREQUENCY,
+        "POSTGRES_URL": POSTGRES_URL,
+        "INFLUXDB_BUCKET": INFLUXDB_BUCKET,
+        "INFLUXDB_ORG": INFLUXDB_ORG,
+        "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
+        "INFLUXDB_URL": INFLUXDB_URL,
+        "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+    }
+
+    exception_message = (
+        f"{', '.join(required_variables)} environment variables must be set."
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=exception_message,
+    ) as exception:
+        ensure_environment_is_configured()
+
+    assert str(exception.value) == exception_message
+
+
+@patch("apollo.utils.common.STRATEGY", "SomeNonExistentStrategy")
+def test__ensure_environment_is_configured__for_invalidating_strategy() -> None:
+    """
+    Test ensure_environment_is_configured for invalidating strategy.
+
+    Function must raise an exception if the strategy is not a valid strategy.
+    """
+
     exception_message = str(
-        "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
-        "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, "
-        "INFLUXDB_URL, INFLUXDB_MEASUREMENT "
-        "environment variables must be set.",
+        "Invalid STRATEGY environment variable: SomeNonExistentStrategy. "
+        f"Accepted values: {', '.join(STRATEGY_CATALOGUE_MAP)}",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=exception_message,
+    ) as exception:
+        ensure_environment_is_configured()
+
+    assert str(exception.value) == exception_message
+
+
+@patch("apollo.utils.common.EXCHANGE", "ABCD")
+def test__ensure_environment_is_configured__for_invalidating_exchange() -> None:
+    """
+    Test ensure_environment_is_configured for invalidating exchange.
+
+    Function must raise an exception if the exchange is not a valid exchange.
+    """
+
+    exception_message = str(
+        "Invalid EXCHANGE environment variable: ABCD. "
+        f"Accepted values: {', '.join(EXCHANGE_TIME_ZONE_AND_HOURS)}",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=exception_message,
+    ) as exception:
+        ensure_environment_is_configured()
+
+    assert str(exception.value) == exception_message
+
+
+@patch("apollo.utils.common.FREQUENCY", "inf")
+def test__ensure_environment_is_configured__for_invalidating_frequency() -> None:
+    """
+    Test ensure_environment_is_configured for invalidating frequency.
+
+    Function must raise an exception if the frequency is not a valid frequency.
+    """
+
+    exception_message = str(
+        "Invalid FREQUENCY environment variable: inf. "
+        f"Accepted values: {', '.join([f.value for f in YahooApiFrequencies])}",
     )
 
     with pytest.raises(

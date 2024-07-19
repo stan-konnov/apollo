@@ -1,7 +1,5 @@
-from json import load
-from pathlib import Path
 from typing import cast
-from unittest.mock import patch
+from unittest.mock import Mock
 
 import pandas as pd
 import pytest
@@ -9,30 +7,26 @@ import pytest
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.utils.types import ParameterSet
-from tests.fixtures.env_and_constants import (
+from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.settings import (
+    BACKTESTING_CASH_SIZE,
     END_DATE,
-    LOT_SIZE_CASH,
-    SL_VOL_MULT,
+    FREQUENCY,
+    LONG_SIGNAL,
+    MAX_PERIOD,
+    SHORT_SIGNAL,
     START_DATE,
     STRATEGY,
     TICKER,
-    TP_VOL_MULT,
 )
-from tests.fixtures.files_and_directories import BRES_DIR, OPTP_DIR
+from apollo.utils.types import ParameterSet
+from tests.fixtures.window_size_and_dataframe import SameSeries
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
 RANGE_STEP = 1.0
 
-"""
-NOTE: this will change significantly with moving away from files
-as lots of logic revolving around writing to and from file system will be removed
-"""
 
-
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -53,7 +47,6 @@ def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     pd.testing.assert_series_equal(control_combination_ranges, combination_ranges)
 
 
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     """
     Test Parameter Optimizer for correct combination ranges.
@@ -65,11 +58,11 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     parameter_optimizer = ParameterOptimizer()
 
     parameters = {
-        "stop_loss_level": {
+        "sl_volatility_multiplier": {
             "range": [RANGE_MIN, RANGE_MAX],
             "step": RANGE_STEP,
         },
-        "take_profit_level": {
+        "tp_volatility_multiplier": {
             "range": [RANGE_MIN, RANGE_MAX],
             "step": RANGE_STEP,
         },
@@ -90,7 +83,6 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_combinations_batching() -> None:
     """
     Test Parameter Optimizer for correct combinations batching.
@@ -121,8 +113,6 @@ def test__parameter_optimizer__for_correct_combinations_batching() -> None:
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
 def test__parameter_optimizer__for_correct_error_handling(
     dataframe: pd.DataFrame,
     caplog: pytest.LogCaptureFixture,
@@ -173,106 +163,62 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_creating_start_end_results_directories() -> None:
+@pytest.mark.usefixtures("dataframe")
+def test__parameter_optimizer__for_correct_processing(
+    dataframe: pd.DataFrame,
+) -> None:
     """
-    Test Parameter Optimizer for correctly creating results directories.
+    Test Parameter Optimizer for correct processing.
 
-    Parameter Optimizer must create main backtesting results directory.
-    Parameter Optimizer must create individual strategy directory.
-    Parameter Optimizer must create optimized parameters directory.
+    Result must be dataframe.
+    Result must have "parameters" column.
     """
 
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-{START_DATE}-{END_DATE}",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
 
-    parameter_optimizer._create_output_directories()  # noqa: SLF001
-
-    assert Path.exists(BRES_DIR)
-    assert Path.exists(strategy_dir)
-    assert Path.exists(OPTP_DIR)
-
-
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_creating_max_period_results_directories() -> None:
-    """
-    Test Parameter Optimizer for correctly creating results directories.
-
-    Parameter Optimizer must create main backtesting results directory.
-    Parameter Optimizer must create individual strategy directory.
-    Parameter Optimizer must create optimized parameters directory.
-    """
-
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
-
-    parameter_optimizer._create_output_directories()  # noqa: SLF001
-
-    assert Path.exists(BRES_DIR)
-    assert Path.exists(strategy_dir)
-    assert Path.exists(OPTP_DIR)
-
-
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
-def test__parameter_optimizer__for_correctly_writing_result_files() -> None:
-    """
-    Test Parameter Optimizer for correctly writing result files.
-
-    Parameter Optimizer must write trades CSV file.
-    Parameter Optimizer must write results CSV file.
-    Parameter Optimizer must write optimized parameters JSON file.
-    """
-
-    strategy_dir = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
-
-    # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = strategy_dir
-
-    trades_dataframe = pd.DataFrame({"ReturnPct": [1.0]})
-    results_dataframe = pd.DataFrame({"Return [%]": [1.0]})
-    optimized_parameters = {
-        "frequency": "1d",
-        "window_size": 5,
-        "sl_volatility_multiplier": 0.01,
+    parameters = {
+        "window_size": {
+            "range": [5, 10],
+            "step": 5,
+        },
+        "sl_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "tp_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "kurtosis_threshold": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "strategy_specific_parameters": [
+            "kurtosis_threshold",
+            "volatility_multiplier",
+        ],
     }
 
-    parameter_optimizer._write_result_files(  # noqa: SLF001
-        trades_dataframe,
-        results_dataframe,
-        optimized_parameters,
+    keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
+        cast(ParameterSet, parameters),
     )
 
-    assert Path.exists(Path(f"{strategy_dir}/trades.csv"))
-    assert Path.exists(Path(f"{strategy_dir}/results.csv"))
-    assert Path.exists(Path(f"{OPTP_DIR}/{STRATEGY}.json"))
+    backtested_dataframe = parameter_optimizer._process(  # noqa: SLF001
+        combinations=combinations,
+        price_dataframe=dataframe,
+        parameter_set=cast(ParameterSet, parameters),
+        keys=keys,
+    )
+
+    assert isinstance(backtested_dataframe, pd.DataFrame)
+    assert "parameters" in backtested_dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
-@patch("apollo.backtesting.parameter_optimizer.BRES_DIR", BRES_DIR)
-@patch("apollo.backtesting.parameter_optimizer.OPTP_DIR", OPTP_DIR)
 def test__parameter_optimizer__for_correct_result_output(
     dataframe: pd.DataFrame,
     window_size: int,
@@ -280,12 +226,13 @@ def test__parameter_optimizer__for_correct_result_output(
     """
     Test Parameter Optimizer for correct result output.
 
-    Results CSV must have clean indices.
-    Results CSV must omit unnecessary columns.
-    Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
+    Results dataframe must have clean indices.
+    Results dataframe must omit unnecessary columns.
+    Results dataframe must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
 
-    Trades CSV returns must match the best results.
     Optimized parameters JSON must match the best results.
+
+    Parameter Optimizer must call database connector with correct values.
     """
 
     # Precalculate volatility
@@ -295,15 +242,10 @@ def test__parameter_optimizer__for_correct_result_output(
     # Drop NaNs after rolling calculations
     dataframe.dropna(inplace=True)
 
-    # Define the individual strategy directory
-    individual_strategy_directory = Path(
-        f"{BRES_DIR}/{TICKER}-{STRATEGY}-max-period",
-    )
-
     # Initialize ParameterOptimizer with strategy directory
     # NOTE: this is a flaky test that will be removed with moving away from files
     parameter_optimizer = ParameterOptimizer()
-    parameter_optimizer.strategy_dir = individual_strategy_directory
+    parameter_optimizer._database_connector = Mock(PostgresConnector)  # noqa: SLF001
 
     # Insert signal column
     dataframe["signal"] = 0
@@ -328,32 +270,38 @@ def test__parameter_optimizer__for_correct_result_output(
     # Backtest the first run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_1_dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
     )
     optimization_run_1_stats = backtesting_runner.run()
 
     # Backtest the second run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_2_dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.02,
+        tp_volatility_multiplier=0.02,
     )
     optimization_run_2_stats = backtesting_runner.run()
 
     # Transpose the results and add parameters
     optimized_results_1 = pd.DataFrame(optimization_run_1_stats).transpose()
-    optimized_results_1["parameters"] = (
-        "{'sl_volatility_multiplier': 0.01, 'tp_volatility_multiplier': 0.01}"
+    optimized_results_1["parameters"] = str(
+        {
+            "sl_volatility_multiplier": 0.01,
+            "tp_volatility_multiplier": 0.01,
+        },
     )
 
     optimized_results_2 = pd.DataFrame(optimization_run_2_stats).transpose()
-    optimized_results_2["parameters"] = (
-        "{'sl_volatility_multiplier': 0.02, 'tp_volatility_multiplier': 0.02}"
+    optimized_results_2["parameters"] = str(
+        {
+            "sl_volatility_multiplier": 0.02,
+            "tp_volatility_multiplier": 0.02,
+        },
     )
 
     # Merge the results
@@ -373,64 +321,25 @@ def test__parameter_optimizer__for_correct_result_output(
     # dataframe to cleanup after concatenation
     control_dataframe.reset_index(drop=True, inplace=True)
 
-    # Preserve the best performing trades
-    control_trades_dataframe = control_dataframe.iloc[0]["_trades"].copy()
+    # Parse the optimized parameters
+    control_parameters = control_dataframe.iloc[0]["parameters"]
+    control_parameters = str(control_parameters).replace("'", '"')
 
-    # Humanize trades' returns
-    control_trades_dataframe["ReturnPct"] = control_trades_dataframe["ReturnPct"] * 100
-
-    # Drop unnecessary columns from the control dataframe
-    control_dataframe.drop(
-        columns=[
-            "Start",
-            "End",
-            "Duration",
-            "Profit Factor",
-            "Expectancy [%]",
-            "_strategy",
-            "_equity_curve",
-            "_trades",
-        ],
-        inplace=True,
-    )
+    # Extract single backtesting results series to write
+    control_backtesting_results = control_dataframe.iloc[0]
 
     # Now, run the _output_results method
     parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
 
-    # Read back the results
-    results_dataframe = pd.read_csv(
-        f"{individual_strategy_directory}/results.csv",
-        index_col=0,
+    parameter_optimizer._database_connector.write_backtesting_results.assert_called_once_with(  # noqa: SLF001
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=bool(MAX_PERIOD),
+        parameters=control_parameters,
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameSeries class
+        backtesting_results=SameSeries(control_backtesting_results),
+        backtesting_end_date=str(END_DATE),
+        backtesting_start_date=str(START_DATE),
     )
-
-    # Read back the trades
-    trades_dataframe = pd.read_csv(
-        f"{individual_strategy_directory}/trades.csv",
-        index_col=0,
-    )
-
-    # Read back the optimized parameters
-    with Path.open(Path(f"{OPTP_DIR}/{STRATEGY}.json")) as file:
-        optimized_parameters = load(file)
-
-    # Grab the return from the results and control dataframes
-    results_return = round(results_dataframe.iloc[0]["Return [%]"], 2)
-    control_return = round(control_dataframe.iloc[0]["Return [%]"], 2)
-
-    # Results CSV must have clean indices
-    assert results_dataframe.index.equals(control_dataframe.index)
-
-    # Results CSV must omit unnecessary columns
-    assert list(results_dataframe.columns) == list(control_dataframe.columns)
-
-    # Results CSV must be sorted by "Return [%]", "Sharpe Ratio", "# Trades"
-    assert results_return == control_return
-
-    # Trades CSV returns must match the best results
-    pd.testing.assert_series_equal(
-        trades_dataframe["ReturnPct"],
-        control_trades_dataframe["ReturnPct"],
-    )
-
-    # Optimized parameters JSON must match the best results
-    assert str(optimized_parameters) == control_dataframe.iloc[0]["parameters"]

@@ -1,8 +1,4 @@
 {
-    "frequency": "1d",
-
-    "cash_size": 1000,
-
     "window_size": {
         "step": 5,
         "range": [5, 20]

@@ -1,16 +1,17 @@
 import logging
-from typing import TYPE_CHECKING
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
-from apollo.settings import END_DATE, MAX_PERIOD, START_DATE, TICKER
+from apollo.settings import (
+    END_DATE,
+    MAX_PERIOD,
+    START_DATE,
+    TICKER,
+)
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
@@ -55,11 +56,6 @@ def main() -> None:
     stats = backtesting_runner.run()
 
     logger.info(stats)
-
-    trades: pd.DataFrame = stats["_trades"]
-    trades["ReturnPct"] = trades["ReturnPct"] * 100
-
-    # trades.to_csv("trades.csv")  # noqa: ERA001
 
 
 if __name__ == "__main__":

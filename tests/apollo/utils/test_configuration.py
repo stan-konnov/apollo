@@ -6,9 +6,9 @@ from unittest.mock import patch
 
 import pytest
 
+from apollo.settings import STRATEGY
 from apollo.utils.configuration import Configuration
-from tests.fixtures.env_and_constants import STRATEGY
-from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH
+from tests.fixtures.files_and_directories import TEST_DIR
 
 if TYPE_CHECKING:
     from apollo.utils.types import ParameterSet
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-@patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
+@patch("apollo.utils.configuration.PARM_DIR", TEST_DIR)
 @patch("apollo.utils.configuration.STRATEGY", "NonExistingStrategy")
 def test__configuration__with_non_existing_parameter_set_file(
     caplog: pytest.LogCaptureFixture,
@@ -35,7 +35,7 @@ def test__configuration__with_non_existing_parameter_set_file(
     assert (
         str(
             "Parameter set file not found. "
-            f"Please create one at {PARM_DIR}/NonExistingStrategy.json",
+            f"Please create one at {TEST_DIR}/NonExistingStrategy.json",
         )
         in caplog.text
     )
@@ -43,7 +43,7 @@ def test__configuration__with_non_existing_parameter_set_file(
     assert exception.value.code == 1
 
 
-@patch("apollo.utils.configuration.PARM_DIR", PARM_DIR)
+@patch("apollo.utils.configuration.PARM_DIR", TEST_DIR)
 @patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 def test__configuration__with_existing_parameter_set_file() -> None:
     """
@@ -56,7 +56,7 @@ def test__configuration__with_existing_parameter_set_file() -> None:
 
     parameter_set: ParameterSet
 
-    with Path.open(Path(PARM_FILE_PATH)) as file:
+    with Path.open(Path(f"{TEST_DIR}/{STRATEGY}.json")) as file:
         parameter_set = load(file)
 
     assert configuration.parameter_set == parameter_set

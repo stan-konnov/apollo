@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from tests.fixtures.env_and_constants import TICKER
+from apollo.settings import TICKER
 from tests.fixtures.files_and_directories import TEST_DIR
 
 WINDOW_SIZE = 5
@@ -50,3 +50,21 @@ class SameDataframe:
         """Override equals method to compare two pandas Dataframes."""
 
         return isinstance(other, pd.DataFrame) and other.equals(self.dataframe)
+
+
+class SameSeries:
+    """
+    SameSeries class.
+
+    Please see SameDataframe class above.
+    """
+
+    def __init__(self, series: pd.Series) -> None:
+        """Construct SameSeries class."""
+
+        self.series = series
+
+    def __eq__(self, other: object) -> bool:
+        """Override equals method to compare two pandas Series."""
+
+        return isinstance(other, pd.Series) and other.equals(self.series)

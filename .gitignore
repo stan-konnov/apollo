@@ -7,5 +7,6 @@
 **/backtesting_results
 
 **/.coverage*
+!.coveragerc
 
 **/.DS_Store
