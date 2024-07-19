@@ -94,7 +94,7 @@ class ParameterOptimizer:
             # Concatenate the results from each process
             combined_results = pd.concat(results)
 
-            # Output the results to a file and create optimized parameters file
+            # Output the results to the database
             self._output_results(combined_results)
 
     def _batch_combinations(
