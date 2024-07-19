@@ -3,7 +3,15 @@ from json import dumps, load
 from pathlib import Path
 from sys import exit
 
-from apollo.settings import END_DATE, MAX_PERIOD, PARM_DIR, START_DATE, STRATEGY, TICKER
+from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
+    MAX_PERIOD,
+    PARM_DIR,
+    START_DATE,
+    STRATEGY,
+    TICKER,
+)
 from apollo.utils.types import ParameterSet
 
 logger = logging.getLogger(__name__)
@@ -13,7 +21,6 @@ class Configuration:
     """
     Configuration class.
 
-    Takes in environment variables to supply to parameter optimizer.
     Looks up strategy parameters file and parses it into a typed object.
     """
 
@@ -31,6 +38,7 @@ class Configuration:
         logger.info(
             f"Running {STRATEGY} for {TICKER}\n\n"
             f"Period: {period}\n\n"
+            f"Frequency: {FREQUENCY}\n\n"
             "Parameters:\n\n"
             f"{dumps(self.parameter_set, indent=4)}",
         )

@@ -1,0 +1,10 @@
+[report]
+omit =
+    */__init__.py
+    */settings.py
+    */commands/*
+    */types.py
+    */tests/*
+
+exclude_lines =
+    if TYPE_CHECKING:

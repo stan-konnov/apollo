@@ -82,7 +82,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
         slope, intercept, _, _, _ = linregress(x, y)
 
         # Preserve slope
-        self.t_slope.append(slope)
+        self.t_slope.append(slope)  # type: ignore  # noqa: PGH003
 
         # Calculate line of best fit
         lbf = slope * x + intercept

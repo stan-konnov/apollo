@@ -11,11 +11,14 @@ EXCHANGE = getenv("EXCHANGE", None)
 STRATEGY = getenv("STRATEGY", None)
 START_DATE = getenv("START_DATE", None)
 END_DATE = getenv("END_DATE", None)
+FREQUENCY = getenv("FREQUENCY", None)
 MAX_PERIOD = getenv("MAX_PERIOD", None)
 
 NO_SIGNAL = 0
 LONG_SIGNAL = 1
 SHORT_SIGNAL = -1
+
+BACKTESTING_CASH_SIZE = 1000
 
 ROOT_DIR = Path(curdir).resolve()
 DATA_DIR = Path(f"{ROOT_DIR}/data")
@@ -27,6 +30,7 @@ BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"
 
+POSTGRES_URL = getenv("POSTGRES_URL", None)
 INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
 INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
 INFLUXDB_URL = getenv("INFLUXDB_URL", None)

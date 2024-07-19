@@ -1,0 +1,53 @@
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model backtesting_results {
+  id                        String @id @unique @default(uuid())
+
+  // NOTE: we explicitly do not define unique constraints
+  // around seemingly unique fields like ticker, frequency, and strategy
+  // because we want to allow for multiple backtests of the same strategy
+  // on the same ticker at the same frequency, but different backtesting periods
+
+  ticker                    String
+  strategy                  String
+  frequency                 String
+  parameters                Json
+
+  start_date                DateTime?
+  end_date                  DateTime?
+  max_period                Boolean
+
+  exposure_time             Float
+  total_return              Float
+  buy_and_hold_return       Float
+  annualized_return         Float
+  annualized_volatility     Float
+  sharpe_ratio              Float
+  sortino_ratio             Float
+  calmar_ratio              Float
+  max_drawdown              Float
+  average_drawdown          Float
+  max_drawdown_duration     String
+  average_drawdown_duration String
+  number_of_trades          Int
+  win_rate                  Float
+  best_trade                Float
+  worst_trade               Float
+  average_trade             Float
+  max_trade_duration        String
+  average_trade_duration    String
+  system_quality_number     Float
+
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+}
