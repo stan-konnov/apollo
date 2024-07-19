@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
+from apollo.settings import STRATEGY
 from apollo.utils.configuration import Configuration
-from tests.fixtures.env_and_constants import STRATEGY
 from tests.fixtures.files_and_directories import PARM_DIR, PARM_FILE_PATH
 
 if TYPE_CHECKING:

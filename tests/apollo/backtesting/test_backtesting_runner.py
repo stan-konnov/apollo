@@ -5,12 +5,7 @@ import pytest
 from pandas import DataFrame
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from tests.fixtures.env_and_constants import (
-    LOT_SIZE_CASH,
-    SL_VOL_MULT,
-    STRATEGY,
-    TP_VOL_MULT,
-)
+from apollo.settings import BACKTESTING_CASH_SIZE, STRATEGY
 from tests.fixtures.files_and_directories import PLOT_DIR
 
 
@@ -26,10 +21,10 @@ def test__backtesting_runner__for_uppercasing_columns(
 
     BacktestingRunner(
         dataframe=dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
     )
 
     assert all(
@@ -54,10 +49,10 @@ def test__backtesting_runner__for_running_the_process(
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
     )
 
     stats = backtesting_runner.run()
@@ -82,10 +77,10 @@ def test__backtesting_runner__for_creating_plots_directory(
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
         write_result_plot=True,
     )
 
@@ -110,11 +105,11 @@ def test__backtesting_runner__for_writing_result_plot(
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
-        write_result_plot=True,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
+        write_result_plot=False,
     )
 
     backtesting_runner.run()

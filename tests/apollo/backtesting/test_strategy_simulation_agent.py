@@ -3,7 +3,9 @@ from pandas import DataFrame
 
 from apollo.backtesting.strategy_simulation_agent import StrategySimulationAgent
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from tests.fixtures.env_and_constants import SL_VOL_MULT, TP_VOL_MULT
+
+SL_VOL_MULT = 0.01
+TP_VOL_MULT = 0.01
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

@@ -6,7 +6,8 @@ from scipy.stats import linregress
 from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
-from tests.fixtures.env_and_constants import CHANNEL_SD_SPREAD
+
+CHANNEL_SD_SPREAD = 0.1
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -169,7 +170,7 @@ def mimic_calc_lin_reg(
 
     slope, intercept, _, _, _ = linregress(x, y)
 
-    t_slope.append(slope)
+    t_slope.append(slope)  # type: ignore  # noqa: PGH003
 
     lbf = slope * x + intercept
 

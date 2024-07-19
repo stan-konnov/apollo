@@ -9,21 +9,17 @@ from apollo.backtesting.parameter_optimizer import ParameterOptimizer
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.settings import (
+    BACKTESTING_CASH_SIZE,
     END_DATE,
     FREQUENCY,
     LONG_SIGNAL,
     MAX_PERIOD,
     SHORT_SIGNAL,
     START_DATE,
+    STRATEGY,
     TICKER,
 )
 from apollo.utils.types import ParameterSet
-from tests.fixtures.env_and_constants import (
-    LOT_SIZE_CASH,
-    SL_VOL_MULT,
-    STRATEGY,
-    TP_VOL_MULT,
-)
 from tests.fixtures.window_size_and_dataframe import SameSeries
 
 RANGE_MIN = 1.0
@@ -219,20 +215,20 @@ def test__parameter_optimizer__for_correct_result_output(
     # Backtest the first run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_1_dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
     )
     optimization_run_1_stats = backtesting_runner.run()
 
     # Backtest the second run
     backtesting_runner = BacktestingRunner(
         dataframe=optimization_run_2_dataframe,
-        strategy_name=STRATEGY,
-        lot_size_cash=LOT_SIZE_CASH,
-        sl_volatility_multiplier=SL_VOL_MULT,
-        tp_volatility_multiplier=TP_VOL_MULT,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.02,
+        tp_volatility_multiplier=0.02,
     )
     optimization_run_2_stats = backtesting_runner.run()
 

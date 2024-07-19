@@ -16,11 +16,11 @@ from apollo.settings import (
     INFLUXDB_URL,
     POSTGRES_URL,
     START_DATE,
+    STRATEGY,
     TICKER,
     YahooApiFrequencies,
 )
 from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
-from tests.fixtures.env_and_constants import STRATEGY
 
 
 def test__to_default_date_string__with_proper_inputs() -> None:

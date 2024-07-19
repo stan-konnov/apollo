@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from tests.fixtures.env_and_constants import TICKER
+from apollo.settings import TICKER
 from tests.fixtures.files_and_directories import TEST_DIR
 
 WINDOW_SIZE = 5
