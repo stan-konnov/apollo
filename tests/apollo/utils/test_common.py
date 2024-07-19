@@ -3,7 +3,21 @@ from unittest.mock import patch
 import pytest
 from numpy import datetime64
 
+from apollo.settings import (
+    END_DATE,
+    EXCHANGE,
+    FREQUENCY,
+    INFLUXDB_BUCKET,
+    INFLUXDB_MEASUREMENT,
+    INFLUXDB_ORG,
+    INFLUXDB_TOKEN,
+    INFLUXDB_URL,
+    POSTGRES_URL,
+    START_DATE,
+    TICKER,
+)
 from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
+from tests.fixtures.env_and_constants import STRATEGY
 
 
 def test__to_default_date_string__with_proper_inputs() -> None:
@@ -28,11 +42,23 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
     Function must raise an exception if any of the required variables are not set.
     """
 
-    exception_message = str(
-        "TICKER, EXCHANGE, STRATEGY, START_DATE, END_DATE, "
-        "INFLUXDB_BUCKET, INFLUXDB_ORG, INFLUXDB_TOKEN, "
-        "INFLUXDB_URL, INFLUXDB_MEASUREMENT "
-        "environment variables must be set.",
+    required_variables = {
+        "TICKER": TICKER,
+        "EXCHANGE": EXCHANGE,
+        "STRATEGY": STRATEGY,
+        "START_DATE": START_DATE,
+        "END_DATE": END_DATE,
+        "FREQUENCY": FREQUENCY,
+        "POSTGRES_URL": POSTGRES_URL,
+        "INFLUXDB_BUCKET": INFLUXDB_BUCKET,
+        "INFLUXDB_ORG": INFLUXDB_ORG,
+        "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
+        "INFLUXDB_URL": INFLUXDB_URL,
+        "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+    }
+
+    exception_message = (
+        f"{', '.join(required_variables)} environment variables must be set."
     )
 
     with pytest.raises(
