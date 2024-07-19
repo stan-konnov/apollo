@@ -8,6 +8,7 @@ from pytz import timezone
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.models.backtesting_results import BacktestingResults
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     DEFAULT_DATE_FORMAT,
@@ -291,3 +292,99 @@ def test__write_backtesting_results__for_writing_results_with_defined_time_perio
     assert backtesting_results_from_db.end_date == end_date.astimezone().replace(
         tzinfo=timezone("UTC"),
     )
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+    "dataframe",
+    "window_size",
+)
+def test__write_backtesting_results__for_updating_already_existing_entity(
+    prisma_client: Prisma,
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test write_backtesting_results for updating already existing entity.
+
+    PostgresConnector should update backtesting results already present in the database.
+    """
+
+    dataframe = dataframe.copy()
+
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+        dataframe=dataframe,
+        window_size=window_size,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=0.5,
+    )
+
+    strategy.model_trading_signals()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
+    )
+
+    stats = backtesting_runner.run()
+
+    backtesting_results = pd.DataFrame(stats).transpose()
+    backtesting_results = backtesting_results.iloc[0]
+
+    parameters = dumps(
+        {
+            "window_size": window_size,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+            "sl_volatility_multiplier": 0.1,
+            "tp_volatility_multiplier": 0.3,
+        },
+    )
+
+    backtesting_results_model = BacktestingResults(
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=True,
+        parameters=parameters,
+        backtesting_results=backtesting_results,
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
+    )
+
+    writable_model_representation = backtesting_results_model.model_dump()
+
+    already_present_backtesting_results = prisma_client.backtesting_results.create(
+        data=writable_model_representation,  # type: ignore  # noqa: PGH003
+    )
+
+    postgres_connector = PostgresConnector()
+
+    postgres_connector.write_backtesting_results(
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=True,
+        parameters=parameters,
+        backtesting_results=backtesting_results,
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
+    )
+
+    backtesting_results_from_db = prisma_client.backtesting_results.find_first(
+        where={
+            "ticker": str(TICKER),
+            "strategy": str(STRATEGY),
+            "frequency": str(FREQUENCY),
+            "max_period": True,
+            "start_date": None,
+            "end_date": None,
+        },
+    )
+
+    assert backtesting_results_from_db is not None
+    assert backtesting_results_from_db.id == already_present_backtesting_results.id
