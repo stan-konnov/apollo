@@ -5,13 +5,9 @@ from typing import Generator
 
 import pytest
 
-from apollo.settings import STRATEGY
-
 TEMP_TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
 PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
 TEST_DIR = "tests/test_data"
-PARM_DIR = TEST_DIR
-PARM_FILE_PATH = f"{PARM_DIR}/{STRATEGY}.json"
 
 
 @pytest.fixture(scope="session", autouse=True)
