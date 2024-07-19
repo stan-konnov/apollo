@@ -17,6 +17,7 @@ from apollo.settings import (
     POSTGRES_URL,
     START_DATE,
     TICKER,
+    YahooApiFrequencies,
 )
 from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
 from tests.fixtures.env_and_constants import STRATEGY
@@ -105,6 +106,28 @@ def test__ensure_environment_is_configured__for_invalidating_exchange() -> None:
     exception_message = str(
         "Invalid EXCHANGE environment variable: ABCD. "
         f"Accepted values: {', '.join(EXCHANGE_TIME_ZONE_AND_HOURS)}",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=exception_message,
+    ) as exception:
+        ensure_environment_is_configured()
+
+    assert str(exception.value) == exception_message
+
+
+@patch("apollo.utils.common.FREQUENCY", "inf")
+def test__ensure_environment_is_configured__for_invalidating_frequency() -> None:
+    """
+    Test ensure_environment_is_configured for invalidating frequency.
+
+    Function must raise an exception if the frequency is not a valid frequency.
+    """
+
+    exception_message = str(
+        "Invalid FREQUENCY environment variable: inf. "
+        f"Accepted values: {', '.join([f.value for f in YahooApiFrequencies])}",
     )
 
     with pytest.raises(
