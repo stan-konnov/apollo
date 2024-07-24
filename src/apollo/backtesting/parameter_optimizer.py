@@ -304,9 +304,9 @@ class ParameterOptimizer:
         :param results_dataframe: DataFrame with backtesting results.
         """
 
-        # Sort the results by total return, sharpe ratio, and number of trades
+        # Sort the results by sharpe ratio, total return, and number of trades
         results_dataframe.sort_values(
-            ["Return [%]", "Sharpe Ratio", "# Trades"],
+            ["Sharpe Ratio", "Return [%]", "# Trades"],
             ascending=False,
             inplace=True,
         )

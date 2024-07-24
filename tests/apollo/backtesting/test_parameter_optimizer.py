@@ -312,7 +312,7 @@ def test__parameter_optimizer__for_correct_result_output(
 
     # Sort the control dataframe
     control_dataframe.sort_values(
-        ["Return [%]", "Sharpe Ratio", "# Trades"],
+        ["Sharpe Ratio", "Return [%]", "# Trades"],
         ascending=False,
         inplace=True,
     )
