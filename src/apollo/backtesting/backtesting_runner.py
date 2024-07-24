@@ -58,9 +58,9 @@ class BacktestingRunner:
         self._lot_size_cash = lot_size_cash
         self._write_result_plot = write_result_plot
 
-        self.strategy_sim_agent = StrategySimulationAgent
-        self.strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
-        self.strategy_sim_agent.tp_volatility_multiplier = tp_volatility_multiplier
+        self._strategy_sim_agent = StrategySimulationAgent
+        self._strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
+        self._strategy_sim_agent.tp_volatility_multiplier = tp_volatility_multiplier
 
     def run(self) -> Series:
         """
@@ -72,7 +72,7 @@ class BacktestingRunner:
 
         backtesting_process = Backtest(
             data=self._dataframe,
-            strategy=self.strategy_sim_agent,
+            strategy=self._strategy_sim_agent,
             cash=self._lot_size_cash,
             exclusive_orders=True,
             trade_on_close=True,
