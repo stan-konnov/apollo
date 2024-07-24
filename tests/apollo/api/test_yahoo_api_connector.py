@@ -214,7 +214,7 @@ def test__request_or_read_prices__with_max_period() -> None:
         frequency=api_connector._frequency,  # noqa: SLF001
     )
 
-    assert api_connector.request_arguments["period"] == "max"
+    assert api_connector._request_arguments["period"] == "max"  # noqa: SLF001
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
@@ -249,8 +249,8 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
         end_date=END_DATE,
     )
 
-    assert api_connector.request_arguments["start"] == START_DATE
-    assert api_connector.request_arguments["end"] == END_DATE
+    assert api_connector._request_arguments["start"] == START_DATE  # noqa: SLF001
+    assert api_connector._request_arguments["end"] == END_DATE  # noqa: SLF001
 
 
 @freeze_time(f"{END_DATE} 17:00:00")

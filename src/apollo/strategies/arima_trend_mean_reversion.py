@@ -37,7 +37,7 @@ class ARIMATrendMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.arm_calculator = ARIMARegressionModelCalculator(
+        self._arm_calculator = ARIMARegressionModelCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -45,24 +45,24 @@ class ARIMATrendMeanReversion(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
-        self.dataframe.dropna(inplace=True)
+        self._calculate_indicators()
+        self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.arm_calculator.forecast_trend_periods()
+        self._arm_calculator.forecast_trend_periods()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[
-            self.dataframe["adj close"] < self.dataframe["artf"],
+        self._dataframe.loc[
+            self._dataframe["adj close"] < self._dataframe["artf"],
             "signal",
         ] = LONG_SIGNAL
 
-        self.dataframe.loc[
-            self.dataframe["adj close"] > self.dataframe["artf"],
+        self._dataframe.loc[
+            self._dataframe["adj close"] > self._dataframe["artf"],
             "signal",
         ] = SHORT_SIGNAL

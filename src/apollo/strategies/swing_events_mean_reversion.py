@@ -42,7 +42,7 @@ class SwingEventsMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.se_calculator = SwingEventsCalculator(
+        self._se_calculator = SwingEventsCalculator(
             dataframe=dataframe,
             window_size=window_size,
             swing_filter=swing_filter,
@@ -51,24 +51,24 @@ class SwingEventsMeanReversion(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
-        self.dataframe.dropna(inplace=True)
+        self._calculate_indicators()
+        self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.se_calculator.calculate_swing_events()
+        self._se_calculator.calculate_swing_events()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self.dataframe.loc[
-            self.dataframe["se"] == self.se_calculator.DOWN_SWING,
+        self._dataframe.loc[
+            self._dataframe["se"] == self._se_calculator.DOWN_SWING,
             "signal",
         ] = LONG_SIGNAL
 
-        self.dataframe.loc[
-            self.dataframe["se"] == self.se_calculator.UP_SWING,
+        self._dataframe.loc[
+            self._dataframe["se"] == self._se_calculator.UP_SWING,
             "signal",
         ] = SHORT_SIGNAL

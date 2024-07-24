@@ -48,21 +48,21 @@ class YahooApiConnector(BaseApiConnector):
             frequency,
         )
 
-        self.request_arguments = {}
-        self.querydb_arguments = {
+        self._request_arguments = {}
+        self._querydb_arguments = {
             "ticker": self._ticker,
             "frequency": self._frequency,
         }
 
         if max_period:
-            self.request_arguments["period"] = "max"
+            self._request_arguments["period"] = "max"
 
         else:
-            self.request_arguments["end"] = self._end_date
-            self.request_arguments["start"] = self._start_date
+            self._request_arguments["end"] = self._end_date
+            self._request_arguments["start"] = self._start_date
 
-            self.querydb_arguments["end_date"] = self._end_date
-            self.querydb_arguments["start_date"] = self._start_date
+            self._querydb_arguments["end_date"] = self._end_date
+            self._querydb_arguments["start_date"] = self._start_date
 
         self._database_connector = InfluxDbConnector()
 
@@ -91,7 +91,7 @@ class YahooApiConnector(BaseApiConnector):
             price_data = download(
                 tickers=self._ticker,
                 interval=self._frequency,
-                **self.request_arguments,
+                **self._request_arguments,
             )
 
             # Make sure we have data to work with
@@ -125,7 +125,7 @@ class YahooApiConnector(BaseApiConnector):
         # Otherwise, read from disk
         else:
             price_data = self._database_connector.read_price_data(
-                **self.querydb_arguments,
+                **self._querydb_arguments,
             )
 
             logger.info("Price data read from storage.")

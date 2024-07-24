@@ -52,7 +52,7 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.lrc_calculator = LinearRegressionChannelCalculator(
+        self._lrc_calculator = LinearRegressionChannelCalculator(
             dataframe=dataframe,
             window_size=window_size,
             channel_sd_spread=channel_sd_spread,
@@ -61,24 +61,24 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
-        self.dataframe.dropna(inplace=True)
+        self._calculate_indicators()
+        self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.lrc_calculator.calculate_linear_regression_channel()
+        self._lrc_calculator.calculate_linear_regression_channel()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self.dataframe["adj close"] <= self.dataframe["l_bound"]) & (
-            self.dataframe["slope"] <= self.dataframe["prev_slope"]
+        long = (self._dataframe["adj close"] <= self._dataframe["l_bound"]) & (
+            self._dataframe["slope"] <= self._dataframe["prev_slope"]
         )
-        self.dataframe.loc[long, "signal"] = LONG_SIGNAL
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self.dataframe["adj close"] >= self.dataframe["u_bound"]) & (
-            self.dataframe["slope"] >= self.dataframe["prev_slope"]
+        short = (self._dataframe["adj close"] >= self._dataframe["u_bound"]) & (
+            self._dataframe["slope"] >= self._dataframe["prev_slope"]
         )
-        self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
