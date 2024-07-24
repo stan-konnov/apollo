@@ -23,9 +23,9 @@ def test__calculate_average_true_range__for_correct_columns(
 
     atr_calculator.calculate_average_true_range()
 
-    assert "tr" in atr_calculator.dataframe.columns
-    assert "atr" in atr_calculator.dataframe.columns
-    assert "prev_close" not in atr_calculator.dataframe.columns
+    assert "tr" in dataframe.columns
+    assert "atr" in dataframe.columns
+    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

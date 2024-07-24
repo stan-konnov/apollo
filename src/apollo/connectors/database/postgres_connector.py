@@ -18,7 +18,7 @@ class PostgresConnector:
         Initialize Prisma client.
         """
 
-        self.database_client = Prisma()
+        self._database_client = Prisma()
 
     def write_backtesting_results(
         self,
@@ -44,7 +44,7 @@ class PostgresConnector:
         :param backtesting_start_date: Start date of the backtesting period.
         """
 
-        self.database_client.connect()
+        self._database_client.connect()
 
         # Map incoming inputs to the database model
         backtesting_results_model = BacktestingResults(
@@ -62,7 +62,7 @@ class PostgresConnector:
         # based on whether max period was used or not
         # parameters of start and end date are either None or dates
         existing_backtesting_result = (
-            self.database_client.backtesting_results.find_first(
+            self._database_client.backtesting_results.find_first(
                 where={
                     "ticker": backtesting_results_model.ticker,
                     "strategy": backtesting_results_model.strategy,
@@ -85,15 +85,15 @@ class PostgresConnector:
 
         # Create or update the backtesting result
         if not existing_backtesting_result:
-            self.database_client.backtesting_results.create(
+            self._database_client.backtesting_results.create(
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
         else:
-            self.database_client.backtesting_results.update(
+            self._database_client.backtesting_results.update(
                 where={
                     "id": existing_backtesting_result.id,
                 },
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
 
-        self.database_client.disconnect()
+        self._database_client.disconnect()

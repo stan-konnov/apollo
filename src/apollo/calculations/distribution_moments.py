@@ -25,21 +25,21 @@ class DistributionMomentsCalculator(BaseCalculator):
         """Calculate rolling distribution moments."""
 
         # Get rolling window object to calculate distribution moments
-        rolling_window = self.dataframe["adj close"].rolling(window=self.window_size)
+        rolling_window = self._dataframe["adj close"].rolling(window=self._window_size)
 
         # Calculate rolling average
-        self.dataframe["avg"] = rolling_window.mean()
+        self._dataframe["avg"] = rolling_window.mean()
 
         # Calculate rolling standard deviation
-        self.dataframe["std"] = rolling_window.std()
+        self._dataframe["std"] = rolling_window.std()
 
         # Calculate rolling skewness
-        self.dataframe["skew"] = rolling_window.skew()
+        self._dataframe["skew"] = rolling_window.skew()
 
         # Calculate rolling kurtosis
-        self.dataframe["kurt"] = rolling_window.kurt()
+        self._dataframe["kurt"] = rolling_window.kurt()
 
         # Calculate rolling z-score from mean and standard deviation
-        self.dataframe["z_score"] = (
-            self.dataframe["adj close"] - self.dataframe["avg"]
-        ) / self.dataframe["std"]
+        self._dataframe["z_score"] = (
+            self._dataframe["adj close"] - self._dataframe["avg"]
+        ) / self._dataframe["std"]

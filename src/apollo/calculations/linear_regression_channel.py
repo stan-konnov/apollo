@@ -29,42 +29,42 @@ class LinearRegressionChannelCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        self.t_slope: list[float] = []
-        self.l_bound: list[float] = []
-        self.u_bound: list[float] = []
+        self._t_slope: list[float] = []
+        self._l_bound: list[float] = []
+        self._u_bound: list[float] = []
 
-        self.channel_sd_spread = channel_sd_spread
+        self._channel_sd_spread = channel_sd_spread
 
     def calculate_linear_regression_channel(self) -> None:
         """Calculate rolling linear regression channel."""
 
         # Reset indices to integer to use as x axis of linear regression
-        self.dataframe.reset_index(inplace=True)
+        self._dataframe.reset_index(inplace=True)
 
         # Fill slopes and bounds arrays with N NaN, where N = window size
-        self.t_slope = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
-        self.l_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
-        self.u_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        self._t_slope = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        self._l_bound = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        self._u_bound = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
 
         # Calculate bounds and slope by using ordinary least squares regression
-        self.dataframe["adj close"].rolling(self.window_size).apply(
-            self.__calc_lin_reg,
+        self._dataframe["adj close"].rolling(self._window_size).apply(
+            self._calc_lin_reg,
         )
 
         # Write slopes to dataframe
-        self.dataframe["slope"] = self.t_slope
+        self._dataframe["slope"] = self._t_slope
 
         # Shift slopes to further compare direction
-        self.dataframe["prev_slope"] = self.dataframe["slope"].shift(1)
+        self._dataframe["prev_slope"] = self._dataframe["slope"].shift(1)
 
         # Write bounds to the dataframe
-        self.dataframe["l_bound"] = self.l_bound
-        self.dataframe["u_bound"] = self.u_bound
+        self._dataframe["l_bound"] = self._l_bound
+        self._dataframe["u_bound"] = self._u_bound
 
         # Reset indices back to date
-        self.dataframe.set_index("date", inplace=True)
+        self._dataframe.set_index("date", inplace=True)
 
-    def __calc_lin_reg(self, series: pd.Series) -> float:
+    def _calc_lin_reg(self, series: pd.Series) -> float:
         """
         Calculate rolling ordinary least squares regression for a given window.
 
@@ -82,7 +82,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
         slope, intercept, _, _, _ = linregress(x, y)
 
         # Preserve slope
-        self.t_slope.append(slope)  # type: ignore  # noqa: PGH003
+        self._t_slope.append(slope)  # type: ignore  # noqa: PGH003
 
         # Calculate line of best fit
         lbf = slope * x + intercept
@@ -92,11 +92,11 @@ class LinearRegressionChannelCalculator(BaseCalculator):
 
         # Calculate lower and upper bounds
         # as N standard deviations above/below LBF
-        lower_bound = lbf - std * self.channel_sd_spread
-        upper_bound = lbf + std * self.channel_sd_spread
+        lower_bound = lbf - std * self._channel_sd_spread
+        upper_bound = lbf + std * self._channel_sd_spread
 
-        self.l_bound.append(lower_bound[-1])
-        self.u_bound.append(upper_bound[-1])
+        self._l_bound.append(lower_bound[-1])
+        self._u_bound.append(upper_bound[-1])
 
         # Return dummy float
         return 0.0

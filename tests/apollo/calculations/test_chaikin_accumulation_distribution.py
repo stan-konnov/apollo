@@ -24,8 +24,8 @@ def test__calculate_chaikin_accumulation_distribution_line__for_correct_columns(
     )
     cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
-    assert "adl" in cad_calculator.dataframe.columns
-    assert "prev_adl" in cad_calculator.dataframe.columns
+    assert "adl" in dataframe.columns
+    assert "prev_adl" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

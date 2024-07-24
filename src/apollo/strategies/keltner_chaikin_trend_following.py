@@ -60,18 +60,18 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.hma_calculator = HullMovingAverageCalculator(
+        self._hma_calculator = HullMovingAverageCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
 
-        self.kc_calculator = KeltnerChannelCalculator(
+        self._kc_calculator = KeltnerChannelCalculator(
             dataframe=dataframe,
             window_size=window_size,
             volatility_multiplier=volatility_multiplier,
         )
 
-        self.cad_calculator = ChaikinAccumulationDistributionCalculator(
+        self._cad_calculator = ChaikinAccumulationDistributionCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -79,28 +79,28 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
-        self.dataframe.dropna(inplace=True)
+        self._calculate_indicators()
+        self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.hma_calculator.calculate_hull_moving_average()
-        self.kc_calculator.calculate_keltner_channel()
-        self.cad_calculator.calculate_chaikin_accumulation_distribution_line()
+        self._hma_calculator.calculate_hull_moving_average()
+        self._kc_calculator.calculate_keltner_channel()
+        self._cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self.dataframe["adj close"] > self.dataframe["lkc_bound"]) & (
-            self.dataframe["adl"] > self.dataframe["prev_adl"]
+        long = (self._dataframe["adj close"] > self._dataframe["lkc_bound"]) & (
+            self._dataframe["adl"] > self._dataframe["prev_adl"]
         )
 
-        self.dataframe.loc[long, "signal"] = LONG_SIGNAL
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self.dataframe["adj close"] < self.dataframe["ukc_bound"]) & (
-            self.dataframe["adl"] < self.dataframe["prev_adl"]
+        short = (self._dataframe["adj close"] < self._dataframe["ukc_bound"]) & (
+            self._dataframe["adl"] < self._dataframe["prev_adl"]
         )
 
-        self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

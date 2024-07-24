@@ -39,13 +39,13 @@ class BaseStrategy:
         :param window_size: Size of the window for the strategy.
         """
 
-        self.dataframe = dataframe
-        self.window_size = window_size
+        self._dataframe = dataframe
+        self._window_size = window_size
 
-        self.dataframe["signal"] = NO_SIGNAL
+        self._dataframe["signal"] = NO_SIGNAL
 
-        self.atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
-        self.atr_calculator.calculate_average_true_range()
+        self._atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+        self._atr_calculator.calculate_average_true_range()
 
     def model_trading_signals(self) -> None:
         """

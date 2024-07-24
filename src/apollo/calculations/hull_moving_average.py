@@ -32,18 +32,18 @@ class HullMovingAverageCalculator(BaseCalculator):
         # Calculate weighed moving average of
         # the close using provided window size
         standard_window_wma = self._calculate_weighted_moving_average(
-            self.dataframe["adj close"],
-            self.window_size,
+            self._dataframe["adj close"],
+            self._window_size,
         )
 
         # Define a half window size
         # rounded down to the nearest integer
-        half_window = self.window_size // 2
+        half_window = self._window_size // 2
 
         # Calculate shorter weighed moving average
         # using half window size
         half_window_wma = self._calculate_weighted_moving_average(
-            self.dataframe["adj close"],
+            self._dataframe["adj close"],
             half_window,
         )
 
@@ -54,7 +54,7 @@ class HullMovingAverageCalculator(BaseCalculator):
 
         # Take a square root of the window size
         # to make the Hull Moving Average even more responsive
-        sqrt_window = int(np.sqrt(self.window_size))
+        sqrt_window = int(np.sqrt(self._window_size))
 
         # Finally, calculate Hull Moving Average
         # over the difference using square root of the window size
@@ -64,7 +64,7 @@ class HullMovingAverageCalculator(BaseCalculator):
         )
 
         # Write to the dataframe
-        self.dataframe["hma"] = hull_moving_average
+        self._dataframe["hma"] = hull_moving_average
 
     def _calculate_weighted_moving_average(
         self,

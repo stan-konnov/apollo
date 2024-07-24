@@ -29,8 +29,8 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
         end_date=str(END_DATE),
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = None
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
 
     exception_message = "API response returned empty dataframe."
 
@@ -40,7 +40,7 @@ def test__request_or_read_prices__with_empty_api_response() -> None:
     ) as exception:
         api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
 
     assert str(exception.value) == exception_message
 
@@ -67,8 +67,8 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
         end_date=str(END_DATE),
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = None
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
 
     expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
@@ -83,9 +83,9 @@ def test__request_or_read_prices__with_valid_parameters_and_no_data_present() ->
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.write_price_data.assert_called_once_with(
-        frequency=api_connector.frequency,
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.write_price_data.assert_called_once_with(  # noqa: SLF001
+        frequency=api_connector._frequency,  # noqa: SLF001
         # Please see tests/fixtures/window_size_and_dataframe.py
         # for explanation on SameDataframe class
         dataframe=SameDataframe(expected_dataframe_to_write),
@@ -118,16 +118,16 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refr
         end_date=str(END_DATE),
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.read_price_data.return_value = dataframe
-    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.read_price_data.return_value = dataframe  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = datetime.now(  # noqa: SLF001
         tz=ZoneInfo("UTC"),
     ).date()
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.read_price_data.assert_called_once()
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.read_price_data.assert_called_once()  # noqa: SLF001
 
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
@@ -166,16 +166,16 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refr
     last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
     last_queried_date = last_queried_datetime.date()
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = (
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = (  # noqa: SLF001
         last_queried_date
     )
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.write_price_data.assert_called_once_with(
-        frequency=api_connector.frequency,
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.write_price_data.assert_called_once_with(  # noqa: SLF001
+        frequency=api_connector._frequency,  # noqa: SLF001
         # Please see tests/fixtures/window_size_and_dataframe.py
         # for explanation on SameDataframe class
         dataframe=SameDataframe(expected_dataframe_to_write),
@@ -201,20 +201,20 @@ def test__request_or_read_prices__with_max_period() -> None:
         max_period=True,
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = datetime.now(  # noqa: SLF001
         tz=ZoneInfo("UTC"),
     ).date()
 
     api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.read_price_data.assert_called_once_with(
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.read_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=TICKER,
-        frequency=api_connector.frequency,
+        frequency=api_connector._frequency,  # noqa: SLF001
     )
 
-    assert api_connector.request_arguments["period"] == "max"
+    assert api_connector._request_arguments["period"] == "max"  # noqa: SLF001
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
@@ -234,23 +234,23 @@ def test__request_or_read_prices__with_start_and_end_date() -> None:
         max_period=False,
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = datetime.now(
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = datetime.now(  # noqa: SLF001
         tz=ZoneInfo("UTC"),
     ).date()
 
     api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.read_price_data.assert_called_once_with(
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.read_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=TICKER,
-        frequency=api_connector.frequency,
+        frequency=api_connector._frequency,  # noqa: SLF001
         start_date=START_DATE,
         end_date=END_DATE,
     )
 
-    assert api_connector.request_arguments["start"] == START_DATE
-    assert api_connector.request_arguments["end"] == END_DATE
+    assert api_connector._request_arguments["start"] == START_DATE  # noqa: SLF001
+    assert api_connector._request_arguments["end"] == END_DATE  # noqa: SLF001
 
 
 @freeze_time(f"{END_DATE} 17:00:00")
@@ -274,8 +274,8 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
         end_date=str(END_DATE),
     )
 
-    api_connector.database_connector = Mock(InfluxDbConnector)
-    api_connector.database_connector.get_last_record_date.return_value = None
+    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    api_connector._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
 
     expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
@@ -295,9 +295,9 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
 
     price_dataframe = api_connector.request_or_read_prices()
 
-    api_connector.database_connector.get_last_record_date.assert_called_once()
-    api_connector.database_connector.write_price_data.assert_called_once_with(
-        frequency=api_connector.frequency,
+    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
+    api_connector._database_connector.write_price_data.assert_called_once_with(  # noqa: SLF001
+        frequency=api_connector._frequency,  # noqa: SLF001
         # Please see tests/fixtures/window_size_and_dataframe.py
         # for explanation on SameDataframe class
         dataframe=SameDataframe(expected_dataframe_to_write),
