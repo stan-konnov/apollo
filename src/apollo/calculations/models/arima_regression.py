@@ -56,18 +56,18 @@ class ARIMARegressionModelCalculator(BaseCalculator):
 
         # Reset the indices to integer values
         # to avoid issues with the ARIMA model
-        self.dataframe.reset_index(inplace=True)
+        self._dataframe.reset_index(inplace=True)
 
         # Forecast the trend component
         # using rolling ARIMA regression
-        self.dataframe["artf"] = (
-            self.dataframe["adj close"]
-            .rolling(window=self.window_size)
+        self._dataframe["artf"] = (
+            self._dataframe["adj close"]
+            .rolling(window=self._window_size)
             .apply(self._run_rolling_forecast)
         )
 
         # Reset indices back to date
-        self.dataframe.set_index("date", inplace=True)
+        self._dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
         """

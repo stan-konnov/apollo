@@ -30,7 +30,7 @@ def test__forecast_periods__for_correct_columns(
 
     lrm_calculator.forecast_periods()
 
-    assert "lrf" in lrm_calculator.dataframe.columns
+    assert "lrf" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

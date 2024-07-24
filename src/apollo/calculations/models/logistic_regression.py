@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
+from apollo.calculations.base_calculator import BaseCalculator
 
-class LogisticRegressionModelCalculator:
+
+class LogisticRegressionModelCalculator(BaseCalculator):
     """
     Logistic Regression Model Calculator.
 
@@ -50,37 +52,36 @@ class LogisticRegressionModelCalculator:
         :param window_size: Size of the rolling window to forecast future periods.
         """
 
-        self.dataframe = dataframe
-        self.window_size = window_size
+        super().__init__(dataframe, window_size)
 
         # NOTE: we use elasticnet penalty
         # with l1 ratio of 1.0 to enforce LASSO
         # regularization, and, thus, feature reduction
         # since we do not know beforehand which features are important
-        self.model = LogisticRegression(
+        self._model = LogisticRegression(
             penalty="elasticnet",
             solver="saga",
             l1_ratio=1.0,
         )
 
         # List of indices to expand the window
-        self.expanding_indices: list[int] = []
+        self._expanding_indices: list[int] = []
 
     def forecast_periods(self) -> None:
         """Forecast future periods using logistic regression model."""
 
         # Reset the indices to allow for cleaner expanding window
-        self.dataframe.reset_index(inplace=True)
+        self._dataframe.reset_index(inplace=True)
 
         # Forecast future periods using rolling logistic regression
-        self.dataframe["lrf"] = (
-            self.dataframe["close"]
-            .rolling(window=self.window_size)
+        self._dataframe["lrf"] = (
+            self._dataframe["close"]
+            .rolling(window=self._window_size)
             .apply(self._run_rolling_forecast)
         )
 
         # Reset indices back to date
-        self.dataframe.set_index("date", inplace=True)
+        self._dataframe.set_index("date", inplace=True)
 
     def _run_rolling_forecast(self, series: pd.Series) -> float:
         """
@@ -95,25 +96,25 @@ class LogisticRegressionModelCalculator:
 
         # If expanding indices are empty
         # use indices from the current window
-        if len(self.expanding_indices) == 0:
-            self.expanding_indices = rolling_indices
+        if len(self._expanding_indices) == 0:
+            self._expanding_indices = rolling_indices
 
         # Otherwise, append the last
         # index from the current window
         else:
-            self.expanding_indices.append(rolling_indices[-1])
+            self._expanding_indices.append(rolling_indices[-1])
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = self.dataframe.loc[self.expanding_indices]
+        rolling_df = self._dataframe.loc[self._expanding_indices]
 
         # Create trading conditions
         x, y = self._create_regression_trading_conditions(rolling_df)
 
         # Fit the model
-        self.model.fit(x, y)
+        self._model.fit(x, y)
 
         # Forecast future periods
-        return self.model.predict(x)[-1]
+        return self._model.predict(x)[-1]
 
     def _create_regression_trading_conditions(
         self,
