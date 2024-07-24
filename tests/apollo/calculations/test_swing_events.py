@@ -120,7 +120,7 @@ def mimic_calc_se(
 
     current_high = rolling_df.iloc[-1]["high"]
 
-    current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
+    current_swing_filter = series.iloc[-1] * SWING_FILTER
 
     if IN_DOWNSWING.get():
         if current_low < swing_l:
