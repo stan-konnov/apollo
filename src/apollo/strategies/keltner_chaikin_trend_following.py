@@ -79,18 +79,18 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self._calculate_indicators()
-        self._mark_trading_signals()
+        self.__calculate_indicators()
+        self.__mark_trading_signals()
         self.dataframe.dropna(inplace=True)
 
-    def _calculate_indicators(self) -> None:
+    def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
         self.hma_calculator.calculate_hull_moving_average()
         self.kc_calculator.calculate_keltner_channel()
         self.cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
-    def _mark_trading_signals(self) -> None:
+    def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         long = (self.dataframe["adj close"] > self.dataframe["lkc_bound"]) & (

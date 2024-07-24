@@ -45,16 +45,16 @@ class ARIMATrendMeanReversion(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self._calculate_indicators()
-        self._mark_trading_signals()
+        self.__calculate_indicators()
+        self.__mark_trading_signals()
         self.dataframe.dropna(inplace=True)
 
-    def _calculate_indicators(self) -> None:
+    def __calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
         self.arm_calculator.forecast_trend_periods()
 
-    def _mark_trading_signals(self) -> None:
+    def __mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         self.dataframe.loc[

@@ -48,7 +48,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
 
         # Calculate bounds and slope by using ordinary least squares regression
         self.dataframe["adj close"].rolling(self.window_size).apply(
-            self._calc_lin_reg,
+            self.__calc_lin_reg,
         )
 
         # Write slopes to dataframe
@@ -64,7 +64,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
         # Reset indices back to date
         self.dataframe.set_index("date", inplace=True)
 
-    def _calc_lin_reg(self, series: pd.Series) -> float:
+    def __calc_lin_reg(self, series: pd.Series) -> float:
         """
         Calculate rolling ordinary least squares regression for a given window.
 
