@@ -31,7 +31,7 @@ class InfluxDbConnector:
         Define InfluxDB Client initialization parameters.
         """
 
-        self.client_parameters = {
+        self._client_parameters = {
             "org": INFLUXDB_ORG,
             "url": str(INFLUXDB_URL),
             "token": INFLUXDB_TOKEN,
@@ -50,7 +50,7 @@ class InfluxDbConnector:
         """
 
         try:
-            with InfluxDBClient(**self.client_parameters) as client:
+            with InfluxDBClient(**self._client_parameters) as client:
                 # Copy and add frequency to the
                 # dataframe to use as a tag value
                 dataframe_to_write = dataframe.copy()
@@ -93,7 +93,7 @@ class InfluxDbConnector:
         :returns: Price dataframe read from the database.
         """
 
-        with InfluxDBClient(**self.client_parameters) as client:
+        with InfluxDBClient(**self._client_parameters) as client:
             # Create query API
             query_api = client.query_api()
 
@@ -157,7 +157,7 @@ class InfluxDbConnector:
         :returns: Last record date or None if no records are found.
         """
 
-        with InfluxDBClient(**self.client_parameters) as client:
+        with InfluxDBClient(**self._client_parameters) as client:
             # Create query API
             query_api = client.query_api()
 
