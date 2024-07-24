@@ -78,13 +78,13 @@ class BacktestingRunner:
             trade_on_close=True,
         )
 
-        # Make sure directory for plots exists
-        if not Path.is_dir(PLOT_DIR):
-            PLOT_DIR.mkdir(parents=True, exist_ok=True)
-
         stats = backtesting_process.run()
 
         if self._write_result_plot:
+            # Make sure directory for plots exists
+            if not Path.is_dir(PLOT_DIR):
+                PLOT_DIR.mkdir(parents=True, exist_ok=True)
+
             backtesting_process.plot(
                 plot_return=True,
                 plot_equity=False,
