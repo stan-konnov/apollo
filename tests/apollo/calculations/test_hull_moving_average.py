@@ -24,7 +24,7 @@ def test__calculate_hull_moving_average__for_correct_columns(
     )
     hma_calculator.calculate_hull_moving_average()
 
-    assert "hma" in hma_calculator.dataframe.columns
+    assert "hma" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

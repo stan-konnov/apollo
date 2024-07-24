@@ -16,5 +16,5 @@ class BaseCalculator:
         :param window_size: Window size for rolling calculation.
         """
 
-        self.dataframe = dataframe
-        self.window_size = window_size
+        self._dataframe = dataframe
+        self._window_size = window_size

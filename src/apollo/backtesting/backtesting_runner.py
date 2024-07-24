@@ -53,14 +53,14 @@ class BacktestingRunner:
             inplace=True,
         )
 
-        self.dataframe = dataframe
-        self.strategy_name = strategy_name
-        self.lot_size_cash = lot_size_cash
-        self.write_result_plot = write_result_plot
+        self._dataframe = dataframe
+        self._strategy_name = strategy_name
+        self._lot_size_cash = lot_size_cash
+        self._write_result_plot = write_result_plot
 
-        self.strategy_sim_agent = StrategySimulationAgent
-        self.strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
-        self.strategy_sim_agent.tp_volatility_multiplier = tp_volatility_multiplier
+        self._strategy_sim_agent = StrategySimulationAgent
+        self._strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
+        self._strategy_sim_agent.tp_volatility_multiplier = tp_volatility_multiplier
 
     def run(self) -> Series:
         """
@@ -71,29 +71,29 @@ class BacktestingRunner:
         """
 
         backtesting_process = Backtest(
-            data=self.dataframe,
-            strategy=self.strategy_sim_agent,
-            cash=self.lot_size_cash,
+            data=self._dataframe,
+            strategy=self._strategy_sim_agent,
+            cash=self._lot_size_cash,
             exclusive_orders=True,
             trade_on_close=True,
         )
 
-        # Make sure directory for plots exists
-        if not Path.is_dir(PLOT_DIR):
-            PLOT_DIR.mkdir(parents=True, exist_ok=True)
-
         stats = backtesting_process.run()
 
-        if self.write_result_plot:
+        if self._write_result_plot:
+            # Make sure directory for plots exists
+            if not Path.is_dir(PLOT_DIR):
+                PLOT_DIR.mkdir(parents=True, exist_ok=True)
+
             backtesting_process.plot(
                 plot_return=True,
                 plot_equity=False,
                 open_browser=False,
-                filename=f"{PLOT_DIR}/{self.strategy_name}.html",
+                filename=f"{PLOT_DIR}/{self._strategy_name}.html",
             )
 
         # Rename the strategy name in stats
         # to display proper strategy name
-        stats["_strategy"] = self.strategy_name
+        stats["_strategy"] = self._strategy_name
 
         return stats

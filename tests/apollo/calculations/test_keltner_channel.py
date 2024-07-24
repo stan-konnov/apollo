@@ -41,8 +41,8 @@ def test__calculate_keltner_channel__for_correct_columns(
     )
     kc_calculator.calculate_keltner_channel()
 
-    assert "lkc_bound" in kc_calculator.dataframe.columns
-    assert "ukc_bound" in kc_calculator.dataframe.columns
+    assert "lkc_bound" in dataframe.columns
+    assert "ukc_bound" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

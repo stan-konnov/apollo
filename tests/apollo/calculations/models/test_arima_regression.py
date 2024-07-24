@@ -24,7 +24,7 @@ def test__forecast_trend_periods__for_correct_columns(
 
     arf_calculator.forecast_trend_periods()
 
-    assert "artf" in arf_calculator.dataframe.columns
+    assert "artf" in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -81,6 +81,6 @@ def _run_rolling_forecast(series: pd.Series) -> float:
 
     results: ARIMAResults = model.fit()
 
-    forecast = results.forecast(steps=1)
+    forecast: pd.Series = results.forecast(steps=1)
 
     return forecast.iloc[0]

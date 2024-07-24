@@ -47,10 +47,10 @@ class SwingEventsCalculator(BaseCalculator):
         """Calculate rolling swing events."""
 
         # Record the low of the first bar (before rolling window) as swing low
-        self.swing_l = self.dataframe.iloc[self.window_size - 2]["low"]
+        self.swing_l = self._dataframe.iloc[self._window_size - 2]["low"]
 
         # Record the high of the first bar (before rolling window) as swing high
-        self.swing_h = self.dataframe.iloc[self.window_size - 2]["high"]
+        self.swing_h = self._dataframe.iloc[self._window_size - 2]["high"]
 
         # Following the swing high, assume we are in downswing
         # Kaufman, TSM, p. 168
@@ -58,16 +58,16 @@ class SwingEventsCalculator(BaseCalculator):
 
         # Fill swing events array with N NaN, where N = window size
         self.swing_events = (
-            np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
         # Calculate swings
-        self.dataframe["adj close"].rolling(self.window_size).apply(self.__calc_se)
+        self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_se)
 
         # Write swings to the dataframe
-        self.dataframe["se"] = self.swing_events
+        self._dataframe["se"] = self.swing_events
 
-    def __calc_se(self, series: pd.Series) -> float:
+    def _calc_se(self, series: pd.Series) -> float:
         """
         Calculate rolling swings for a given window.
 
@@ -77,7 +77,7 @@ class SwingEventsCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = self.dataframe.loc[series.index]
+        rolling_df = self._dataframe.loc[series.index]
 
         # Grab current low
         current_low = rolling_df.iloc[-1]["low"]
@@ -106,7 +106,7 @@ class SwingEventsCalculator(BaseCalculator):
                 # Treat current high as new swing high
                 self.swing_h = current_high
 
-                # Add positive float to the list
+                # Append positive float to the list
                 self.swing_events.append(self.UP_SWING)
 
                 # Return dummy float

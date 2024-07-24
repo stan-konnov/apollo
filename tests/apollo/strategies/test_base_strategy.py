@@ -17,8 +17,8 @@ def test__base_strategy__for_inserting_signal_column(
 
     strategy = BaseStrategy(dataframe, window_size)
 
-    assert "signal" in strategy.dataframe.columns
-    assert strategy.dataframe["signal"].iloc[0] == NO_SIGNAL
+    assert "signal" in strategy._dataframe.columns  # noqa: SLF001
+    assert strategy._dataframe["signal"].iloc[0] == NO_SIGNAL  # noqa: SLF001
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -39,8 +39,8 @@ def test__base_strategy__for_calculating_volatility(
 
     strategy = BaseStrategy(dataframe, window_size)
 
-    assert "tr" in strategy.dataframe.columns
-    assert "atr" in strategy.dataframe.columns
+    assert "tr" in strategy._dataframe.columns  # noqa: SLF001
+    assert "atr" in strategy._dataframe.columns  # noqa: SLF001
     pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
 
 

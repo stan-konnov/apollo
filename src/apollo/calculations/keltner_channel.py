@@ -38,24 +38,24 @@ class KeltnerChannelCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        self.volatility_multiplier = volatility_multiplier
+        self._volatility_multiplier = volatility_multiplier
 
-        self.lkc_bound: list[float] = []
-        self.ukc_bound: list[float] = []
+        self._lkc_bound: list[float] = []
+        self._ukc_bound: list[float] = []
 
     def calculate_keltner_channel(self) -> None:
         """Calculate Keltner Channel."""
 
         # Fill bounds arrays with N NaN, where N = window size
-        self.lkc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
-        self.ukc_bound = np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        self._lkc_bound = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        self._ukc_bound = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
 
         # Calculate bounds by using SMA and ATR
-        self.dataframe["adj close"].rolling(self.window_size).apply(self._calc_chan)
+        self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_chan)
 
         # Preserve bounds on the dataframe
-        self.dataframe["lkc_bound"] = self.lkc_bound
-        self.dataframe["ukc_bound"] = self.ukc_bound
+        self._dataframe["lkc_bound"] = self._lkc_bound
+        self._dataframe["ukc_bound"] = self._ukc_bound
 
     def _calc_chan(self, series: pd.Series) -> float:
         """
@@ -66,15 +66,15 @@ class KeltnerChannelCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = self.dataframe.loc[series.index]
+        rolling_df = self._dataframe.loc[series.index]
 
         # Calculate lower and upper channel bounds
         # expressed as +/- ATR * multiplier from the moving average
-        lkc_bound = rolling_df["hma"] - rolling_df["atr"] * self.volatility_multiplier
-        ukc_bound = rolling_df["hma"] + rolling_df["atr"] * self.volatility_multiplier
+        lkc_bound = rolling_df["hma"] - rolling_df["atr"] * self._volatility_multiplier
+        ukc_bound = rolling_df["hma"] + rolling_df["atr"] * self._volatility_multiplier
 
-        self.lkc_bound.append(lkc_bound.iloc[-1])
-        self.ukc_bound.append(ukc_bound.iloc[-1])
+        self._lkc_bound.append(lkc_bound.iloc[-1])
+        self._ukc_bound.append(ukc_bound.iloc[-1])
 
         # Return dummy float
         return 0.0

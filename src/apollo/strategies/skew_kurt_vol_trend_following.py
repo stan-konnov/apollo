@@ -59,42 +59,42 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
 
         super().__init__(dataframe, window_size)
 
-        self.kurtosis_threshold = kurtosis_threshold
-        self.volatility_multiplier = volatility_multiplier
+        self._kurtosis_threshold = kurtosis_threshold
+        self._volatility_multiplier = volatility_multiplier
 
-        self.dm_calculator = DistributionMomentsCalculator(dataframe, window_size)
+        self._dm_calculator = DistributionMomentsCalculator(dataframe, window_size)
 
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
-        self.dataframe.dropna(inplace=True)
+        self._calculate_indicators()
+        self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self.dm_calculator.calculate_distribution_moments()
+        self._dm_calculator.calculate_distribution_moments()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self.dataframe["skew"] < 0)
-            & (self.dataframe["kurt"] < self.kurtosis_threshold)
+            (self._dataframe["skew"] < 0)
+            & (self._dataframe["kurt"] < self._kurtosis_threshold)
             & (
-                self.dataframe["tr"]
-                > self.dataframe["atr"] * self.volatility_multiplier
+                self._dataframe["tr"]
+                > self._dataframe["atr"] * self._volatility_multiplier
             )
         )
-        self.dataframe.loc[long, "signal"] = LONG_SIGNAL
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self.dataframe["skew"] > 0)
-            & (self.dataframe["kurt"] < self.kurtosis_threshold)
+            (self._dataframe["skew"] > 0)
+            & (self._dataframe["kurt"] < self._kurtosis_threshold)
             & (
-                self.dataframe["tr"]
-                > self.dataframe["atr"] * self.volatility_multiplier
+                self._dataframe["tr"]
+                > self._dataframe["atr"] * self._volatility_multiplier
             )
         )
-        self.dataframe.loc[short, "signal"] = SHORT_SIGNAL
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

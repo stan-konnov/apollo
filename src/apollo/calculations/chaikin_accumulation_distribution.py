@@ -39,24 +39,24 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        self.accumulation_distribution_line: list[float] = []
+        self._accumulation_distribution_line: list[float] = []
 
     def calculate_chaikin_accumulation_distribution_line(self) -> None:
         """Calculate Chaikin Accumulation Distribution Line."""
 
         # Fill AD line array with N NaN, where N = window size
-        self.accumulation_distribution_line = (
-            np.full((1, self.window_size - 1), np.nan).flatten().tolist()
+        self._accumulation_distribution_line = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
         # Calculate rolling AD line
-        self.dataframe["close"].rolling(self.window_size).apply(self._calc_adl)
+        self._dataframe["close"].rolling(self._window_size).apply(self._calc_adl)
 
         # Preserve AD line on the dataframe
-        self.dataframe["adl"] = self.accumulation_distribution_line
+        self._dataframe["adl"] = self._accumulation_distribution_line
 
         # Preserve previous AD line on the dataframe
-        self.dataframe["prev_adl"] = self.dataframe["adl"].shift(1)
+        self._dataframe["prev_adl"] = self._dataframe["adl"].shift(1)
 
     def _calc_adl(self, series: pd.Series) -> float:
         """
@@ -67,7 +67,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = self.dataframe.loc[series.index]
+        rolling_df = self._dataframe.loc[series.index]
 
         # Calculate money flow multiplier
         money_flow_multiplier = (
@@ -82,7 +82,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         accumulation_distribution = money_flow_volume.cumsum()
 
         # Append last value to the AD line array
-        self.accumulation_distribution_line.append(
+        self._accumulation_distribution_line.append(
             accumulation_distribution.iloc[-1],
         )
 
