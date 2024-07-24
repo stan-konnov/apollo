@@ -50,21 +50,21 @@ class YahooApiConnector(BaseApiConnector):
 
         self.request_arguments = {}
         self.querydb_arguments = {
-            "ticker": self.ticker,
-            "frequency": self.frequency,
+            "ticker": self._ticker,
+            "frequency": self._frequency,
         }
 
         if max_period:
             self.request_arguments["period"] = "max"
 
         else:
-            self.request_arguments["end"] = self.end_date
-            self.request_arguments["start"] = self.start_date
+            self.request_arguments["end"] = self._end_date
+            self.request_arguments["start"] = self._start_date
 
-            self.querydb_arguments["end_date"] = self.end_date
-            self.querydb_arguments["start_date"] = self.start_date
+            self.querydb_arguments["end_date"] = self._end_date
+            self.querydb_arguments["start_date"] = self._start_date
 
-        self.database_connector = InfluxDbConnector()
+        self._database_connector = InfluxDbConnector()
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
@@ -77,7 +77,7 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        last_record_date = self.database_connector.get_last_record_date()
+        last_record_date = self._database_connector.get_last_record_date()
 
         # Re-query prices
         # if no records are available
@@ -89,8 +89,8 @@ class YahooApiConnector(BaseApiConnector):
 
         if price_data_needs_update:
             price_data = download(
-                tickers=self.ticker,
-                interval=self.frequency,
+                tickers=self._ticker,
+                interval=self._frequency,
                 **self.request_arguments,
             )
 
@@ -124,7 +124,7 @@ class YahooApiConnector(BaseApiConnector):
 
         # Otherwise, read from disk
         else:
-            price_data = self.database_connector.read_price_data(
+            price_data = self._database_connector.read_price_data(
                 **self.querydb_arguments,
             )
 
@@ -148,7 +148,7 @@ class YahooApiConnector(BaseApiConnector):
         dataframe.columns = dataframe.columns.str.lower()
 
         dataframe.set_index("date", inplace=True)
-        dataframe.insert(0, "ticker", self.ticker)
+        dataframe.insert(0, "ticker", self._ticker)
 
     def _save_dataframe(self, dataframe: pd.DataFrame) -> None:
         """
@@ -157,7 +157,7 @@ class YahooApiConnector(BaseApiConnector):
         :param dataframe: Requested Dataframe.
         """
 
-        self.database_connector.write_price_data(
-            frequency=self.frequency,
+        self._database_connector.write_price_data(
+            frequency=self._frequency,
             dataframe=dataframe,
         )

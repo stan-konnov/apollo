@@ -47,10 +47,10 @@ class BaseApiConnector(ABC):
         if start_date > end_date:
             raise ValueError("Start date must be before end date.")
 
-        self.ticker = ticker
-        self.start_date = start_date
-        self.end_date = end_date
-        self.frequency = frequency
+        self._ticker = ticker
+        self._start_date = start_date
+        self._end_date = end_date
+        self._frequency = frequency
 
     @abstractmethod
     def request_or_read_prices(self) -> DataFrame:
