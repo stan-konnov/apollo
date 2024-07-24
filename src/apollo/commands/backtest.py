@@ -8,9 +8,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.skew_kurt_vol_trend_following import (
-    SkewnessKurtosisVolatilityTrendFollowing,
-)
+from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -35,18 +33,17 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+    strategy = SwingEventsMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        kurtosis_threshold=0.0,
-        volatility_multiplier=0.5,
+        swing_filter=0.01,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
+        strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.3,
