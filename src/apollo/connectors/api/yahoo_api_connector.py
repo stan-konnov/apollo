@@ -64,7 +64,7 @@ class YahooApiConnector(BaseApiConnector):
             self.querydb_arguments["end_date"] = self.end_date
             self.querydb_arguments["start_date"] = self.start_date
 
-        self.database_connector = InfluxDbConnector()
+        self._database_connector = InfluxDbConnector()
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
@@ -77,7 +77,7 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        last_record_date = self.database_connector.get_last_record_date()
+        last_record_date = self._database_connector.get_last_record_date()
 
         # Re-query prices
         # if no records are available
@@ -124,7 +124,7 @@ class YahooApiConnector(BaseApiConnector):
 
         # Otherwise, read from disk
         else:
-            price_data = self.database_connector.read_price_data(
+            price_data = self._database_connector.read_price_data(
                 **self.querydb_arguments,
             )
 
@@ -157,7 +157,7 @@ class YahooApiConnector(BaseApiConnector):
         :param dataframe: Requested Dataframe.
         """
 
-        self.database_connector.write_price_data(
+        self._database_connector.write_price_data(
             frequency=self.frequency,
             dataframe=dataframe,
         )

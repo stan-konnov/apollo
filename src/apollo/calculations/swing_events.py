@@ -62,12 +62,12 @@ class SwingEventsCalculator(BaseCalculator):
         )
 
         # Calculate swings
-        self.dataframe["adj close"].rolling(self.window_size).apply(self.__calc_se)
+        self.dataframe["adj close"].rolling(self.window_size).apply(self._calc_se)
 
         # Write swings to the dataframe
         self.dataframe["se"] = self.swing_events
 
-    def __calc_se(self, series: pd.Series) -> float:
+    def _calc_se(self, series: pd.Series) -> float:
         """
         Calculate rolling swings for a given window.
 

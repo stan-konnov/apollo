@@ -61,16 +61,16 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
     def model_trading_signals(self) -> None:
         """Model entry and exit signals."""
 
-        self.__calculate_indicators()
-        self.__mark_trading_signals()
+        self._calculate_indicators()
+        self._mark_trading_signals()
         self.dataframe.dropna(inplace=True)
 
-    def __calculate_indicators(self) -> None:
+    def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
         self.lrc_calculator.calculate_linear_regression_channel()
 
-    def __mark_trading_signals(self) -> None:
+    def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         long = (self.dataframe["adj close"] <= self.dataframe["l_bound"]) & (
