@@ -39,8 +39,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
         """Calculate Wilder's Swing Index."""
 
         # Fill swing points array with N NaN, where N = window size
-        # NOTE: we fill up to and not including last index, since capturing
-        # SP involves comparing middle value with previous and following bar
         self._swing_points = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
