@@ -31,7 +31,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # NOTE: we fill up to and not including last index, since capturing
         # SP involves comparing middle value with previous and following bar
         self._swing_points = (
-            np.full((1, self._window_size - 2), np.nan).flatten().tolist()
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
         # Calculate rolling Swing Index
