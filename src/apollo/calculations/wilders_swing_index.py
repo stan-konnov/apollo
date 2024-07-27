@@ -8,7 +8,14 @@ class WildersSwingIndexCalculator(BaseCalculator):
     """
     Wilder's Swing Index calculator.
 
-    WIP.
+    Wilder's Swing Index produces signals based on
+    High and Low Swing Points, which are based on the
+    difference between three consecutive ASI values.
+
+    Where ASI is the Accumulated Swing Index, which is
+    the sum of all Swing Index values within a given window.
+
+    Kaufman, Trading Systems and Methods, 2020, p.174
     """
 
     def __init__(
