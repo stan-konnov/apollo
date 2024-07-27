@@ -1,12 +1,15 @@
 import logging
 
-from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
+from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.settings import (
     END_DATE,
     MAX_PERIOD,
     START_DATE,
     TICKER,
+)
+from apollo.strategies.wilders_swing_index_mean_reversion import (
+    WildersSwingIndexMeanReversion,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -32,12 +35,25 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    wsi_calculator = WildersSwingIndexCalculator(
+    strategy = WildersSwingIndexMeanReversion(
         dataframe=dataframe,
         window_size=5,
     )
 
-    wsi_calculator.calculate_swing_index()
+    strategy.model_trading_signals()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name="WildersSwingIndexMeanReversion",
+        lot_size_cash=1000,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
+        write_result_plot=True,
+    )
+
+    stats = backtesting_runner.run()
+
+    logger.info(stats)
 
 
 if __name__ == "__main__":
