@@ -93,8 +93,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # To decide which TR calculation we will be using
         highest_value_index = abs_diffs.index(highest_value)
 
-        # Calculate K, the highest value of first two diffs
-        highest_diff = max(abs_diffs[:-1])
+        # Calculate K, the highest value of diffs
+        highest_diff = max(abs_diffs)
 
         # Calculate TR using one of the methods based on highest value index
         true_range = self.__calc_tr(
