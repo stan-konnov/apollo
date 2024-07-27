@@ -21,6 +21,9 @@ from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
+from apollo.strategies.wilders_swing_index_trend_following import (
+    WildersSwingIndexTrendFollowing,
+)
 from apollo.utils.types import StrategyCatalogueMap
 
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
@@ -28,6 +31,7 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
     "LogisticRegressionForecast": LogisticRegressionForecast,
     "KeltnerChaikinTrendFollowing": KeltnerChaikinTrendFollowing,
+    "WildersSwingIndexTrendFollowing": WildersSwingIndexTrendFollowing,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
 }

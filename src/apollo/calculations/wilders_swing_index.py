@@ -5,7 +5,19 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 
 class WildersSwingIndexCalculator(BaseCalculator):
-    """Wilder's Swing Index calculator."""
+    """
+    Wilder's Swing Index calculator.
+
+    NOTE: the signal generation logic should be improved:
+
+    # High/Low Swing Point:
+    # Any day on which the ASI is higher/lower
+    # than both the previous and the following day
+    # Kaufman, Trading Systems and Methods, 2020, p.175
+
+    Enter long when ASI crosses above HSPt-2
+    Enter short when ASI crosses below LSPt-2
+    """
 
     def __init__(
         self,
@@ -48,6 +60,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Mark latest SP entry as falsy, since we don't have foresight
         # to decide if the latest bar is higher/lower than the one after it
+        # NOTE: this is wrong as we should be able to decide the latest bar
+        # for signalling.
         self._swing_points[-1] = 0.0
 
         # Mark Swing Points into the dataframe
@@ -112,6 +126,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Calculate ASI
+        # NOTE: cumsum!
         return rolling_df["si"].sum()
 
     def __calc_sp(self, series: pd.Series) -> float:

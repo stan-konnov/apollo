@@ -5,7 +5,7 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base_strategy import BaseStrategy
 
 
-class WildersSwingIndexMeanReversion(BaseStrategy):
+class WildersSwingIndexTrendFollowing(BaseStrategy):
     """WIP."""
 
     def __init__(

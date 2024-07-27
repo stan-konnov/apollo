@@ -8,8 +8,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.wilders_swing_index_mean_reversion import (
-    WildersSwingIndexMeanReversion,
+from apollo.strategies.wilders_swing_index_trend_following import (
+    WildersSwingIndexTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -35,7 +35,7 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = WildersSwingIndexMeanReversion(
+    strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,
         window_size=5,
     )
@@ -44,7 +44,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="WildersSwingIndexMeanReversion",
+        strategy_name="WildersSwingIndexTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.3,
