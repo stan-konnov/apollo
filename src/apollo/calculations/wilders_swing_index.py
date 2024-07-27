@@ -8,15 +8,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
     """
     Wilder's Swing Index calculator.
 
-    NOTE: the signal generation logic should be improved:
-
-    # High/Low Swing Point:
-    # Any day on which the ASI is higher/lower
-    # than both the previous and the following day
-    # Kaufman, Trading Systems and Methods, 2020, p.175
-
-    Enter long when ASI crosses above HSPt-2
-    Enter short when ASI crosses below LSPt-2
+    WIP.
     """
 
     def __init__(
@@ -76,11 +68,11 @@ class WildersSwingIndexCalculator(BaseCalculator):
         o: float = rolling_df.iloc[-1]["open"]
         h: float = rolling_df.iloc[-1]["high"]
         l: float = rolling_df.iloc[-1]["low"]  # noqa: E741
-        c: float = rolling_df.iloc[-1]["close"]
+        c: float = rolling_df.iloc[-1]["adj close"]
 
         # Shift to get previous open and previous close
         prev_o = rolling_df["open"].shift(1).iloc[-1]
-        prev_c = rolling_df["close"].shift(1).iloc[-1]
+        prev_c = rolling_df["adj close"].shift(1).iloc[-1]
 
         # Calculate diffs between:
         # max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)
