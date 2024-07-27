@@ -58,12 +58,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Calculate rolling Swing Points
         self._dataframe["close"].rolling(self._window_size).apply(self.__calc_sp)
 
-        # Mark latest SP entry as falsy, since we don't have foresight
-        # to decide if the latest bar is higher/lower than the one after it
-        # NOTE: this is wrong as we should be able to decide the latest bar
-        # for signalling.
-        self._swing_points[-1] = 0.0
-
         # Mark Swing Points into the dataframe
         self._dataframe["sp"] = self._swing_points
 
@@ -125,8 +119,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
-        # Calculate ASI
-        # NOTE: cumsum!
+        # Calculate ASI by summing
+        # as we only need the last value
         return rolling_df["si"].sum()
 
     def __calc_sp(self, series: pd.Series) -> float:
