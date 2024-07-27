@@ -21,7 +21,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        self._limit_move: float = 100
         self._swing_points: list[float] = []
 
     def calculate_swing_index(self) -> None:
@@ -106,7 +105,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         numerator = (c - prev_c) + (0.50 * (c - o)) + (0.25 * (prev_c - prev_o))
 
         # Then calculate the actual index
-        return 50 * (numerator / true_range) * (highest_diff / self._limit_move)
+        return 50 * (numerator / true_range) * highest_diff
 
     def __calc_asi(self, series: pd.Series) -> float:
         # Slice out a chunk of dataframe to work with
