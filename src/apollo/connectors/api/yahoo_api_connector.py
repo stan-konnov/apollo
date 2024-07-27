@@ -77,7 +77,10 @@ class YahooApiConnector(BaseApiConnector):
 
         price_data: pd.DataFrame
 
-        last_record_date = self._database_connector.get_last_record_date()
+        last_record_date = self._database_connector.get_last_record_date(
+            ticker=self._ticker,
+            frequency=self._frequency,
+        )
 
         # Re-query prices
         # if no records are available

@@ -150,10 +150,12 @@ class InfluxDbConnector:
             # Execute the query and return
             return dataframe
 
-    def get_last_record_date(self) -> date | None:
+    def get_last_record_date(self, ticker: str, frequency: str) -> date | None:
         """
         Get the last record date from the database.
 
+        :param ticker: Ticker of the last record date.
+        :param frequency: Frequency of the last  record date.
         :returns: Last record date or None if no records are found.
         """
 
@@ -166,6 +168,8 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
+                        r.ticker == "{ticker}" and
+                        r.frequency == "{frequency}" and
                         r._measurement == "{INFLUXDB_MEASUREMENT}"
                     )
                 |> last()
