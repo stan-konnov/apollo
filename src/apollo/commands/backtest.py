@@ -1,7 +1,5 @@
 import logging
 
-import pandas as pd
-
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.settings import (
@@ -44,8 +42,8 @@ def main() -> None:
 
     strategy.model_trading_signals()
 
-    pd.options.display.max_rows = 100
-    print(dataframe.head(100))  # noqa: T201
+    # pd.options.display.max_rows = 100  # noqa: ERA001
+    print(dataframe.tail())  # noqa: T201
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,

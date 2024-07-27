@@ -61,6 +61,12 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Mark Swing Points into the dataframe
         self._dataframe["sp"] = self._swing_points
 
+        # Since High and Low swing points are
+        # based on the difference between three
+        # consecutive ASI values, we need to shift
+        # the SP column by one to get the correct signal
+        self._dataframe["sp"] = self._dataframe["sp"].shift(1)
+
         # Drop SI column since we don't need it
         self._dataframe.drop(columns=["si"], inplace=True)
 
