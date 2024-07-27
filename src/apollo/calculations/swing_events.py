@@ -47,10 +47,10 @@ class SwingEventsCalculator(BaseCalculator):
         """Calculate rolling swing events."""
 
         # Record the low of the first bar (before rolling window) as swing low
-        self.swing_l = self._dataframe.iloc[self._window_size - 2]["low"]
+        self.swing_l = self._dataframe.iloc[self._window_size - 2]["adj low"]
 
         # Record the high of the first bar (before rolling window) as swing high
-        self.swing_h = self._dataframe.iloc[self._window_size - 2]["high"]
+        self.swing_h = self._dataframe.iloc[self._window_size - 2]["adj high"]
 
         # Following the swing high, assume we are in downswing
         # Kaufman, TSM, p. 168
@@ -80,10 +80,10 @@ class SwingEventsCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Grab current low
-        current_low = rolling_df.iloc[-1]["low"]
+        current_low = rolling_df.iloc[-1]["adj low"]
 
         # Grab current high
-        current_high = rolling_df.iloc[-1]["high"]
+        current_high = rolling_df.iloc[-1]["adj high"]
 
         # Calculate current swing filter
         current_swing_filter = series.iloc[-1] * self.swing_filter

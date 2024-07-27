@@ -147,8 +147,6 @@ class YahooApiConnector(BaseApiConnector):
         :param dataframe: Requested Dataframe.
         """
 
-        # Pack me into separate class
-
         # Adjusted Open = Open * Adjusted Close / Unadjusted Close
 
         # Adjusted High = High * Adjusted Close / Close

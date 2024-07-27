@@ -50,7 +50,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         )
 
         # Calculate rolling AD line
-        self._dataframe["close"].rolling(self._window_size).apply(self._calc_adl)
+        self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_adl)
 
         # Preserve AD line on the dataframe
         self._dataframe["adl"] = self._accumulation_distribution_line
@@ -71,12 +71,12 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
 
         # Calculate money flow multiplier
         money_flow_multiplier = (
-            (rolling_df["close"] - rolling_df["low"])
-            - (rolling_df["high"] - rolling_df["close"])
-        ) / (rolling_df["high"] - rolling_df["low"])
+            (rolling_df["adj close"] - rolling_df["adj low"])
+            - (rolling_df["adj high"] - rolling_df["adj close"])
+        ) / (rolling_df["adj high"] - rolling_df["adj low"])
 
         # Calculate money flow volume
-        money_flow_volume = money_flow_multiplier * rolling_df["volume"]
+        money_flow_volume = money_flow_multiplier * rolling_df["adj volume"]
 
         # Calculate AD value
         accumulation_distribution = money_flow_volume.cumsum()
