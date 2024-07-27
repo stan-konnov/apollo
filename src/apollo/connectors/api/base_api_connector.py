@@ -61,14 +61,6 @@ class BaseApiConnector(ABC):
         """
 
     @abstractmethod
-    def _prep_dataframe(self, dataframe: DataFrame) -> None:
-        """
-        Prepare dataframe based on specifics of the child connector.
-
-        :param dataframe: Raw data from the API.
-        """
-
-    @abstractmethod
     def _save_dataframe(self, dataframe: DataFrame) -> None:
         """
         Save dataframe to disk based on specifics of the child connector.

@@ -8,6 +8,7 @@ from apollo.connectors.api.base_api_connector import BaseApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import YahooApiFrequencies
+from apollo.utils.data_adapter import DataAdapter
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
 
 if TYPE_CHECKING:
@@ -120,7 +121,11 @@ class YahooApiConnector(BaseApiConnector):
             if price_data_includes_intraday:
                 price_data.drop(index=last_queried_date, inplace=True)
 
-            self._prep_dataframe(price_data)
+            price_data = DataAdapter.prepare_price_data(
+                ticker=self._ticker,
+                dataframe=price_data,
+            )
+
             self._save_dataframe(price_data)
 
             logger.info("Requested price data from Yahoo Finance API.")
@@ -134,45 +139,6 @@ class YahooApiConnector(BaseApiConnector):
             logger.info("Price data read from storage.")
 
         return price_data
-
-    def _prep_dataframe(self, dataframe: pd.DataFrame) -> None:
-        """
-        Prepare Dataframe for consistency.
-
-        Reset indices,
-        Cast columns to lowercase.
-        Reset indices back to date column.
-        Add ticker column.
-
-        :param dataframe: Requested Dataframe.
-        """
-
-        # Adjusted Open = Open * Adjusted Close / Unadjusted Close
-
-        # Adjusted High = High * Adjusted Close / Close
-
-        # Adjusted Low = Low * Adjusted Close / Close
-
-        # Adjusted volume = Volume / (Adjusted Close / Close)
-
-        dataframe.reset_index(inplace=True)
-        dataframe.columns = dataframe.columns.str.lower()
-
-        dataframe.set_index("date", inplace=True)
-        dataframe.insert(0, "ticker", self._ticker)
-
-        dataframe["adj open"] = (
-            dataframe["open"] * dataframe["adj close"] / dataframe["close"]
-        )
-        dataframe["adj high"] = (
-            dataframe["high"] * dataframe["adj close"] / dataframe["close"]
-        )
-        dataframe["adj low"] = (
-            dataframe["low"] * dataframe["adj close"] / dataframe["close"]
-        )
-        dataframe["adj volume"] = dataframe["volume"] / (
-            dataframe["adj close"] / dataframe["close"]
-        )
 
     def _save_dataframe(self, dataframe: pd.DataFrame) -> None:
         """
