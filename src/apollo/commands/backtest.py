@@ -42,9 +42,6 @@ def main() -> None:
 
     strategy.model_trading_signals()
 
-    # pd.options.display.max_rows = 100  # noqa: ERA001
-    print(dataframe.head(50))  # noqa: T201
-
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
         strategy_name="WildersSwingIndexTrendFollowing",

@@ -76,7 +76,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         o: float = rolling_df.iloc[-1]["open"]
         h: float = rolling_df.iloc[-1]["high"]
         l: float = rolling_df.iloc[-1]["low"]  # noqa: E741
-        c: float = rolling_df.iloc[-1]["adj close"]
+        c: float = rolling_df.iloc[-1]["close"]
 
         # Shift to get previous open and previous close
         prev_o = rolling_df["open"].shift(1).iloc[-1]
