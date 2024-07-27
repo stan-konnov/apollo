@@ -44,16 +44,20 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Calculate rolling Swing Index
         self._dataframe["si"] = (
-            self._dataframe["close"].rolling(self._window_size).apply(self.__calc_si)
+            self._dataframe["adj close"]
+            .rolling(self._window_size)
+            .apply(self.__calc_si)
         )
 
         # Calculate rolling Accumulated Swing Index
         self._dataframe["asi"] = (
-            self._dataframe["close"].rolling(self._window_size).apply(self.__calc_asi)
+            self._dataframe["adj close"]
+            .rolling(self._window_size)
+            .apply(self.__calc_asi)
         )
 
         # Calculate rolling Swing Points
-        self._dataframe["close"].rolling(self._window_size).apply(self.__calc_sp)
+        self._dataframe["adj close"].rolling(self._window_size).apply(self.__calc_sp)
 
         # Mark Swing Points into the dataframe
         self._dataframe["sp"] = self._swing_points
@@ -72,13 +76,13 @@ class WildersSwingIndexCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Get open, high, low, close
-        o: float = rolling_df.iloc[-1]["open"]
-        h: float = rolling_df.iloc[-1]["high"]
-        l: float = rolling_df.iloc[-1]["low"]  # noqa: E741
+        o: float = rolling_df.iloc[-1]["adj open"]
+        h: float = rolling_df.iloc[-1]["adj high"]
+        l: float = rolling_df.iloc[-1]["adj low"]  # noqa: E741
         c: float = rolling_df.iloc[-1]["adj close"]
 
         # Shift to get previous open and previous close
-        prev_o = rolling_df["open"].shift(1).iloc[-1]
+        prev_o = rolling_df["adj open"].shift(1).iloc[-1]
         prev_c = rolling_df["adj close"].shift(1).iloc[-1]
 
         # Calculate diffs between:

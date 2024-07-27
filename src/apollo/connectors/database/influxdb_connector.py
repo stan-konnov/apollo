@@ -120,11 +120,15 @@ class InfluxDbConnector:
                         columns: [
                             "ticker",
                             "open",
+                            "adj open",
                             "high",
+                            "adj high",
                             "low",
+                            "adj low",
                             "close",
                             "adj close",
                             "volume",
+                            "adj volume",
                             "_time",
                         ]
                     )

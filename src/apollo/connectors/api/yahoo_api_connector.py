@@ -147,11 +147,34 @@ class YahooApiConnector(BaseApiConnector):
         :param dataframe: Requested Dataframe.
         """
 
+        # Pack me into separate class
+
+        # Adjusted Open = Open * Adjusted Close / Unadjusted Close
+
+        # Adjusted High = High * Adjusted Close / Close
+
+        # Adjusted Low = Low * Adjusted Close / Close
+
+        # Adjusted volume = Volume / (Adjusted Close / Close)
+
         dataframe.reset_index(inplace=True)
         dataframe.columns = dataframe.columns.str.lower()
 
         dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", self._ticker)
+
+        dataframe["adj open"] = (
+            dataframe["open"] * dataframe["adj close"] / dataframe["close"]
+        )
+        dataframe["adj high"] = (
+            dataframe["high"] * dataframe["adj close"] / dataframe["close"]
+        )
+        dataframe["adj low"] = (
+            dataframe["low"] * dataframe["adj close"] / dataframe["close"]
+        )
+        dataframe["adj volume"] = dataframe["volume"] / (
+            dataframe["adj close"] / dataframe["close"]
+        )
 
     def _save_dataframe(self, dataframe: pd.DataFrame) -> None:
         """
