@@ -9,7 +9,10 @@ class DataAdapter:
     price data for saving into storage and calculations.
 
     TODO: break down API connector, preparing of data, and saving
-    into separate classes. Build DataProvider class to yield data.
+    into separate classes. Build PriceDataProvider class to yield data.
+
+    Rename this to PriceDataAdapter.
+    Rename DataAvailabilityHelper to PriceDataAvailabilityHelper.
     """
 
     @staticmethod
