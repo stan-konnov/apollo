@@ -109,11 +109,15 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # K = highest of first two diffs, M = limit move
         # SI = 50 * ( ( (Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1) ) / TRt ) * (K / M)  # noqa: ERA001, E501
 
-        # Calculate numerator first
-        numerator = (c - prev_c) + (0.50 * (c - o)) + (0.25 * (prev_c - prev_o))
-
         # Then calculate the actual index
-        return 50 * (numerator / true_range) * highest_diff
+        return (
+            50
+            * (
+                ((c - prev_c) + (0.50 * (c - o)) + (0.25 * (prev_c - prev_o)))
+                / true_range
+            )
+            * highest_diff
+        )
 
     def __calc_asi(self, series: pd.Series) -> float:
         # Slice out a chunk of dataframe to work with
