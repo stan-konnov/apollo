@@ -93,8 +93,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # To decide which TR calculation we will be using
         highest_value_index = abs_diffs.index(highest_value)
 
-        # Calculate K, the highest value of diffs
-        highest_diff = max(abs_diffs)
+        # Calculate K, the highest value of first 2 diffs
+        highest_diff = max(abs_diffs[:2])
 
         # Calculate TR using one of the methods based on highest value index
         true_range = self.__calc_tr(
@@ -177,19 +177,19 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         if diff_index == 0:
             return (
-                (high - prev_close)
-                - (0.50 * (low - prev_close))
-                + (0.25 * (prev_close - prev_open))
+                abs(high - prev_close)
+                - 0.50 * abs(low - prev_close)
+                + 0.25 * abs(prev_close - prev_open)
             )
 
         if diff_index == 1:
             return (
-                (low - prev_close)
-                - (0.50 * (high - prev_close))
-                + (0.25 * (prev_close - prev_open))
+                abs(low - prev_close)
+                - 0.50 * abs(high - prev_close)
+                + 0.25 * abs(prev_close - prev_open)
             )
 
         if diff_index == 2:  # noqa: PLR2004
-            return (high - low) + (0.25 * (prev_close - prev_open))
+            return abs(high - low) + 0.25 * abs(prev_close - prev_open)
 
         return 0.0
