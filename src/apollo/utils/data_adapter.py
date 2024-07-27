@@ -26,7 +26,6 @@ class DataAdapter:
 
         :param ticker: Ticker to insert into dataframe.
         :param dataframe: Dataframe with price data to prepare.
-
         :returns: Prepared dataframe.
         """
 
