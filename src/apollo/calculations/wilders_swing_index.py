@@ -205,8 +205,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
     def _calc_wtr(
         self,
         diff_index: int,
-        high: float,
-        low: float,
+        curr_high: float,
+        curr_low: float,
         prev_close: float,
         prev_open: float,
     ) -> float:
@@ -218,28 +218,31 @@ class WildersSwingIndexCalculator(BaseCalculator):
         the index of the highest absolute difference.
 
         :param diff_index: Index of the highest absolute difference.
-        :param high: Current high price.
-        :param low: Current low price.
+        :param curr_high: Current high price.
+        :param curr_low: Current low price.
         :param prev_close: Previous close price.
         :param prev_open: Previous open price.
         :returns: Calculated weighted True Range.
+
+        :raises ValueError: If provided diff_index is invalid.
         """
 
-        if diff_index == 0:
-            return (
-                abs(high - prev_close)
-                - 0.50 * abs(low - prev_close)
-                + 0.25 * abs(prev_close - prev_open)
-            )
-
-        if diff_index == 1:
-            return (
-                abs(low - prev_close)
-                - 0.50 * abs(high - prev_close)
-                + 0.25 * abs(prev_close - prev_open)
-            )
-
-        if diff_index == 2:  # noqa: PLR2004
-            return abs(high - low) + 0.25 * abs(prev_close - prev_open)
-
-        return 0.0
+        match diff_index:
+            case 0:
+                return (
+                    abs(curr_high - prev_close)
+                    - 0.50 * abs(curr_low - prev_close)
+                    + 0.25 * abs(prev_close - prev_open)
+                )
+            case 1:
+                return (
+                    abs(curr_low - prev_close)
+                    - 0.50 * abs(curr_high - prev_close)
+                    + 0.25 * abs(prev_close - prev_open)
+                )
+            case 2:
+                return abs(curr_high - curr_low) + 0.25 * abs(prev_close - prev_open)
+            case _:
+                raise ValueError(
+                    "Provided diff_index is invalid. Base calculation is faulty.",
+                )
