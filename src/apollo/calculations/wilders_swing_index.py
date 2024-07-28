@@ -70,8 +70,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # the SP column by one to get the correct signal
         self._dataframe["sp"] = self._dataframe["sp"].shift(1)
 
-        # Drop SI column since we don't need it
-        self._dataframe.drop(columns=["si"], inplace=True)
+        # Drop swing index, previous open and previous close columns
+        self._dataframe.drop(columns=["si", "prev_open", "prev_close"], inplace=True)
 
     def _calc_si(self, series: pd.Series) -> float:
         """
