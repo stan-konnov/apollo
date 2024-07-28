@@ -125,7 +125,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Calculate weighted TR using one of
         # the methods based on highest value index
-        weighted_true_range = self._calc_tr(
+        weighted_true_range = self._calc_wtr(
             highest_value_index,
             curr_high,
             curr_low,
@@ -133,7 +133,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
             prev_open,
         )
 
-        # Finally, calculate Wilders Swing Index:
+        # Finally, calculate Wilders Swing Index as:
         # SI = 50 * (((Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1)) / TRt) * Kt  # noqa: ERA001, E501
         return (
             50
@@ -202,7 +202,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Return dummy value
         return 0.0
 
-    def _calc_tr(
+    def _calc_wtr(
         self,
         diff_index: int,
         high: float,
@@ -210,10 +210,20 @@ class WildersSwingIndexCalculator(BaseCalculator):
         prev_close: float,
         prev_open: float,
     ) -> float:
-        # Wilder's Swing Index uses adapted version of True Range
-        # Therefore, we define several methods that we will
-        # be using and then index them out based on logic
-        # Kaufman, Trading Systems and Methods, 2020, p.175
+        """
+        Calculate weighted True Range.
+
+        Wilder's Swing Index uses weighted version of True Range.
+        Thus, we define several methods to calculate it based on
+        the index of the highest absolute difference.
+
+        :param diff_index: Index of the highest absolute difference.
+        :param high: Current high price.
+        :param low: Current low price.
+        :param prev_close: Previous close price.
+        :param prev_open: Previous open price.
+        :returns: Calculated weighted True Range.
+        """
 
         if diff_index == 0:
             return (
