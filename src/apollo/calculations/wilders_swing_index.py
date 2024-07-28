@@ -42,22 +42,24 @@ class WildersSwingIndexCalculator(BaseCalculator):
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
+        # Shift to get previous open and previous close
+        self._dataframe["prev_open"] = self._dataframe["adj open"].shift(1)
+        self._dataframe["prev_close"] = self._dataframe["adj close"].shift(1)
+
         # Calculate rolling Swing Index
         self._dataframe["si"] = (
-            self._dataframe["adj close"]
-            .rolling(self._window_size)
-            .apply(self.__calc_si)
+            self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_si)
         )
 
         # Calculate rolling Accumulated Swing Index
         self._dataframe["asi"] = (
             self._dataframe["adj close"]
             .rolling(self._window_size)
-            .apply(self.__calc_asi)
+            .apply(self._calc_asi)
         )
 
         # Calculate rolling Swing Points
-        self._dataframe["adj close"].rolling(self._window_size).apply(self.__calc_sp)
+        self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_hlsp)
 
         # Mark Swing Points into the dataframe
         self._dataframe["sp"] = self._swing_points
@@ -71,62 +73,76 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Drop SI column since we don't need it
         self._dataframe.drop(columns=["si"], inplace=True)
 
-    def __calc_si(self, series: pd.Series) -> float:
+    def _calc_si(self, series: pd.Series) -> float:
+        """
+        Calculate rolling swing index for a given window.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Latest calculated entry from processed window.
+        """
+
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
-        # Get open, high, low, close
-        o: float = rolling_df.iloc[-1]["adj open"]
-        h: float = rolling_df.iloc[-1]["adj high"]
-        l: float = rolling_df.iloc[-1]["adj low"]  # noqa: E741
-        c: float = rolling_df.iloc[-1]["adj close"]
+        # Get current open, high, low, close
+        curr_open: float = rolling_df.iloc[-1]["adj open"]
+        curr_high: float = rolling_df.iloc[-1]["adj high"]
+        curr_low: float = rolling_df.iloc[-1]["adj low"]
+        curr_close: float = rolling_df.iloc[-1]["adj close"]
 
-        # Shift to get previous open and previous close
-        prev_o = rolling_df["adj open"].shift(1).iloc[-1]
-        prev_c = rolling_df["adj close"].shift(1).iloc[-1]
+        # Get previous open, close
+        prev_open: float = rolling_df.iloc[-1]["prev_open"]
+        prev_close: float = rolling_df.iloc[-1]["prev_close"]
 
-        # Calculate diffs between:
-        # max(|Ht - Lt|, |Ht - Ct-1|, |Ct-1 - Lt|)
+        # Calculate absolute differences
+        # as the basis of weighted True Range:
+        # max(|Ht - Ct-1|, |Lt - Ct-1|, |Ht - Lt|)
         # Kaufman, Trading Systems and Methods, 2020, p.174
-        diffs = [h - prev_c, l - prev_c, h - l]
+        absolute_differences = [
+            abs(difference)
+            for difference in [
+                curr_high - prev_close,
+                curr_low - prev_close,
+                curr_high - curr_low,
+            ]
+        ]
 
-        # Bring to list of absolute floats
-        abs_diffs = [abs(d) for d in diffs]
-
-        # Get the highest value
-        highest_value = max(abs_diffs)
+        # Get the highest value out of the three
+        highest_value = max(absolute_differences)
 
         # Determine the index of the highest value
-        # To decide which TR calculation we will be using
-        highest_value_index = abs_diffs.index(highest_value)
+        # To decide which weighted True Range calculation to use
+        highest_value_index = absolute_differences.index(highest_value)
 
-        # Calculate K, the highest value of first 2 diffs
-        highest_diff = max(abs_diffs)
+        # Calculate K: the highest value of the three differences
+        highest_difference = max(absolute_differences)
 
-        # Calculate TR using one of the methods based on highest value index
-        true_range = self.__calc_tr(
+        # Calculate weighted TR using one of
+        # the methods based on highest value index
+        weighted_true_range = self._calc_tr(
             highest_value_index,
-            h,
-            l,
-            prev_c,
-            prev_o,
+            curr_high,
+            curr_low,
+            prev_close,
+            prev_open,
         )
 
-        # Finally, calculate Swing Index:
-        # K = highest of first two diffs, M = limit move
-        # SI = 50 * ( ( (Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1) ) / TRt ) * (K / M)  # noqa: ERA001, E501
-
-        # Then calculate the actual index
+        # Finally, calculate Wilders Swing Index:
+        # SI = 50 * (((Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1)) / TRt) * Kt  # noqa: ERA001, E501
         return (
             50
             * (
-                ((c - prev_c) + (0.50 * (c - o)) + (0.25 * (prev_c - prev_o)))
-                / true_range
+                (
+                    (curr_close - prev_close)
+                    + (0.50 * (curr_close - curr_open))
+                    + (0.25 * (prev_close - prev_open))
+                )
+                / weighted_true_range
             )
-            * highest_diff
+            * highest_difference
         )
 
-    def __calc_asi(self, series: pd.Series) -> float:
+    def _calc_asi(self, series: pd.Series) -> float:
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
@@ -134,7 +150,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # as we only need the last value
         return rolling_df["si"].sum()
 
-    def __calc_sp(self, series: pd.Series) -> float:
+    def _calc_hlsp(self, series: pd.Series) -> float:
         # High/Low Swing Point:
         # Any day on which the ASI is higher/lower
         # than both the previous and the following day
@@ -169,7 +185,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # Return dummy value
         return 0.0
 
-    def __calc_tr(
+    def _calc_tr(
         self,
         diff_index: int,
         high: float,

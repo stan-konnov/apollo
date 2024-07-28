@@ -8,8 +8,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.keltner_chaikin_trend_following import (
-    KeltnerChaikinTrendFollowing,
+from apollo.strategies.wilders_swing_index_trend_following import (
+    WildersSwingIndexTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -35,10 +35,9 @@ def main() -> None:
 
     dataframe = yahoo_api_connector.request_or_read_prices()
 
-    strategy = KeltnerChaikinTrendFollowing(
+    strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,
         window_size=5,
-        volatility_multiplier=0.1,
     )
 
     strategy.model_trading_signals()
