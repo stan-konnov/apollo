@@ -16,6 +16,10 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
+"""
+TODO: Most of it will be come a PriceDataProvider
+"""
+
 
 class YahooApiConnector(BaseApiConnector):
     """
