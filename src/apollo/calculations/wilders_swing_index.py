@@ -8,12 +8,12 @@ class WildersSwingIndexCalculator(BaseCalculator):
     """
     Wilder's Swing Index calculator.
 
-    Wilder's Swing Index produces signals based on
-    High and Low Swing Points, which are based on the
-    difference between three consecutive ASI values.
+    Wilder's Swing Index is an event-driven
+    indicator that captures High and Low swing points.
 
-    Where ASI is the Accumulated Swing Index, which is
-    the sum of all Swing Index values within a given window.
+    The High and Low swing points are based
+    on the difference between three consecutive
+    ASI values, where ASI is the sum of the Swing Index values.
 
     Kaufman, Trading Systems and Methods, 2020, p.174
     """
