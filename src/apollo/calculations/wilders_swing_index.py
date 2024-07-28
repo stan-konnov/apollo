@@ -18,6 +18,12 @@ class WildersSwingIndexCalculator(BaseCalculator):
     Kaufman, Trading Systems and Methods, 2020, p.174
     """
 
+    # Constant to represent low swing point
+    LOW_SWING_POINT: float = -1.0
+
+    # Constant to represent high swing point
+    HIGH_SWING_POINT: float = 1.0
+
     def __init__(
         self,
         dataframe: pd.DataFrame,
@@ -143,6 +149,13 @@ class WildersSwingIndexCalculator(BaseCalculator):
         )
 
     def _calc_asi(self, series: pd.Series) -> float:
+        """
+        Calculate rolling accumulated swing index for a given window.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Latest calculated entry from processed window.
+        """
+
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
@@ -151,32 +164,36 @@ class WildersSwingIndexCalculator(BaseCalculator):
         return rolling_df["si"].sum()
 
     def _calc_hlsp(self, series: pd.Series) -> float:
-        # High/Low Swing Point:
-        # Any day on which the ASI is higher/lower
-        # than both the previous and the following day
-        # Kaufman, Trading Systems and Methods, 2020, p.175
+        """
+        Calculate rolling high/low swing point for a given window.
+
+        High/Low Swing Point:
+        Any day on which the ASI is higher/lower
+        than both the previous and the following day
+        Kaufman, Trading Systems and Methods, 2020, p.175
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Latest calculated entry from processed window.
+        """
 
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
         # Get the last 3 ASI entries
-        last_three_asi = rolling_df.iloc[self._window_size - 3 :]["asi"]
+        # where left: t-2, middle: t-1, right: t
+        left, middle, right = list(
+            rolling_df.iloc[self._window_size - 3 :]["asi"],
+        )
 
-        # Bring to list of floats
-        last_three_asi = list(last_three_asi)
-
-        # Unpack ASI values
-        prev, curr, next = last_three_asi  # noqa: A001
-
-        # If current ASI is higher than previous and next (HSP)
-        if curr > prev and curr > next:
+        # If middle ASI is higher than it's neighbors (HSP)
+        if middle > left and middle > right:
             # Append positive float to the list
-            self._swing_points.append(1.0)
+            self._swing_points.append(self.HIGH_SWING_POINT)
 
-        # If current ASI is lower than previous and next (LSP)
-        elif curr < prev and curr < next:
+        # If middle ASI is lower than it's neighbors (LSP)
+        elif middle < left and middle < right:
             # Append negative float to the list
-            self._swing_points.append(-1.0)
+            self._swing_points.append(self.LOW_SWING_POINT)
 
         else:
             # Otherwise, append falsy float

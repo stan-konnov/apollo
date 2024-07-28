@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 import numpy as np
 import pandas as pd
 
@@ -14,10 +12,10 @@ class SwingEventsCalculator(BaseCalculator):
     """
 
     # Constant to represent upswing
-    UP_SWING: ClassVar[float] = 1.0
+    UP_SWING: float = 1.0
 
     # Constant to represent downswing
-    DOWN_SWING: ClassVar[float] = -1.0
+    DOWN_SWING: float = -1.0
 
     def __init__(
         self,
