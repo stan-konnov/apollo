@@ -6,7 +6,19 @@ from apollo.strategies.base_strategy import BaseStrategy
 
 
 class WildersSwingIndexTrendFollowing(BaseStrategy):
-    """WIP."""
+    """
+    Wilder's Swing Index Trend Following.
+
+    This strategy takes long positions when:
+
+    * Swing index reaches a high swing point, indicating that instrument is in uptrend.
+
+    This strategy takes short positions when:
+
+    * Swing index reaches a low swing point, indicating that instrument is in downtrend.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    """
 
     def __init__(
         self,
@@ -16,7 +28,8 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         """
         Construct Wilder's Swing Index Mean Reversion Strategy.
 
-        WIP.
+        :param dataframe: Dataframe with price data.
+        :param window_size: Size of the window for the strategy.
         """
 
         super().__init__(dataframe, window_size)
@@ -42,11 +55,11 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["sp"] == 1,
+            self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["sp"] == -1,
+            self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT,
             "signal",
         ] = SHORT_SIGNAL
