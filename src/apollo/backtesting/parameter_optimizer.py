@@ -65,8 +65,8 @@ class ParameterOptimizer:
             frequency=str(FREQUENCY),
         )
 
-        # Request or read the prices
-        price_dataframe = price_data_provider.request_or_read_prices()
+        # Request or read the price data
+        price_dataframe = price_data_provider.request_or_read_price_data()
 
         # Get the number of available CPU cores
         available_cores = cpu_count()

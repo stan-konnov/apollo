@@ -11,18 +11,19 @@ class YahooApiConnector:
     Acts as a wrapper around Yahoo Finance API to request price data.
     """
 
-    def request_prices(
+    def request_price_data(
         self,
         ticker: str,
         frequency: str,
         request_arguments: dict,
     ) -> pd.DataFrame:
         """
-        Request prices from Yahoo Finance.
+        Request price data from Yahoo Finance.
 
-        :param ticker: Instrument symbol.
-        :param frequency: Frequency of the data.
-        :param request_arguments: Additional arguments for the request.
+        :param ticker: Ticker to request prices for.
+        :param start_date: Start point to request prices from (inclusive).
+        :param end_date: End point until which to request prices (exclusive).
+        :param frequency: Frequency of requested prices.
         :returns: Dataframe with price data.
 
         :raises EmptyApiResponseError: If API response is empty.

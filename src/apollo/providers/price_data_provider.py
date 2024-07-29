@@ -36,7 +36,7 @@ class PriceDataProvider:
         :param ticker: Ticker to provide prices for.
         :param start_date: Start point to provide prices from (inclusive).
         :param end_date: End point until which to provide prices (exclusive).
-        :param max_period: Flag to request the maximum available period of prices.
+        :param max_period: Flag to provide the maximum available period.
         :param frequency: Frequency of provided prices.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
@@ -83,12 +83,12 @@ class PriceDataProvider:
         self._api_connector = YahooApiConnector()
         self._database_connector = InfluxDbConnector()
 
-    def request_or_read_prices(self) -> pd.DataFrame:
+    def request_or_read_price_data(self) -> pd.DataFrame:
         """
-        Request prices from API or read them from storage.
+        Request price data from API or read it from storage.
 
-        If prices are missing, prepare dataframe for
-        consistency, adjust price values and save to storage.
+        If price data is missing from storage, prepare dataframe
+        for consistency, adjust price values and save to storage.
 
         :returns: Dataframe with price data.
         """
@@ -111,7 +111,7 @@ class PriceDataProvider:
         )
 
         if price_data_needs_update:
-            price_data = self._api_connector.request_prices(
+            price_data = self._api_connector.request_price_data(
                 ticker=self._ticker,
                 frequency=self._frequency,
                 request_arguments=self._request_arguments,
@@ -157,11 +157,11 @@ class PriceDataProvider:
 
     def _prepare_price_data(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """
-        Prepare price data.
+        Prepare price data for consistency and storage.
 
-        Reset indices, cast columns to lowercase.
-        Set indices back to date column.
-        Add ticker column.
+        Reset indices, cast all columns to lowercase.
+        Reindex the dataframe back by date column.
+        Add ticker column at first position.
 
         Adjust OHLV values based on adjusted close to
         avoid inconsistencies around stock splits and dividends.
@@ -172,7 +172,6 @@ class PriceDataProvider:
 
         dataframe.reset_index(inplace=True)
         dataframe.columns = dataframe.columns.str.lower()
-
         dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", self._ticker)
 
