@@ -11,11 +11,11 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
 
     This strategy takes long positions when:
 
-    * Swing index reaches a high swing point, indicating that instrument is in uptrend.
+    * T-1 swing index reaches a high point, indicating that instrument is in uptrend.
 
     This strategy takes short positions when:
 
-    * Swing index reaches a low swing point, indicating that instrument is in downtrend.
+    * T-1 swing index reaches a low point, indicating that instrument is in downtrend.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
