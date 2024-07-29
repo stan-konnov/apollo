@@ -154,8 +154,8 @@ class PriceDataProvider:
         Set indices back to date column.
         Add ticker column.
 
-        Adjust OHLCV values based on adjusted close
-        to avoid inconsistencies around stock splits and dividends.
+        Adjust OHLV values based on adjusted close to
+        avoid inconsistencies around stock splits and dividends.
 
         :param ticker: Ticker to insert into dataframe.
         :param dataframe: Dataframe with price data to prepare.

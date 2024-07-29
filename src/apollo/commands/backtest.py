@@ -1,7 +1,7 @@
 import logging
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
+from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
     MAX_PERIOD,
@@ -26,18 +26,18 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    yahoo_api_connector = YahooApiConnector(
+    price_data_provider = PriceDataProvider(
         ticker=str(TICKER),
         start_date=str(START_DATE),
         end_date=str(END_DATE),
         max_period=bool(MAX_PERIOD),
     )
 
-    dataframe = yahoo_api_connector.request_or_read_prices()
+    dataframe = price_data_provider.request_or_read_prices()
 
     strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
+        window_size=15,
     )
 
     strategy.model_trading_signals()
@@ -47,7 +47,7 @@ def main() -> None:
         strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.3,
+        tp_volatility_multiplier=0.4,
         write_result_plot=True,
     )
 

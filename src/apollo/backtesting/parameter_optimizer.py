@@ -8,8 +8,8 @@ from numpy import arange
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     END_DATE,
@@ -56,17 +56,16 @@ class ParameterOptimizer:
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
-        # Instantiate the API connector
-        api_connector = YahooApiConnector(
+        # Instantiate price data provider
+        price_data_provider = PriceDataProvider(
             ticker=str(TICKER),
             start_date=str(START_DATE),
             end_date=str(END_DATE),
             max_period=bool(MAX_PERIOD),
-            frequency=str(FREQUENCY),
         )
 
         # Request or read the prices
-        price_dataframe = api_connector.request_or_read_prices()
+        price_dataframe = price_data_provider.request_or_read_prices()
 
         # Get the number of available CPU cores
         available_cores = cpu_count()
