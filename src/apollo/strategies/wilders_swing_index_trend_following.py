@@ -26,7 +26,7 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         window_size: int,
     ) -> None:
         """
-        Construct Wilder's Swing Index Mean Reversion Strategy.
+        Construct Wilder's Swing Index Trend Following Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
