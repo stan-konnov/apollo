@@ -5,7 +5,7 @@ import pandas as pd
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
-from apollo.settings import DEFAULT_DATE_FORMAT, YahooApiFrequencies
+from apollo.settings import DEFAULT_DATE_FORMAT
 from apollo.utils.price_data_availability_helper import PriceDataAvailabilityHelper
 
 logger = getLogger(__name__)
@@ -24,8 +24,8 @@ class PriceDataProvider:
         ticker: str,
         start_date: str,
         end_date: str,
-        max_period: bool = False,
-        frequency: str = YahooApiFrequencies.ONE_DAY.value,
+        frequency: str,
+        max_period: bool,
     ) -> None:
         """
         Construct Price Data Provider.
@@ -33,8 +33,8 @@ class PriceDataProvider:
         :param ticker: Ticker to provide prices for.
         :param start_date: Start point to provide prices from (inclusive).
         :param end_date: End point until which to provide prices (exclusive).
-        :param max_period: Flag to provide the maximum available period of prices.
         :param frequency: Frequency of provided prices.
+        :param max_period: Flag to provide the maximum available period of prices.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
         :raises ValueError: If start_date is greater than end_date.

@@ -61,6 +61,7 @@ class ParameterOptimizer:
             ticker=str(TICKER),
             start_date=str(START_DATE),
             end_date=str(END_DATE),
+            frequency=str(FREQUENCY),
             max_period=bool(MAX_PERIOD),
         )
 

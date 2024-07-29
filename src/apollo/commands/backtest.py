@@ -4,6 +4,7 @@ from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
+    FREQUENCY,
     MAX_PERIOD,
     START_DATE,
     TICKER,
@@ -30,6 +31,7 @@ def main() -> None:
         ticker=str(TICKER),
         start_date=str(START_DATE),
         end_date=str(END_DATE),
+        frequency=str(FREQUENCY),
         max_period=bool(MAX_PERIOD),
     )
 
