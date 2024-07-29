@@ -1,18 +1,14 @@
-from logging import getLogger
-
 import pandas as pd
 from yfinance import download
 
 from apollo.errors.api import EmptyApiResponseError
-
-logger = getLogger(__name__)
 
 
 class YahooApiConnector:
     """
     API connector for Yahoo Finance.
 
-    Connects to Yahoo Finance API to request price data.
+    Acts as a wrapper around Yahoo Finance API to request price data.
     """
 
     def request_prices(
