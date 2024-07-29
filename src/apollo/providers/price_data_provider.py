@@ -157,7 +157,7 @@ class PriceDataProvider:
         avoid inconsistencies around stock splits and dividends.
 
         :param dataframe: Dataframe with price data to prepare.
-        :returns: Prepared dataframe.
+        :returns: Dataframe prepared for consistency and storage.
         """
 
         dataframe.reset_index(inplace=True)
