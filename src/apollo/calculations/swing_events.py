@@ -84,7 +84,7 @@ class SwingEventsCalculator(BaseCalculator):
         current_high = rolling_df.iloc[-1]["adj high"]
 
         # Calculate current swing filter
-        current_swing_filter = series.iloc[-1] * self.swing_filter
+        current_swing_filter = rolling_df.iloc[-1]["adj close"] * self.swing_filter
 
         # If we are in downswing
         if self.in_downswing:
