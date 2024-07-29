@@ -61,24 +61,7 @@ class PriceDataProvider:
         self._start_date = start_date
         self._end_date = end_date
         self._frequency = frequency
-
-        self._request_arguments = {}
-        self._querydb_arguments = {
-            "ticker": self._ticker,
-            "frequency": self._frequency,
-        }
-
-        # Define request and query arguments
-        # based on whether maximum period is requested
-        if max_period:
-            self._request_arguments["period"] = "max"
-
-        else:
-            self._request_arguments["end"] = self._end_date
-            self._request_arguments["start"] = self._start_date
-
-            self._querydb_arguments["end_date"] = self._end_date
-            self._querydb_arguments["start_date"] = self._start_date
+        self._max_period = max_period
 
         self._api_connector = YahooApiConnector()
         self._database_connector = InfluxDbConnector()
@@ -113,8 +96,10 @@ class PriceDataProvider:
         if price_data_needs_update:
             price_data = self._api_connector.request_price_data(
                 ticker=self._ticker,
+                start_date=self._start_date,
+                end_date=self._end_date,
+                max_period=self._max_period,
                 frequency=self._frequency,
-                request_arguments=self._request_arguments,
             )
 
             # At this point in time,
@@ -148,7 +133,11 @@ class PriceDataProvider:
         # Otherwise, read from disk
         else:
             price_data = self._database_connector.read_price_data(
-                **self._querydb_arguments,
+                ticker=self._ticker,
+                start_date=self._start_date,
+                end_date=self._end_date,
+                max_period=self._max_period,
+                frequency=self._frequency,
             )
 
             logger.info("Price data read from storage.")

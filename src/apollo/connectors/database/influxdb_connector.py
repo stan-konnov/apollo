@@ -80,8 +80,9 @@ class InfluxDbConnector:
         self,
         ticker: str,
         frequency: str,
-        start_date: str | None = None,
-        end_date: str | None = None,
+        start_date: str,
+        end_date: str,
+        max_period: bool,
     ) -> pd.DataFrame:
         """
         Read price data from the database.
@@ -90,6 +91,7 @@ class InfluxDbConnector:
         :param frequency: Frequency of the price data.
         :param start_date: Start date of the price data (inclusive).
         :param end_date: End date of the price data (exclusive).
+        :param max_period: Flag to read the maximum available period.
         :returns: Price dataframe read from the database.
         """
 
@@ -98,8 +100,10 @@ class InfluxDbConnector:
             query_api = client.query_api()
 
             # Define query range
-            query_range = "start:0"
-            if start_date and end_date:
+            # depending on the max_period flag
+            if max_period:
+                query_range = "start:0"
+            else:
                 query_range = f"start: {start_date}, stop: {end_date}"
 
             # Query the price data from the database
