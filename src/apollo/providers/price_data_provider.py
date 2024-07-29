@@ -64,6 +64,8 @@ class PriceDataProvider:
             "frequency": self._frequency,
         }
 
+        # Define request and query arguments
+        # based on whether maximum period is requested
         if max_period:
             self._request_arguments["period"] = "max"
 
@@ -81,7 +83,8 @@ class PriceDataProvider:
         """
         Request prices from API or read them from storage.
 
-        If prices are missing, prepare dataframe for consistency and save to storage.
+        If prices are missing, prepare dataframe for
+        consistency, adjust price values and save to storage.
 
         :returns: Dataframe with price data.
         """
@@ -157,7 +160,6 @@ class PriceDataProvider:
         Adjust OHLV values based on adjusted close to
         avoid inconsistencies around stock splits and dividends.
 
-        :param ticker: Ticker to insert into dataframe.
         :param dataframe: Dataframe with price data to prepare.
         :returns: Prepared dataframe.
         """
