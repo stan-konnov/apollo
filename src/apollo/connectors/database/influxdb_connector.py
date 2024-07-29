@@ -87,15 +87,12 @@ class InfluxDbConnector:
         """
         Read price data from the database.
 
-        Deduce the query arguments
-        based on the provided max period flag.
-
-        :param ticker: Ticker of the price data.
-        :param frequency: Frequency of the price data.
-        :param start_date: Start date of the price data (inclusive).
-        :param end_date: End date of the price data (exclusive).
-        :param max_period: Flag to read the maximum available period.
-        :returns: Price dataframe read from the database.
+        :param ticker: Ticker to read prices data for.
+        :param start_date: Start point to read price data from (inclusive).
+        :param end_date: End point until which to read prices data (exclusive).
+        :param max_period: Flag to read the maximum available period of price data.
+        :param frequency: Frequency of read price data.
+        :returns: Dataframe with price data.
         """
 
         with InfluxDBClient(**self._client_parameters) as client:
@@ -103,11 +100,10 @@ class InfluxDbConnector:
             query_api = client.query_api()
 
             # Define query range
-            # depending on the max_period flag
-            if max_period:
-                query_range = "start:0"
-            else:
-                query_range = f"start: {start_date}, stop: {end_date}"
+            # depending on the max period flag
+            query_range = (
+                "start:0" if max_period else f"start: {start_date}, stop: {end_date}"
+            )
 
             # Query the price data from the database
             query_statement = f"""
@@ -166,7 +162,7 @@ class InfluxDbConnector:
         Get the last record date from the database.
 
         :param ticker: Ticker of the last record date.
-        :param frequency: Frequency of the last  record date.
+        :param frequency: Frequency of the last record date.
         :returns: Last record date or None if no records are found.
         """
 

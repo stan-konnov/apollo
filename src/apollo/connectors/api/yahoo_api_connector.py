@@ -1,10 +1,11 @@
 import pandas as pd
 from yfinance import download
 
+from apollo.connectors.api.base_api_connector import BaseApiConnector
 from apollo.errors.api import EmptyApiResponseError
 
 
-class YahooApiConnector:
+class YahooApiConnector(BaseApiConnector):
     """
     API connector for Yahoo Finance.
 
@@ -25,11 +26,11 @@ class YahooApiConnector:
         Deduce the request arguments
         based on the provided max period flag.
 
-        :param ticker: Ticker to request prices for.
-        :param start_date: Start point to request prices from (inclusive).
-        :param end_date: End point until which to request prices (exclusive).
-        :param max_period: Flag to request the maximum available period.
-        :param frequency: Frequency of requested prices.
+        :param ticker: Ticker to request prices data for.
+        :param start_date: Start point to request price data from (inclusive).
+        :param end_date: End point until which to request prices data (exclusive).
+        :param max_period: Flag to request the maximum available period of price data.
+        :param frequency: Frequency of requested price data.
         :returns: Dataframe with price data.
 
         :raises EmptyApiResponseError: If API response is empty.
@@ -37,15 +38,16 @@ class YahooApiConnector:
 
         price_data: pd.DataFrame
 
+        # If max period is requested
+        # request prices without start and end date
         if max_period:
-            # Request prices without start and end date
             price_data = download(
                 tickers=ticker,
                 interval=frequency,
                 period="max",
             )
+        # Otherwise, request prices with bounds
         else:
-            # Otherwise, request prices with bounds
             price_data = download(
                 tickers=ticker,
                 interval=frequency,

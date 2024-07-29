@@ -33,11 +33,12 @@ class PriceDataProvider:
         """
         Construct Price Data Provider.
 
-        :param ticker: Ticker to provide prices for.
-        :param start_date: Start point to provide prices from (inclusive).
-        :param end_date: End point until which to provide prices (exclusive).
-        :param max_period: Flag to provide the maximum available period.
-        :param frequency: Frequency of provided prices.
+        :param ticker: Ticker to provide prices data for.
+        :param start_date: Start point to provide price data from (inclusive).
+        :param end_date: End point until which to provide prices data (exclusive).
+        :param max_period: Flag to provide the maximum available period of price data.
+        :param frequency: Frequency of provided price data.
+        :returns: Dataframe with price data.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
         :raises ValueError: If start_date is greater than end_date.
