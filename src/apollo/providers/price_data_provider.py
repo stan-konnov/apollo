@@ -6,16 +6,17 @@ import pandas as pd
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.settings import DEFAULT_DATE_FORMAT, YahooApiFrequencies
-from apollo.utils.data_availability_helper import DataAvailabilityHelper
+from apollo.utils.price_data_availability_helper import PriceDataAvailabilityHelper
 
 logger = getLogger(__name__)
 
 
 class PriceDataProvider:
     """
-    Class to provide price data for a given instrument.
+    Price Data Provider class.
 
-    Makes use of API and Database connectors to either fetch or retrieve data.
+    Makes use of API and Database connectors to
+    either fetch data from remote source or retrieve data from disk.
     """
 
     def __init__(
@@ -101,7 +102,9 @@ class PriceDataProvider:
         # or last record date is before previous business day
         # or last record date is previous business day and data available from exchange
         price_data_needs_update = last_record_date is None or (
-            DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
+            PriceDataAvailabilityHelper.check_if_price_data_needs_update(
+                last_record_date,
+            )
         )
 
         if price_data_needs_update:
@@ -120,7 +123,7 @@ class PriceDataProvider:
             last_queried_date = last_queried_datetime.date()
 
             price_data_includes_intraday = (
-                DataAvailabilityHelper.check_if_price_data_includes_intraday(
+                PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
                     last_queried_date,
                 )
             )
