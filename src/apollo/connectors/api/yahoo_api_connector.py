@@ -23,9 +23,6 @@ class YahooApiConnector(BaseApiConnector):
         """
         Request price data from Yahoo Finance.
 
-        Deduce the request arguments
-        based on the provided max period flag.
-
         :param ticker: Ticker to request prices data for.
         :param start_date: Start point to request price data from (inclusive).
         :param end_date: End point until which to request prices data (exclusive).
