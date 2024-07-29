@@ -88,10 +88,10 @@ class InfluxDbConnector:
         Read price data from the database.
 
         :param ticker: Ticker to read prices data for.
+        :param frequency: Frequency of read price data.
         :param start_date: Start point to read price data from (inclusive).
         :param end_date: End point until which to read prices data (exclusive).
         :param max_period: Flag to read the maximum available period of price data.
-        :param frequency: Frequency of read price data.
         :returns: Dataframe with price data.
         """
 

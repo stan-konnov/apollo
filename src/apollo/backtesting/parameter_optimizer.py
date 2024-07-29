@@ -59,10 +59,10 @@ class ParameterOptimizer:
         # Instantiate price data provider
         price_data_provider = PriceDataProvider(
             ticker=str(TICKER),
+            frequency=str(FREQUENCY),
             start_date=str(START_DATE),
             end_date=str(END_DATE),
             max_period=bool(MAX_PERIOD),
-            frequency=str(FREQUENCY),
         )
 
         # Request or read the price data

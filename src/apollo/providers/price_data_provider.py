@@ -25,19 +25,19 @@ class PriceDataProvider:
     def __init__(
         self,
         ticker: str,
+        frequency: str,
         start_date: str,
         end_date: str,
         max_period: bool,
-        frequency: str,
     ) -> None:
         """
         Construct Price Data Provider.
 
         :param ticker: Ticker to provide prices data for.
+        :param frequency: Frequency of provided price data.
         :param start_date: Start point to provide price data from (inclusive).
         :param end_date: End point until which to provide prices data (exclusive).
         :param max_period: Flag to provide the maximum available period of price data.
-        :param frequency: Frequency of provided price data.
         :returns: Dataframe with price data.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
