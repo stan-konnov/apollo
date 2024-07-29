@@ -3,6 +3,7 @@ from logging import getLogger
 
 import pandas as pd
 
+from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.settings import DEFAULT_DATE_FORMAT, YahooApiFrequencies
 from apollo.utils.data_availability_helper import DataAvailabilityHelper
@@ -73,11 +74,12 @@ class PriceDataProvider:
             self._querydb_arguments["end_date"] = self._end_date
             self._querydb_arguments["start_date"] = self._start_date
 
+        self._api_connector = YahooApiConnector()
         self._database_connector = InfluxDbConnector()
 
     def request_or_read_prices(self) -> pd.DataFrame:
         """
-        Request prices from Yahoo Finance or read them from storage.
+        Request prices from API or read them from storage.
 
         If prices are missing, prepare dataframe for consistency and save to storage.
 
@@ -100,7 +102,11 @@ class PriceDataProvider:
         )
 
         if price_data_needs_update:
-            price_data = pd.DataFrame()
+            price_data = self._api_connector.request_prices(
+                ticker=self._ticker,
+                frequency=self._frequency,
+                request_arguments=self._request_arguments,
+            )
 
             # At this point in time,
             # if prices were requested intraday
@@ -119,7 +125,9 @@ class PriceDataProvider:
             if price_data_includes_intraday:
                 price_data.drop(index=last_queried_date, inplace=True)
 
-            price_data = self._prepare_price_data(price_data)
+            price_data = self._prepare_price_data(
+                dataframe=price_data,
+            )
 
             self._database_connector.write_price_data(
                 frequency=self._frequency,
