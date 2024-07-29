@@ -15,6 +15,9 @@ class PriceDataProvider:
     """
     Price Data Provider class.
 
+    Provides historical price data for a given
+    ticker within a specified time frame and frequency.
+
     Makes use of API and Database connectors to
     either fetch data from remote source or retrieve data from disk.
     """
@@ -24,8 +27,8 @@ class PriceDataProvider:
         ticker: str,
         start_date: str,
         end_date: str,
-        frequency: str,
         max_period: bool,
+        frequency: str,
     ) -> None:
         """
         Construct Price Data Provider.
@@ -33,8 +36,8 @@ class PriceDataProvider:
         :param ticker: Ticker to provide prices for.
         :param start_date: Start point to provide prices from (inclusive).
         :param end_date: End point until which to provide prices (exclusive).
+        :param max_period: Flag to request the maximum available period of prices.
         :param frequency: Frequency of provided prices.
-        :param max_period: Flag to provide the maximum available period of prices.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
         :raises ValueError: If start_date is greater than end_date.
@@ -176,11 +179,8 @@ class PriceDataProvider:
         # Determine adjustment factor based on adjusted close
         adjustment_factor = dataframe["adj close"] / dataframe["close"]
 
-        # Adjust open, high, and low
-        for column in ["open", "high", "low"]:
+        # Adjust open, high, low and volume
+        for column in ["open", "high", "low", "volume"]:
             dataframe[f"adj {column}"] = dataframe[column] * adjustment_factor
-
-        # Adjust volume
-        dataframe["adj volume"] = dataframe["volume"] / (adjustment_factor)
 
         return dataframe
