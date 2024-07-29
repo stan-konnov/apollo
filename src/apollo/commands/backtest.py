@@ -35,7 +35,7 @@ def main() -> None:
         frequency=str(FREQUENCY),
     )
 
-    dataframe = price_data_provider.request_or_read_price_data()
+    dataframe = price_data_provider.get_price_data()
 
     strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,

@@ -83,7 +83,7 @@ class PriceDataProvider:
         self._api_connector = YahooApiConnector()
         self._database_connector = InfluxDbConnector()
 
-    def request_or_read_price_data(self) -> pd.DataFrame:
+    def get_price_data(self) -> pd.DataFrame:
         """
         Request price data from API or read it from storage.
 

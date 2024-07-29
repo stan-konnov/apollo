@@ -66,7 +66,7 @@ class ParameterOptimizer:
         )
 
         # Request or read the price data
-        price_dataframe = price_data_provider.request_or_read_price_data()
+        price_dataframe = price_data_provider.get_price_data()
 
         # Get the number of available CPU cores
         available_cores = cpu_count()
