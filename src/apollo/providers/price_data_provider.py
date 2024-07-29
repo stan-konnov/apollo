@@ -1,6 +1,13 @@
 from datetime import datetime
+from logging import getLogger
 
-from apollo.settings import DEFAULT_DATE_FORMAT
+import pandas as pd
+
+from apollo.connectors.database.influxdb_connector import InfluxDbConnector
+from apollo.settings import DEFAULT_DATE_FORMAT, YahooApiFrequencies
+from apollo.utils.data_availability_helper import DataAvailabilityHelper
+
+logger = getLogger(__name__)
 
 
 class PriceDataProvider:
@@ -15,7 +22,8 @@ class PriceDataProvider:
         ticker: str,
         start_date: str,
         end_date: str,
-        frequency: str,
+        max_period: bool = False,
+        frequency: str = YahooApiFrequencies.ONE_DAY.value,
     ) -> None:
         """
         Construct Price Data Provider.
@@ -23,6 +31,7 @@ class PriceDataProvider:
         :param ticker: Ticker to provide prices for.
         :param start_date: Start point to provide prices from (inclusive).
         :param end_date: End point until which to provide prices (exclusive).
+        :param max_period: Flag to provide the maximum available period of prices.
         :param frequency: Frequency of provided prices.
 
         :raises ValueError: If start_date or end_date are not in the correct format.
@@ -47,3 +56,118 @@ class PriceDataProvider:
         self._start_date = start_date
         self._end_date = end_date
         self._frequency = frequency
+
+        self._request_arguments = {}
+        self._querydb_arguments = {
+            "ticker": self._ticker,
+            "frequency": self._frequency,
+        }
+
+        if max_period:
+            self._request_arguments["period"] = "max"
+
+        else:
+            self._request_arguments["end"] = self._end_date
+            self._request_arguments["start"] = self._start_date
+
+            self._querydb_arguments["end_date"] = self._end_date
+            self._querydb_arguments["start_date"] = self._start_date
+
+        self._database_connector = InfluxDbConnector()
+
+    def request_or_read_prices(self) -> pd.DataFrame:
+        """
+        Request prices from Yahoo Finance or read them from storage.
+
+        If prices are missing, prepare dataframe for consistency and save to storage.
+
+        :returns: Dataframe with price data.
+        """
+
+        price_data: pd.DataFrame
+
+        last_record_date = self._database_connector.get_last_record_date(
+            ticker=self._ticker,
+            frequency=self._frequency,
+        )
+
+        # Re-query prices
+        # if no records are available
+        # or last record date is before previous business day
+        # or last record date is previous business day and data available from exchange
+        price_data_needs_update = last_record_date is None or (
+            DataAvailabilityHelper.check_if_price_data_needs_update(last_record_date)
+        )
+
+        if price_data_needs_update:
+            price_data = pd.DataFrame()
+
+            # At this point in time,
+            # if prices were requested intraday
+            # Yahoo Finance API sporadically returns an intraday close
+            # which is undesirable, since it leads to data inconsistency.
+            # If it is the case, we remove the last record from the dataframe.
+            last_queried_datetime: datetime = price_data.index[-1]
+            last_queried_date = last_queried_datetime.date()
+
+            price_data_includes_intraday = (
+                DataAvailabilityHelper.check_if_price_data_includes_intraday(
+                    last_queried_date,
+                )
+            )
+
+            if price_data_includes_intraday:
+                price_data.drop(index=last_queried_date, inplace=True)
+
+            price_data = self._prepare_price_data(price_data)
+
+            self._database_connector.write_price_data(
+                frequency=self._frequency,
+                dataframe=price_data,
+            )
+
+            logger.info("Requested price data from Yahoo Finance API.")
+
+        # Otherwise, read from disk
+        else:
+            price_data = self._database_connector.read_price_data(
+                **self._querydb_arguments,
+            )
+
+            logger.info("Price data read from storage.")
+
+        return price_data
+
+    def _prepare_price_data(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        """
+        Prepare price data.
+
+        Reset indices, cast columns to lowercase.
+        Set indices back to date column.
+        Add ticker column.
+
+        Adjust OHLCV values based on adjusted close
+        to avoid inconsistencies around stock splits and dividends.
+
+        :param ticker: Ticker to insert into dataframe.
+        :param dataframe: Dataframe with price data to prepare.
+        :returns: Prepared dataframe.
+        """
+
+        dataframe.reset_index(inplace=True)
+        dataframe.columns = dataframe.columns.str.lower()
+
+        dataframe.set_index("date", inplace=True)
+        dataframe.insert(0, "ticker", self._ticker)
+
+        # Determine adjustment factor based on adjusted close
+        adjustment_factor = dataframe["adj close"] / dataframe["close"]
+
+        # Adjust open, high, and low
+        for column in ["open", "high", "low"]:
+            dataframe[f"adj {column}"] = dataframe[column] * adjustment_factor
+
+        # Adjust volume
+        dataframe["adj volume"] = dataframe["volume"] / (adjustment_factor)
+
+        return dataframe
