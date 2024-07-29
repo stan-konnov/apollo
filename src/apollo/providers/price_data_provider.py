@@ -153,7 +153,7 @@ class PriceDataProvider:
         Add ticker column at first position.
 
         Adjust OHLV values based on adjusted close to
-        avoid inconsistencies around stock splits and dividends.
+        avoid conflicts around stock splits and dividends.
 
         :param dataframe: Dataframe with price data to prepare.
         :returns: Prepared dataframe.

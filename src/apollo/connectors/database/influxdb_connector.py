@@ -87,6 +87,9 @@ class InfluxDbConnector:
         """
         Read price data from the database.
 
+        Deduce the query arguments
+        based on the provided max period flag.
+
         :param ticker: Ticker of the price data.
         :param frequency: Frequency of the price data.
         :param start_date: Start date of the price data (inclusive).
