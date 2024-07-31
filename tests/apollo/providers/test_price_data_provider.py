@@ -2,7 +2,9 @@
 
 # WIP
 
+from datetime import datetime
 from unittest.mock import Mock
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
@@ -18,6 +20,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
+from reactivex import start
 from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 from tests.fixtures.window_size_and_dataframe import SameDataframe
 
@@ -75,12 +78,12 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
     price_dataframe = price_data_provider.get_price_data()
 
     price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
-        ticker=TICKER,
-        frequency=FREQUENCY,
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
     )
 
     price_data_provider._database_connector.write_price_data.assert_called_once_with(  # noqa: SLF001
-        frequency=FREQUENCY,
+        frequency=str(FREQUENCY),
         # Please see tests/fixtures/window_size_and_dataframe.py
         # for explanation on SameDataframe class
         dataframe=SameDataframe(expected_dataframe_to_write),
@@ -93,38 +96,51 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
     pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
-# @pytest.mark.usefixtures("yahoo_api_response", "dataframe")
-# def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refresh(
-#     dataframe: pd.DataFrame,
-# ) -> None:
-#     """
-#     Test request_or_read_prices method with valid parameters.
+def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refresh(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test get_price_data method with valid parameters.
 
-#     And data present in the database and needs no refresh.
+    And data present in the database and needs no refresh.
 
-#     API Connector must call InfluxDB connector to get last record date.
-#     API Connector must call InfluxDB connector to read price data.
-#     API Connector must return a pandas Dataframe with price data.
-#     """
+    Data Provider must call InfluxDB connector to get last record date.
+    Data Provider must call InfluxDB connector to read price data.
+    Data Provider must return a pandas Dataframe with price data.
+    """
 
-#     api_connector = YahooApiConnector(
-#         ticker=str(TICKER),
-#         start_date=str(START_DATE),
-#         end_date=str(END_DATE),
-#     )
+    price_data_provider = PriceDataProvider(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
-#     api_connector._database_connector = Mock(InfluxDbConnector)
-#     api_connector._database_connector.read_price_data.return_value = dataframe
-#     api_connector._database_connector.get_last_record_date.return_value = datetime.now(
-#         tz=ZoneInfo("UTC"),
-#     ).date()
+    price_data_provider._database_connector = Mock(InfluxDbConnector)
+    price_data_provider._database_connector.read_price_data.return_value = dataframe
+    price_data_provider._database_connector.get_last_record_date.return_value = (
+        datetime.now(
+            tz=ZoneInfo("UTC"),
+        ).date()
+    )
 
-#     price_dataframe = api_connector.request_or_read_prices()
+    price_dataframe = price_data_provider.get_price_data()
 
-#     api_connector._database_connector.get_last_record_date.assert_called_once()
-#     api_connector._database_connector.read_price_data.assert_called_once()
+    price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+    )
 
-#     pd.testing.assert_frame_equal(dataframe, price_dataframe)
+    price_data_provider._database_connector.read_price_data.assert_called_once_with(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
+
+    pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
 # @pytest.mark.usefixtures("yahoo_api_response")

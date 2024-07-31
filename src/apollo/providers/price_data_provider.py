@@ -97,10 +97,10 @@ class PriceDataProvider:
         if price_data_needs_update:
             price_data = self._api_connector.request_price_data(
                 ticker=self._ticker,
+                frequency=self._frequency,
                 start_date=self._start_date,
                 end_date=self._end_date,
                 max_period=self._max_period,
-                frequency=self._frequency,
             )
 
             # At this point in time,
@@ -135,10 +135,10 @@ class PriceDataProvider:
         else:
             price_data = self._database_connector.read_price_data(
                 ticker=self._ticker,
+                frequency=self._frequency,
                 start_date=self._start_date,
                 end_date=self._end_date,
                 max_period=self._max_period,
-                frequency=self._frequency,
             )
 
             logger.info("Price data read from storage.")
