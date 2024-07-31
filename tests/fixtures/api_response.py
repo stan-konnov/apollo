@@ -26,6 +26,7 @@ API_RESPONSE_DATAFRAME = pd.DataFrame(
         "Volume": [1000, 2000],
     },
 )
+API_RESPONSE_DATAFRAME.set_index("Date", inplace=True)
 
 
 @pytest.fixture(name="yahoo_api_response", scope="session")
@@ -38,10 +39,7 @@ def _yahoo_api_response() -> Generator[None, None, None]:
         end: str,  # noqa: ARG001
         interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
     ) -> pd.DataFrame:
-        raw_yahoo_api_response = API_RESPONSE_DATAFRAME.copy()
-        raw_yahoo_api_response.set_index("Date", inplace=True)
-
-        return raw_yahoo_api_response
+        return API_RESPONSE_DATAFRAME.copy()
 
     with patch("apollo.connectors.api.yahoo_api_connector.download", download):
         yield
