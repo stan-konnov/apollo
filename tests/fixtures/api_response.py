@@ -12,6 +12,17 @@ from apollo.settings import (
     YahooApiFrequencies,
 )
 
+"""
+TODO:
+
+API_RESPONSE_DATAFRAME should be made into fixture
+
+How can we mock response from patch of yahoo_api_response?
+
+The mocking of patch should be resolved first, since
+it relies on API_RESPONSE_DATAFRAME variable, which is not a fixture.
+"""
+
 API_RESPONSE_DATAFRAME = pd.DataFrame(
     {
         "Date": [
