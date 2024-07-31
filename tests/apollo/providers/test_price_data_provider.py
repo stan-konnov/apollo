@@ -31,7 +31,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
     And no data present in the database.
 
     Data Provider must call InfluxDB connector to get last record date.
-    Data Provider must call API connector to get price data.
+    Data Provider must call API connector to request price data.
     Data Provider must call InfluxDB connector to write price data.
 
     Data Provider must reindex the dataframe to date column.
@@ -113,6 +113,7 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     And data present in the database and needs no refresh.
 
     Data Provider must call InfluxDB connector to get last record date.
+    Data Provider must not call API connector to request price data.
     Data Provider must call InfluxDB connector to read price data.
     Data Provider must return a pandas Dataframe with price data.
     """
@@ -124,6 +125,8 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
         end_date=str(END_DATE),
         max_period=bool(MAX_PERIOD),
     )
+
+    price_data_provider._api_connector = Mock(YahooApiConnector)
 
     price_data_provider._database_connector = Mock(InfluxDbConnector)
     price_data_provider._database_connector.read_price_data.return_value = dataframe
@@ -139,6 +142,8 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
     )
+
+    price_data_provider._api_connector.request_price_data.assert_not_called()
 
     price_data_provider._database_connector.read_price_data.assert_called_once_with(
         ticker=str(TICKER),
