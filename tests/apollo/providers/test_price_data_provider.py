@@ -8,41 +8,17 @@ from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
-from apollo.errors.api import EmptyApiResponseError
-from apollo.settings import DEFAULT_DATE_FORMAT, END_DATE, START_DATE, TICKER
+from apollo.providers.price_data_provider import PriceDataProvider
+from apollo.settings import (
+    DEFAULT_DATE_FORMAT,
+    END_DATE,
+    FREQUENCY,
+    MAX_PERIOD,
+    START_DATE,
+    TICKER,
+)
 from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 from tests.fixtures.window_size_and_dataframe import SameDataframe
-
-
-@pytest.mark.usefixtures("empty_yahoo_api_response")
-def test__request_or_read_prices__with_empty_api_response() -> None:
-    """
-    Test request_or_read_prices method with empty yahoo API response.
-
-    API Connector must call InfluxDB connector to get last record date.
-    API Connector must raise EmptyApiResponseError when API response is empty.
-    """
-
-    api_connector = YahooApiConnector(
-        ticker=str(TICKER),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-    )
-
-    api_connector._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
-    api_connector._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
-
-    exception_message = "API response returned empty dataframe."
-
-    with pytest.raises(
-        EmptyApiResponseError,
-        match=exception_message,
-    ) as exception:
-        api_connector.request_or_read_prices()
-
-    api_connector._database_connector.get_last_record_date.assert_called_once()  # noqa: SLF001
-
-    assert str(exception.value) == exception_message
 
 
 @pytest.mark.usefixtures("yahoo_api_response")
@@ -306,43 +282,49 @@ def test__request_or_read_prices__with_valid_parameters_and_intraday_data() -> N
     pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
-def test__request_or_read_prices__with_invalid_date_format() -> None:
+def test__price_data_provider__with_invalid_date_format() -> None:
     """
-    Test request_or_read_prices method with invalid date format.
+    Test Price Data Provider method with invalid date format.
 
-    API Connector must raise a ValueError when dates are not in the correct format.
+    Data Provider must raise a ValueError when dates are not in the correct format.
     """
+
+    exception_message = f"Start and end date format must be {DEFAULT_DATE_FORMAT}."
 
     with pytest.raises(
         ValueError,
-        match=f"Start and end date format must be {DEFAULT_DATE_FORMAT}.",
+        match=exception_message,
     ) as exception:
-        YahooApiConnector(
+        PriceDataProvider(
             ticker=str(TICKER),
+            frequency=str(FREQUENCY),
             start_date=str(START_DATE),
             end_date="01-01-2020",
+            max_period=bool(MAX_PERIOD),
         )
 
-    assert str(exception.value) == (
-        f"Start and end date format must be {DEFAULT_DATE_FORMAT}."
-    )
+    assert str(exception.value) == exception_message
 
 
-def test__request_or_read_prices__with_invalid_dates() -> None:
+def test__price_data_provider__with_invalid_dates() -> None:
     """
-    Test request_or_read_prices method with invalid dates.
+    Test Price Data Provider method with invalid dates.
 
-    API Connector must raise a ValueError when start_date is greater than end_date.
+    Data Provider must raise a ValueError when start_date is greater than end_date.
     """
+
+    exception_message = "Start date must be before end date."
 
     with pytest.raises(
         ValueError,
-        match="Start date must be before end date.",
+        match=exception_message,
     ) as exception:
-        YahooApiConnector(
+        PriceDataProvider(
             ticker=str(TICKER),
+            frequency=str(FREQUENCY),
             start_date="3333-01-01",
             end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
         )
 
-    assert str(exception.value) == "Start date must be before end date."
+    assert str(exception.value) == exception_message
