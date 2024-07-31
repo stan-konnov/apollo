@@ -51,12 +51,16 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
-        API_RESPONSE_DATAFRAME
+        # We copy the dataframe to avoid
+        # modifying the inputs between tests
+        API_RESPONSE_DATAFRAME.copy()
     )
 
     price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
     price_data_provider._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
 
+    # We copy the dataframe to avoid
+    # modifying the inputs between tests
     expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
@@ -156,57 +160,86 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
-# def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
-#     None
-# ):
-#     """
-#     Test get_price_data method with valid parameters.
+def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
+    None
+):
+    """
+    Test get_price_data method with valid parameters.
 
-#     And data present in the database and needs refresh.
+    And data present in the database and needs refresh.
 
-#     API Connector must call InfluxDB connector to get last record date.
-#     API Connector must call InfluxDB connector to write price data.
-#     API Connector must return a pandas Dataframe with price data.
-#     """
+    Data Provider must call InfluxDB connector to get last record date.
+    Data Provider must call API connector to request price data.
+    Data Provider must call InfluxDB connector to write price data.
+    Data Provider must return a pandas Dataframe with price data.
+    """
 
-#     price_data_provider = PriceDataProvider(
-#         ticker=str(TICKER),
-#         frequency=str(FREQUENCY),
-#         start_date=str(START_DATE),
-#         end_date=str(END_DATE),
-#         max_period=bool(MAX_PERIOD),
-#     )
+    price_data_provider = PriceDataProvider(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
-#     expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+    price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
+    price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
+        # We copy the dataframe to avoid
+        # modifying the inputs between tests
+        API_RESPONSE_DATAFRAME.copy()
+    )
 
-#     expected_dataframe_to_write.reset_index(inplace=True)
-#     expected_dataframe_to_write.drop(columns="index", inplace=True)
-#     expected_dataframe_to_write.columns = (
-#         expected_dataframe_to_write.columns.str.lower()
-#     )
+    # We copy the dataframe to avoid
+    # modifying the inputs between tests
+    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
-#     expected_dataframe_to_write.set_index("date", inplace=True)
-#     expected_dataframe_to_write.insert(0, "ticker", TICKER)
+    expected_dataframe_to_write.reset_index(inplace=True)
+    expected_dataframe_to_write.columns = (
+        expected_dataframe_to_write.columns.str.lower()
+    )
+    expected_dataframe_to_write.set_index("date", inplace=True)
+    expected_dataframe_to_write.insert(0, "ticker", TICKER)
 
-#     last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
-#     last_queried_date = last_queried_datetime.date()
+    adjustment_factor = (
+        expected_dataframe_to_write["adj close"] / expected_dataframe_to_write["close"]
+    )
 
-#     api_connector._database_connector = Mock(InfluxDbConnector)
-#     api_connector._database_connector.get_last_record_date.return_value = (
-#         last_queried_date
-#     )
+    for column in ["open", "high", "low", "volume"]:
+        expected_dataframe_to_write[f"adj {column}"] = (
+            expected_dataframe_to_write[column] * adjustment_factor
+        )
 
-#     price_dataframe = api_connector.request_or_read_prices()
+    last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
+    last_queried_date = last_queried_datetime.date()
 
-#     api_connector._database_connector.get_last_record_date.assert_called_once()
-#     api_connector._database_connector.write_price_data.assert_called_once_with(
-#         frequency=api_connector._frequency,
-#         # Please see tests/fixtures/window_size_and_dataframe.py
-#         # for explanation on SameDataframe class
-#         dataframe=SameDataframe(expected_dataframe_to_write),
-#     )
+    price_data_provider._database_connector = Mock(InfluxDbConnector)
+    price_data_provider._database_connector.get_last_record_date.return_value = (
+        last_queried_date
+    )
 
-#     pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
+    price_dataframe = price_data_provider.get_price_data()
+
+    price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+    )
+
+    price_data_provider._api_connector.request_price_data.assert_called_once_with(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
+
+    price_data_provider._database_connector.write_price_data.assert_called_once_with(  # noqa: SLF001
+        frequency=str(FREQUENCY),
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        dataframe=SameDataframe(expected_dataframe_to_write),
+    )
+
+    pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
 # @pytest.mark.usefixtures("yahoo_api_response")
