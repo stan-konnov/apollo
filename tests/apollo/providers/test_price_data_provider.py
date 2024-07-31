@@ -96,7 +96,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
     pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
-def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refresh(
+def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     dataframe: pd.DataFrame,
 ) -> None:
     """
@@ -143,56 +143,55 @@ def test__request_or_read_prices__with_valid_parameters_and_data_present_no_refr
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
-# @pytest.mark.usefixtures("yahoo_api_response")
-# def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
-#     None
-# ):
-#     """
-#     Test request_or_read_prices method with valid parameters.
+def test__request_or_read_prices__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
+    None
+):
+    """
+    Test request_or_read_prices method with valid parameters.
 
-#     And data present in the database and needs refresh.
+    And data present in the database and needs refresh.
 
-#     API Connector must call InfluxDB connector to get last record date.
-#     API Connector must call InfluxDB connector to write price data.
-#     API Connector must return a pandas Dataframe with price data.
-#     """
+    API Connector must call InfluxDB connector to get last record date.
+    API Connector must call InfluxDB connector to write price data.
+    API Connector must return a pandas Dataframe with price data.
+    """
 
-#     api_connector = YahooApiConnector(
-#         ticker=str(TICKER),
-#         start_date=str(START_DATE),
-#         end_date=str(END_DATE),
-#     )
+    api_connector = YahooApiConnector(
+        ticker=str(TICKER),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+    )
 
-#     expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
 
-#     expected_dataframe_to_write.reset_index(inplace=True)
-#     expected_dataframe_to_write.drop(columns="index", inplace=True)
-#     expected_dataframe_to_write.columns = (
-#         expected_dataframe_to_write.columns.str.lower()
-#     )
+    expected_dataframe_to_write.reset_index(inplace=True)
+    expected_dataframe_to_write.drop(columns="index", inplace=True)
+    expected_dataframe_to_write.columns = (
+        expected_dataframe_to_write.columns.str.lower()
+    )
 
-#     expected_dataframe_to_write.set_index("date", inplace=True)
-#     expected_dataframe_to_write.insert(0, "ticker", TICKER)
+    expected_dataframe_to_write.set_index("date", inplace=True)
+    expected_dataframe_to_write.insert(0, "ticker", TICKER)
 
-#     last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
-#     last_queried_date = last_queried_datetime.date()
+    last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
+    last_queried_date = last_queried_datetime.date()
 
-#     api_connector._database_connector = Mock(InfluxDbConnector)
-#     api_connector._database_connector.get_last_record_date.return_value = (
-#         last_queried_date
-#     )
+    api_connector._database_connector = Mock(InfluxDbConnector)
+    api_connector._database_connector.get_last_record_date.return_value = (
+        last_queried_date
+    )
 
-#     price_dataframe = api_connector.request_or_read_prices()
+    price_dataframe = api_connector.request_or_read_prices()
 
-#     api_connector._database_connector.get_last_record_date.assert_called_once()
-#     api_connector._database_connector.write_price_data.assert_called_once_with(
-#         frequency=api_connector._frequency,
-#         # Please see tests/fixtures/window_size_and_dataframe.py
-#         # for explanation on SameDataframe class
-#         dataframe=SameDataframe(expected_dataframe_to_write),
-#     )
+    api_connector._database_connector.get_last_record_date.assert_called_once()
+    api_connector._database_connector.write_price_data.assert_called_once_with(
+        frequency=api_connector._frequency,
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        dataframe=SameDataframe(expected_dataframe_to_write),
+    )
 
-#     pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
+    pd.testing.assert_frame_equal(price_dataframe, expected_dataframe_to_write)
 
 
 # @pytest.mark.usefixtures("yahoo_api_response")
