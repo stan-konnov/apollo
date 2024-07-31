@@ -21,6 +21,9 @@ How can we mock response from patch of yahoo_api_response?
 
 The mocking of patch should be resolved first, since
 it relies on API_RESPONSE_DATAFRAME variable, which is not a fixture.
+
+Or, perhaps, _yahoo_api_response can use api_response_dataframe fixture
+and then return it, therefore, also patching the download() function from the library.
 """
 
 API_RESPONSE_DATAFRAME = pd.DataFrame(
