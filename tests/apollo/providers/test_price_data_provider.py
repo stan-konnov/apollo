@@ -21,8 +21,7 @@ from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 from tests.fixtures.window_size_and_dataframe import SameDataframe
 
 
-@pytest.mark.usefixtures("yahoo_api_response")
-def test__request_or_read_prices__with_valid_parameters_and_no_data_present() -> None:
+def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
     """
     Test request_or_read_prices method with valid parameters.
 

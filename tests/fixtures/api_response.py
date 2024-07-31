@@ -22,6 +22,7 @@ API_RESPONSE_DATAFRAME = pd.DataFrame(
         "High": [105.0, 106.0],
         "Low": [95.0, 96.0],
         "Close": [99.0, 100.0],
+        "Adj Close": [98.0, 99.0],
         "Volume": [1000, 2000],
     },
 )
