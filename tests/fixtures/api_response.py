@@ -42,7 +42,7 @@ API_RESPONSE_DATAFRAME = pd.DataFrame(
 API_RESPONSE_DATAFRAME.set_index("Date", inplace=True)
 
 
-@pytest.fixture(name="yahoo_api_call", scope="session")
+@pytest.fixture(name="yahoo_api_call")
 def yahoo_api_call() -> Generator[None, None, None]:
     """Simulate call to Yahoo API."""
 
