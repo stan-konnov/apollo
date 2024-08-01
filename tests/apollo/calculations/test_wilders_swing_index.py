@@ -13,6 +13,7 @@ def test__calculate_swing_index__for_correct_columns(
     Test calculate_swing_index method for correct columns.
 
     Resulting dataframe must have "sp" column.
+    Resulting dataframe must not have "si", "asi", "prev_open", "prev_close" columns.
     """
 
     wsi_calculator = WildersSwingIndexCalculator(
@@ -23,6 +24,10 @@ def test__calculate_swing_index__for_correct_columns(
     wsi_calculator.calculate_swing_index()
 
     assert "sp" in dataframe.columns
+    assert "si" not in dataframe.columns
+    assert "asi" not in dataframe.columns
+    assert "prev_open" not in dataframe.columns
+    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
