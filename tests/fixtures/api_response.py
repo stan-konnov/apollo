@@ -14,7 +14,8 @@ from apollo.settings import (
 
 @pytest.fixture(name="api_response_dataframe", autouse=True)
 def api_response_dataframe() -> pd.DataFrame:
-    """Return API response dataframe."""
+    """Simulate API response dataframe."""
+
     api_response_dataframe = pd.DataFrame(
         {
             "Date": [
@@ -29,6 +30,7 @@ def api_response_dataframe() -> pd.DataFrame:
             "Volume": [1000, 2000],
         },
     )
+
     api_response_dataframe.set_index("Date", inplace=True)
 
     return api_response_dataframe
