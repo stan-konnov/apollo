@@ -28,17 +28,27 @@ class WildersSwingIndexCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
+        index_weight_multiplier: float,
+        true_range_weight_multiplier_one: float,
+        true_range_weight_multiplier_two: float,
     ) -> None:
         """
         Construct Wilder's Swing Index calculator.
 
         :param dataframe: Dataframe to calculate Wilder's Swing Index for.
         :param window_size: Window size for rolling Wilder's Swing Index calculation.
+        :param index_weight_multiplier: Multiplier for the Swing Index.
+        :param true_range_weight_multiplier_one: First multiplier for the True Range.
+        :param true_range_weight_multiplier_two: Second multiplier for the True Range.
         """
 
         super().__init__(dataframe, window_size)
 
         self._swing_points: list[float] = []
+
+        self._index_weight_multiplier = index_weight_multiplier
+        self._true_range_weight_multiplier_one = true_range_weight_multiplier_one
+        self._true_range_weight_multiplier_two = true_range_weight_multiplier_two
 
     def calculate_swing_index(self) -> None:
         """Calculate Wilder's Swing Index."""
@@ -137,15 +147,20 @@ class WildersSwingIndexCalculator(BaseCalculator):
             prev_open,
         )
 
-        # Finally, calculate Wilders Swing Index as:
-        # SI = 50 * (((Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1)) / TRt) * Kt  # noqa: ERA001, E501
+        # Finally, calculate Wilders Swing Index
         return (
-            50
+            self._index_weight_multiplier
             * (
                 (
                     (curr_close - prev_close)
-                    + (0.50 * (curr_close - curr_open))
-                    + (0.25 * (prev_close - prev_open))
+                    + (
+                        self._true_range_weight_multiplier_one
+                        * (curr_close - curr_open)
+                    )
+                    + (
+                        self._true_range_weight_multiplier_two
+                        * (prev_close - prev_open)
+                    )
                 )
                 / weighted_true_range
             )
@@ -235,18 +250,27 @@ class WildersSwingIndexCalculator(BaseCalculator):
             case 0:
                 return (
                     abs(curr_high - prev_close)
-                    - 0.50 * abs(curr_low - prev_close)
-                    + 0.25 * abs(prev_close - prev_open)
+                    - self._true_range_weight_multiplier_one
+                    * abs(curr_low - prev_close)
+                    + self._true_range_weight_multiplier_two
+                    * abs(prev_close - prev_open)
                 )
             case 1:
                 return (
                     abs(curr_low - prev_close)
-                    - 0.50 * abs(curr_high - prev_close)
-                    + 0.25 * abs(prev_close - prev_open)
+                    - self._true_range_weight_multiplier_one
+                    * abs(curr_high - prev_close)
+                    + self._true_range_weight_multiplier_two
+                    * abs(prev_close - prev_open)
                 )
             case 2:
-                return abs(curr_high - curr_low) + 0.25 * abs(prev_close - prev_open)
+                return abs(
+                    curr_high - curr_low,
+                ) + self._true_range_weight_multiplier_two * abs(
+                    prev_close - prev_open,
+                )
             case _:
                 raise ValueError(
-                    "Provided diff_index is invalid. Base calculation is faulty.",
+                    "Provided diff_index value is invalid. "
+                    "Base True Range calculation is faulty.",
                 )
