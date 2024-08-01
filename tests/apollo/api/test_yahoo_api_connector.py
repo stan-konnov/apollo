@@ -56,13 +56,46 @@ def test__request_price_data__with_max_period_requested(yahoo_api_call: Mock) ->
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
         end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
+        max_period=True,
     )
 
     yahoo_api_call.assert_called_once_with(
         tickers=str(TICKER),
         interval=str(FREQUENCY),
         period="max",
+    )
+
+    assert not price_dataframe.empty
+
+
+@pytest.mark.usefixtures("yahoo_api_call")
+def test__request_price_data__with_start_and_end_date_requested(
+    yahoo_api_call: Mock,
+) -> None:
+    """
+    Test request_price_data method with max period requested.
+
+    API Connector must call Yahoo API to request price data with correct arguments.
+    API Connector must return price data dataframe.
+    """
+
+    yahoo_api_call.return_value = API_RESPONSE_DATAFRAME
+
+    api_connector = YahooApiConnector()
+
+    price_dataframe = api_connector.request_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=False,
+    )
+
+    yahoo_api_call.assert_called_once_with(
+        tickers=str(TICKER),
+        interval=str(FREQUENCY),
+        start=str(START_DATE),
+        end=str(END_DATE),
     )
 
     assert not price_dataframe.empty
