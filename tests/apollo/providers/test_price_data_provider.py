@@ -17,11 +17,13 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 from tests.fixtures.window_size_and_dataframe import SameDataframe
 
 
-def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
+@pytest.mark.usefixtures("api_response_dataframe")
+def test__get_price_data__with_valid_parameters_and_no_data_present(
+    api_response_dataframe: pd.DataFrame,
+) -> None:
     """
     Test get_price_data method with valid parameters.
 
@@ -48,9 +50,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
-        # We copy the dataframe to avoid
-        # modifying the inputs between tests
-        API_RESPONSE_DATAFRAME.copy()
+        api_response_dataframe
     )
 
     price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
@@ -58,7 +58,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
 
     # We copy the dataframe to avoid
     # modifying the inputs between tests
-    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+    expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
     expected_dataframe_to_write.columns = (
@@ -157,7 +157,10 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
-def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() -> None:
+@pytest.mark.usefixtures("api_response_dataframe")
+def test__get_price_data__with_valid_parameters_and_data_present_to_refresh(
+    api_response_dataframe: pd.DataFrame,
+) -> None:
     """
     Test get_price_data method with valid parameters.
 
@@ -179,14 +182,12 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() ->
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
-        # We copy the dataframe to avoid
-        # modifying the inputs between tests
-        API_RESPONSE_DATAFRAME.copy()
+        api_response_dataframe
     )
 
     # We copy the dataframe to avoid
     # modifying the inputs between tests
-    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+    expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
     expected_dataframe_to_write.columns = (
@@ -238,7 +239,10 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() ->
 
 
 @freeze_time(f"{END_DATE} 17:00:00")
-def test__get_price_data__with_valid_parameters_and_intraday_data() -> None:
+@pytest.mark.usefixtures("api_response_dataframe")
+def test__get_price_data__with_valid_parameters_and_intraday_data(
+    api_response_dataframe: pd.DataFrame,
+) -> None:
     """
     Test get_price_data method with valid parameters.
 
@@ -261,9 +265,7 @@ def test__get_price_data__with_valid_parameters_and_intraday_data() -> None:
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
-        # We copy the dataframe to avoid
-        # modifying the inputs between tests
-        API_RESPONSE_DATAFRAME.copy()
+        api_response_dataframe
     )
 
     price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
@@ -271,7 +273,7 @@ def test__get_price_data__with_valid_parameters_and_intraday_data() -> None:
 
     # We copy the dataframe to avoid
     # modifying the inputs between tests
-    expected_dataframe_to_write = API_RESPONSE_DATAFRAME.copy()
+    expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
     expected_dataframe_to_write.columns = (

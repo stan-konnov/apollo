@@ -1,11 +1,11 @@
 from unittest.mock import Mock
 
+import pandas as pd
 import pytest
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE, TICKER
-from tests.fixtures.api_response import API_RESPONSE_DATAFRAME
 
 
 @pytest.mark.usefixtures("yahoo_api_call")
@@ -38,8 +38,11 @@ def test__request_price_data__with_empty_api_response(yahoo_api_call: Mock) -> N
     assert str(exception.value) == exception_message
 
 
-@pytest.mark.usefixtures("yahoo_api_call")
-def test__request_price_data__with_max_period_requested(yahoo_api_call: Mock) -> None:
+@pytest.mark.usefixtures("yahoo_api_call", "api_response_dataframe")
+def test__request_price_data__with_max_period_requested(
+    yahoo_api_call: Mock,
+    api_response_dataframe: pd.DataFrame,
+) -> None:
     """
     Test request_price_data method with max period requested.
 
@@ -47,7 +50,7 @@ def test__request_price_data__with_max_period_requested(yahoo_api_call: Mock) ->
     API Connector must return price data dataframe.
     """
 
-    yahoo_api_call.return_value = API_RESPONSE_DATAFRAME
+    yahoo_api_call.return_value = api_response_dataframe
 
     api_connector = YahooApiConnector()
 
@@ -68,9 +71,10 @@ def test__request_price_data__with_max_period_requested(yahoo_api_call: Mock) ->
     assert not price_dataframe.empty
 
 
-@pytest.mark.usefixtures("yahoo_api_call")
+@pytest.mark.usefixtures("yahoo_api_call", "api_response_dataframe")
 def test__request_price_data__with_start_and_end_date_requested(
     yahoo_api_call: Mock,
+    api_response_dataframe: pd.DataFrame,
 ) -> None:
     """
     Test request_price_data method with max period requested.
@@ -79,7 +83,7 @@ def test__request_price_data__with_start_and_end_date_requested(
     API Connector must return price data dataframe.
     """
 
-    yahoo_api_call.return_value = API_RESPONSE_DATAFRAME
+    yahoo_api_call.return_value = api_response_dataframe
 
     api_connector = YahooApiConnector()
 
