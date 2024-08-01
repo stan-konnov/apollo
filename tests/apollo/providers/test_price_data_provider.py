@@ -1,14 +1,10 @@
-# ruff: noqa
-
-# WIP
-
 from datetime import datetime
 from unittest.mock import Mock
-from zoneinfo import ZoneInfo
 
-from freezegun import freeze_time
 import pandas as pd
 import pytest
+from freezegun import freeze_time
+from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
@@ -87,7 +83,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present() -> None:
         frequency=str(FREQUENCY),
     )
 
-    price_data_provider._api_connector.request_price_data.assert_called_once_with(
+    price_data_provider._api_connector.request_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -131,11 +127,11 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
         max_period=bool(MAX_PERIOD),
     )
 
-    price_data_provider._api_connector = Mock(YahooApiConnector)
+    price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
 
-    price_data_provider._database_connector = Mock(InfluxDbConnector)
-    price_data_provider._database_connector.read_price_data.return_value = dataframe
-    price_data_provider._database_connector.get_last_record_date.return_value = (
+    price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    price_data_provider._database_connector.read_price_data.return_value = dataframe  # noqa: SLF001
+    price_data_provider._database_connector.get_last_record_date.return_value = (  # noqa: SLF001
         datetime.now(
             tz=ZoneInfo("UTC"),
         ).date()
@@ -148,9 +144,9 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
         frequency=str(FREQUENCY),
     )
 
-    price_data_provider._api_connector.request_price_data.assert_not_called()
+    price_data_provider._api_connector.request_price_data.assert_not_called()  # noqa: SLF001
 
-    price_data_provider._database_connector.read_price_data.assert_called_once_with(
+    price_data_provider._database_connector.read_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -161,9 +157,7 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     pd.testing.assert_frame_equal(dataframe, price_dataframe)
 
 
-def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() -> (  # noqa: E501
-    None
-):
+def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() -> None:
     """
     Test get_price_data method with valid parameters.
 
@@ -213,8 +207,8 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() ->
     last_queried_datetime: datetime = expected_dataframe_to_write.index[-1]
     last_queried_date = last_queried_datetime.date()
 
-    price_data_provider._database_connector = Mock(InfluxDbConnector)
-    price_data_provider._database_connector.get_last_record_date.return_value = (
+    price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    price_data_provider._database_connector.get_last_record_date.return_value = (  # noqa: SLF001
         last_queried_date
     )
 
@@ -225,7 +219,7 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh() ->
         frequency=str(FREQUENCY),
     )
 
-    price_data_provider._api_connector.request_price_data.assert_called_once_with(
+    price_data_provider._api_connector.request_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -272,8 +266,8 @@ def test__get_price_data__with_valid_parameters_and_intraday_data() -> None:
         API_RESPONSE_DATAFRAME.copy()
     )
 
-    price_data_provider._database_connector = Mock(InfluxDbConnector)
-    price_data_provider._database_connector.get_last_record_date.return_value = None
+    price_data_provider._database_connector = Mock(InfluxDbConnector)  # noqa: SLF001
+    price_data_provider._database_connector.get_last_record_date.return_value = None  # noqa: SLF001
 
     # We copy the dataframe to avoid
     # modifying the inputs between tests
@@ -307,7 +301,7 @@ def test__get_price_data__with_valid_parameters_and_intraday_data() -> None:
         frequency=str(FREQUENCY),
     )
 
-    price_data_provider._api_connector.request_price_data.assert_called_once_with(
+    price_data_provider._api_connector.request_price_data.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
