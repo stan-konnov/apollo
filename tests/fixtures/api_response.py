@@ -9,7 +9,6 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
     START_DATE,
-    YahooApiFrequencies,
 )
 
 """
@@ -43,33 +42,9 @@ API_RESPONSE_DATAFRAME = pd.DataFrame(
 API_RESPONSE_DATAFRAME.set_index("Date", inplace=True)
 
 
-@pytest.fixture(name="yahoo_api_response", scope="session")
-def _yahoo_api_response() -> Generator[None, None, None]:
-    """Simulate raw Yahoo API OHLCV response."""
+@pytest.fixture(name="yahoo_api_call", scope="session")
+def yahoo_api_call() -> Generator[None, None, None]:
+    """Simulate call to Yahoo API."""
 
-    def download(
-        tickers: str | list[str],  # noqa: ARG001
-        start: str,  # noqa: ARG001
-        end: str,  # noqa: ARG001
-        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
-    ) -> pd.DataFrame:
-        return API_RESPONSE_DATAFRAME.copy()
-
-    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
-        yield
-
-
-@pytest.fixture(name="empty_yahoo_api_response", scope="session")
-def _empty_yahoo_api_response() -> Generator[None, None, None]:
-    """Simulate empty Yahoo API OHLCV response."""
-
-    def download(
-        tickers: str | list[str],  # noqa: ARG001
-        start: str,  # noqa: ARG001
-        end: str,  # noqa: ARG001
-        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
-    ) -> pd.DataFrame:
-        return pd.DataFrame()
-
-    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
-        yield
+    with patch("apollo.connectors.api.yahoo_api_connector.download") as mocked_call:
+        yield mocked_call
