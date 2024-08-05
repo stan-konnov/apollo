@@ -28,12 +28,19 @@ class WildersSwingIndexCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
+        tr_volatility_multiplier: float,
     ) -> None:
         """
         Construct Wilder's Swing Index calculator.
 
         :param dataframe: Dataframe to calculate Wilder's Swing Index for.
         :param window_size: Window size for rolling Wilder's Swing Index calculation.
+        :param tr_volatility_multiplier: Multiplier for weighted True Range calculation.
+        """
+
+        """
+        TODO: highest_difference is unnecessary, as we already have highest_value
+        TODO: rename tr_volatility_multiplier to weighted_tr_multiplier
         """
 
         super().__init__(dataframe, window_size)
@@ -41,10 +48,11 @@ class WildersSwingIndexCalculator(BaseCalculator):
         self._swing_points: list[float] = []
 
         # Define multipliers for weighted True Range
-        # Kaufman, Trading Systems and Methods, 2020, p.174
-        # NOTE: we do not (yet) optimize multipliers due to hardware limitations
-        self._tr_volatility_multiplier_curr: float = 0.50
-        self._tr_volatility_multiplier_prev: float = 0.25
+        # NOTE: we use two multipliers to give more weight
+        # to either current or previous closing price change,
+        # yet, we use one parameter to improve optimization time
+        self._tr_volatility_multiplier_curr: float = 1.0 - tr_volatility_multiplier
+        self._tr_volatility_multiplier_prev: float = 0.0 + tr_volatility_multiplier
 
     def calculate_swing_index(self) -> None:
         """Calculate Wilder's Swing Index."""

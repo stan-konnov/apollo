@@ -24,12 +24,14 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
+        tr_volatility_multiplier: float,
     ) -> None:
         """
         Construct Wilder's Swing Index Trend Following Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
+        :param tr_volatility_multiplier: Multiplier for weighted True Range calculation.
         """
 
         super().__init__(dataframe, window_size)
@@ -37,6 +39,7 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         self._wsi_calculator = WildersSwingIndexCalculator(
             dataframe=dataframe,
             window_size=window_size,
+            tr_volatility_multiplier=tr_volatility_multiplier,
         )
 
     def model_trading_signals(self) -> None:
