@@ -14,24 +14,5 @@
         "range": [0.1, 1.0]
     },
 
-    "index_weight_multiplier": {
-        "step": 25,
-        "range": [25, 100]
-    },
-
-    "true_range_weight_multiplier_one": {
-        "step": 0.25,
-        "range": [0.25, 1.0]
-    },
-
-    "true_range_weight_multiplier_two": {
-        "step": 0.25,
-        "range": [0.25, 1.0]
-    },
-
-    "strategy_specific_parameters": [
-        "index_weight_multiplier",
-        "true_range_weight_multiplier_one",
-        "true_range_weight_multiplier_two"
-    ]
+    "strategy_specific_parameters": []
 }
