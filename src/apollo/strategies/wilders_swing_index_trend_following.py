@@ -24,6 +24,7 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         self,
         dataframe: DataFrame,
         window_size: int,
+        index_weight_multiplier: float,
         true_range_weight_multiplier_one: float,
         true_range_weight_multiplier_two: float,
     ) -> None:
@@ -32,6 +33,7 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
+        :param index_weight_multiplier: Multiplier for the Swing Index.
         :param true_range_weight_multiplier_one: First multiplier for the True Range.
         :param true_range_weight_multiplier_two: Second multiplier for the True Range.
         """
@@ -41,6 +43,7 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         self._wsi_calculator = WildersSwingIndexCalculator(
             dataframe=dataframe,
             window_size=window_size,
+            index_weight_multiplier=index_weight_multiplier,
             true_range_weight_multiplier_one=true_range_weight_multiplier_one,
             true_range_weight_multiplier_two=true_range_weight_multiplier_two,
         )
