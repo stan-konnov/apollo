@@ -40,6 +40,8 @@ def main() -> None:
     strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,
         window_size=15,
+        true_range_weight_multiplier_one=0.50,
+        true_range_weight_multiplier_two=0.75,
     )
 
     strategy.model_trading_signals()

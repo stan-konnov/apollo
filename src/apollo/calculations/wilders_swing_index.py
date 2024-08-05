@@ -28,7 +28,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        index_weight_multiplier: float,
         true_range_weight_multiplier_one: float,
         true_range_weight_multiplier_two: float,
     ) -> None:
@@ -37,7 +36,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         :param dataframe: Dataframe to calculate Wilder's Swing Index for.
         :param window_size: Window size for rolling Wilder's Swing Index calculation.
-        :param index_weight_multiplier: Multiplier for the Swing Index.
         :param true_range_weight_multiplier_one: First multiplier for the True Range.
         :param true_range_weight_multiplier_two: Second multiplier for the True Range.
         """
@@ -46,7 +44,6 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         self._swing_points: list[float] = []
 
-        self._index_weight_multiplier = index_weight_multiplier
         self._true_range_weight_multiplier_one = true_range_weight_multiplier_one
         self._true_range_weight_multiplier_two = true_range_weight_multiplier_two
 
@@ -149,23 +146,13 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Finally, calculate Wilders Swing Index
         return (
-            self._index_weight_multiplier
-            * (
-                (
-                    (curr_close - prev_close)
-                    + (
-                        self._true_range_weight_multiplier_one
-                        * (curr_close - curr_open)
-                    )
-                    + (
-                        self._true_range_weight_multiplier_two
-                        * (prev_close - prev_open)
-                    )
-                )
-                / weighted_true_range
+            (
+                (curr_close - prev_close)
+                + (self._true_range_weight_multiplier_one * (curr_close - curr_open))
+                + (self._true_range_weight_multiplier_two * (prev_close - prev_open))
             )
-            * highest_difference
-        )
+            / weighted_true_range
+        ) * highest_difference
 
     def _calc_asi(self, series: pd.Series) -> float:
         """
