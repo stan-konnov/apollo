@@ -42,6 +42,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Define multipliers for weighted True Range
         # Kaufman, Trading Systems and Methods, 2020, p.174
+        # NOTE: we do not (yet) optimize multipliers due to hardware limitations
         self._tr_volatility_multiplier_one: float = 0.50
         self._tr_volatility_multiplier_two: float = 0.25
 
