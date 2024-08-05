@@ -40,6 +40,11 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         self._swing_points: list[float] = []
 
+        # Define multipliers for weighted True Range
+        # Kaufman, Trading Systems and Methods, 2020, p.174
+        self._tr_volatility_multiplier_one: float = 0.50
+        self._tr_volatility_multiplier_two: float = 0.25
+
     def calculate_swing_index(self) -> None:
         """Calculate Wilder's Swing Index."""
 
@@ -137,20 +142,17 @@ class WildersSwingIndexCalculator(BaseCalculator):
             prev_open,
         )
 
-        # Finally, calculate Wilders Swing Index as:
-        # SI = 50 * (((Ct - Ct-1) + 0.50(Ct - Ot) + 0.25(Ct-1 - Ot-1)) / TRt) * Kt  # noqa: ERA001, E501
+        # Finally, calculate (modified) Wilders Swing Index:
+        # (Ct - Ct-1) + 0.50 * (Ct - Ot) + 0.25 * (Ct-1 - Ot-1) / TR * K  # noqa: ERA001
+        # Giving more weight to the current closing price change
         return (
-            50
-            * (
-                (
-                    (curr_close - prev_close)
-                    + (0.50 * (curr_close - curr_open))
-                    + (0.25 * (prev_close - prev_open))
-                )
-                / weighted_true_range
+            (
+                (curr_close - prev_close)
+                + (self._tr_volatility_multiplier_one * (curr_close - curr_open))
+                + (self._tr_volatility_multiplier_two * (prev_close - prev_open))
             )
-            * highest_difference
-        )
+            / weighted_true_range
+        ) * highest_difference
 
     def _calc_asi(self, series: pd.Series) -> float:
         """
@@ -235,17 +237,19 @@ class WildersSwingIndexCalculator(BaseCalculator):
             case 0:
                 return (
                     abs(curr_high - prev_close)
-                    - 0.50 * abs(curr_low - prev_close)
-                    + 0.25 * abs(prev_close - prev_open)
+                    - self._tr_volatility_multiplier_one * abs(curr_low - prev_close)
+                    + self._tr_volatility_multiplier_two * abs(prev_close - prev_open)
                 )
             case 1:
                 return (
                     abs(curr_low - prev_close)
-                    - 0.50 * abs(curr_high - prev_close)
-                    + 0.25 * abs(prev_close - prev_open)
+                    - self._tr_volatility_multiplier_one * abs(curr_high - prev_close)
+                    + self._tr_volatility_multiplier_two * abs(prev_close - prev_open)
                 )
             case 2:
-                return abs(curr_high - curr_low) + 0.25 * abs(prev_close - prev_open)
+                return abs(
+                    curr_high - curr_low,
+                ) + self._tr_volatility_multiplier_two * abs(prev_close - prev_open)
             case _:
                 raise ValueError(
                     "Provided diff_index is invalid. Base calculation is faulty.",

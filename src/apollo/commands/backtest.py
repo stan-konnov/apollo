@@ -9,7 +9,9 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
+from apollo.strategies.wilders_swing_index_trend_following import (
+    WildersSwingIndexTrendFollowing,
+)
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -35,20 +37,19 @@ def main() -> None:
 
     dataframe = price_data_provider.get_price_data()
 
-    strategy = SwingEventsMeanReversion(
+    strategy = WildersSwingIndexTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
-        swing_filter=0.01,
+        window_size=15,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SwingEventsMeanReversion",
+        strategy_name="WildersSwingIndexTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.5,
+        tp_volatility_multiplier=0.4,
         write_result_plot=True,
     )
 
