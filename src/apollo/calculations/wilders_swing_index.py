@@ -131,15 +131,12 @@ class WildersSwingIndexCalculator(BaseCalculator):
             ]
         ]
 
-        # Get the highest value out of the three
+        # Get K = highest value out of the three
         highest_value = max(absolute_differences)
 
         # Determine the index of the highest value
         # To decide which weighted True Range calculation to use
         highest_value_index = absolute_differences.index(highest_value)
-
-        # Calculate K: the highest value of the three differences
-        highest_difference = max(absolute_differences)
 
         # Calculate weighted TR using one of
         # the methods based on highest value index
@@ -161,7 +158,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
                 + (self._tr_volatility_multiplier_prev * (prev_close - prev_open))
             )
             / weighted_true_range
-        ) * highest_difference
+        ) * highest_value
 
     def _calc_asi(self, series: pd.Series) -> float:
         """
