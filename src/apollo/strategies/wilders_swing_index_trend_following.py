@@ -34,6 +34,12 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
         :param weighted_tr_multiplier: Multiplier for weighted True Range calculation.
         """
 
+        self._validate_parameters(
+            [
+                ("weighted_tr_multiplier", weighted_tr_multiplier, float),
+            ],
+        )
+
         super().__init__(dataframe, window_size)
 
         self._wsi_calculator = WildersSwingIndexCalculator(
