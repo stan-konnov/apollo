@@ -3,9 +3,17 @@ from pandas import DataFrame
 from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_reinforced_strategy import VixReinforcedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class WildersSwingIndexTrendFollowing(BaseStrategy):
+class WildersSwingIndexTrendFollowing(
+    BaseStrategy,
+    VixReinforcedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Wilder's Swing Index Trend Following.
 
@@ -40,7 +48,9 @@ class WildersSwingIndexTrendFollowing(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VixReinforcedStrategy.__init__(self, dataframe)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._wsi_calculator = WildersSwingIndexCalculator(
             dataframe=dataframe,
