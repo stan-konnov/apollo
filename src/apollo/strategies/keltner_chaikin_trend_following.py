@@ -8,7 +8,7 @@ from apollo.calculations.hull_moving_average import (
 )
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class KeltnerChaikinTrendFollowing(BaseStrategy):

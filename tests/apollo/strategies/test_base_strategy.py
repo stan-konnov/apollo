@@ -5,7 +5,7 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import NO_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

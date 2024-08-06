@@ -4,7 +4,7 @@ from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class LinearRegressionChannelMeanReversion(BaseStrategy):

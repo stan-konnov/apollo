@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import TypedDict
 
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class ParameterSpec(TypedDict):

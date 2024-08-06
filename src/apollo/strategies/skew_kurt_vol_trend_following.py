@@ -2,7 +2,7 @@ from pandas import DataFrame
 
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):

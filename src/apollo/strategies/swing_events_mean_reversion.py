@@ -2,7 +2,7 @@ from pandas import DataFrame
 
 from apollo.calculations.swing_events import SwingEventsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class SwingEventsMeanReversion(BaseStrategy):

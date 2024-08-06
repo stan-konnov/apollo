@@ -4,7 +4,7 @@ from apollo.calculations.models.logistic_regression import (
     LogisticRegressionModelCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class LogisticRegressionForecast(BaseStrategy):

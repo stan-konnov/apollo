@@ -2,7 +2,7 @@ from pandas import DataFrame
 
 from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class WildersSwingIndexTrendFollowing(BaseStrategy):
