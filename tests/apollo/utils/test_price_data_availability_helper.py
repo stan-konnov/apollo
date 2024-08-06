@@ -3,7 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 from zoneinfo import ZoneInfo
 
-from apollo.utils.data_availability_helper import DataAvailabilityHelper
+from apollo.utils.price_data_availability_helper import PriceDataAvailabilityHelper
 
 
 # Assume today date is Friday, 2024-07-12
@@ -20,7 +20,7 @@ def test__check_if_price_data_needs_update__with_last_record_before_prev_b_day()
     # Assume last available record date is Monday, 2024-07-01
     last_record_date = datetime(2024, 7, 1, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -42,7 +42,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_ah() -> 
     # Assume last available record date is Thursday, 2024-07-11
     last_record_date = datetime(2024, 7, 11, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -64,7 +64,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_id() -> 
     # Assume last available record date is Thursday, 2024-07-11
     last_record_date = datetime(2024, 7, 11, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -85,7 +85,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_we() -> 
     # Assume last available record date is Friday, 2024-07-12
     last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -107,7 +107,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_we_ah() 
     # Assume last available record date is Friday, 2024-07-12
     last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -130,7 +130,7 @@ def test__check_if_price_data_needs_update__with_last_record_before_prev_b_day_w
     # Assume last available record date is Thursday, 2024-07-11
     last_record_date = datetime(2024, 7, 11, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -152,7 +152,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_awe() ->
     # Assume last available record date is Friday, 2024-07-12
     last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -176,7 +176,7 @@ def test__check_if_price_data_needs_update__with_last_record_prev_b_day_awe_ah()
     # Assume last available record date is Friday, 2024-07-12
     last_record_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_needs_update(
+    result = PriceDataAvailabilityHelper.check_if_price_data_needs_update(
         last_record_date,
     )
 
@@ -196,7 +196,7 @@ def test__check_if_price_data_includes_intraday__with_last_query_intraday() -> N
     # Assume last queried record date is Monday, 2024-07-15
     last_queried_date = datetime(2024, 7, 15, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+    result = PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
     )
 
@@ -216,7 +216,7 @@ def test__check_if_price_data_includes_intraday__with_last_query_after_hours() -
     # Assume last queried record date is Monday, 2024-07-15
     last_queried_date = datetime(2024, 7, 15, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+    result = PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
     )
 
@@ -236,7 +236,7 @@ def test__check_if_price_data_includes_intraday__with_last_query_before_today() 
     # Assume last queried record date is Friday, 2024-07-12
     last_queried_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+    result = PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
     )
 
@@ -260,7 +260,7 @@ def test__check_if_price_data_includes_intraday__with_last_query_before_today_we
     # Assume last queried record date is Friday, 2024-07-12
     last_queried_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+    result = PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
     )
 
@@ -284,7 +284,7 @@ def test__check_if_price_data_includes_intraday__with_last_query_before_today_id
     # Assume last queried record date is Friday, 2024-07-12
     last_queried_date = datetime(2024, 7, 12, tzinfo=ZoneInfo("UTC")).date()
 
-    result = DataAvailabilityHelper.check_if_price_data_includes_intraday(
+    result = PriceDataAvailabilityHelper.check_if_price_data_includes_intraday(
         last_queried_date,
     )
 

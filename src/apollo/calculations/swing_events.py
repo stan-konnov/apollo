@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 import numpy as np
 import pandas as pd
 
@@ -14,10 +12,10 @@ class SwingEventsCalculator(BaseCalculator):
     """
 
     # Constant to represent upswing
-    UP_SWING: ClassVar[float] = 1.0
+    UP_SWING: float = 1.0
 
     # Constant to represent downswing
-    DOWN_SWING: ClassVar[float] = -1.0
+    DOWN_SWING: float = -1.0
 
     def __init__(
         self,
@@ -35,29 +33,29 @@ class SwingEventsCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-        self.swing_l = 0.0
-        self.swing_h = 0.0
+        self._swing_l = 0.0
+        self._swing_h = 0.0
 
-        self.in_downswing = False
-        self.swing_filter = swing_filter
+        self._in_downswing = False
+        self._swing_filter = swing_filter
 
-        self.swing_events: list[float] = []
+        self._swing_events: list[float] = []
 
     def calculate_swing_events(self) -> None:
         """Calculate rolling swing events."""
 
         # Record the low of the first bar (before rolling window) as swing low
-        self.swing_l = self._dataframe.iloc[self._window_size - 2]["low"]
+        self._swing_l = self._dataframe.iloc[self._window_size - 2]["adj low"]
 
         # Record the high of the first bar (before rolling window) as swing high
-        self.swing_h = self._dataframe.iloc[self._window_size - 2]["high"]
+        self._swing_h = self._dataframe.iloc[self._window_size - 2]["adj high"]
 
         # Following the swing high, assume we are in downswing
         # Kaufman, TSM, p. 168
-        self.in_downswing = True
+        self._in_downswing = True
 
         # Fill swing events array with N NaN, where N = window size
-        self.swing_events = (
+        self._swing_events = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
@@ -65,7 +63,7 @@ class SwingEventsCalculator(BaseCalculator):
         self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_se)
 
         # Write swings to the dataframe
-        self._dataframe["se"] = self.swing_events
+        self._dataframe["se"] = self._swing_events
 
     def _calc_se(self, series: pd.Series) -> float:
         """
@@ -80,40 +78,40 @@ class SwingEventsCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Grab current low
-        current_low = rolling_df.iloc[-1]["low"]
+        current_low = rolling_df.iloc[-1]["adj low"]
 
         # Grab current high
-        current_high = rolling_df.iloc[-1]["high"]
+        current_high = rolling_df.iloc[-1]["adj high"]
 
         # Calculate current swing filter
-        current_swing_filter = series.iloc[-1] * self.swing_filter
+        current_swing_filter = rolling_df.iloc[-1]["adj close"] * self._swing_filter
 
         # If we are in downswing
-        if self.in_downswing:
+        if self._in_downswing:
             # Test if downswing continues
-            if current_low < self.swing_l:
+            if current_low < self._swing_l:
                 # Treat current low as new swing low
-                self.swing_l = current_low
+                self._swing_l = current_low
 
             # Test if downswing reverses
-            if current_high - self.swing_l > current_swing_filter:
+            if current_high - self._swing_l > current_swing_filter:
                 # If so, we have an upswing
-                self.in_downswing = False
+                self._in_downswing = False
 
                 # Treat current low as new swing low
-                self.swing_l = current_low
+                self._swing_l = current_low
 
                 # Treat current high as new swing high
-                self.swing_h = current_high
+                self._swing_h = current_high
 
                 # Append positive float to the list
-                self.swing_events.append(self.UP_SWING)
+                self._swing_events.append(self.UP_SWING)
 
                 # Return dummy float
                 return 0.0
 
             # Append falsy float as it is a continuation
-            self.swing_events.append(0.0)
+            self._swing_events.append(0.0)
 
             # Return dummy float
             return 0.0
@@ -121,23 +119,23 @@ class SwingEventsCalculator(BaseCalculator):
         # Otherwise, we are in upswing
 
         # Test if upswing continues
-        if current_high > self.swing_h:
+        if current_high > self._swing_h:
             # Treat current high as new swing high
-            self.swing_h = current_high
+            self._swing_h = current_high
 
         # Test if upswing reverses
-        if self.swing_h - current_low > current_swing_filter:
+        if self._swing_h - current_low > current_swing_filter:
             # If so, we have downswing
-            self.in_downswing = True
+            self._in_downswing = True
 
             # Append negative float to the list
-            self.swing_events.append(self.DOWN_SWING)
+            self._swing_events.append(self.DOWN_SWING)
 
             # Return dummy float
             return 0.0
 
         # Append falsy float as it is a continuation
-        self.swing_events.append(0.0)
+        self._swing_events.append(0.0)
 
         # Return dummy float
         return 0.0

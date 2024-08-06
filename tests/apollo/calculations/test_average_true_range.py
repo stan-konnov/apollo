@@ -68,10 +68,10 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     """
 
     control_dataframe = dataframe.copy()
-    control_dataframe["prev_close"] = control_dataframe["close"].shift()
+    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
 
     control_dataframe["tr"] = (
-        control_dataframe["close"]
+        control_dataframe["adj close"]
         .rolling(
             window_size,
         )
@@ -103,10 +103,10 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     """
 
     control_dataframe = dataframe.copy()
-    control_dataframe["prev_close"] = control_dataframe["close"].shift()
+    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
 
     control_dataframe["tr"] = (
-        control_dataframe["close"]
+        control_dataframe["adj close"]
         .rolling(
             window_size,
         )
@@ -145,8 +145,8 @@ def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
 
     rolling_df = dataframe.loc[series.index]
 
-    high = rolling_df.iloc[-1]["high"]
-    low = rolling_df.iloc[-1]["low"]
+    high = rolling_df.iloc[-1]["adj high"]
+    low = rolling_df.iloc[-1]["adj low"]
     prev_close = rolling_df.iloc[-1]["prev_close"]
 
     true_range = [high - low, high - prev_close, prev_close - low]

@@ -72,7 +72,7 @@ def test__calculate_chaikin_accumulation_distribution_line__for_correct_adl_calc
 
     control_dataframe = dataframe.copy()
 
-    control_dataframe["close"].rolling(window_size).apply(
+    control_dataframe["adj close"].rolling(window_size).apply(
         mimic_calc_adl,
         args=(
             control_dataframe,
@@ -108,11 +108,11 @@ def mimic_calc_adl(
     rolling_df = dataframe.loc[series.index]
 
     money_flow_multiplier = (
-        (rolling_df["close"] - rolling_df["low"])
-        - (rolling_df["high"] - rolling_df["close"])
-    ) / (rolling_df["high"] - rolling_df["low"])
+        (rolling_df["adj close"] - rolling_df["adj low"])
+        - (rolling_df["adj high"] - rolling_df["adj close"])
+    ) / (rolling_df["adj high"] - rolling_df["adj low"])
 
-    money_flow_volume = money_flow_multiplier * rolling_df["volume"]
+    money_flow_volume = money_flow_multiplier * rolling_df["adj volume"]
 
     accumulation_distribution = money_flow_volume.cumsum()
 

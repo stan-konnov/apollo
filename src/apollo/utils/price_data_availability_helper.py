@@ -10,9 +10,9 @@ from apollo.settings import (
 )
 
 
-class DataAvailabilityHelper:
+class PriceDataAvailabilityHelper:
     """
-    Data Availability Helper class.
+    Price Data Availability Helper class.
 
     Determines if data should be re-queried from the source
     based on provided last record date and current point in time.
@@ -48,7 +48,9 @@ class DataAvailabilityHelper:
 
         # Check if the data is available from the exchange
         data_available_from_exchange = (
-            DataAvailabilityHelper.check_if_price_data_available_from_exchange(now_date)
+            PriceDataAvailabilityHelper.check_if_price_data_available_from_exchange(
+                now_date,
+            )
         )
 
         # Re-query prices

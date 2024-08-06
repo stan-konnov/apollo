@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TICKER = getenv("TICKER", None)
-EXCHANGE = getenv("EXCHANGE", None)
-STRATEGY = getenv("STRATEGY", None)
-START_DATE = getenv("START_DATE", None)
-END_DATE = getenv("END_DATE", None)
-FREQUENCY = getenv("FREQUENCY", None)
-MAX_PERIOD = getenv("MAX_PERIOD", None)
+TICKER = getenv("TICKER")
+EXCHANGE = getenv("EXCHANGE")
+STRATEGY = getenv("STRATEGY")
+START_DATE = getenv("START_DATE")
+END_DATE = getenv("END_DATE")
+FREQUENCY = getenv("FREQUENCY")
+MAX_PERIOD = getenv("MAX_PERIOD")
 
 NO_SIGNAL = 0
 LONG_SIGNAL = 1
@@ -30,12 +30,12 @@ BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"
 
-POSTGRES_URL = getenv("POSTGRES_URL", None)
-INFLUXDB_ORG = getenv("INFLUXDB_ORG", None)
-INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET", None)
-INFLUXDB_URL = getenv("INFLUXDB_URL", None)
-INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN", None)
-INFLUXDB_MEASUREMENT = getenv("INFLUXDB_MEASUREMENT", None)
+POSTGRES_URL = getenv("POSTGRES_URL")
+INFLUXDB_ORG = getenv("INFLUXDB_ORG")
+INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET")
+INFLUXDB_URL = getenv("INFLUXDB_URL")
+INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN")
+INFLUXDB_MEASUREMENT = getenv("INFLUXDB_MEASUREMENT")
 
 
 class YahooApiFrequencies(Enum):

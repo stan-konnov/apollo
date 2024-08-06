@@ -7,11 +7,13 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 from apollo.connectors.database.influxdb_connector import InfluxDbConnector
 from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
     INFLUXDB_BUCKET,
     INFLUXDB_MEASUREMENT,
     INFLUXDB_ORG,
+    START_DATE,
     TICKER,
-    YahooApiFrequencies,
 )
 
 if TYPE_CHECKING:
@@ -27,7 +29,10 @@ def test__get_last_record_date__with_no_data_available() -> None:
 
     influxdb_connector = InfluxDbConnector()
 
-    last_record_date = influxdb_connector.get_last_record_date()
+    last_record_date = influxdb_connector.get_last_record_date(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+    )
 
     assert last_record_date is None
 
@@ -43,6 +48,9 @@ def test__get_last_record_date__with_data_available(
     InfluxDbConnector should return last available record date.
     """
 
+    dataframe = dataframe.copy()
+    dataframe["frequency"] = FREQUENCY
+
     control_last_record: datetime = dataframe.index[-1]
     control_last_record_date = control_last_record.date()
 
@@ -51,12 +59,15 @@ def test__get_last_record_date__with_data_available(
             bucket=str(INFLUXDB_BUCKET),
             record=dataframe,
             data_frame_measurement_name=INFLUXDB_MEASUREMENT,
-            data_frame_tag_columns=["ticker"],
+            data_frame_tag_columns=["ticker", "frequency"],
         )
 
     influxdb_connector = InfluxDbConnector()
 
-    last_record_date = influxdb_connector.get_last_record_date()
+    last_record_date = influxdb_connector.get_last_record_date(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+    )
 
     assert last_record_date == control_last_record_date
 
@@ -72,11 +83,9 @@ def test__write_price_data__for_correctly_writing_dataframe(
     Dataframe must be available in the database after writing.
     """
 
-    frequency = YahooApiFrequencies.ONE_DAY.value
-
     influxdb_connector = InfluxDbConnector()
     influxdb_connector.write_price_data(
-        frequency=frequency,
+        frequency=str(FREQUENCY),
         dataframe=dataframe,
     )
 
@@ -86,7 +95,7 @@ def test__write_price_data__for_correctly_writing_dataframe(
         |> range(start:0)
         |> filter(fn: (r) =>
                 r.ticker == "{TICKER}" and
-                r.frequency == "{frequency}" and
+                r.frequency == "{FREQUENCY}" and
                 r._measurement == "{INFLUXDB_MEASUREMENT}"
             )
         |> pivot(
@@ -98,11 +107,15 @@ def test__write_price_data__for_correctly_writing_dataframe(
                 columns: [
                     "ticker",
                     "open",
+                    "adj open",
                     "high",
+                    "adj high",
                     "low",
+                    "adj low",
                     "close",
                     "adj close",
                     "volume",
+                    "adj volume",
                     "_time",
                 ]
             )
@@ -137,8 +150,8 @@ def test__read_price_data__for_reading_all_available_data(
     InfluxDbConnector should remove influx columns.
     """
 
-    frequency = YahooApiFrequencies.ONE_DAY.value
-    dataframe["frequency"] = frequency
+    dataframe = dataframe.copy()
+    dataframe["frequency"] = FREQUENCY
 
     with influxdb_client.write_api(write_options=SYNCHRONOUS) as write_api:
         write_api.write(
@@ -154,7 +167,10 @@ def test__read_price_data__for_reading_all_available_data(
 
     control_dataframe = influxdb_connector.read_price_data(
         ticker=str(TICKER),
-        frequency=frequency,
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=True,
     )
 
     assert "table" not in control_dataframe.columns
@@ -182,8 +198,8 @@ def test__read_price_data__for_reading_data_slice(
     start_date = "2007-01-10"
     end_date = "2007-01-20"
 
-    frequency = YahooApiFrequencies.ONE_DAY.value
-    dataframe["frequency"] = frequency
+    dataframe = dataframe.copy()
+    dataframe["frequency"] = FREQUENCY
 
     with influxdb_client.write_api(write_options=SYNCHRONOUS) as write_api:
         write_api.write(
@@ -200,9 +216,10 @@ def test__read_price_data__for_reading_data_slice(
 
     control_dataframe = influxdb_connector.read_price_data(
         ticker=str(TICKER),
-        frequency=frequency,
+        frequency=str(FREQUENCY),
         start_date=start_date,
         end_date=end_date,
+        max_period=False,
     )
 
     assert "table" not in control_dataframe.columns
