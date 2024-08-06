@@ -80,17 +80,19 @@ class InfluxDbConnector:
         self,
         ticker: str,
         frequency: str,
-        start_date: str | None = None,
-        end_date: str | None = None,
+        start_date: str,
+        end_date: str,
+        max_period: bool,
     ) -> pd.DataFrame:
         """
         Read price data from the database.
 
-        :param ticker: Ticker of the price data.
-        :param frequency: Frequency of the price data.
-        :param start_date: Start date of the price data (inclusive).
-        :param end_date: End date of the price data (exclusive).
-        :returns: Price dataframe read from the database.
+        :param ticker: Ticker to read prices data for.
+        :param frequency: Frequency of read price data.
+        :param start_date: Start point to read price data from (inclusive).
+        :param end_date: End point until which to read prices data (exclusive).
+        :param max_period: Flag to read the maximum available period of price data.
+        :returns: Dataframe with price data.
         """
 
         with InfluxDBClient(**self._client_parameters) as client:
@@ -98,9 +100,10 @@ class InfluxDbConnector:
             query_api = client.query_api()
 
             # Define query range
-            query_range = "start:0"
-            if start_date and end_date:
-                query_range = f"start: {start_date}, stop: {end_date}"
+            # depending on the max period flag
+            query_range = (
+                "start:0" if max_period else f"start: {start_date}, stop: {end_date}"
+            )
 
             # Query the price data from the database
             query_statement = f"""
@@ -120,11 +123,15 @@ class InfluxDbConnector:
                         columns: [
                             "ticker",
                             "open",
+                            "adj open",
                             "high",
+                            "adj high",
                             "low",
+                            "adj low",
                             "close",
                             "adj close",
                             "volume",
+                            "adj volume",
                             "_time",
                         ]
                     )
@@ -150,10 +157,12 @@ class InfluxDbConnector:
             # Execute the query and return
             return dataframe
 
-    def get_last_record_date(self) -> date | None:
+    def get_last_record_date(self, ticker: str, frequency: str) -> date | None:
         """
         Get the last record date from the database.
 
+        :param ticker: Ticker of the last record date.
+        :param frequency: Frequency of the last record date.
         :returns: Last record date or None if no records are found.
         """
 
@@ -166,6 +175,8 @@ class InfluxDbConnector:
                 from(bucket:"{INFLUXDB_BUCKET}")
                 |> range(start:0)
                 |> filter(fn: (r) =>
+                        r.ticker == "{ticker}" and
+                        r.frequency == "{frequency}" and
                         r._measurement == "{INFLUXDB_MEASUREMENT}"
                     )
                 |> last()

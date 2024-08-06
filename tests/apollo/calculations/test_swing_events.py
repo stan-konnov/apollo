@@ -60,20 +60,20 @@ def test__calculate_swing_events__for_correct_rolling_window(
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__calculate_swing_events__for_correct_atr_calculation(
+def test__calculate_swing_events__for_correct_swing_events_calculation(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_swing_events method for correct swings calculation.
+    Test calculate_swing_events method for correct swing events calculation.
 
     Resulting SE column must have correct values for each row.
     """
 
     control_dataframe = dataframe.copy()
 
-    swing_l = control_dataframe.iloc[window_size - 2]["low"]
-    swing_h = control_dataframe.iloc[window_size - 2]["high"]
+    swing_l = control_dataframe.iloc[window_size - 2]["adj low"]
+    swing_h = control_dataframe.iloc[window_size - 2]["adj high"]
 
     swing_events = np.full((1, window_size - 1), np.nan).flatten().tolist()
 
@@ -116,11 +116,11 @@ def mimic_calc_se(
 
     rolling_df = dataframe.loc[series.index]
 
-    current_low = rolling_df.iloc[-1]["low"]
+    current_low = rolling_df.iloc[-1]["adj low"]
 
-    current_high = rolling_df.iloc[-1]["high"]
+    current_high = rolling_df.iloc[-1]["adj high"]
 
-    current_swing_filter = series.iloc[-1] * SWING_FILTER
+    current_swing_filter = rolling_df.iloc[-1]["adj close"] * SWING_FILTER
 
     if IN_DOWNSWING.get():
         if current_low < swing_l:

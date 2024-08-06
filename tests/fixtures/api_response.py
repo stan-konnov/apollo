@@ -9,54 +9,36 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
     START_DATE,
-    YahooApiFrequencies,
-)
-
-API_RESPONSE_DATAFRAME = pd.DataFrame(
-    {
-        "Date": [
-            datetime.strptime(str(START_DATE), DEFAULT_DATE_FORMAT),
-            datetime.strptime(str(END_DATE), DEFAULT_DATE_FORMAT),
-        ],
-        "Open": [100.0, 101.0],
-        "High": [105.0, 106.0],
-        "Low": [95.0, 96.0],
-        "Close": [99.0, 100.0],
-        "Volume": [1000, 2000],
-    },
 )
 
 
-@pytest.fixture(name="yahoo_api_response", scope="session")
-def _yahoo_api_response() -> Generator[None, None, None]:
-    """Simulate raw Yahoo API OHLCV response."""
+@pytest.fixture(name="api_response_dataframe", autouse=True)
+def api_response_dataframe() -> pd.DataFrame:
+    """Simulate API response dataframe."""
 
-    def download(
-        tickers: str | list[str],  # noqa: ARG001
-        start: str,  # noqa: ARG001
-        end: str,  # noqa: ARG001
-        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
-    ) -> pd.DataFrame:
-        raw_yahoo_api_response = API_RESPONSE_DATAFRAME.copy()
-        raw_yahoo_api_response.set_index("Date", inplace=True)
+    api_response_dataframe = pd.DataFrame(
+        {
+            "Date": [
+                datetime.strptime(str(START_DATE), DEFAULT_DATE_FORMAT),
+                datetime.strptime(str(END_DATE), DEFAULT_DATE_FORMAT),
+            ],
+            "Open": [100.0, 101.0],
+            "High": [105.0, 106.0],
+            "Low": [95.0, 96.0],
+            "Close": [99.0, 100.0],
+            "Adj Close": [98.0, 99.0],
+            "Volume": [1000, 2000],
+        },
+    )
 
-        return raw_yahoo_api_response
+    api_response_dataframe.set_index("Date", inplace=True)
 
-    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
-        yield
+    return api_response_dataframe
 
 
-@pytest.fixture(name="empty_yahoo_api_response", scope="session")
-def _empty_yahoo_api_response() -> Generator[None, None, None]:
-    """Simulate empty Yahoo API OHLCV response."""
+@pytest.fixture(name="yahoo_api_call")
+def yahoo_api_call() -> Generator[None, None, None]:
+    """Simulate call to Yahoo API."""
 
-    def download(
-        tickers: str | list[str],  # noqa: ARG001
-        start: str,  # noqa: ARG001
-        end: str,  # noqa: ARG001
-        interval: str = YahooApiFrequencies.ONE_DAY.value,  # noqa: ARG001
-    ) -> pd.DataFrame:
-        return pd.DataFrame()
-
-    with patch("apollo.connectors.api.yahoo_api_connector.download", download):
-        yield
+    with patch("apollo.connectors.api.yahoo_api_connector.download") as mocked_call:
+        yield mocked_call
