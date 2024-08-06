@@ -28,19 +28,14 @@ class WildersSwingIndexCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        tr_volatility_multiplier: float,
+        weighted_tr_multiplier: float,
     ) -> None:
         """
         Construct Wilder's Swing Index calculator.
 
         :param dataframe: Dataframe to calculate Wilder's Swing Index for.
         :param window_size: Window size for rolling Wilder's Swing Index calculation.
-        :param tr_volatility_multiplier: Multiplier for weighted True Range calculation.
-        """
-
-        """
-        TODO: highest_difference is unnecessary, as we already have highest_value
-        TODO: rename tr_volatility_multiplier to weighted_tr_multiplier
+        :param weighted_tr_multiplier: Multiplier for weighted True Range calculation.
         """
 
         super().__init__(dataframe, window_size)
@@ -51,8 +46,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # NOTE: we use two multipliers to give more weight
         # to either current or previous closing price change,
         # yet, we use one parameter to improve optimization time
-        self._tr_volatility_multiplier_curr: float = 1.0 - tr_volatility_multiplier
-        self._tr_volatility_multiplier_prev: float = 0.0 + tr_volatility_multiplier
+        self._weighted_tr_multiplier_curr: float = 1.0 - weighted_tr_multiplier
+        self._weighted_tr_multiplier_prev: float = 0.0 + weighted_tr_multiplier
 
     def calculate_swing_index(self) -> None:
         """Calculate Wilder's Swing Index."""
@@ -154,8 +149,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
         return (
             (
                 (curr_close - prev_close)
-                + (self._tr_volatility_multiplier_curr * (curr_close - curr_open))
-                + (self._tr_volatility_multiplier_prev * (prev_close - prev_open))
+                + (self._weighted_tr_multiplier_curr * (curr_close - curr_open))
+                + (self._weighted_tr_multiplier_prev * (prev_close - prev_open))
             )
             / weighted_true_range
         ) * highest_value
@@ -243,19 +238,19 @@ class WildersSwingIndexCalculator(BaseCalculator):
             case 0:
                 return (
                     abs(curr_high - prev_close)
-                    - self._tr_volatility_multiplier_curr * abs(curr_low - prev_close)
-                    + self._tr_volatility_multiplier_prev * abs(prev_close - prev_open)
+                    - self._weighted_tr_multiplier_curr * abs(curr_low - prev_close)
+                    + self._weighted_tr_multiplier_prev * abs(prev_close - prev_open)
                 )
             case 1:
                 return (
                     abs(curr_low - prev_close)
-                    - self._tr_volatility_multiplier_curr * abs(curr_high - prev_close)
-                    + self._tr_volatility_multiplier_prev * abs(prev_close - prev_open)
+                    - self._weighted_tr_multiplier_curr * abs(curr_high - prev_close)
+                    + self._weighted_tr_multiplier_prev * abs(prev_close - prev_open)
                 )
             case 2:
                 return abs(
                     curr_high - curr_low,
-                ) + self._tr_volatility_multiplier_prev * abs(prev_close - prev_open)
+                ) + self._weighted_tr_multiplier_prev * abs(prev_close - prev_open)
             case _:
                 raise ValueError(
                     "Provided diff_index is invalid. Base calculation is faulty.",

@@ -14,12 +14,12 @@
         "range": [0.1, 1.0]
     },
 
-    "tr_volatility_multiplier": {
+    "weighted_tr_multiplier": {
         "step": 0.1,
         "range": [0.1, 0.9]
     },
 
     "strategy_specific_parameters": [
-        "tr_volatility_multiplier"
+        "weighted_tr_multiplier"
     ]
 }
