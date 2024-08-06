@@ -145,7 +145,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
 
         # Finally, calculate (modified) Wilders Swing Index:
         # (Ct - Ct-1) + TRWMC * (Ct - Ot) + TRWMP * (Ct-1 - Ot-1) / WTR * K  # noqa: ERA001, E501
-        # Giving more weight to the current closing price change
+        # Giving more weight to either current or previous closing price change
         return (
             (
                 (curr_close - prev_close)
