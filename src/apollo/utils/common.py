@@ -17,6 +17,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    VIX_TICKER,
     YahooApiFrequencies,
 )
 
@@ -48,6 +49,7 @@ def ensure_environment_is_configured() -> None:
 
     required_variables = {
         "TICKER": TICKER,
+        "VIX_TICKER": VIX_TICKER,
         "EXCHANGE": EXCHANGE,
         "STRATEGY": STRATEGY,
         "START_DATE": START_DATE,

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TICKER = getenv("TICKER")
+VIX_TICKER = getenv("VIX_TICKER")
 EXCHANGE = getenv("EXCHANGE")
 STRATEGY = getenv("STRATEGY")
 START_DATE = getenv("START_DATE")
