@@ -3,6 +3,8 @@ import pytest
 
 from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
 
+WEIGHTED_TR_MULTIPLIER: float = 0.1
+
 
 @pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_swing_index__for_correct_columns(
@@ -19,6 +21,7 @@ def test__calculate_swing_index__for_correct_columns(
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
         window_size=window_size,
+        weighted_tr_multiplier=WEIGHTED_TR_MULTIPLIER,
     )
 
     wsi_calculator.calculate_swing_index()
@@ -48,6 +51,7 @@ def test__calculate_swing_index__for_correct_rolling_window(
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
         window_size=window_size,
+        weighted_tr_multiplier=WEIGHTED_TR_MULTIPLIER,
     )
 
     wsi_calculator.calculate_swing_index()
@@ -71,6 +75,7 @@ def test__calc_wtr__with_invalid_base_calculation(
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
         window_size=window_size,
+        weighted_tr_multiplier=WEIGHTED_TR_MULTIPLIER,
     )
 
     exception_message = "Provided diff_index is invalid. Base calculation is faulty."
