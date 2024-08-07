@@ -14,7 +14,7 @@ class VixReinforcedStrategy:
     Requests VIX index close prices from the price data
     provider and enriches the supplied dataframe with them.
 
-    Calculates Conners' VIX reversals to reinforce signal generation logic.
+    Calculates Conners' VIX reversals to be used in specialized strategies.
     """
 
     def __init__(self, dataframe: pd.DataFrame) -> None:
