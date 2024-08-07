@@ -15,3 +15,15 @@ class ConnersVixReversalCalculator(BaseCalculator):
         """
 
         super().__init__(dataframe, window_size)
+
+    def calculate_vix_reversals(self) -> None:
+        """Calculate Conners' VIX Reversals."""
+
+        # Precalculate VIX previous open and close
+        self._dataframe["vix_prev_open"] = self._dataframe["vix open"].shift(1)
+        self._dataframe["vix_prev_close"] = self._dataframe["vix close"].shift(1)
+
+        # Precalculate VIX range
+        self._dataframe["vix_range"] = abs(
+            self._dataframe["vix high"] - self._dataframe["vix low"],
+        )
