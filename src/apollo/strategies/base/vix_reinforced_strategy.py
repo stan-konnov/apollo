@@ -1,5 +1,6 @@
 import pandas as pd
 
+from apollo.calculations.conners_vix_reversal import ConnersVixReversalCalculator
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE, VIX_TICKER
 
@@ -41,7 +42,7 @@ class VixReinforcedStrategy:
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
-    def __init__(self, dataframe: pd.DataFrame, _: int) -> None:
+    def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
         Construct VIX Reinforced Strategy.
 
@@ -66,3 +67,8 @@ class VixReinforcedStrategy:
         dataframe["vix open"] = vix_price_data["open"]
         dataframe["vix high"] = vix_price_data["high"]
         dataframe["vix close"] = vix_price_data["close"]
+
+        _ = ConnersVixReversalCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+        )
