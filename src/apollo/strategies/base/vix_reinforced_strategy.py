@@ -19,7 +19,8 @@ class VixReinforcedStrategy:
         """
         Construct VIX Reinforced Strategy.
 
-        Initialize PriceDataProvider with VIX index ticker.
+        Initialize PriceDataProvider with VIX index ticker,
+        request VIX prices and enrich price dataframe with them.
         """
 
         self._price_data_provider = PriceDataProvider(
@@ -30,4 +31,6 @@ class VixReinforcedStrategy:
             max_period=bool(MAX_PERIOD),
         )
 
-        dataframe["vix close"] = 1
+        vix_prices = self._price_data_provider.get_price_data()
+
+        dataframe["vix close"] = vix_prices["close"]
