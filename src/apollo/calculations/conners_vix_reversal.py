@@ -40,6 +40,19 @@ class ConnersVixReversalCalculator(BaseCalculator):
             self._dataframe["vix high"] - self._dataframe["vix low"],
         )
 
+        # Calculate VIX reversals and write to the dataframe
+        self._dataframe["cvr"] = (
+            self._dataframe["vix close"]
+            .rolling(self._window_size)
+            .apply(self._calc_cvr)
+        )
+
+        # Drop precalculated columns as we no longer need them
+        self._dataframe.drop(
+            columns=["vix_prev_open", "vix_prev_close", "vix_range"],
+            inplace=True,
+        )
+
     def _calc_cvr(self, series: pd.Series) -> float:
         """
         Calculate rolling VIX Reversal for a given window.

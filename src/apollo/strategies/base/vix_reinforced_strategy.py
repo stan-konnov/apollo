@@ -2,7 +2,16 @@ import pandas as pd
 
 from apollo.calculations.conners_vix_reversal import ConnersVixReversalCalculator
 from apollo.providers.price_data_provider import PriceDataProvider
-from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE, VIX_TICKER
+from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
+    LONG_SIGNAL,
+    MAX_PERIOD,
+    NO_SIGNAL,
+    SHORT_SIGNAL,
+    START_DATE,
+    VIX_TICKER,
+)
 
 
 class VixReinforcedStrategy:
@@ -63,12 +72,28 @@ class VixReinforcedStrategy:
 
         vix_price_data = self._price_data_provider.get_price_data()
 
-        # Enrich price dataframe with VIX open, high, and close
+        # Enrich price dataframe with VIX open, high, low, close
         dataframe["vix open"] = vix_price_data["open"]
         dataframe["vix high"] = vix_price_data["high"]
+        dataframe["vix low"] = vix_price_data["low"]
         dataframe["vix close"] = vix_price_data["close"]
 
-        _ = ConnersVixReversalCalculator(
+        # Calculate Conners' VIX Reversals
+        cvr_calculator = ConnersVixReversalCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
+        cvr_calculator.calculate_vix_reversals()
+
+        # Mark VIX reinforced signals to the dataframe
+        dataframe["vix_signal"] = NO_SIGNAL
+
+        dataframe.loc[
+            dataframe["cvr"] == cvr_calculator.UPSIDE_REVERSAL,
+            "vix_signal",
+        ] = LONG_SIGNAL
+
+        dataframe.loc[
+            dataframe["cvr"] == cvr_calculator.DOWNSIDE_REVERSAL,
+            "vix_signal",
+        ] = SHORT_SIGNAL
