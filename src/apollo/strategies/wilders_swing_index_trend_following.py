@@ -49,7 +49,7 @@ class WildersSwingIndexTrendFollowing(
         )
 
         BaseStrategy.__init__(self, dataframe, window_size)
-        VixReinforcedStrategy.__init__(self, dataframe)
+        VixReinforcedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._wsi_calculator = WildersSwingIndexCalculator(
