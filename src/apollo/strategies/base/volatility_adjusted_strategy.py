@@ -19,9 +19,6 @@ class VolatilityAdjustedStrategy:
     The job of calculating these levels is delegated to backtesting module,
     yet, the strategy is responsible for providing necessary inputs.
     Therefore, this method calculates volatility for all strategies.
-
-    :param dataframe: Dataframe with price data.
-    :param window_size: Size of the window for the strategy.
     """
 
     def __init__(self, dataframe: DataFrame, window_size: int) -> None:
