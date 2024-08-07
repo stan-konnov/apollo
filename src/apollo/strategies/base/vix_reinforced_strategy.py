@@ -8,10 +8,8 @@ class VixReinforcedStrategy:
     """
     VIX Reinforced Strategy class.
 
-    IS THE VIX RANGE (4) correct?
-
-    Uses VIX index close prices to reinforce
-    signal generation logic of specialized strategies.
+    Uses VIX index prices to reinforce signal
+    generation logic of specialized strategies.
 
     Requests VIX index prices from the price data
     provider and enriches the supplied dataframe with them.
@@ -20,13 +18,13 @@ class VixReinforcedStrategy:
 
     This strategy reinforces long positions when:
 
-    * VIX hight at T is greater than the VIX highest high within the window.
+    * VIX high at T is greater than the VIX highest high within the window.
 
     * VIX close at T is lower than VIX open at T.
 
     * VIX close at T-1 is greater than VIX open at T-1.
 
-    * VIX close at T is greater than the VIX highest close within the window.
+    * VIX range at T is greater than the VIX ranges within the window.
 
     This strategy reinforces short positions when:
 
@@ -36,7 +34,9 @@ class VixReinforcedStrategy:
 
     * VIX close at T-1 is lower than VIX open at T-1.
 
-    * VIX close at T is lower than the VIX highest close within the window.
+    * VIX ranges at T is lower than the VIX ranges within the window.
+
+    Where VIX range is the difference between high and low.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
