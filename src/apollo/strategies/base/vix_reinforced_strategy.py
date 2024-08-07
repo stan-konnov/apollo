@@ -11,20 +11,20 @@ class VixReinforcedStrategy:
     Uses VIX index close prices to reinforce
     signal generation logic of specialized strategies.
 
-    Requests VIX index close prices from the price data
+    Requests VIX index prices from the price data
     provider and enriches the supplied dataframe with them.
 
-    Calculates Conners' VIX reversals and generates VIX reinforced signal.
+    Calculates Conners' VIX Reversals and generates VIX reinforced signal.
 
     This strategy takes long positions when:
 
-    * VIX hight at T is greater than the VIX highest high within the last window.
+    * VIX hight at T is greater than the VIX highest high within the window.
 
     * VIX close at T is lower than VIX open at T.
 
     * VIX close at T-1 is greater than VIX open at T-1.
 
-    * VIX close at T is greater than the VIX highest close within the last window.
+    * VIX close at T is greater than the VIX highest close within the window.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -48,9 +48,9 @@ class VixReinforcedStrategy:
             max_period=bool(MAX_PERIOD),
         )
 
-        vix_prices = self._price_data_provider.get_price_data()
+        vix_price_data = self._price_data_provider.get_price_data()
 
         # Enrich price dataframe with VIX open, high, and close
-        dataframe["vix_open"] = vix_prices["open"]
-        dataframe["vix_high"] = vix_prices["high"]
-        dataframe["vix_close"] = vix_prices["close"]
+        dataframe["vix open"] = vix_price_data["open"]
+        dataframe["vix high"] = vix_price_data["high"]
+        dataframe["vix close"] = vix_price_data["close"]
