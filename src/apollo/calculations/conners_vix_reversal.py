@@ -26,6 +26,10 @@ if (
     return self.DOWNSIDE_REVERSAL
 
 return self.NO_REVERSAL
+
+https://www.whselfinvest.com/en-lu/trading-platform/free-trading-strategies/tradingsystem/40-vix-reversal
+
+https://howtotrade.com/trading-strategies/vix/
 """
 
 
