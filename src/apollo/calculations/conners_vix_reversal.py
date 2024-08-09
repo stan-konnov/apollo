@@ -100,7 +100,7 @@ class ConnersVixReversalCalculator(BaseCalculator):
             curr_high < highest_high
             and curr_close > curr_open
             and prev_close < prev_open
-            and curr_range > largest_range
+            and curr_range < largest_range
         ):
             return self.DOWNSIDE_REVERSAL
 
