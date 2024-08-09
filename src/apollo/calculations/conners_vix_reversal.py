@@ -2,6 +2,9 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+# WIP
+# ruff: noqa
+
 
 class ConnersVixReversalCalculator(BaseCalculator):
     """Conners' VIX Reversal Calculator class."""
@@ -84,24 +87,14 @@ class ConnersVixReversalCalculator(BaseCalculator):
         curr_range = abs(curr_high - curr_low)
 
         # Get the highest VIX close within the window
-        # highest_close = rolling_df["vix close"].max()  # noqa: ERA001
+        highest_close = rolling_df["vix close"].max()
 
         # Calculate VIX reversal to the upside
-        if (
-            curr_high > highest_high
-            and curr_close < curr_open
-            and prev_close > prev_open
-            and curr_range > largest_range
-        ):
+        if curr_close >= highest_close:
             return self.UPSIDE_REVERSAL
 
         # Calculate VIX reversal to the downside
-        if (
-            curr_high < highest_high
-            and curr_close > curr_open
-            and prev_close < prev_open
-            and curr_range < largest_range
-        ):
+        if curr_close < highest_close:
             return self.DOWNSIDE_REVERSAL
 
         return self.NO_REVERSAL
