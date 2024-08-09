@@ -83,6 +83,9 @@ class ConnersVixReversalCalculator(BaseCalculator):
         # Calculate current VIX range
         curr_range = abs(curr_high - curr_low)
 
+        # Get the highest VIX close within the window
+        # highest_close = rolling_df["vix close"].max()  # noqa: ERA001
+
         # Calculate VIX reversal to the upside
         if (
             curr_high > highest_high
@@ -97,7 +100,7 @@ class ConnersVixReversalCalculator(BaseCalculator):
             curr_high < highest_high
             and curr_close > curr_open
             and prev_close < prev_open
-            and curr_range < largest_range
+            and curr_range > largest_range
         ):
             return self.DOWNSIDE_REVERSAL
 
