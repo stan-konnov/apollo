@@ -5,6 +5,30 @@ from apollo.calculations.base_calculator import BaseCalculator
 # WIP
 # ruff: noqa
 
+"""
+Original logic:
+
+# Calculate VIX reversal to the upside
+if (
+    curr_high > highest_high
+    and curr_close < curr_open
+    and prev_close > prev_open
+    and curr_range > largest_range
+):
+    return self.UPSIDE_REVERSAL
+
+# Calculate VIX reversal to the downside
+if (
+    curr_high < highest_high
+    and curr_close > curr_open
+    and prev_close < prev_open
+    and curr_range < largest_range
+):
+    return self.DOWNSIDE_REVERSAL
+
+return self.NO_REVERSAL
+"""
+
 
 class ConnersVixReversalCalculator(BaseCalculator):
     """Conners' VIX Reversal Calculator class."""
@@ -86,15 +110,22 @@ class ConnersVixReversalCalculator(BaseCalculator):
         # Calculate current VIX range
         curr_range = abs(curr_high - curr_low)
 
-        # Get the highest VIX close within the window
-        highest_close = rolling_df["vix close"].max()
-
         # Calculate VIX reversal to the upside
-        if curr_close >= highest_close:
+        if (
+            curr_high > highest_high
+            and curr_close < curr_open
+            and prev_close > prev_open
+            and curr_range > largest_range
+        ):
             return self.UPSIDE_REVERSAL
 
         # Calculate VIX reversal to the downside
-        if curr_close < highest_close:
+        if (
+            curr_high < highest_high
+            and curr_close > curr_open
+            and prev_close < prev_open
+            and curr_range < largest_range
+        ):
             return self.DOWNSIDE_REVERSAL
 
         return self.NO_REVERSAL

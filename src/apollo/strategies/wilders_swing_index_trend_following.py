@@ -76,7 +76,7 @@ class WildersSwingIndexTrendFollowing(
         self._dataframe.loc[
             (
                 (self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT)
-                & (self._dataframe["vix_signal"] == LONG_SIGNAL)
+                | (self._dataframe["vix_signal"] == LONG_SIGNAL)
             ),
             "signal",
         ] = LONG_SIGNAL
@@ -84,7 +84,7 @@ class WildersSwingIndexTrendFollowing(
         self._dataframe.loc[
             (
                 (self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT)
-                & (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+                | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
             ),
             "signal",
         ] = SHORT_SIGNAL
