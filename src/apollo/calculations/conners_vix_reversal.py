@@ -120,11 +120,11 @@ class ConnersVixReversalCalculator(BaseCalculator):
         curr_range = abs(curr_high - curr_low)
 
         # Calculate VIX reversal to the upside
-        if curr_open < prev_open:
+        if curr_open < prev_open and curr_close > prev_close:
             return self.UPSIDE_REVERSAL
 
         # Calculate VIX reversal to the downside
-        if curr_open > prev_open:
+        if curr_open > prev_open and curr_close < prev_close:
             return self.DOWNSIDE_REVERSAL
 
         return self.NO_REVERSAL
