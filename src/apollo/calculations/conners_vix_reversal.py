@@ -32,6 +32,10 @@ https://www.whselfinvest.com/en-lu/trading-platform/free-trading-strategies/trad
 https://howtotrade.com/trading-strategies/vix/
 
 Chart VIX and ticker prices together to investigate potential opportunities.
+
+Ideas:
+
+1. Use VIX slope (via OLS)?
 """
 
 
