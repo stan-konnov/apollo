@@ -73,18 +73,22 @@ class WildersSwingIndexTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
+        # self._dataframe.loc[
+        #     self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT,  # noqa: ERA001, E501
+        #     "signal",
+        # ] = LONG_SIGNAL
+
+        # self._dataframe.loc[
+        #     self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT,  # noqa: ERA001, E501
+        #     "signal",
+        # ] = SHORT_SIGNAL
+
         self._dataframe.loc[
-            (
-                (self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT)
-                & (self._dataframe["vix_signal"] == LONG_SIGNAL)
-            ),
+            self._dataframe["vix_signal"] == LONG_SIGNAL,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            (
-                (self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT)
-                & (self._dataframe["vix_signal"] == SHORT_SIGNAL)
-            ),
+            self._dataframe["vix_signal"] == SHORT_SIGNAL,
             "signal",
         ] = SHORT_SIGNAL
