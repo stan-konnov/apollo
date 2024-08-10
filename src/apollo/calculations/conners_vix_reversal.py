@@ -36,6 +36,21 @@ Chart VIX and ticker prices together to investigate potential opportunities.
 Ideas:
 
 1. Use VIX slope (via OLS)?
+
+What works so far:
+
+# Calculate VIX reversal to the upside
+if curr_open < prev_open and curr_close > prev_close:
+    return self.UPSIDE_REVERSAL
+
+# Calculate VIX reversal to the downside
+if curr_open > prev_open and curr_close < prev_close:
+    return self.DOWNSIDE_REVERSAL
+
+Exposure Time [%]                   58.778915
+Return (Ann.) [%]                   26.890418
+Sharpe Ratio                         2.172139
+Avg. Trade [%]                       0.275405
 """
 
 
