@@ -94,7 +94,7 @@ class ConnersVixReversalCalculator(BaseCalculator):
             self._dataframe["vix high"] - self._dataframe["vix low"],
         )
 
-        self._dataframe["prev_vix_range"] = self._dataframe["vix_range"].shift(1)
+        self._dataframe["vix_prev_range"] = self._dataframe["vix_range"].shift(1)
 
         # Calculate VIX reversals and write to the dataframe
         self._dataframe["cvr"] = (
