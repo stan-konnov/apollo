@@ -57,6 +57,16 @@ class VixReinforcedStrategy:
     Where VIX range is the difference between high and low.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
+
+    self._dataframe.loc[
+        self._dataframe["vix_signal"] == LONG_SIGNAL,
+        "signal",
+    ] = LONG_SIGNAL
+
+    self._dataframe.loc[
+        self._dataframe["vix_signal"] == SHORT_SIGNAL,
+        "signal",
+    ] = SHORT_SIGNAL
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
