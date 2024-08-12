@@ -5,6 +5,9 @@ from apollo.calculations.base_calculator import BaseCalculator
 # ruff: noqa
 
 """
+TODO: worst-case scenario pack VIX into
+separate strategy
+
 Original logic:
 
 # Calculate VIX reversal to the upside
