@@ -23,6 +23,8 @@ class KeltnerChaikinTrendFollowing(
     """
     Keltner Chaikin Trend Following.
 
+    TODO: parameters changed, please make me mean reversion
+
     NOTE: this strategy uses Hull Moving Average as input for
     calculation of the Keltner Channel to make the channel
     more responsive to short-term price movements.
