@@ -3,7 +3,6 @@ from pandas import DataFrame
 from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
-from apollo.strategies.base.vix_reinforced_strategy import VixReinforcedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
@@ -11,7 +10,6 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 class WildersSwingIndexTrendFollowing(
     BaseStrategy,
-    VixReinforcedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -49,7 +47,6 @@ class WildersSwingIndexTrendFollowing(
         )
 
         BaseStrategy.__init__(self, dataframe, window_size)
-        VixReinforcedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._wsi_calculator = WildersSwingIndexCalculator(
@@ -73,22 +70,12 @@ class WildersSwingIndexTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        # self._dataframe.loc[
-        #     self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT,  # noqa: ERA001, E501
-        #     "signal",
-        # ] = LONG_SIGNAL
-
-        # self._dataframe.loc[
-        #     self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT,  # noqa: ERA001, E501
-        #     "signal",
-        # ] = SHORT_SIGNAL
-
         self._dataframe.loc[
-            self._dataframe["vix_signal"] == LONG_SIGNAL,
+            self._dataframe["sp"] == self._wsi_calculator.HIGH_SWING_POINT,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["vix_signal"] == SHORT_SIGNAL,
+            self._dataframe["sp"] == self._wsi_calculator.LOW_SWING_POINT,
             "signal",
         ] = SHORT_SIGNAL

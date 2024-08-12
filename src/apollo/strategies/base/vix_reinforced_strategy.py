@@ -18,11 +18,13 @@ class VixReinforcedStrategy:
     """
     VIX Reinforced Strategy class.
 
-    NOTE: This might not be useful, more research is needed.
-
-    Include Futures?
+    Just some reading (this is a heavy WIP):
 
     https://www.investopedia.com/articles/active-trading/032415/strategies-trade-volatility-effectively-vix.asp
+
+    https://www.whselfinvest.com/en-lu/trading-platform/free-trading-strategies/tradingsystem/40-vix-reversal
+
+    https://howtotrade.com/trading-strategies/vix/
 
     Uses VIX index prices to reinforce signal
     generation logic of specialized strategies.
