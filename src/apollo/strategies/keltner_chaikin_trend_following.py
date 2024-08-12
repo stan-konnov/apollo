@@ -9,6 +9,7 @@ from apollo.calculations.hull_moving_average import (
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_reinforced_strategy import VixReinforcedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
@@ -16,6 +17,7 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 class KeltnerChaikinTrendFollowing(
     BaseStrategy,
+    VixReinforcedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -65,6 +67,7 @@ class KeltnerChaikinTrendFollowing(
         )
 
         BaseStrategy.__init__(self, dataframe, window_size)
+        VixReinforcedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._hma_calculator = HullMovingAverageCalculator(
@@ -100,14 +103,14 @@ class KeltnerChaikinTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["adj close"] > self._dataframe["lkc_bound"]) & (
-            self._dataframe["adl"] > self._dataframe["prev_adl"]
-        )
+        long = (self._dataframe["adj close"] < self._dataframe["ukc_bound"]) & (
+            self._dataframe["adl"] < self._dataframe["prev_adl"]
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["adj close"] < self._dataframe["ukc_bound"]) & (
-            self._dataframe["adl"] < self._dataframe["prev_adl"]
-        )
+        short = (self._dataframe["adj close"] > self._dataframe["lkc_bound"]) & (
+            self._dataframe["adl"] > self._dataframe["prev_adl"]
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
