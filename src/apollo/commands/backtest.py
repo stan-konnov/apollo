@@ -9,8 +9,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.wilders_swing_index_trend_following import (
-    WildersSwingIndexTrendFollowing,
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -37,17 +37,18 @@ def main() -> None:
 
     dataframe = price_data_provider.get_price_data()
 
-    strategy = WildersSwingIndexTrendFollowing(
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
-        window_size=15,
-        weighted_tr_multiplier=0.1,
+        window_size=5,
+        kurtosis_threshold=3.0,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="WildersSwingIndexTrendFollowing",
+        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,

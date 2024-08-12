@@ -3,9 +3,17 @@ from pandas import DataFrame
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_reinforced_strategy import VixReinforcedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
+class SkewnessKurtosisVolatilityTrendFollowing(
+    BaseStrategy,
+    VixReinforcedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Skewness Kurtosis Volatility Trend Following.
 
@@ -57,7 +65,9 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VixReinforcedStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._kurtosis_threshold = kurtosis_threshold
         self._volatility_multiplier = volatility_multiplier
@@ -79,22 +89,16 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (
-            (self._dataframe["skew"] < 0)
-            & (self._dataframe["kurt"] < self._kurtosis_threshold)
-            & (
-                self._dataframe["tr"]
-                > self._dataframe["atr"] * self._volatility_multiplier
-            )
-        )
+        long = (self._dataframe["skew"] < 0) & (
+            self._dataframe["kurt"] < self._kurtosis_threshold
+        ) & (
+            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (
-            (self._dataframe["skew"] > 0)
-            & (self._dataframe["kurt"] < self._kurtosis_threshold)
-            & (
-                self._dataframe["tr"]
-                > self._dataframe["atr"] * self._volatility_multiplier
-            )
-        )
+        short = (self._dataframe["skew"] > 0) & (
+            self._dataframe["kurt"] < self._kurtosis_threshold
+        ) & (
+            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
