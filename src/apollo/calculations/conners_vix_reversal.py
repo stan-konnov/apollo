@@ -94,6 +94,8 @@ class ConnersVixReversalCalculator(BaseCalculator):
             self._dataframe["vix high"] - self._dataframe["vix low"],
         )
 
+        self._dataframe["prev_vix_range"] = self._dataframe["vix_range"].shift(1)
+
         # Calculate VIX reversals and write to the dataframe
         self._dataframe["cvr"] = (
             self._dataframe["vix close"]
@@ -134,8 +136,9 @@ class ConnersVixReversalCalculator(BaseCalculator):
         prev_open = rolling_df["vix_prev_open"].iloc[-1]
         prev_close = rolling_df["vix_prev_close"].iloc[-1]
 
-        # Calculate current VIX range
-        curr_range = abs(curr_high - curr_low)
+        # Grab current and previous VIX range
+        curr_range = rolling_df["vix_range"].iloc[-1]
+        prev_range = rolling_df["vix_prev_range"].iloc[-1]
 
         # Calculate VIX reversal to the upside
         if curr_open < prev_open and curr_close > prev_close:
