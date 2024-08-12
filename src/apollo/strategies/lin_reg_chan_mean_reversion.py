@@ -5,9 +5,17 @@ from apollo.calculations.linear_regression_channel import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_reinforced_strategy import VixReinforcedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class LinearRegressionChannelMeanReversion(BaseStrategy):
+class LinearRegressionChannelMeanReversion(
+    BaseStrategy,
+    VixReinforcedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Linear Regression Channel Mean Reversion.
 
@@ -50,7 +58,9 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VixReinforcedStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._lrc_calculator = LinearRegressionChannelCalculator(
             dataframe=dataframe,
@@ -75,10 +85,10 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
 
         long = (self._dataframe["adj close"] <= self._dataframe["l_bound"]) & (
             self._dataframe["slope"] <= self._dataframe["prev_slope"]
-        )
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (self._dataframe["adj close"] >= self._dataframe["u_bound"]) & (
             self._dataframe["slope"] >= self._dataframe["prev_slope"]
-        )
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
