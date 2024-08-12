@@ -18,6 +18,14 @@ class VixReinforcedStrategy:
     """
     VIX Reinforced Strategy class.
 
+    TODO: this is a fallback strategy (OR condition):
+    adapt the docstrings of those strategies where it is used
+
+    TODO: this strategy in itself is also a good strategy
+    make a separate strategy class that uses only VIX
+
+    TODO: reoptimize impacted strategies and new strategy
+
     Just some reading (this is a heavy WIP):
 
     https://www.investopedia.com/articles/active-trading/032415/strategies-trade-volatility-effectively-vix.asp
