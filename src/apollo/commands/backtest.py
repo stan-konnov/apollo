@@ -9,8 +9,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.lin_reg_chan_mean_reversion import (
-    LinearRegressionChannelMeanReversion,
+from apollo.strategies.keltner_chaikin_trend_following import (
+    KeltnerChaikinTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -37,20 +37,20 @@ def main() -> None:
 
     dataframe = price_data_provider.get_price_data()
 
-    strategy = LinearRegressionChannelMeanReversion(
+    strategy = KeltnerChaikinTrendFollowing(
         dataframe=dataframe,
         window_size=5,
-        channel_sd_spread=0.8,
+        volatility_multiplier=0.1,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="LinearRegressionChannelMeanReversion",
+        strategy_name="KeltnerChaikinTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.3,
+        tp_volatility_multiplier=0.4,
         write_result_plot=True,
     )
 

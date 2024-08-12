@@ -86,9 +86,11 @@ class LinearRegressionChannelMeanReversion(
         long = (self._dataframe["adj close"] <= self._dataframe["l_bound"]) & (
             self._dataframe["slope"] <= self._dataframe["prev_slope"]
         ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (self._dataframe["adj close"] >= self._dataframe["u_bound"]) & (
             self._dataframe["slope"] >= self._dataframe["prev_slope"]
         ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

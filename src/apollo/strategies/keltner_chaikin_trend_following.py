@@ -9,9 +9,15 @@ from apollo.calculations.hull_moving_average import (
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class KeltnerChaikinTrendFollowing(BaseStrategy):
+class KeltnerChaikinTrendFollowing(
+    BaseStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Keltner Chaikin Trend Following.
 
@@ -58,7 +64,8 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._hma_calculator = HullMovingAverageCalculator(
             dataframe=dataframe,
