@@ -5,7 +5,7 @@ from apollo.calculations.linear_regression_channel import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
-from apollo.strategies.base.vix_reinforced_strategy import VIXEnhancedStrategy
+from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
