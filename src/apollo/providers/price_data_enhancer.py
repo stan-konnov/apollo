@@ -27,7 +27,7 @@ class PriceDataEnhancer:
         :param additional_data_enhancers: List of additional data enhancers to use.
         :returns: Price data enhanced with additional data.
 
-        :raises ValueError: If enhancer is not supported.
+        :raises ValueError: If unsupported data enhancer is provided.
         """
 
         # Return original price data
