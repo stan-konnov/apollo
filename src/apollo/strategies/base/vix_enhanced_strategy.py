@@ -19,7 +19,19 @@ class VIXEnhancedStrategy:
 
     This strategy takes long positions when:
 
+    * Current VIX open is lower than the previous VIX open,
+    indicating a decrease in implied volatility.
+
+    * Current VIX close is higher than the previous VIX close,
+    indicating an upside reversal in implied volatility.
+
     This strategy takes short positions when:
+
+    * Current VIX open is higher than the previous VIX open,
+    indicating an increase in implied volatility.
+
+    * Current VIX close is lower than the previous VIX close,
+    indicating a downside reversal in implied volatility.
 
     NOTE: This strategy class is not a standalone strategy
     and should be used in conjunction with other strategies.
@@ -27,6 +39,9 @@ class VIXEnhancedStrategy:
     Yet, the logic of VIX signals proved to be effective
     as a standalone strategy and, therefore, can be found
     in VIX Reversal Strategy class that uses the same signals.
+
+    NOTE: This is an adapted version of Conners' VIX Reversals
+    and does not follow the original logic to the letter.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
