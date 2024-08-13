@@ -12,6 +12,8 @@ class VIXEnhancedStrategy:
     """
     VIX Enhanced Strategy class.
 
+    NOTE: THIS IS WIP, this needs to be properly explained and documented.
+
     Uses VIX index prices to enhance signal
     generation logic of specialized strategies.
 
