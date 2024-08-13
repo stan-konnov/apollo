@@ -1,7 +1,14 @@
 import pandas as pd
 
 from apollo.providers.price_data_provider import PriceDataProvider
-from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE, VIX_TICKER
+from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
+    MAX_PERIOD,
+    START_DATE,
+    SUPPORTED_DATA_ENHANCERS,
+    VIX_TICKER,
+)
 
 
 class PriceDataEnhancer:
@@ -56,7 +63,8 @@ class PriceDataEnhancer:
                 case _:
                     raise ValueError(
                         "Unsupported data enhancer provided "
-                        f"in strategy configuration: {enhancer}",
+                        f"in strategy configuration -- {enhancer}. "
+                        f"Supported enhancers: {str(SUPPORTED_DATA_ENHANCERS)[:-2]}.",
                     )
 
         return price_dataframe

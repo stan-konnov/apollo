@@ -16,6 +16,7 @@ from apollo.settings import (
     POSTGRES_URL,
     START_DATE,
     STRATEGY,
+    SUPPORTED_DATA_ENHANCERS,
     TICKER,
     VIX_TICKER,
     YahooApiFrequencies,
@@ -61,6 +62,7 @@ def ensure_environment_is_configured() -> None:
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
         "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+        "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
     }
 
     # Check if any of the required variables are not set
