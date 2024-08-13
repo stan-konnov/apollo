@@ -40,7 +40,6 @@ class PriceDataEnhancer:
         for enhancer in additional_data_enhancers:
             match enhancer:
                 case "VIX":
-                    # Instantiate VIX price data provider
                     price_data_provider = PriceDataProvider(
                         ticker=str(VIX_TICKER),
                         frequency=str(FREQUENCY),
@@ -49,10 +48,8 @@ class PriceDataEnhancer:
                         max_period=bool(MAX_PERIOD),
                     )
 
-                    # Request or read the VIX price data
                     vix_price_dataframe = price_data_provider.get_price_data()
 
-                    # Enrich price dataframe with VIX open and close
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
 
