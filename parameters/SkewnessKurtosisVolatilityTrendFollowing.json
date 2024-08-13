@@ -27,5 +27,9 @@
     "strategy_specific_parameters": [
         "kurtosis_threshold",
         "volatility_multiplier"
+    ],
+
+    "strategy_enhancers": [
+        "vix"
     ]
 }
