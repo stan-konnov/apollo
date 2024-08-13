@@ -8,7 +8,8 @@ class PriceDataEnhancer:
     """
     Price Data Enhancer class.
 
-    Enhances price data with additional price data from other instruments.
+    Enhances price dataframe with
+    additional price data from other instruments.
 
     Uses Price Data Provider to retrieve enhancing data
     and enrich the original price dataframe with new columns.
@@ -25,6 +26,8 @@ class PriceDataEnhancer:
         :param price_dataframe: Price data to enhance.
         :param additional_data_enhancers: List of additional data enhancers to use.
         :returns: Price data enhanced with additional data.
+
+        :raises ValueError: If enhancer is not supported.
         """
 
         # Return original price data
@@ -53,6 +56,8 @@ class PriceDataEnhancer:
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
 
+                # Raise if none of the
+                # enhancers are supported
                 case _:
                     raise ValueError(f"Unsupported data enhancer: {enhancer}")
 
