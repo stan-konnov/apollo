@@ -67,12 +67,18 @@ class ConnersVixReversalCalculator(BaseCalculator):
         prev_open = rolling_df["vix_prev_open"].iloc[-1]
         prev_close = rolling_df["vix_prev_close"].iloc[-1]
 
+        """
+        TODO: this is actually an expansion and contraction of range
+
+        Rename this calculator and explain it on the strategy level
+        """
+
         # Calculate VIX reversal to the upside
-        if curr_open < prev_open and curr_close > prev_close:
+        if curr_open < prev_open and curr_close > prev_close and curr_close > curr_open:
             return self.UPSIDE_REVERSAL
 
         # Calculate VIX reversal to the downside
-        if curr_open > prev_open and curr_close < prev_close:
+        if curr_open > prev_open and curr_close < prev_close and curr_close < curr_open:
             return self.DOWNSIDE_REVERSAL
 
         return self.NO_REVERSAL
