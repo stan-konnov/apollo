@@ -53,9 +53,10 @@ class PriceDataEnhancer:
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
 
-                # Raise if none of the
-                # enhancers are supported
                 case _:
-                    raise ValueError(f"Unsupported data enhancer: {enhancer}")
+                    raise ValueError(
+                        "Unsupported data enhancer provided "
+                        f"in strategy configuration: {enhancer}",
+                    )
 
         return price_dataframe
