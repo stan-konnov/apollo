@@ -9,6 +9,7 @@ from numpy import arange
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
@@ -19,7 +20,6 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
-    VIX_TICKER,
 )
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
@@ -66,28 +66,17 @@ class ParameterOptimizer:
             max_period=bool(MAX_PERIOD),
         )
 
+        # Instantiate price data enhancer
+        price_data_enhancer = PriceDataEnhancer()
+
         # Request or read the price data
         price_dataframe = price_data_provider.get_price_data()
 
-        # This can be match and packed into separate method
-        # or even class PriceDataEnhancer (in providers/)
-        # and the field can be named better
-        if "vix" in self._configuration.parameter_set["additional_data_enhancers"]:
-            # Instantiate VIX price data provider
-            self._price_data_provider = PriceDataProvider(
-                ticker=str(VIX_TICKER),
-                frequency=str(FREQUENCY),
-                start_date=str(START_DATE),
-                end_date=str(END_DATE),
-                max_period=bool(MAX_PERIOD),
-            )
-
-            # Request or read the VIX price data
-            vix_price_dataframe = self._price_data_provider.get_price_data()
-
-            # Enrich price dataframe with VIX open and close
-            price_dataframe["vix open"] = vix_price_dataframe["open"]
-            price_dataframe["vix close"] = vix_price_dataframe["close"]
+        # Enhance the price data based on the configuration
+        price_dataframe = price_data_enhancer.enhance_price_data(
+            price_dataframe,
+            self._configuration.parameter_set["additional_data_enhancers"],
+        )
 
         # Get the number of available CPU cores
         available_cores = cpu_count()
