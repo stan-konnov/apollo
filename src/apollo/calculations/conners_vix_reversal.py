@@ -71,6 +71,17 @@ class ConnersVixReversalCalculator(BaseCalculator):
         TODO: this is actually an expansion and contraction of range
 
         Rename this calculator and explain it on the strategy level
+
+        NOTE: "This capitalizes on the concept that non-professional traders
+        liquidate when volatility increases, and buy when volatility decreases,
+        commonly termed 'risk on' and 'risk off'" WE REVERT THIS!
+        Kaufman, p 863.
+
+        We are looking for VIX expansion to the upside
+        (increased implied vol when underlying is falling)
+
+        And VIX contraction to the downside
+        (decreased implied vol when underlying is rising)
         """
 
         # Calculate VIX reversal to the upside

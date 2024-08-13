@@ -46,6 +46,17 @@ class VIXEnhancedStrategy:
     and does not follow the original logic to the letter.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
+
+    NOTE: "This capitalizes on the concept that non-professional traders
+    liquidate when volatility increases, and buy when volatility decreases,
+    commonly termed 'risk on' and 'risk off'" WE REVERT THIS!
+    Kaufman, p 863.
+
+    We are looking for VIX expansion to the upside
+    (increased implied vol when underlying is falling)
+
+    And VIX contraction to the downside
+    (decreased implied vol when underlying is rising)
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
