@@ -69,8 +69,10 @@ class ParameterOptimizer:
         # Request or read the price data
         price_dataframe = price_data_provider.get_price_data()
 
-        if "vix" in self._configuration.parameter_set["strategy_enhancers"]:
-            # NOTE: I should be isolated in some other class
+        # This can be match and packed into separate method
+        # or even class PriceDataEnhancer (in providers/)
+        # and the field can be named better
+        if "vix" in self._configuration.parameter_set["additional_data_enhancers"]:
             # Instantiate VIX price data provider
             self._price_data_provider = PriceDataProvider(
                 ticker=str(VIX_TICKER),

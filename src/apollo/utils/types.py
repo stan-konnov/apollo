@@ -22,15 +22,15 @@ class ParameterSet(TypedDict):
     sl_volatility_multiplier: ParameterSpec
     tp_volatility_multiplier: ParameterSpec
 
+    # Some strategies are enhanced
+    # with additional data sources
+    additional_data_enhancers: list[str]
+
     # Every strategy defines its own set of specific parameters
     # We do not know beforehand what these parameters are and cannot type them
     # They are still present as entries on parameters files
     # We use this list to index the specific parameters and pass them to the strategy
     strategy_specific_parameters: list[str]
-
-    # Some strategies can be enhanced with
-    # additional parameters or data sources
-    strategy_enhancers: list[str]
 
 
 ParameterCombinations = Iterable[tuple[float, ...]]
