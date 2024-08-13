@@ -19,6 +19,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    VIX_TICKER,
 )
 from apollo.utils.configuration import Configuration
 from apollo.utils.types import (
@@ -67,6 +68,23 @@ class ParameterOptimizer:
 
         # Request or read the price data
         price_dataframe = price_data_provider.get_price_data()
+
+        # NOTE: I should be isolated in some other class
+        # Instantiate VIX price data provider
+        self._price_data_provider = PriceDataProvider(
+            ticker=str(VIX_TICKER),
+            frequency=str(FREQUENCY),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
+        )
+
+        # Request or read the VIX price data
+        vix_price_dataframe = self._price_data_provider.get_price_data()
+
+        # Enrich price dataframe with VIX open and close
+        price_dataframe["vix open"] = vix_price_dataframe["open"]
+        price_dataframe["vix close"] = vix_price_dataframe["close"]
 
         # Get the number of available CPU cores
         available_cores = cpu_count()

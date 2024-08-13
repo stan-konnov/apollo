@@ -1,22 +1,18 @@
 import pandas as pd
 
 from apollo.calculations.conners_vix_reversal import ConnersVixReversalCalculator
-from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
-    END_DATE,
-    FREQUENCY,
     LONG_SIGNAL,
-    MAX_PERIOD,
     NO_SIGNAL,
     SHORT_SIGNAL,
-    START_DATE,
-    VIX_TICKER,
 )
 
 
 class VixReinforcedStrategy:
     """
     VIX Reinforced Strategy class.
+
+    VIXEnhancedStrategy sounds better
 
     TODO: this is a fallback strategy (OR condition):
     adapt the docstrings of those strategies where it is used
@@ -87,22 +83,6 @@ class VixReinforcedStrategy:
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
         """
-
-        self._price_data_provider = PriceDataProvider(
-            ticker=str(VIX_TICKER),
-            frequency=str(FREQUENCY),
-            start_date=str(START_DATE),
-            end_date=str(END_DATE),
-            max_period=bool(MAX_PERIOD),
-        )
-
-        vix_price_data = self._price_data_provider.get_price_data()
-
-        # Enrich price dataframe with VIX open, high, low, close
-        dataframe["vix open"] = vix_price_data["open"]
-        dataframe["vix high"] = vix_price_data["high"]
-        dataframe["vix low"] = vix_price_data["low"]
-        dataframe["vix close"] = vix_price_data["close"]
 
         # Calculate Conners' VIX Reversals
         cvr_calculator = ConnersVixReversalCalculator(
