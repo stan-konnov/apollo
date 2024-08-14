@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.calculations.conners_vix_reversal import (
+from apollo.calculations.conners_vix_expansion_contraction import (
     ConnersVixExpansionContractionCalculator,
 )
 from apollo.settings import (
