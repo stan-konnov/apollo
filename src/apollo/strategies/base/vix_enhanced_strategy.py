@@ -14,51 +14,56 @@ class VIXEnhancedStrategy:
     """
     VIX Enhanced Strategy class.
 
-    NOTE: THIS IS WIP, this needs to be properly explained and documented.
-
     Uses VIX index prices to enhance signal
     generation logic of specialized strategies.
 
-    Calculates Conners' VIX Reversals and generates VIX enhanced signal.
+    Calculates Conners' VIX Expansion and
+    Contraction and generates VIX enhanced signal.
 
     This strategy takes long positions when:
 
-    * Current VIX open is lower than the previous VIX open,
-    indicating a decrease in implied volatility.
+    * Current VIX open is lower than the previous VIX open.
 
-    * Current VIX close is higher than the previous VIX close,
-    indicating an upside reversal in implied volatility.
+    * Current VIX close is higher than the previous VIX close.
+
+    * Current VIX close is higher than the current VIX open.
+
+    Combination of these factors point to an upside
+    range expansion in implied volatility and a sharp decline
+    in the underlying asset price with the potential for a reversal.
 
     This strategy takes short positions when:
 
-    * Current VIX open is higher than the previous VIX open,
-    indicating an increase in implied volatility.
+    * Current VIX open is higher than the previous VIX open.
 
-    * Current VIX close is lower than the previous VIX close,
-    indicating a downside reversal in implied volatility.
+    * Current VIX close is lower than the previous VIX close.
+
+    * Current VIX close is lower than the current VIX open.
+
+    Combination of these factors point to a downside
+    range contraction in implied volatility and a steady rise
+    in the underlying asset price with the potential for a reversal.
+
+    "This capitalizes on the concept that non-professional traders liquidate
+    when volatility increases, and buy when volatility decreases,
+    commonly termed 'risk on' and 'risk off'".
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed., p 863.
+
+    The strategy, therefore, aims to reverse this logic
+    and capture the reversal points in the underlying asset price.
 
     NOTE: This strategy class is not a standalone strategy
     and should be used in conjunction with other strategies.
 
     Yet, the logic of VIX signals proved to be effective
-    as a standalone strategy and, therefore, can be found
-    in VIX Reversal Strategy class that uses the same signals.
+    enough and, therefore, is applied in isolation in
+    VIX Expansion Contraction Mean Reversion class.
 
     NOTE: This is an adapted version of Conners' VIX Reversals
     and does not follow the original logic to the letter.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
-
-    NOTE: "This capitalizes on the concept that non-professional traders
-    liquidate when volatility increases, and buy when volatility decreases,
-    commonly termed 'risk on' and 'risk off'" WE REVERT THIS!
-    Kaufman, p 863.
-
-    We are looking for VIX expansion to the upside
-    (increased implied vol when underlying is falling)
-
-    And VIX contraction to the downside
-    (decreased implied vol when underlying is rising)
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
