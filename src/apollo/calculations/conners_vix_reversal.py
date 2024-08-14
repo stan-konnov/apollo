@@ -4,7 +4,25 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 
 class ConnersVixExpansionContractionCalculator(BaseCalculator):
-    """Conners' VIX Expansion Contraction Calculator."""
+    """
+    Conners' VIX Expansion Contraction Calculator.
+
+    Connors VIX Expansion Contraction (CVEC) ultimately aims to
+    capture VIX expansions to the upside and contractions to the downside.
+
+    This is a modified version of Conners' VIX Reversals
+    and does not follow the original logic to the letter.
+
+    Expansions and contractions can be characterized as
+    engulfing movements in either direction accompanied
+    by increasing and decreasing VIX range, respectively.
+
+    This is somewhat similar to bullish and bearish engulfing
+    patterns, with the difference in the bearish pattern
+    being that the close is lower than the open.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    """
 
     # Constant to represent
     # VIX expansion to the upside
