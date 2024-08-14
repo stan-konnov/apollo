@@ -14,7 +14,9 @@
         "range": [0.1, 1.0]
     },
 
-    "additional_data_enhancers": [],
+    "additional_data_enhancers": [
+        "VIX"
+    ],
 
     "strategy_specific_parameters": []
 }
