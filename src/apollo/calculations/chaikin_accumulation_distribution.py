@@ -31,7 +31,7 @@ class ChaikinAccumulationDistributionCalculator(BaseCalculator):
         window_size: int,
     ) -> None:
         """
-        Construct Chaikin Accumulation Distribution Line calculator.
+        Construct Chaikin Accumulation Distribution Line Calculator.
 
         :param dataframe: Dataframe to calculate Chaikin AD Line for.
         :param window_size: Window size for rolling Chaikin AD Line calculation.

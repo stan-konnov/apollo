@@ -22,14 +22,14 @@ class ConnersVixExpansionContractionCalculator(BaseCalculator):
         """
         Construct Conners' VIX Expansion Contraction Calculator.
 
-        :param dataframe: Dataframe to calculate VIX reversals for.
-        :param window_size: Window size for VIX reversals calculation.
+        :param dataframe: Dataframe to calculate VIX expansion contraction for.
+        :param window_size: Window size for VIX expansion and contraction calculation.
         """
 
         super().__init__(dataframe, window_size)
 
     def calculate_vix_expansion_contraction(self) -> None:
-        """Calculate Conners' VIX Expansion and Contraction."""
+        """Calculate Conners' VIX Expansion Contraction."""
 
         # Precalculate VIX previous open and close
         self._dataframe["vix_prev_open"] = self._dataframe["vix open"].shift(1)
@@ -67,23 +67,6 @@ class ConnersVixExpansionContractionCalculator(BaseCalculator):
         # Get previous VIX open and close
         prev_open = rolling_df["vix_prev_open"].iloc[-1]
         prev_close = rolling_df["vix_prev_close"].iloc[-1]
-
-        """
-        TODO: this is actually an expansion and contraction of range
-
-        Rename this calculator and explain it on the strategy level
-
-        NOTE: "This capitalizes on the concept that non-professional traders
-        liquidate when volatility increases, and buy when volatility decreases,
-        commonly termed 'risk on' and 'risk off'" WE REVERT THIS!
-        Kaufman, p 863.
-
-        We are looking for VIX expansion to the upside
-        (increased implied vol when underlying is falling)
-
-        And VIX contraction to the downside
-        (decreased implied vol when underlying is rising)
-        """
 
         # Calculate VIX expansion to the upside
         if curr_open < prev_open and curr_close > prev_close and curr_close > curr_open:
