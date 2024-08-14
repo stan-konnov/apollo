@@ -10,8 +10,8 @@ from apollo.settings import (
     TICKER,
     VIX_TICKER,
 )
-from apollo.strategies.lin_reg_chan_mean_reversion import (
-    LinearRegressionChannelMeanReversion,
+from apollo.strategies.vix_exp_con_mean_reversion import (
+    VIXExpansionContractionMeanReversion,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -51,20 +51,19 @@ def main() -> None:
     dataframe["vix open"] = vix_dataframe["open"]
     dataframe["vix close"] = vix_dataframe["close"]
 
-    strategy = LinearRegressionChannelMeanReversion(
+    strategy = VIXExpansionContractionMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        channel_sd_spread=0.8,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="LinearRegressionChannelMeanReversion",
+        strategy_name="VIXExpansionContractionMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.3,
+        tp_volatility_multiplier=0.4,
         write_result_plot=True,
     )
 
