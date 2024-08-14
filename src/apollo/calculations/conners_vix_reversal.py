@@ -21,6 +21,10 @@ class ConnersVixExpansionContractionCalculator(BaseCalculator):
     patterns, with the difference in the bearish pattern
     being that the close is lower than the open.
 
+    Capturing downside movement as contraction in range
+    is necessary to further reinforce the decrease in
+    implied volatility and the potential for a reversal.
+
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
