@@ -1,6 +1,8 @@
 import pandas as pd
 
-from apollo.calculations.conners_vix_reversal import ConnersVixReversalCalculator
+from apollo.calculations.conners_vix_reversal import (
+    ConnersVixExpansionContractionCalculator,
+)
 from apollo.settings import (
     LONG_SIGNAL,
     NO_SIGNAL,
@@ -70,22 +72,22 @@ class VIXEnhancedStrategy:
         :param window_size: Size of the window for the strategy.
         """
 
-        # Calculate Conners' VIX Reversals
-        cvr_calculator = ConnersVixReversalCalculator(
+        # Calculate Conners' VIX Expansion and Contraction
+        cvec_calculator = ConnersVixExpansionContractionCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
-        cvr_calculator.calculate_vix_reversals()
+        cvec_calculator.calculate_vix_expansion_contraction()
 
         # Mark VIX reinforced signals to the dataframe
         dataframe["vix_signal"] = NO_SIGNAL
 
         dataframe.loc[
-            dataframe["cvr"] == cvr_calculator.UPSIDE_REVERSAL,
+            dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
             "vix_signal",
         ] = LONG_SIGNAL
 
         dataframe.loc[
-            dataframe["cvr"] == cvr_calculator.DOWNSIDE_REVERSAL,
+            dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
             "vix_signal",
         ] = SHORT_SIGNAL

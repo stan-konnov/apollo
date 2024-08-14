@@ -3,24 +3,24 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class ConnersVixReversalCalculator(BaseCalculator):
-    """Conners' VIX Reversal Calculator class."""
+class ConnersVixExpansionContractionCalculator(BaseCalculator):
+    """Conners' VIX Expansion Contraction Calculator."""
 
     # Constant to represent
-    # reversal to the upside
-    UPSIDE_REVERSAL: float = 1.0
+    # VIX expansion to the upside
+    UPSIDE_EXPANSION: float = 1.0
 
     # Constant to represent
-    # reversal to the downside
-    DOWNSIDE_REVERSAL: float = -1.0
+    # VIX contraction to the downside
+    DOWNSIDE_CONTRACTION: float = -1.0
 
     # Constant to represent
-    # no reversal to either side
-    NO_REVERSAL: float = 0.0
+    # no significant VIX movement
+    NO_SIGNIFICANT_MOVEMENT: float = 0.0
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct Conners' VIX Reversal Calculator.
+        Construct Conners' VIX Expansion Contraction Calculator.
 
         :param dataframe: Dataframe to calculate VIX reversals for.
         :param window_size: Window size for VIX reversals calculation.
@@ -28,18 +28,19 @@ class ConnersVixReversalCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
-    def calculate_vix_reversals(self) -> None:
-        """Calculate Conners' VIX Reversals."""
+    def calculate_vix_expansion_contraction(self) -> None:
+        """Calculate Conners' VIX Expansion and Contraction."""
 
         # Precalculate VIX previous open and close
         self._dataframe["vix_prev_open"] = self._dataframe["vix open"].shift(1)
         self._dataframe["vix_prev_close"] = self._dataframe["vix close"].shift(1)
 
-        # Calculate VIX reversals and write to the dataframe
-        self._dataframe["cvr"] = (
+        # Calculate VIX expansion and
+        # contraction and write to the dataframe
+        self._dataframe["cvec"] = (
             self._dataframe["vix close"]
             .rolling(self._window_size)
-            .apply(self._calc_cvr)
+            .apply(self._calc_cvec)
         )
 
         # Drop precalculated columns as we no longer need them
@@ -48,9 +49,9 @@ class ConnersVixReversalCalculator(BaseCalculator):
             inplace=True,
         )
 
-    def _calc_cvr(self, series: pd.Series) -> float:
+    def _calc_cvec(self, series: pd.Series) -> float:
         """
-        Calculate rolling VIX Reversal for a given window.
+        Calculate rolling VIX Expansion Contraction for a given window.
 
         :param series: Series which is used for indexing out rolling window.
         :returns: Latest calculated entry from processed window.
@@ -84,12 +85,12 @@ class ConnersVixReversalCalculator(BaseCalculator):
         (decreased implied vol when underlying is rising)
         """
 
-        # Calculate VIX reversal to the upside
+        # Calculate VIX expansion to the upside
         if curr_open < prev_open and curr_close > prev_close and curr_close > curr_open:
-            return self.UPSIDE_REVERSAL
+            return self.UPSIDE_EXPANSION
 
-        # Calculate VIX reversal to the downside
+        # Calculate VIX contraction to the downside
         if curr_open > prev_open and curr_close < prev_close and curr_close < curr_open:
-            return self.DOWNSIDE_REVERSAL
+            return self.DOWNSIDE_CONTRACTION
 
-        return self.NO_REVERSAL
+        return self.NO_SIGNIFICANT_MOVEMENT
