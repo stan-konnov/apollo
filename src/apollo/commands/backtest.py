@@ -51,8 +51,8 @@ def main() -> None:
 
     strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
-        window_size=5,
-        volatility_multiplier=0.1,
+        window_size=15,
+        volatility_multiplier=1.1,
     )
 
     strategy.model_trading_signals()
