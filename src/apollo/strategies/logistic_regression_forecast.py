@@ -5,9 +5,15 @@ from apollo.calculations.models.logistic_regression import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class LogisticRegressionForecast(BaseStrategy):
+class LogisticRegressionForecast(
+    BaseStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Logistic Regression Forecast.
 
@@ -35,7 +41,8 @@ class LogisticRegressionForecast(BaseStrategy):
         :param train_size: Size of the train set.
         """
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._lrm_calculator = LogisticRegressionModelCalculator(
             dataframe=dataframe,

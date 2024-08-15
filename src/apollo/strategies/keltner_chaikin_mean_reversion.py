@@ -35,6 +35,11 @@ class KeltnerChaikinMeanReversion(
     * Accumulation Distribution Line is decreasing,
     indicating that instrument is being distributed.
 
+    OR
+
+    * VIX signal is long, indicating that volatility is expected to increase,
+    forcing the price down and potentially triggering a mean reversion.
+
     This strategy takes short positions when:
 
     * Adjusted close is above the upper Keltner Channel bound,
@@ -42,6 +47,11 @@ class KeltnerChaikinMeanReversion(
 
     * Accumulation Distribution Line is increasing,
     indicating that instrument is being accumulated.
+
+    OR
+
+    * VIX signal is short, indicating that volatility is expected to decrease,
+    forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """

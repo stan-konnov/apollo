@@ -3,9 +3,15 @@ from pandas import DataFrame
 from apollo.calculations.models.arima_regression import ARIMARegressionModelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class ARIMATrendMeanReversion(BaseStrategy):
+class ARIMATrendMeanReversion(
+    BaseStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     ARIMA Trend Mean Reversion.
 
@@ -35,7 +41,8 @@ class ARIMATrendMeanReversion(BaseStrategy):
         :param window_size: Size of the window for the strategy.
         """
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._arm_calculator = ARIMARegressionModelCalculator(
             dataframe=dataframe,

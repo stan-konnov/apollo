@@ -28,6 +28,11 @@ class SkewnessKurtosisVolatilityTrendFollowing(
     * Volatility is above average -- price point fluctuates significantly from the rest,
     acting as reinforcement of the move within positive trend.
 
+    OR
+
+    * VIX signal is long, indicating that volatility is expected to increase,
+    forcing the price down and potentially triggering a mean reversion.
+
     This strategy takes short positions when:
 
     * Moving skewness is positive -- more prices fall below the mean than above,
@@ -38,6 +43,11 @@ class SkewnessKurtosisVolatilityTrendFollowing(
 
     * Volatility is above average -- price point fluctuates significantly from the rest,
     acting as reinforcement of the move within negative trend.
+
+    OR
+
+    * VIX signal is short, indicating that volatility is expected to decrease,
+    forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """

@@ -3,9 +3,15 @@ from pandas import DataFrame
 from apollo.calculations.swing_events import SwingEventsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class SwingEventsMeanReversion(BaseStrategy):
+class SwingEventsMeanReversion(
+    BaseStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Swing Events Mean Reversion.
 
@@ -40,7 +46,8 @@ class SwingEventsMeanReversion(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._se_calculator = SwingEventsCalculator(
             dataframe=dataframe,
