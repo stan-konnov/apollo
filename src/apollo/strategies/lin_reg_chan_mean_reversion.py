@@ -29,7 +29,7 @@ class LinearRegressionChannelMeanReversion(
 
     OR
 
-    * VIX signal is long, indicating that volatility is expected to increase,
+    * VIX signal is long, indicating increasing volatility,
     forcing the price down and potentially triggering a mean reversion.
 
     This strategy takes short positions when:
@@ -42,7 +42,7 @@ class LinearRegressionChannelMeanReversion(
 
     OR
 
-    * VIX signal is short, indicating that volatility is expected to decrease,
+    * VIX signal is short, indicating decreasing volatility,
     forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
