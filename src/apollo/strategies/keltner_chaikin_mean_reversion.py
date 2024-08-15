@@ -103,13 +103,13 @@ class KeltnerChaikinMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["adj close"] < self._dataframe["ukc_bound"]) & (
+        long = (self._dataframe["adj close"] < self._dataframe["lkc_bound"]) & (
             self._dataframe["adl"] < self._dataframe["prev_adl"]
         ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["adj close"] > self._dataframe["lkc_bound"]) & (
+        short = (self._dataframe["adj close"] > self._dataframe["ukc_bound"]) & (
             self._dataframe["adl"] > self._dataframe["prev_adl"]
         ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
 
