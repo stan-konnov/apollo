@@ -29,16 +29,16 @@ class KeltnerChaikinMeanReversion(
 
     This strategy takes long positions when:
 
-    * Adjusted close is below the upper Keltner Channel bound,
-    indicating that instrument is within the expected volatility range.
+    * Adjusted close is below the lower Keltner Channel bound,
+    indicating that instrument is outside the expected volatility range.
 
     * Accumulation Distribution Line is decreasing,
     indicating that instrument is being distributed.
 
     This strategy takes short positions when:
 
-    * Adjusted close is above the lower Keltner Channel bound,
-    indicating that instrument is within the expected volatility range.
+    * Adjusted close is above the upper Keltner Channel bound,
+    indicating that instrument is outside the expected volatility range.
 
     * Accumulation Distribution Line is increasing,
     indicating that instrument is being accumulated.
