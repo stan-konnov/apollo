@@ -10,9 +10,7 @@ from apollo.settings import (
     TICKER,
     VIX_TICKER,
 )
-from apollo.strategies.vix_exp_con_mean_reversion import (
-    VIXExpansionContractionMeanReversion,
-)
+from apollo.strategies.keltner_chaikin_mean_reversion import KeltnerChaikinMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -51,16 +49,17 @@ def main() -> None:
     dataframe["vix open"] = vix_dataframe["open"]
     dataframe["vix close"] = vix_dataframe["close"]
 
-    strategy = VIXExpansionContractionMeanReversion(
+    strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=5,
+        volatility_multiplier=0.1,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="VIXExpansionContractionMeanReversion",
+        strategy_name="KeltnerChaikinMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
