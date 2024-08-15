@@ -15,15 +15,13 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 
-class KeltnerChaikinTrendFollowing(
+class KeltnerChaikinMeanReversion(
     BaseStrategy,
     VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
-    Keltner Chaikin Trend Following.
-
-    TODO: parameters changed, please make me mean reversion
+    Keltner Chaikin Mean Reversion.
 
     NOTE: this strategy uses Hull Moving Average as input for
     calculation of the Keltner Channel to make the channel
@@ -31,19 +29,19 @@ class KeltnerChaikinTrendFollowing(
 
     This strategy takes long positions when:
 
-    * Adjusted close is above the lower Keltner Channel bound,
-    indicating that instrument is within the expected volatility range.
-
-    * Accumulation Distribution Line is increasing,
-    indicating that instrument is being accumulated.
-
-    This strategy takes short positions when:
-
     * Adjusted close is below the upper Keltner Channel bound,
     indicating that instrument is within the expected volatility range.
 
     * Accumulation Distribution Line is decreasing,
     indicating that instrument is being distributed.
+
+    This strategy takes short positions when:
+
+    * Adjusted close is above the lower Keltner Channel bound,
+    indicating that instrument is within the expected volatility range.
+
+    * Accumulation Distribution Line is increasing,
+    indicating that instrument is being accumulated.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
