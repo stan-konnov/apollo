@@ -15,15 +15,18 @@ def test__volatility_adjusted_strategy__for_calculating_volatility(
     """
     Test Volatility Adjusted Strategy for properly calculating volatility (ATR).
 
-    Strategy should have "tr" and "atr" columns.
+    Dataframe should have "tr" and "atr" columns.
     """
 
     control_dataframe = dataframe.copy()
 
-    at_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    at_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
     at_calculator.calculate_average_true_range()
 
-    VolatilityAdjustedStrategy(dataframe, window_size)
+    VolatilityAdjustedStrategy(dataframe=dataframe, window_size=window_size)
 
     assert "tr" in dataframe.columns
     assert "atr" in dataframe.columns
