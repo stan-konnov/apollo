@@ -91,3 +91,34 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
 
     assert all(control_dataframe.iloc[:5]["vix open"] == 0)
     assert all(control_dataframe.iloc[:5]["vix close"] == 0)
+
+
+@pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
+def test__enhance_price_data__for_correctly_enhancing_price_data(
+    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test enhance_price_data method for correctly enhancing price data.
+
+    Price Data Enhancer must insert additional columns with enhanced data.
+    Additional column values should match the values from the enhanced dataframe.
+
+    NOTE: we are using here enhanced_dataframe, even though it
+    does not correspond to the actual enhanced data, but is
+    already modified dataframe for the sake of this test.
+    """
+
+    price_data_enhancer = PriceDataEnhancer()
+    price_data_enhancer._price_data_provider = Mock(PriceDataProvider)  # noqa: SLF001
+    price_data_enhancer._price_data_provider.get_price_data.return_value = (  # noqa: SLF001
+        enhanced_dataframe
+    )
+
+    control_dataframe = price_data_enhancer.enhance_price_data(
+        price_dataframe=dataframe,
+        additional_data_enhancers=["VIX"],
+    )
+
+    assert all(control_dataframe["vix open"] == enhanced_dataframe["open"])
+    assert all(control_dataframe["vix close"] == enhanced_dataframe["close"])
