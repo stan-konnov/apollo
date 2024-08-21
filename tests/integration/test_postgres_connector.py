@@ -26,12 +26,12 @@ from apollo.strategies.skew_kurt_vol_trend_following import (
 @pytest.mark.usefixtures(
     "prisma_client",
     "flush_postgres_database",
-    "dataframe",
+    "enhanced_dataframe",
     "window_size",
 )
 def test__write_backtesting_results__for_correctly_writing_results(
     prisma_client: Prisma,
-    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
@@ -42,7 +42,7 @@ def test__write_backtesting_results__for_correctly_writing_results(
     All of the values produced by the backtesting library should be match.
     """
 
-    dataframe = dataframe.copy()
+    dataframe = enhanced_dataframe.copy()
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
@@ -202,12 +202,12 @@ def test__write_backtesting_results__for_correctly_writing_results(
 @pytest.mark.usefixtures(
     "prisma_client",
     "flush_postgres_database",
-    "dataframe",
+    "enhanced_dataframe",
     "window_size",
 )
 def test__write_backtesting_results__for_writing_results_with_defined_time_period(
     prisma_client: Prisma,
-    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
@@ -217,7 +217,7 @@ def test__write_backtesting_results__for_writing_results_with_defined_time_perio
     Written backtesting results should have correct start and end dates.
     """
 
-    dataframe = dataframe.copy()
+    dataframe = enhanced_dataframe.copy()
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
@@ -297,12 +297,12 @@ def test__write_backtesting_results__for_writing_results_with_defined_time_perio
 @pytest.mark.usefixtures(
     "prisma_client",
     "flush_postgres_database",
-    "dataframe",
+    "enhanced_dataframe",
     "window_size",
 )
 def test__write_backtesting_results__for_updating_already_existing_entity(
     prisma_client: Prisma,
-    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
@@ -311,7 +311,7 @@ def test__write_backtesting_results__for_updating_already_existing_entity(
     PostgresConnector should update backtesting results already present in the database.
     """
 
-    dataframe = dataframe.copy()
+    dataframe = enhanced_dataframe.copy()
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
