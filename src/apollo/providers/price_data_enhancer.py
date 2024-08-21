@@ -66,16 +66,16 @@ class PriceDataEnhancer:
                         max_period=bool(MAX_PERIOD),
                     )
 
-                    price_dataframe["vix open"] = vix_price_dataframe["open"]
-                    price_dataframe["vix close"] = vix_price_dataframe["close"]
+                    price_dataframe[["vix open", "vix close"]] = vix_price_dataframe[
+                        ["open", "close"]
+                    ]
 
-                    if any(price_dataframe["vix open"].isna()):
+                    if price_dataframe.shape[0] > vix_price_dataframe.shape[0]:
                         price_dataframe.fillna(
-                            {"vix open": self.MISSING_VALUE_FILLER},
-                            inplace=True,
-                        )
-                        price_dataframe.fillna(
-                            {"vix close": self.MISSING_VALUE_FILLER},
+                            {
+                                "vix open": self.MISSING_VALUE_FILLER,
+                                "vix close": self.MISSING_VALUE_FILLER,
+                            },
                             inplace=True,
                         )
 
