@@ -22,6 +22,12 @@ class PriceDataEnhancer:
     and enrich the original price dataframe with new columns.
     """
 
+    # If there is more data in the price dataframe
+    # than in the enhanced dataframe, missing values will be
+    # filled with NaNs and subsequently dropped by the strategy
+    # We, therefore, avoid this by filling the missing values with 0
+    MISSING_VALUE_FILLER = 0
+
     def enhance_price_data(
         self,
         price_dataframe: pd.DataFrame,
@@ -59,6 +65,16 @@ class PriceDataEnhancer:
 
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
+
+                    if any(price_dataframe["vix open"].isna().values):
+                        price_dataframe["vix open"].fillna(
+                            self.MISSING_VALUE_FILLER,
+                            inplace=True,
+                        )
+                        price_dataframe["vix close"].fillna(
+                            self.MISSING_VALUE_FILLER,
+                            inplace=True,
+                        )
 
                 case _:
                     raise ValueError(
