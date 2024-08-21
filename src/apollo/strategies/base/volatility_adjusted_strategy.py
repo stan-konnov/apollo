@@ -32,5 +32,8 @@ class VolatilityAdjustedStrategy:
         :param window_size: Size of the window for the strategy.
         """
 
-        self._atr_calculator = AverageTrueRangeCalculator(dataframe, window_size)
+        self._atr_calculator = AverageTrueRangeCalculator(
+            dataframe=dataframe,
+            window_size=window_size,
+        )
         self._atr_calculator.calculate_average_true_range()
