@@ -58,19 +58,19 @@ class ParameterOptimizer:
         """Run the optimization process in parallel."""
 
         # Instantiate price data provider
-        price_data_provider = PriceDataProvider(
+        price_data_provider = PriceDataProvider()
+
+        # Instantiate price data enhancer
+        price_data_enhancer = PriceDataEnhancer()
+
+        # Request or read the price data
+        price_dataframe = price_data_provider.get_price_data(
             ticker=str(TICKER),
             frequency=str(FREQUENCY),
             start_date=str(START_DATE),
             end_date=str(END_DATE),
             max_period=bool(MAX_PERIOD),
         )
-
-        # Instantiate price data enhancer
-        price_data_enhancer = PriceDataEnhancer()
-
-        # Request or read the price data
-        price_dataframe = price_data_provider.get_price_data()
 
         # Enhance the price data based on the configuration
         price_dataframe = price_data_enhancer.enhance_price_data(

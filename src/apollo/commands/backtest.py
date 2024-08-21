@@ -26,7 +26,9 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    price_data_provider = PriceDataProvider(
+    price_data_provider = PriceDataProvider()
+
+    dataframe = price_data_provider.get_price_data(
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -34,7 +36,7 @@ def main() -> None:
         max_period=bool(MAX_PERIOD),
     )
 
-    vix_price_data_provider = PriceDataProvider(
+    vix_dataframe = price_data_provider.get_price_data(
         ticker=str(VIX_TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -42,17 +44,13 @@ def main() -> None:
         max_period=bool(MAX_PERIOD),
     )
 
-    dataframe = price_data_provider.get_price_data()
-
-    vix_dataframe = vix_price_data_provider.get_price_data()
-
     dataframe["vix open"] = vix_dataframe["open"]
     dataframe["vix close"] = vix_dataframe["close"]
 
     strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=15,
-        volatility_multiplier=0.5,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
