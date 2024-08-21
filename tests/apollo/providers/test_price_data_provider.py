@@ -323,7 +323,7 @@ def test__get_price_data__with_valid_parameters_and_intraday_data(
 
 def test__price_data_provider__with_invalid_date_format() -> None:
     """
-    Test Price Data Provider method with invalid date format.
+    Test Price Data Provider with invalid date format.
 
     Data Provider must raise a ValueError when dates are not in the correct format.
     """
@@ -347,7 +347,7 @@ def test__price_data_provider__with_invalid_date_format() -> None:
 
 def test__price_data_provider__with_invalid_dates() -> None:
     """
-    Test Price Data Provider method with invalid dates.
+    Test Price Data Provider with invalid dates.
 
     Data Provider must raise a ValueError when start_date is greater than end_date.
     """
