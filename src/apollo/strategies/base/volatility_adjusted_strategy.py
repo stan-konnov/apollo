@@ -25,7 +25,6 @@ class VolatilityAdjustedStrategy:
         """
         Construct Volatility Adjusted Strategy.
 
-        Insert signal column.
         Calculate volatility for the strategy.
 
         :param dataframe: Dataframe with price data.
