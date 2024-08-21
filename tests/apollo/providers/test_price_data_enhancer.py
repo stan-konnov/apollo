@@ -35,3 +35,22 @@ def test__enhance_price_data__with_unsupported_enhancers(
         )
 
     assert str(exception.value) == exception_message
+
+
+def test__enhance_price_data__without_enhancers(
+    dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test enhance_price_data method without enhancers.
+
+    Price Data Enhancer should return original price data if no enhancers are provided.
+    """
+
+    price_data_enhancer = PriceDataEnhancer()
+
+    control_dataframe = price_data_enhancer.enhance_price_data(
+        price_dataframe=dataframe,
+        additional_data_enhancers=[],
+    )
+
+    pd.testing.assert_frame_equal(control_dataframe, dataframe)
