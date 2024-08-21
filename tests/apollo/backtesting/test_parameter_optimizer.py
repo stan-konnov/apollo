@@ -163,9 +163,9 @@ def test__parameter_optimizer__for_correct_error_handling(
     assert exception.value.code == 1
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("enhanced_dataframe")
 def test__parameter_optimizer__for_correct_processing(
-    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
 ) -> None:
     """
     Test Parameter Optimizer for correct processing.
@@ -209,7 +209,7 @@ def test__parameter_optimizer__for_correct_processing(
 
     backtested_dataframe = parameter_optimizer._process(  # noqa: SLF001
         combinations=combinations,
-        price_dataframe=dataframe,
+        price_dataframe=enhanced_dataframe,
         parameter_set=cast(ParameterSet, parameters),
         keys=keys,
     )
