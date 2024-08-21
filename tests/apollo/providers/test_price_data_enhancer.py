@@ -1,7 +1,10 @@
+from unittest.mock import Mock
+
 import pandas as pd
 import pytest
 
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
+from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import SUPPORTED_DATA_ENHANCERS
 
 
@@ -54,3 +57,33 @@ def test__enhance_price_data__without_enhancers(
     )
 
     pd.testing.assert_frame_equal(control_dataframe, dataframe)
+
+
+@pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
+def test__enhance_price_data__with_enhanced_data_partially_missing(
+    dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test enhance_price_data method with enhanced data partially missing.
+
+    Price Data Enhancer should fill missing values with 0 if there
+    is more data in the price dataframe than in the enhanced dataframe.
+
+    NOTE: we are using here enhanced_dataframe, even though it
+    does not correspond to the actual enhanced data, but is
+    already modified dataframe for the sake of this test.
+    """
+
+    price_data_enhancer = PriceDataEnhancer()
+    price_data_enhancer._price_data_provider = Mock(PriceDataProvider)  # noqa: SLF001
+    price_data_enhancer._price_data_provider.get_price_data.return_value = (  # noqa: SLF001
+        enhanced_dataframe
+    )
+
+    price_data_enhancer.enhance_price_data(
+        price_dataframe=dataframe,
+        additional_data_enhancers=["VIX"],
+    )
+
+    price_data_enhancer._price_data_provider.get_price_data.assert_called_once()  # noqa: SLF001

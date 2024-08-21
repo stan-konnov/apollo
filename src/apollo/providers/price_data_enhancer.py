@@ -28,6 +28,11 @@ class PriceDataEnhancer:
     # We, therefore, avoid this by filling the missing values with 0
     MISSING_VALUE_FILLER = 0
 
+    def __init__(self) -> None:
+        """Construct Price Data Enhancer."""
+
+        self._price_data_provider = PriceDataProvider()
+
     def enhance_price_data(
         self,
         price_dataframe: pd.DataFrame,
@@ -53,15 +58,13 @@ class PriceDataEnhancer:
         for enhancer in additional_data_enhancers:
             match enhancer:
                 case "VIX":
-                    price_data_provider = PriceDataProvider(
+                    vix_price_dataframe = self._price_data_provider.get_price_data(
                         ticker=str(VIX_TICKER),
                         frequency=str(FREQUENCY),
                         start_date=str(START_DATE),
                         end_date=str(END_DATE),
                         max_period=bool(MAX_PERIOD),
                     )
-
-                    vix_price_dataframe = price_data_provider.get_price_data()
 
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
