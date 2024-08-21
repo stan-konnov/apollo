@@ -21,7 +21,10 @@ def test__arima_trend_mean_reversion__with_valid_parameters(
     control_dataframe = dataframe.copy()
     control_dataframe["signal"] = 0
 
-    atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
     atr_calculator.calculate_average_true_range()
 
     arm_calculator = ARIMARegressionModelCalculator(

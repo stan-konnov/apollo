@@ -1,26 +1,35 @@
 import pandas as pd
 import pytest
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.conners_vix_expansion_contraction import (
     ConnersVixExpansionContractionCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
+from apollo.strategies.vix_exp_con_mean_reversion import (
+    VIXExpansionContractionMeanReversion,
+)
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__vix_enhanced_strategy__for_calculating_vix_signals(
+def test__vix_exp_con_mean_reversion__with_valid_parameters(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test VIX Enhanced Strategy for properly calculating VIX Expansion Contraction.
+    Test VIX Expansion Contraction Mean Reversion Strategy with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
 
     control_dataframe = enhanced_dataframe.copy()
-    control_dataframe["vix_signal"] = NO_SIGNAL
+    control_dataframe["signal"] = NO_SIGNAL
+
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
+    atr_calculator.calculate_average_true_range()
 
     cvec_calculator = ConnersVixExpansionContractionCalculator(
         dataframe=control_dataframe,
@@ -30,17 +39,24 @@ def test__vix_enhanced_strategy__for_calculating_vix_signals(
 
     control_dataframe.loc[
         control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
-        "vix_signal",
+        "signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
         control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
-        "vix_signal",
+        "signal",
     ] = SHORT_SIGNAL
 
-    VIXEnhancedStrategy(enhanced_dataframe, window_size)
+    control_dataframe.dropna(inplace=True)
+
+    vix_exp_con_mean_reversion = VIXExpansionContractionMeanReversion(
+        enhanced_dataframe,
+        window_size,
+    )
+
+    vix_exp_con_mean_reversion.model_trading_signals()
 
     pd.testing.assert_series_equal(
-        control_dataframe["vix_signal"],
-        enhanced_dataframe["vix_signal"],
+        control_dataframe["signal"],
+        enhanced_dataframe["signal"],
     )

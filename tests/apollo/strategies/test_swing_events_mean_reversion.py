@@ -30,7 +30,10 @@ def test__swing_events_mean_reversion__with_valid_parameters(
     )
     se_calculator.calculate_swing_events()
 
-    atr_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
     atr_calculator.calculate_average_true_range()
 
     control_dataframe.loc[
