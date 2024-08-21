@@ -69,13 +69,13 @@ class PriceDataEnhancer:
                     price_dataframe["vix open"] = vix_price_dataframe["open"]
                     price_dataframe["vix close"] = vix_price_dataframe["close"]
 
-                    if any(price_dataframe["vix open"].isna().values):
-                        price_dataframe["vix open"].fillna(
-                            self.MISSING_VALUE_FILLER,
+                    if any(price_dataframe["vix open"].isna()):
+                        price_dataframe.fillna(
+                            {"vix open": self.MISSING_VALUE_FILLER},
                             inplace=True,
                         )
-                        price_dataframe["vix close"].fillna(
-                            self.MISSING_VALUE_FILLER,
+                        price_dataframe.fillna(
+                            {"vix close": self.MISSING_VALUE_FILLER},
                             inplace=True,
                         )
 

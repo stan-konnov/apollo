@@ -75,15 +75,19 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
     already modified dataframe for the sake of this test.
     """
 
+    # Remove first 5 rows from enhanced dataframe
+    enhanced_dataframe = enhanced_dataframe[5:]
+
     price_data_enhancer = PriceDataEnhancer()
     price_data_enhancer._price_data_provider = Mock(PriceDataProvider)  # noqa: SLF001
     price_data_enhancer._price_data_provider.get_price_data.return_value = (  # noqa: SLF001
         enhanced_dataframe
     )
 
-    price_data_enhancer.enhance_price_data(
+    control_dataframe = price_data_enhancer.enhance_price_data(
         price_dataframe=dataframe,
         additional_data_enhancers=["VIX"],
     )
 
-    price_data_enhancer._price_data_provider.get_price_data.assert_called_once()  # noqa: SLF001
+    assert all(control_dataframe.iloc[:5]["vix open"] == 0)
+    assert all(control_dataframe.iloc[:5]["vix close"] == 0)
