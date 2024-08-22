@@ -5,7 +5,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 class DistributionMomentsCalculator(BaseCalculator):
     """
-    Distribution Moments calculator.
+    Distribution Moments Calculator.
 
     Calculates rolling distribution moments such as
     mean, standard deviation, skewness, kurtosis, and z-score.
@@ -13,7 +13,7 @@ class DistributionMomentsCalculator(BaseCalculator):
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct Distribution Moments calculator.
+        Construct Distribution Moments Calculator.
 
         :param dataframe: Dataframe to calculate distribution moments for.
         :param window_size: Window size for rolling distribution moments calculation.

@@ -9,6 +9,7 @@ from numpy import arange
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
@@ -57,7 +58,13 @@ class ParameterOptimizer:
         """Run the optimization process in parallel."""
 
         # Instantiate price data provider
-        price_data_provider = PriceDataProvider(
+        price_data_provider = PriceDataProvider()
+
+        # Instantiate price data enhancer
+        price_data_enhancer = PriceDataEnhancer()
+
+        # Request or read the price data
+        price_dataframe = price_data_provider.get_price_data(
             ticker=str(TICKER),
             frequency=str(FREQUENCY),
             start_date=str(START_DATE),
@@ -65,8 +72,11 @@ class ParameterOptimizer:
             max_period=bool(MAX_PERIOD),
         )
 
-        # Request or read the price data
-        price_dataframe = price_data_provider.get_price_data()
+        # Enhance the price data based on the configuration
+        price_dataframe = price_data_enhancer.enhance_price_data(
+            price_dataframe,
+            self._configuration.parameter_set["additional_data_enhancers"],
+        )
 
         # Get the number of available CPU cores
         available_cores = cpu_count()

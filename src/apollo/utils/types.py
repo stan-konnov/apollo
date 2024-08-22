@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import TypedDict
 
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 class ParameterSpec(TypedDict):
@@ -21,6 +21,10 @@ class ParameterSet(TypedDict):
     window_size: ParameterSpec
     sl_volatility_multiplier: ParameterSpec
     tp_volatility_multiplier: ParameterSpec
+
+    # Some strategies are enhanced
+    # with additional data sources
+    additional_data_enhancers: list[str]
 
     # Every strategy defines its own set of specific parameters
     # We do not know beforehand what these parameters are and cannot type them

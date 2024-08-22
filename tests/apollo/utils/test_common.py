@@ -17,7 +17,9 @@ from apollo.settings import (
     POSTGRES_URL,
     START_DATE,
     STRATEGY,
+    SUPPORTED_DATA_ENHANCERS,
     TICKER,
+    VIX_TICKER,
     YahooApiFrequencies,
 )
 from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
@@ -47,6 +49,7 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
 
     required_variables = {
         "TICKER": TICKER,
+        "VIX_TICKER": VIX_TICKER,
         "EXCHANGE": EXCHANGE,
         "STRATEGY": STRATEGY,
         "START_DATE": START_DATE,
@@ -58,6 +61,7 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
         "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+        "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
     }
 
     exception_message = (

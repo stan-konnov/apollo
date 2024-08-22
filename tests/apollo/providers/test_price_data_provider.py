@@ -40,13 +40,7 @@ def test__get_price_data__with_valid_parameters_and_no_data_present(
     Data Provider must return a pandas Dataframe with price data.
     """
 
-    price_data_provider = PriceDataProvider(
-        ticker=str(TICKER),
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
-    )
+    price_data_provider = PriceDataProvider()
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
@@ -76,7 +70,13 @@ def test__get_price_data__with_valid_parameters_and_no_data_present(
             expected_dataframe_to_write[column] * adjustment_factor
         )
 
-    price_dataframe = price_data_provider.get_price_data()
+    price_dataframe = price_data_provider.get_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
     price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
@@ -119,13 +119,7 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
     Data Provider must return a pandas Dataframe with price data.
     """
 
-    price_data_provider = PriceDataProvider(
-        ticker=str(TICKER),
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
-    )
+    price_data_provider = PriceDataProvider()
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
 
@@ -137,7 +131,13 @@ def test__get_price_data__with_valid_parameters_and_data_present_no_refresh(
         ).date()
     )
 
-    price_dataframe = price_data_provider.get_price_data()
+    price_dataframe = price_data_provider.get_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
     price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
@@ -172,13 +172,7 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh(
     Data Provider must return a pandas Dataframe with price data.
     """
 
-    price_data_provider = PriceDataProvider(
-        ticker=str(TICKER),
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
-    )
+    price_data_provider = PriceDataProvider()
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
@@ -213,7 +207,13 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh(
         last_queried_date
     )
 
-    price_dataframe = price_data_provider.get_price_data()
+    price_dataframe = price_data_provider.get_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
     price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
@@ -255,13 +255,7 @@ def test__get_price_data__with_valid_parameters_and_intraday_data(
     Data Provider must return a pandas Dataframe with price data.
     """
 
-    price_data_provider = PriceDataProvider(
-        ticker=str(TICKER),
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
-    )
+    price_data_provider = PriceDataProvider()
 
     price_data_provider._api_connector = Mock(YahooApiConnector)  # noqa: SLF001
     price_data_provider._api_connector.request_price_data.return_value = (  # noqa: SLF001
@@ -296,7 +290,13 @@ def test__get_price_data__with_valid_parameters_and_intraday_data(
             expected_dataframe_to_write[column] * adjustment_factor
         )
 
-    price_dataframe = price_data_provider.get_price_data()
+    price_dataframe = price_data_provider.get_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
     price_data_provider._database_connector.get_last_record_date.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
@@ -323,10 +323,12 @@ def test__get_price_data__with_valid_parameters_and_intraday_data(
 
 def test__price_data_provider__with_invalid_date_format() -> None:
     """
-    Test Price Data Provider method with invalid date format.
+    Test Price Data Provider with invalid date format.
 
     Data Provider must raise a ValueError when dates are not in the correct format.
     """
+
+    price_data_provider = PriceDataProvider()
 
     exception_message = f"Start and end date format must be {DEFAULT_DATE_FORMAT}."
 
@@ -334,7 +336,7 @@ def test__price_data_provider__with_invalid_date_format() -> None:
         ValueError,
         match=exception_message,
     ) as exception:
-        PriceDataProvider(
+        price_data_provider.get_price_data(
             ticker=str(TICKER),
             frequency=str(FREQUENCY),
             start_date=str(START_DATE),
@@ -347,10 +349,12 @@ def test__price_data_provider__with_invalid_date_format() -> None:
 
 def test__price_data_provider__with_invalid_dates() -> None:
     """
-    Test Price Data Provider method with invalid dates.
+    Test Price Data Provider with invalid dates.
 
     Data Provider must raise a ValueError when start_date is greater than end_date.
     """
+
+    price_data_provider = PriceDataProvider()
 
     exception_message = "Start date must be before end date."
 
@@ -358,7 +362,7 @@ def test__price_data_provider__with_invalid_dates() -> None:
         ValueError,
         match=exception_message,
     ) as exception:
-        PriceDataProvider(
+        price_data_provider.get_price_data(
             ticker=str(TICKER),
             frequency=str(FREQUENCY),
             start_date="3333-01-01",

@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TICKER = getenv("TICKER")
+VIX_TICKER = getenv("VIX_TICKER")
 EXCHANGE = getenv("EXCHANGE")
 STRATEGY = getenv("STRATEGY")
 START_DATE = getenv("START_DATE")
 END_DATE = getenv("END_DATE")
 FREQUENCY = getenv("FREQUENCY")
 MAX_PERIOD = getenv("MAX_PERIOD")
+SUPPORTED_DATA_ENHANCERS = getenv("SUPPORTED_DATA_ENHANCERS")
 
 NO_SIGNAL = 0
 LONG_SIGNAL = 1

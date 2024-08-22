@@ -23,6 +23,19 @@ def get_price_dataframe() -> pd.DataFrame:
     return test_dataframe
 
 
+@pytest.fixture(name="enhanced_dataframe", scope="module")
+def get_enhanced_price_dataframe() -> pd.DataFrame:
+    """Fixture to get enhanced test dataframe from file system."""
+
+    enhanced_test_dataframe = pd.read_csv(
+        Path(f"{Path(curdir).resolve()}/{TEST_DIR}/{TICKER}-enhanced.csv"),
+        index_col=0,
+    )
+    enhanced_test_dataframe.index = pd.to_datetime(enhanced_test_dataframe.index)
+
+    return enhanced_test_dataframe
+
+
 @pytest.fixture(name="window_size", scope="session")
 def get_window_size() -> int:
     """Fixture to define window size for calculations."""
