@@ -29,7 +29,7 @@ class KeltnerChannelCalculator(BaseCalculator):
         volatility_multiplier: float,
     ) -> None:
         """
-        Construct Keltner Channel calculator.
+        Construct Keltner Channel Calculator.
 
         :param dataframe: Dataframe to calculate Keltner Channel for.
         :param window_size: Window size for rolling Keltner Channel calculation.

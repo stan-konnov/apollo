@@ -24,6 +24,10 @@
         "range": [0.5, 1.0]
     },
 
+    "additional_data_enhancers": [
+        "VIX"
+    ],
+
     "strategy_specific_parameters": [
         "kurtosis_threshold",
         "volatility_multiplier"

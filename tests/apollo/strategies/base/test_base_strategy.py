@@ -3,9 +3,8 @@ from typing import Any, Type
 import pandas as pd
 import pytest
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.settings import NO_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -19,29 +18,6 @@ def test__base_strategy__for_inserting_signal_column(
 
     assert "signal" in strategy._dataframe.columns  # noqa: SLF001
     assert strategy._dataframe["signal"].iloc[0] == NO_SIGNAL  # noqa: SLF001
-
-
-@pytest.mark.usefixtures("dataframe", "window_size")
-def test__base_strategy__for_calculating_volatility(
-    dataframe: pd.DataFrame,
-    window_size: int,
-) -> None:
-    """
-    Test Base Strategy for properly calculating volatility (ATR).
-
-    Strategy should have "tr" and "atr" columns.
-    """
-
-    control_dataframe = dataframe.copy()
-
-    at_calculator = AverageTrueRangeCalculator(control_dataframe, window_size)
-    at_calculator.calculate_average_true_range()
-
-    strategy = BaseStrategy(dataframe, window_size)
-
-    assert "tr" in strategy._dataframe.columns  # noqa: SLF001
-    assert "atr" in strategy._dataframe.columns  # noqa: SLF001
-    pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
 
 
 @pytest.mark.usefixtures("window_size")

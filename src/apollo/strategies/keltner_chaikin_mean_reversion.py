@@ -8,12 +8,20 @@ from apollo.calculations.hull_moving_average import (
 )
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class KeltnerChaikinTrendFollowing(BaseStrategy):
+class KeltnerChaikinMeanReversion(
+    BaseStrategy,
+    VIXEnhancedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
-    Keltner Chaikin Trend Following.
+    Keltner Chaikin Mean Reversion.
 
     NOTE: this strategy uses Hull Moving Average as input for
     calculation of the Keltner Channel to make the channel
@@ -21,19 +29,29 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
 
     This strategy takes long positions when:
 
-    * Adjusted close is above the lower Keltner Channel bound,
-    indicating that instrument is within the expected volatility range.
+    * Adjusted close is below the lower Keltner Channel bound,
+    indicating that instrument is outside the expected volatility range.
+
+    * Accumulation Distribution Line is decreasing,
+    indicating that instrument is being distributed.
+
+    OR
+
+    * VIX signal is long, indicating increasing volatility,
+    forcing the price down and potentially triggering a mean reversion.
+
+    This strategy takes short positions when:
+
+    * Adjusted close is above the upper Keltner Channel bound,
+    indicating that instrument is outside the expected volatility range.
 
     * Accumulation Distribution Line is increasing,
     indicating that instrument is being accumulated.
 
-    This strategy takes short positions when:
+    OR
 
-    * Adjusted close is below the upper Keltner Channel bound,
-    indicating that instrument is within the expected volatility range.
-
-    * Accumulation Distribution Line is decreasing,
-    indicating that instrument is being distributed.
+    * VIX signal is short, indicating decreasing volatility,
+    forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -58,7 +76,9 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VIXEnhancedStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._hma_calculator = HullMovingAverageCalculator(
             dataframe=dataframe,
@@ -93,14 +113,14 @@ class KeltnerChaikinTrendFollowing(BaseStrategy):
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["adj close"] > self._dataframe["lkc_bound"]) & (
-            self._dataframe["adl"] > self._dataframe["prev_adl"]
-        )
+        long = (self._dataframe["adj close"] < self._dataframe["lkc_bound"]) & (
+            self._dataframe["adl"] < self._dataframe["prev_adl"]
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["adj close"] < self._dataframe["ukc_bound"]) & (
-            self._dataframe["adl"] < self._dataframe["prev_adl"]
-        )
+        short = (self._dataframe["adj close"] > self._dataframe["ukc_bound"]) & (
+            self._dataframe["adl"] > self._dataframe["prev_adl"]
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

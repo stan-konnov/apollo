@@ -8,10 +8,9 @@ from apollo.settings import (
     MAX_PERIOD,
     START_DATE,
     TICKER,
+    VIX_TICKER,
 )
-from apollo.strategies.wilders_swing_index_trend_following import (
-    WildersSwingIndexTrendFollowing,
-)
+from apollo.strategies.keltner_chaikin_mean_reversion import KeltnerChaikinMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -27,7 +26,9 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    price_data_provider = PriceDataProvider(
+    price_data_provider = PriceDataProvider()
+
+    dataframe = price_data_provider.get_price_data(
         ticker=str(TICKER),
         frequency=str(FREQUENCY),
         start_date=str(START_DATE),
@@ -35,19 +36,28 @@ def main() -> None:
         max_period=bool(MAX_PERIOD),
     )
 
-    dataframe = price_data_provider.get_price_data()
+    vix_dataframe = price_data_provider.get_price_data(
+        ticker=str(VIX_TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
-    strategy = WildersSwingIndexTrendFollowing(
+    dataframe["vix open"] = vix_dataframe["open"]
+    dataframe["vix close"] = vix_dataframe["close"]
+
+    strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
         window_size=15,
-        weighted_tr_multiplier=0.1,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="WildersSwingIndexTrendFollowing",
+        strategy_name="KeltnerChaikinMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,

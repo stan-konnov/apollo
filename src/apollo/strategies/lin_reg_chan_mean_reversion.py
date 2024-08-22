@@ -4,10 +4,18 @@ from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class LinearRegressionChannelMeanReversion(BaseStrategy):
+class LinearRegressionChannelMeanReversion(
+    BaseStrategy,
+    VIXEnhancedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Linear Regression Channel Mean Reversion.
 
@@ -19,6 +27,11 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
     * Slope of the channel is decreasing,
     indicating continuation of movement down and away from the mean.
 
+    OR
+
+    * VIX signal is long, indicating increasing volatility,
+    forcing the price down and potentially triggering a mean reversion.
+
     This strategy takes short positions when:
 
     * Adjusted close crosses above upper bound of the channel,
@@ -26,6 +39,11 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
 
     * Slope of the channel is increasing,
     indicating continuation of movement up and away from the mean.
+
+    OR
+
+    * VIX signal is short, indicating decreasing volatility,
+    forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -50,7 +68,9 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VIXEnhancedStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._lrc_calculator = LinearRegressionChannelCalculator(
             dataframe=dataframe,
@@ -75,10 +95,12 @@ class LinearRegressionChannelMeanReversion(BaseStrategy):
 
         long = (self._dataframe["adj close"] <= self._dataframe["l_bound"]) & (
             self._dataframe["slope"] <= self._dataframe["prev_slope"]
-        )
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (self._dataframe["adj close"] >= self._dataframe["u_bound"]) & (
             self._dataframe["slope"] >= self._dataframe["prev_slope"]
-        )
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

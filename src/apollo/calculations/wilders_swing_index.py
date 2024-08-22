@@ -31,7 +31,7 @@ class WildersSwingIndexCalculator(BaseCalculator):
         weighted_tr_multiplier: float,
     ) -> None:
         """
-        Construct Wilder's Swing Index calculator.
+        Construct Wilder's Swing Index Calculator.
 
         :param dataframe: Dataframe to calculate Wilder's Swing Index for.
         :param window_size: Window size for rolling Wilder's Swing Index calculation.

@@ -5,7 +5,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 class AverageTrueRangeCalculator(BaseCalculator):
     """
-    Average True Range (ATR) calculator.
+    Average True Range (ATR) Calculator.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Wilder, New Concepts in Technical Trading Systems, 1978.
@@ -13,7 +13,7 @@ class AverageTrueRangeCalculator(BaseCalculator):
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct ATR calculator.
+        Construct ATR Calculator.
 
         :param dataframe: Dataframe to calculate ATR for.
         :param window_size: Window size for rolling ATR calculation.

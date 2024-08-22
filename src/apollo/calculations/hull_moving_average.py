@@ -22,7 +22,7 @@ class HullMovingAverageCalculator(BaseCalculator):
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
-        """Construct Hull Moving Average calculator."""
+        """Construct Hull Moving Average Calculator."""
 
         super().__init__(dataframe, window_size)
 

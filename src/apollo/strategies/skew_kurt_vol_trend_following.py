@@ -2,10 +2,18 @@ from pandas import DataFrame
 
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.base_strategy import BaseStrategy
+from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
+from apollo.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
 
 
-class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
+class SkewnessKurtosisVolatilityTrendFollowing(
+    BaseStrategy,
+    VIXEnhancedStrategy,
+    VolatilityAdjustedStrategy,
+):
     """
     Skewness Kurtosis Volatility Trend Following.
 
@@ -20,6 +28,11 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     * Volatility is above average -- price point fluctuates significantly from the rest,
     acting as reinforcement of the move within positive trend.
 
+    OR
+
+    * VIX signal is long, indicating increasing volatility,
+    forcing the price down and potentially triggering a mean reversion.
+
     This strategy takes short positions when:
 
     * Moving skewness is positive -- more prices fall below the mean than above,
@@ -30,6 +43,11 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
 
     * Volatility is above average -- price point fluctuates significantly from the rest,
     acting as reinforcement of the move within negative trend.
+
+    OR
+
+    * VIX signal is short, indicating decreasing volatility,
+    forcing the price up and potentially triggering a mean reversion.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -57,7 +75,9 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
             ],
         )
 
-        super().__init__(dataframe, window_size)
+        BaseStrategy.__init__(self, dataframe, window_size)
+        VIXEnhancedStrategy.__init__(self, dataframe, window_size)
+        VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._kurtosis_threshold = kurtosis_threshold
         self._volatility_multiplier = volatility_multiplier
@@ -79,22 +99,18 @@ class SkewnessKurtosisVolatilityTrendFollowing(BaseStrategy):
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (
-            (self._dataframe["skew"] < 0)
-            & (self._dataframe["kurt"] < self._kurtosis_threshold)
-            & (
-                self._dataframe["tr"]
-                > self._dataframe["atr"] * self._volatility_multiplier
-            )
-        )
+        long = (self._dataframe["skew"] < 0) & (
+            self._dataframe["kurt"] < self._kurtosis_threshold
+        ) & (
+            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
+        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (
-            (self._dataframe["skew"] > 0)
-            & (self._dataframe["kurt"] < self._kurtosis_threshold)
-            & (
-                self._dataframe["tr"]
-                > self._dataframe["atr"] * self._volatility_multiplier
-            )
-        )
+        short = (self._dataframe["skew"] > 0) & (
+            self._dataframe["kurt"] < self._kurtosis_threshold
+        ) & (
+            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
+        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

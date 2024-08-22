@@ -19,6 +19,8 @@
         "range": [0.01, 0.1]
     },
 
+    "additional_data_enhancers": [],
+
     "strategy_specific_parameters": [
         "swing_filter"
     ]

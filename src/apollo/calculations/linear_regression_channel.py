@@ -7,7 +7,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 
 class LinearRegressionChannelCalculator(BaseCalculator):
     """
-    Linear Regression Channel calculator.
+    Linear Regression Channel Calculator.
 
     Uses rolling ordinary least squares regression.
     Channel bounds are expressed as +/- N standard deviations from the line of best fit.
@@ -20,7 +20,7 @@ class LinearRegressionChannelCalculator(BaseCalculator):
         channel_sd_spread: float,
     ) -> None:
         """
-        Construct Linear Regression Channel calculator.
+        Construct Linear Regression Channel Calculator.
 
         :param dataframe: Dataframe to calculate channel for.
         :param window_size: Window size for rolling channel calculation.

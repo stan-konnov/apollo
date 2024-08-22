@@ -24,7 +24,7 @@ class SwingEventsCalculator(BaseCalculator):
         swing_filter: float,
     ) -> None:
         """
-        Construct Swing Events calculator.
+        Construct Swing Events Calculator.
 
         :param dataframe: Dataframe to calculate swings for.
         :param window_size: Window size for rolling swing events calculation.

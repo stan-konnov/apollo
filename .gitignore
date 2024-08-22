@@ -2,9 +2,7 @@
 **/venv
 **/__pycache__
 
-**/data
 **/backtesting_plots
-**/backtesting_results
 
 **/.coverage*
 !.coveragerc
