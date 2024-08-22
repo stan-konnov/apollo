@@ -136,7 +136,7 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     pd.testing.assert_series_equal(dataframe["atr"], control_dataframe["atr"])
 
 
-def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> None:
+def mimic_calc_tr(series: pd.Series, dataframe: pd.DataFrame) -> float:
     """
     Mimicry of TR calculation for testing purposes.
 
