@@ -108,7 +108,7 @@ class PriceDataProvider:
                 dataframe=price_data,
             )
 
-            logger.info("Requested price data from Yahoo Finance API.")
+            logger.info(f"Requested {ticker} price data from Yahoo Finance API.")
 
         # Otherwise, read from disk
         else:
@@ -120,7 +120,7 @@ class PriceDataProvider:
                 max_period=max_period,
             )
 
-            logger.info("Price data read from storage.")
+            logger.info(f"{ticker} price data read from storage.")
 
         return price_data
 

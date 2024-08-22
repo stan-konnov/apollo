@@ -5,6 +5,7 @@ from apollo.settings import (
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
+    SP500_FUTURES_TICKER,
     START_DATE,
     SUPPORTED_DATA_ENHANCERS,
     VIX_TICKER,
@@ -75,6 +76,35 @@ class PriceDataEnhancer:
                             {
                                 "vix open": self.MISSING_VALUE_FILLER,
                                 "vix close": self.MISSING_VALUE_FILLER,
+                            },
+                            inplace=True,
+                        )
+
+                case "SP500 Futures":
+                    sp500_futures_price_dataframe = (
+                        self._price_data_provider.get_price_data(
+                            ticker=str(SP500_FUTURES_TICKER),
+                            frequency=str(FREQUENCY),
+                            start_date=str(START_DATE),
+                            end_date=str(END_DATE),
+                            max_period=bool(MAX_PERIOD),
+                        )
+                    )
+
+                    price_dataframe[
+                        ["spf open", "spf high", "spf low", "spf close"]
+                    ] = sp500_futures_price_dataframe[["open", "high", "low", "close"]]
+
+                    if (
+                        price_dataframe.shape[0]
+                        > sp500_futures_price_dataframe.shape[0]
+                    ):
+                        price_dataframe.fillna(
+                            {
+                                "spf open": self.MISSING_VALUE_FILLER,
+                                "spf high": self.MISSING_VALUE_FILLER,
+                                "spf low": self.MISSING_VALUE_FILLER,
+                                "spf close": self.MISSING_VALUE_FILLER,
                             },
                             inplace=True,
                         )
