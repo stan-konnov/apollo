@@ -8,6 +8,7 @@ load_dotenv()
 
 TICKER = getenv("TICKER")
 VIX_TICKER = getenv("VIX_TICKER")
+SP500_FUTURES_TICKER = getenv("SP500_FUTURES_TICKER")
 EXCHANGE = getenv("EXCHANGE")
 STRATEGY = getenv("STRATEGY")
 START_DATE = getenv("START_DATE")
