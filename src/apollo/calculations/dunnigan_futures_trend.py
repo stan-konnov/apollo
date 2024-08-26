@@ -83,6 +83,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Initialize falsy values for uptrend and downtrend
+        # NOTE: THIS SHOULD MOVE OUTSIDE THE WINDOW!
         up_trend = False
         down_trend = False
 
