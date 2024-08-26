@@ -141,6 +141,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         if up_trend and h_at_t >= self._trend_h:
             # Then the trend is
             # confirmed as uptrend
+
+            # DO NOT APPEND HERE,
+            # BUT DEFINE current trend AND ASSIGN
             self._futures_trend.append(self.UP_TREND)
 
             # If previous trend was downtrend
@@ -167,6 +170,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         if down_trend and l_at_t <= self._trend_l:
             # Then the trend is
             # confirmed as downtrend
+
+            # DO NOT APPEND HERE,
+            # BUT DEFINE current trend AND ASSIGN
             self._futures_trend.append(self.DOWN_TREND)
 
             # If previous trend was uptrend
