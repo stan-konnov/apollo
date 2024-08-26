@@ -15,7 +15,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
     on the difference between three consecutive
     ASI values, where ASI is the sum of the Swing Index values.
 
-    Kaufman, Trading Systems and Methods, 2020, p.174
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    Wilder, New Concepts in Technical Trading Systems, 1978.
     """
 
     # Constant to represent low swing point
