@@ -27,12 +27,6 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
     # A constant to represent current trend
     CURRENT_TREND: float = 0.0
 
-    # A constant to represent long-term trend
-    LONG_TERM_TREND: float = 1.0
-
-    # A constant to represent short-term trend
-    SHORT_TERM_TREND: float = -1.0
-
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """Construct Dunnigan Futures Trend Calculator."""
 
@@ -62,37 +56,62 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         up_trend = False
         down_trend = False
 
+        # Get the highest high and lowest low (NOTE: OUTSIDE OF THE WINDOW)
+        hh: float = rolling_df["adj high"].max()
+        ll: float = rolling_df["adj low"].min()
+
+        # Get current high and low prices
+        curr_h: float = rolling_df.iloc[-1]["adj high"]
+        curr_l: float = rolling_df.iloc[-1]["adj low"]
+
         # Get last three futures high prices
-        high_at_t_minus_two, high_at_t_minus_one, high_at_t = list(
+        h_at_t_minus_two, h_at_t_minus_one, h_at_t = list(
             rolling_df.iloc[self._window_size - 3 :]["spf high"],
         )
 
         # Get last three futures low prices
-        low_at_t_minus_two, low_at_t_minus_one, low_at_t = list(
+        l_at_t_minus_two, l_at_t_minus_one, l_at_t = list(
             rolling_df.iloc[self._window_size - 3 :]["spf low"],
         )
 
-        # Determine if we are in uptrend
-        # or downtrend based on making higher highs
-        # and higher lows or lower highs and lower lows
+        # We are in the uptrend if the current high
+        # is greater than the previous two highs
+        # and the current low is greater
+        # than the previous two lows
         if (
-            high_at_t > high_at_t_minus_one
-            and high_at_t > high_at_t_minus_two
-            and low_at_t > low_at_t_minus_one
-            and low_at_t > low_at_t_minus_two
+            h_at_t > h_at_t_minus_one
+            and h_at_t > h_at_t_minus_two
+            and l_at_t > l_at_t_minus_one
+            and l_at_t > l_at_t_minus_two
         ):
             up_trend = True
             down_trend = False
 
+        # We are in the downtrend if the current high
+        # is lower than the previous two highs
+        # and the current low is lower
+        # than the previous two lows
         elif (
-            high_at_t < high_at_t_minus_one
-            and high_at_t < high_at_t_minus_two
-            and low_at_t < low_at_t_minus_one
-            and low_at_t < low_at_t_minus_two
+            h_at_t < h_at_t_minus_one
+            and h_at_t < h_at_t_minus_two
+            and l_at_t < l_at_t_minus_one
+            and l_at_t < l_at_t_minus_two
         ):
             up_trend = False
             down_trend = True
 
-        print(up_trend, down_trend)  # noqa: T201
+        # If we are in the uptrend and current high
+        # is greater than or equal to the highest high
+        if up_trend and curr_h >= hh:
+            # Then the trend is
+            # confirmed as uptrend
+            return self.UP_TREND
+
+        # If we are in the downtrend and current low
+        # is less than or equal to the lowest low
+        if down_trend and curr_l <= ll:
+            # Then the trend is
+            # confirmed as downtrend
+            return self.DOWN_TREND
 
         return 0.0
