@@ -10,7 +10,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.keltner_chaikin_mean_reversion import KeltnerChaikinMeanReversion
+from apollo.strategies.dunnigan_futures_trend_following import DunniganTrendFollowing
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -42,17 +42,16 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = KeltnerChaikinMeanReversion(
+    strategy = DunniganTrendFollowing(
         dataframe=dataframe,
-        window_size=15,
-        volatility_multiplier=1.0,
+        window_size=5,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="KeltnerChaikinMeanReversion",
+        strategy_name="DunniganTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
