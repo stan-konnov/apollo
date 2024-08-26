@@ -57,12 +57,12 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         down_trend = False
 
         # Get the highest high and lowest low (NOTE: OUTSIDE OF THE WINDOW)
-        hh: float = rolling_df["adj high"].max()
-        ll: float = rolling_df["adj low"].min()
+        hh: float = rolling_df["spf high"].max()
+        ll: float = rolling_df["spf low"].min()
 
         # Get current high and low prices
-        curr_h: float = rolling_df.iloc[-1]["adj high"]
-        curr_l: float = rolling_df.iloc[-1]["adj low"]
+        curr_h: float = rolling_df.iloc[-1]["spf high"]
+        curr_l: float = rolling_df.iloc[-1]["spf low"]
 
         # Get last three futures high prices
         h_at_t_minus_two, h_at_t_minus_one, h_at_t = list(
