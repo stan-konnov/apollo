@@ -143,7 +143,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             # confirmed as uptrend
 
             # DO NOT APPEND HERE,
-            # BUT DEFINE current trend AND ASSIGN
+            # BUT DEFINE current trend OUTSIDE AND ASSIGN
             self._futures_trend.append(self.UP_TREND)
 
             # If previous trend was downtrend
@@ -172,7 +172,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             # confirmed as downtrend
 
             # DO NOT APPEND HERE,
-            # BUT DEFINE current trend AND ASSIGN
+            # BUT DEFINE current trend OUTSIDE AND ASSIGN
             self._futures_trend.append(self.DOWN_TREND)
 
             # If previous trend was uptrend
