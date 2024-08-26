@@ -40,3 +40,22 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
     def calculate_dunnigan_futures_trend(self) -> None:
         """Calculate Dunnigan Futures Trend."""
+
+        self._dataframe["dtf"] = (
+            self._dataframe["adj close"]
+            .rolling(window=self._window_size)
+            .apply(self._calc_dtf)
+        )
+
+    def _calc_dtf(self, series: pd.Series) -> float:
+        """
+        Calculate rolling Dunnigan's Futures Trend.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Latest calculated entry from processed window.
+        """
+
+        # Slice out a chunk of dataframe to work with
+        rolling_df = self._dataframe.loc[series.index]  # noqa: F841
+
+        return 0.0
