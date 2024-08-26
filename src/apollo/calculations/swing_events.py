@@ -70,7 +70,6 @@ class SwingEventsCalculator(BaseCalculator):
         Calculate rolling swings for a given window.
 
         :param series: Series which is used for indexing out rolling window.
-        :param dataframe: Original dataframe acting as a source of rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
         """
 

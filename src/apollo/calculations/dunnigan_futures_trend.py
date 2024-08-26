@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
@@ -18,27 +19,42 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
     Ruggiero, "Dunnigan's Way", Futures, 1998.
     """
 
+    # A constant to represent no trend
+    NO_TREND: float = 0.0
+
     # A constant to represent up trend
     UP_TREND: float = 1.0
 
     # A constant to represent down trend
     DOWN_TREND: float = -1.0
 
-    # A constant to represent current trend
-    CURRENT_TREND: float = 0.0
-
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """Construct Dunnigan Futures Trend Calculator."""
+
+        self._trend_l = 0.0
+        self._trend_h = 0.0
+
+        self._futures_trend: list[float] = []
 
         super().__init__(dataframe, window_size)
 
     def calculate_dunnigan_futures_trend(self) -> None:
         """Calculate Dunnigan Futures Trend."""
 
-        self._dataframe["dtf"] = (
-            self._dataframe["adj close"]
-            .rolling(window=self._window_size)
-            .apply(self._calc_dtf)
+        # Record the low of the first bar (before rolling window) as trend low
+        self._trend_l = self._dataframe.iloc[self._window_size - 2]["spf low"]
+
+        # Record the high of the first bar (before rolling window) as trend high
+        self._trend_h = self._dataframe.iloc[self._window_size - 2]["spf high"]
+
+        # Fill trend array with N NaN, where N = window size
+        self._futures_trend = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        )
+
+        # Calculate rolling Dunnigan's Futures Trend
+        self._dataframe["adj close"].rolling(window=self._window_size).apply(
+            self._calc_dtf,
         )
 
     def _calc_dtf(self, series: pd.Series) -> float:
@@ -46,7 +62,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         Calculate rolling Dunnigan's Futures Trend.
 
         :param series: Series which is used for indexing out rolling window.
-        :returns: Latest calculated entry from processed window.
+        :returns: Dummy float to satisfy Pandas' return value.
         """
 
         # Slice out a chunk of dataframe to work with
@@ -55,10 +71,6 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # Initialize falsy values for uptrend and downtrend
         up_trend = False
         down_trend = False
-
-        # Get the highest high and lowest low (NOTE: OUTSIDE OF THE WINDOW)
-        hh: float = rolling_df["spf high"].max()
-        ll: float = rolling_df["spf low"].min()
 
         # Get current high and low prices
         curr_h: float = rolling_df.iloc[-1]["spf high"]
@@ -102,16 +114,26 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
         # If we are in the uptrend and current high
         # is greater than or equal to the highest high
-        if up_trend and curr_h >= hh:
+        if up_trend and curr_h >= self._trend_h:
             # Then the trend is
             # confirmed as uptrend
-            return self.UP_TREND
+            self._futures_trend.append(self.UP_TREND)
+
+            # Return dummy float
+            return 0.0
 
         # If we are in the downtrend and current low
         # is less than or equal to the lowest low
-        if down_trend and curr_l <= ll:
+        if down_trend and curr_l <= self._trend_l:
             # Then the trend is
             # confirmed as downtrend
-            return self.DOWN_TREND
+            self._futures_trend.append(self.DOWN_TREND)
 
+            # Return dummy float
+            return 0.0
+
+        # Otherwise, no trend detected
+        self._futures_trend.append(self.NO_TREND)
+
+        # Return dummy float
         return 0.0
