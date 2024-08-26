@@ -12,7 +12,11 @@ class DunniganTrendFollowing(
     BaseStrategy,
     VolatilityAdjustedStrategy,
 ):
-    """Work in progress."""
+    """
+    Work in progress.
+
+    I'm actually mean reversion.
+    """
 
     def __init__(
         self,
