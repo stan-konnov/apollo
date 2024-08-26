@@ -42,6 +42,8 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
+    dataframe = dataframe.where(dataframe["spf close"] != 0).dropna(how="all")
+
     strategy = DunniganTrendFollowing(
         dataframe=dataframe,
         window_size=5,
