@@ -20,6 +20,14 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
     NOTE: there is a difference between Current Trend High and Low
     and curr high and low (check TSM source again)
+
+    CT = trend high or low
+
+    currhigh/low = start with inf -inf
+
+    Appending up, down or no trend should be last
+
+    Rewrite the logic from TSM to the letter, more work in this needed
     """
 
     # A constant to represent no trend
