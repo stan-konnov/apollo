@@ -13,5 +13,5 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Dunnigan, Selected Studies in Speculation, 1954.
-    Ruggiero, Futures, November 1998.
+    Ruggiero, "Dunnigan's Way", Futures, 1998.
     """
