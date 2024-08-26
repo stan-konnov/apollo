@@ -57,6 +57,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             self._calc_dft,
         )
 
+        # Write futures trend to the dataframe
+        self._dataframe["dft"] = self._futures_trend
+
     def _calc_dft(self, series: pd.Series) -> float:
         """
         Calculate rolling Dunnigan's Futures Trend.
