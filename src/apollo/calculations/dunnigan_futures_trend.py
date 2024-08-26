@@ -56,6 +56,43 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        rolling_df = self._dataframe.loc[series.index]  # noqa: F841
+        rolling_df = self._dataframe.loc[series.index]
+
+        # Initialize falsy values for uptrend and downtrend
+        up_trend = False
+        down_trend = False
+
+        # Get last three futures high prices
+        high_at_t_minus_two, high_at_t_minus_one, high_at_t = list(
+            rolling_df.iloc[self._window_size - 3 :]["spf high"],
+        )
+
+        # Get last three futures low prices
+        low_at_t_minus_two, low_at_t_minus_one, low_at_t = list(
+            rolling_df.iloc[self._window_size - 3 :]["spf low"],
+        )
+
+        # Determine if we are in uptrend
+        # or downtrend based on making higher highs
+        # and higher lows or lower highs and lower lows
+        if (
+            high_at_t > high_at_t_minus_one
+            and high_at_t > high_at_t_minus_two
+            and low_at_t > low_at_t_minus_one
+            and low_at_t > low_at_t_minus_two
+        ):
+            up_trend = True
+            down_trend = False
+
+        elif (
+            high_at_t < high_at_t_minus_one
+            and high_at_t < high_at_t_minus_two
+            and low_at_t < low_at_t_minus_one
+            and low_at_t < low_at_t_minus_two
+        ):
+            up_trend = False
+            down_trend = True
+
+        print(up_trend, down_trend)  # noqa: T201
 
         return 0.0
