@@ -28,6 +28,16 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
     Appending up, down or no trend should be last
 
     Rewrite the logic from TSM to the letter, more work in this needed
+
+    VARIABLES TO DEFINE OUTSIDE THE WINDOW:
+
+    trend(0 | 1 | -1),
+    downtrend(false),
+    uptrend(false),
+    curlow(np.inf),
+    curhigh(-np.inf),
+    CTlow(0),
+    CThigh(0),
     """
 
     # A constant to represent no trend
