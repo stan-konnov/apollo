@@ -72,6 +72,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         up_trend = False
         down_trend = False
 
+        # Grab the value of the previous trend
+        prev_trend = self._futures_trend[-1]
+
         # Get last three futures high prices
         h_at_t_minus_two, h_at_t_minus_one, h_at_t = list(
             rolling_df.iloc[self._window_size - 3 :]["spf high"],
@@ -109,32 +112,58 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             down_trend = True
 
         # If we are in the uptrend and current high
-        # is greater than or equal to the highest high
+        # is greater than or equal to the trend high
         if up_trend and h_at_t >= self._trend_h:
             # Then the trend is
             # confirmed as uptrend
             self._futures_trend.append(self.UP_TREND)
 
-            # Recompute the lowest low
-            self._trend_l = l_at_t
+            # If previous trend was downtrend
+            # then recompute the trend high
+            if prev_trend == self.DOWN_TREND:
+                self._trend_h = h_at_t
+
+            # Otherwise,
+            # recompute the trend low
+            else:
+                self._trend_l = l_at_t
 
             # Return dummy float
             return 0.0
 
+        # If we are in the uptrend and current
+        # high is lower than the trend high
+        if up_trend and h_at_t < self._trend_h:
+            # Then, recompute the trend high
+            self._trend_h = h_at_t
+
         # If we are in the downtrend and current low
-        # is less than or equal to the lowest low
+        # is less than or equal to the trend low
         if down_trend and l_at_t <= self._trend_l:
             # Then the trend is
             # confirmed as downtrend
             self._futures_trend.append(self.DOWN_TREND)
 
-            # Recompute the highest high
-            self._trend_h = h_at_t
+            # If previous trend was uptrend
+            # then recompute the trend low
+            if prev_trend == self.UP_TREND:
+                self._trend_l = l_at_t
+
+            # Otherwise,
+            # recompute the trend high
+            else:
+                self._trend_h = h_at_t
 
             # Return dummy float
             return 0.0
 
-        # Otherwise, no trend detected
+        # If we are in the downtrend and current
+        # low is greater than the trend low
+        if down_trend and l_at_t > self._trend_l:
+            # Then, recompute the trend low
+            self._trend_l = l_at_t
+
+        # No trend with confirmation = no trend detected
         self._futures_trend.append(self.NO_TREND)
 
         # Return dummy float
