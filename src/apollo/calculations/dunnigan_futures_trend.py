@@ -17,6 +17,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     Dunnigan, Selected Studies in Speculation, 1954.
     Ruggiero, "Dunnigan's Way", Futures, 1998.
+
+    NOTE: there is a difference between Current Trend High and Low
+    and curr high and low (check TSM source again)
     """
 
     # A constant to represent no trend
