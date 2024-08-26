@@ -46,7 +46,7 @@ def main() -> None:
 
     strategy = DunniganTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
+        window_size=20,
     )
 
     strategy.model_trading_signals()
