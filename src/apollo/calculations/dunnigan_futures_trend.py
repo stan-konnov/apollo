@@ -114,6 +114,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # is greater than the previous two highs
         # and the current low is greater
         # than the previous two lows
+        # THIS CHUNK IS ALSO DIFFERENT IN TSM
         if (
             h_at_t > h_at_t_minus_one
             and h_at_t > h_at_t_minus_two
