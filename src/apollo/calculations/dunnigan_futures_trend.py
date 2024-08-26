@@ -25,7 +25,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
     currhigh/low = start with inf -inf
 
-    Appending up, down or no trend should be last
+    !!!Appending up, down or no trend should be last!!!
 
     Rewrite the logic from TSM to the letter, more work in this needed
 
