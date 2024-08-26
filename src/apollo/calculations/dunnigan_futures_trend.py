@@ -72,10 +72,6 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         up_trend = False
         down_trend = False
 
-        # Get current high and low prices
-        curr_h: float = rolling_df.iloc[-1]["spf high"]
-        curr_l: float = rolling_df.iloc[-1]["spf low"]
-
         # Get last three futures high prices
         h_at_t_minus_two, h_at_t_minus_one, h_at_t = list(
             rolling_df.iloc[self._window_size - 3 :]["spf high"],
@@ -114,20 +110,26 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
         # If we are in the uptrend and current high
         # is greater than or equal to the highest high
-        if up_trend and curr_h >= self._trend_h:
+        if up_trend and h_at_t >= self._trend_h:
             # Then the trend is
             # confirmed as uptrend
             self._futures_trend.append(self.UP_TREND)
+
+            # Recompute the lowest low
+            self._trend_l = l_at_t
 
             # Return dummy float
             return 0.0
 
         # If we are in the downtrend and current low
         # is less than or equal to the lowest low
-        if down_trend and curr_l <= self._trend_l:
+        if down_trend and l_at_t <= self._trend_l:
             # Then the trend is
             # confirmed as downtrend
             self._futures_trend.append(self.DOWN_TREND)
+
+            # Recompute the highest high
+            self._trend_h = h_at_t
 
             # Return dummy float
             return 0.0
