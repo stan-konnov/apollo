@@ -61,6 +61,8 @@ class DunniganTrendFollowing(
 
         # NOTE: if this works, move it to calculations
 
+        # Sharpe: 1.53
+
         # self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
         # self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
 
@@ -73,6 +75,8 @@ class DunniganTrendFollowing(
         # )
 
         ####
+
+        # Sharpe: 1.94
 
         # self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
 
@@ -92,31 +96,35 @@ class DunniganTrendFollowing(
 
         ####
 
-        self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
+        # Sharpe: 2.18
 
-        self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
-        self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()
+        # self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
 
-        self._dataframe["vix_spf_pct_change_diff"] = (
-            self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
-        )
+        # self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
+        # self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()
 
-        self._dataframe["pct_change_diff"] = (
-            self._dataframe["pct_change"] - self._dataframe["vix_spf_pct_change_diff"]
-        )
+        # self._dataframe["vix_spf_pct_change_diff"] = (
+        #     self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
+        # )
 
-        self._dataframe["prev_pct_change_diff"] = self._dataframe[
-            "pct_change_diff"
-        ].shift(1)
+        # self._dataframe["pct_change_diff"] = (
+        #     self._dataframe["pct_change"] - self._dataframe["vix_spf_pct_change_diff"]
+        # )
 
-        long = (
-            self._dataframe["pct_change_diff"] > self._dataframe["prev_pct_change_diff"]
-        )
+        # self._dataframe["prev_pct_change_diff"] = self._dataframe[
+        #     "pct_change_diff"
+        # ].shift(1)
 
-        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
+        # long = (
+        #     self._dataframe["pct_change_diff"] > self._dataframe["prev_pct_change_diff"]
+        # )
 
-        short = (
-            self._dataframe["pct_change_diff"] < self._dataframe["prev_pct_change_diff"]
-        )
+        # self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
+        # short = (
+        #     self._dataframe["pct_change_diff"] < self._dataframe["prev_pct_change_diff"]
+        # )
+
+        # self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
+
+        ####
