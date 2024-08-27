@@ -150,7 +150,7 @@ class PriceDataProvider:
 
         # In our case a simple string compare is enough
         # since at this point we adhere to YYYY-MM-DD format
-        if start_date > end_date:
+        if start_date >= end_date:
             raise ValueError("Start date must be before end date.")
 
     def _prepare_price_data(self, dataframe: pd.DataFrame, ticker: str) -> pd.DataFrame:
