@@ -156,10 +156,10 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             # confirmed as downtrend
             self._current_trend = self.DOWN_TREND
 
-        # Otherwise
-        else:
-            # No trend detected
-            self._current_trend = self.NO_TREND
+        # # Otherwise
+        # else:
+        #     # No trend detected
+        #     self._current_trend = self.NO_TREND
 
         # # If previous trend was downtrend
         # # then recompute the trend high
