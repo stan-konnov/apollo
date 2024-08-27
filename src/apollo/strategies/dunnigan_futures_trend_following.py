@@ -56,6 +56,8 @@ class DunniganTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
+        # NOTE: if this works, move it to calculations
+
         self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
         self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
 
