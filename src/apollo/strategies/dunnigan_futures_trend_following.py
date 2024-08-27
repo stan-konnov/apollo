@@ -7,6 +7,8 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
+# ruff: noqa
+
 
 class DunniganTrendFollowing(
     BaseStrategy,
@@ -61,14 +63,30 @@ class DunniganTrendFollowing(
         self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
         self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
 
-        long = (self._dataframe["vix close"] < self._dataframe["prev_vix_close"]) & (
-            self._dataframe["spf close"] > self._dataframe["prev_spf_close"]
+        # long = (self._dataframe["vix close"] < self._dataframe["prev_vix_close"]) & (
+        #     self._dataframe["spf close"] > self._dataframe["prev_spf_close"]
+        # )
+
+        # short = (self._dataframe["vix close"] > self._dataframe["prev_vix_close"]) & (
+        #     self._dataframe["spf close"] < self._dataframe["prev_spf_close"]
+        # )
+
+        self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
+
+        self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
+        self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()
+
+        self._dataframe["vix_spf_pct_change_diff"] = (
+            self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
+        )
+
+        long = (
+            self._dataframe["vix_spf_pct_change_diff"] > self._dataframe["pct_change"]
+        )
+        short = (
+            self._dataframe["vix_spf_pct_change_diff"] < self._dataframe["pct_change"]
         )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
-
-        short = (self._dataframe["vix close"] > self._dataframe["prev_vix_close"]) & (
-            self._dataframe["spf close"] < self._dataframe["prev_spf_close"]
-        )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
