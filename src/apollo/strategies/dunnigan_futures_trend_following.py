@@ -15,6 +15,9 @@ class DunniganTrendFollowing(
     """
     Work in progress.
 
+    Massive work in progress:
+    we might not even use Dunnigan, experimenting.
+
     I'm actually mean reversion.
     """
 
@@ -53,12 +56,17 @@ class DunniganTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
+        self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
+        self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
+
         self._dataframe.loc[
-            self._dataframe["dft"] == self._dft_calculator.UP_TREND,
+            (self._dataframe["vix close"] < self._dataframe["prev_vix_close"])
+            & (self._dataframe["spf close"] > self._dataframe["prev_spf_close"]),
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["dft"] == self._dft_calculator.DOWN_TREND,
+            (self._dataframe["vix close"] > self._dataframe["prev_vix_close"])
+            & (self._dataframe["spf close"] < self._dataframe["prev_spf_close"]),
             "signal",
         ] = SHORT_SIGNAL
