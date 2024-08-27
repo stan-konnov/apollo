@@ -129,6 +129,8 @@ class DunniganTrendFollowing(
 
         ####
 
+        # Sharpe: 2.31
+
         self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
 
         self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
