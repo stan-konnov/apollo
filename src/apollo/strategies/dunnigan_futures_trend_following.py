@@ -61,14 +61,14 @@ class DunniganTrendFollowing(
         self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
         self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
 
-        self._dataframe.loc[
-            (self._dataframe["vix close"] < self._dataframe["prev_vix_close"])
-            & (self._dataframe["spf close"] > self._dataframe["prev_spf_close"]),
-            "signal",
-        ] = LONG_SIGNAL
+        long = (self._dataframe["vix close"] < self._dataframe["prev_vix_close"]) & (
+            self._dataframe["spf close"] > self._dataframe["prev_spf_close"]
+        )
 
-        self._dataframe.loc[
-            (self._dataframe["vix close"] > self._dataframe["prev_vix_close"])
-            & (self._dataframe["spf close"] < self._dataframe["prev_spf_close"]),
-            "signal",
-        ] = SHORT_SIGNAL
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
+
+        short = (self._dataframe["vix close"] > self._dataframe["prev_vix_close"]) & (
+            self._dataframe["spf close"] < self._dataframe["prev_spf_close"]
+        )
+
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
