@@ -3,6 +3,9 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+# All WIP
+# ruff: noqa
+
 
 class DunniganFuturesTrendCalculator(BaseCalculator):
     """
@@ -52,10 +55,17 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """Construct Dunnigan Futures Trend Calculator."""
 
+        self._curr_l = np.inf
+        self._curr_h = -np.inf
+
         self._trend_l = 0.0
         self._trend_h = 0.0
 
-        self._futures_trend: list[float] = []
+        self._up_trend = False
+        self._down_trend = False
+        self._current_trend = self.NO_TREND
+
+        self._trend_line: list[float] = []
 
         super().__init__(dataframe, window_size)
 
@@ -69,7 +79,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         self._trend_h = self._dataframe.iloc[self._window_size - 2]["spf high"]
 
         # Fill trend array with N NaN, where N = window size
-        self._futures_trend = (
+        self._trend_line = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
@@ -79,7 +89,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         )
 
         # Write futures trend to the dataframe
-        self._dataframe["dft"] = self._futures_trend
+        self._dataframe["dft"] = self._trend_line
 
     def _calc_dft(self, series: pd.Series) -> float:
         """
@@ -92,13 +102,8 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
-        # Initialize falsy values for uptrend and downtrend
-        # NOTE: THIS SHOULD MOVE OUTSIDE THE WINDOW!
-        up_trend = False
-        down_trend = False
-
         # Grab the value of the previous trend
-        prev_trend = self._futures_trend[-1]
+        prev_trend = self._trend_line[-1]
 
         # Get last three futures high prices
         h_at_t_minus_two, h_at_t_minus_one, h_at_t = list(
@@ -121,8 +126,8 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             and l_at_t > l_at_t_minus_one
             and l_at_t > l_at_t_minus_two
         ):
-            up_trend = True
-            down_trend = False
+            self._up_trend = True
+            self._down_trend = False
 
         # We are in the downtrend if the current high
         # is lower than the previous two highs
@@ -134,69 +139,59 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             and l_at_t < l_at_t_minus_one
             and l_at_t < l_at_t_minus_two
         ):
-            up_trend = False
-            down_trend = True
+            self._up_trend = False
+            self._down_trend = True
 
         # If we are in the uptrend and current high
         # is greater than or equal to the trend high
-        if up_trend and h_at_t >= self._trend_h:
+        if self._up_trend and h_at_t >= self._curr_h:
             # Then the trend is
             # confirmed as uptrend
+            self._current_trend = self.UP_TREND
 
-            # DO NOT APPEND HERE,
-            # BUT DEFINE current trend OUTSIDE AND ASSIGN
-            self._futures_trend.append(self.UP_TREND)
+        # # If previous trend was downtrend
+        # # then recompute the trend high
+        # if prev_trend == self.DOWN_TREND:
+        #     self._trend_h = h_at_t
 
-            # If previous trend was downtrend
-            # then recompute the trend high
-            if prev_trend == self.DOWN_TREND:
-                self._trend_h = h_at_t
-
-            # Otherwise,
-            # recompute the trend low
-            else:
-                self._trend_l = l_at_t
-
-            # Return dummy float
-            return 0.0
+        # # Otherwise,
+        # # recompute the trend low
+        # else:
+        #     self._trend_l = l_at_t
 
         # If we are in the uptrend and current
         # high is lower than the trend high
-        if up_trend and h_at_t < self._trend_h:
-            # Then, recompute the trend high
-            self._trend_h = h_at_t
+        # if up_trend and h_at_t < self._trend_h:
+        #     # Then, recompute the trend high
+        #     self._trend_h = h_at_t
 
         # If we are in the downtrend and current low
         # is less than or equal to the trend low
-        if down_trend and l_at_t <= self._trend_l:
+        elif self._down_trend and l_at_t <= self._curr_l:
             # Then the trend is
             # confirmed as downtrend
+            self._current_trend = self.DOWN_TREND
 
-            # DO NOT APPEND HERE,
-            # BUT DEFINE current trend OUTSIDE AND ASSIGN
-            self._futures_trend.append(self.DOWN_TREND)
+        # # If previous trend was uptrend
+        # # then recompute the trend low
+        # if prev_trend == self.UP_TREND:
+        #     self._trend_l = l_at_t
 
-            # If previous trend was uptrend
-            # then recompute the trend low
-            if prev_trend == self.UP_TREND:
-                self._trend_l = l_at_t
-
-            # Otherwise,
-            # recompute the trend high
-            else:
-                self._trend_h = h_at_t
-
-            # Return dummy float
-            return 0.0
+        # # Otherwise,
+        # # recompute the trend high
+        # else:
+        #     self._trend_h = h_at_t
 
         # If we are in the downtrend and current
         # low is greater than the trend low
-        if down_trend and l_at_t > self._trend_l:
-            # Then, recompute the trend low
-            self._trend_l = l_at_t
+        # if down_trend and l_at_t > self._trend_l:
+        #     # Then, recompute the trend low
+        #     self._trend_l = l_at_t
 
-        # No trend with confirmation = no trend detected
-        self._futures_trend.append(self.NO_TREND)
+        # Otherwise,
+        # no trend detected
+        else:
+            self._current_trend = self.NO_TREND
 
-        # Return dummy float
-        return 0.0
+        # Return the current trend
+        return self._current_trend
