@@ -149,6 +149,18 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
             # confirmed as uptrend
             self._current_trend = self.UP_TREND
 
+        # If we are in the downtrend and current low
+        # is less than or equal to the trend low
+        elif self._down_trend and l_at_t <= self._curr_l:
+            # Then the trend is
+            # confirmed as downtrend
+            self._current_trend = self.DOWN_TREND
+
+        # Otherwise
+        else:
+            # No trend detected
+            self._current_trend = self.NO_TREND
+
         # # If previous trend was downtrend
         # # then recompute the trend high
         # if prev_trend == self.DOWN_TREND:
@@ -165,13 +177,6 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         #     # Then, recompute the trend high
         #     self._trend_h = h_at_t
 
-        # If we are in the downtrend and current low
-        # is less than or equal to the trend low
-        elif self._down_trend and l_at_t <= self._curr_l:
-            # Then the trend is
-            # confirmed as downtrend
-            self._current_trend = self.DOWN_TREND
-
         # # If previous trend was uptrend
         # # then recompute the trend low
         # if prev_trend == self.UP_TREND:
@@ -187,11 +192,6 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # if down_trend and l_at_t > self._trend_l:
         #     # Then, recompute the trend low
         #     self._trend_l = l_at_t
-
-        # Otherwise,
-        # no trend detected
-        else:
-            self._current_trend = self.NO_TREND
 
         # Return the current trend
         return self._current_trend
