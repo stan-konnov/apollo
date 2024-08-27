@@ -1,3 +1,4 @@
+from numpy import long
 from pandas import DataFrame
 
 from apollo.calculations.dunnigan_futures_trend import DunniganFuturesTrendCalculator
@@ -60,8 +61,8 @@ class DunniganTrendFollowing(
 
         # NOTE: if this works, move it to calculations
 
-        self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
-        self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
+        # self._dataframe["prev_vix_close"] = self._dataframe["vix close"].shift(1)
+        # self._dataframe["prev_spf_close"] = self._dataframe["spf close"].shift(1)
 
         # long = (self._dataframe["vix close"] < self._dataframe["prev_vix_close"]) & (
         #     self._dataframe["spf close"] > self._dataframe["prev_spf_close"]
@@ -70,6 +71,26 @@ class DunniganTrendFollowing(
         # short = (self._dataframe["vix close"] > self._dataframe["prev_vix_close"]) & (
         #     self._dataframe["spf close"] < self._dataframe["prev_spf_close"]
         # )
+
+        ####
+
+        # self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
+
+        # self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
+        # self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()
+
+        # self._dataframe["vix_spf_pct_change_diff"] = (
+        #     self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
+        # )
+
+        # long = (
+        #     self._dataframe["vix_spf_pct_change_diff"] > self._dataframe["pct_change"]
+        # )
+        # short = (
+        #     self._dataframe["vix_spf_pct_change_diff"] < self._dataframe["pct_change"]
+        # )
+
+        ####
 
         self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
 
@@ -80,13 +101,22 @@ class DunniganTrendFollowing(
             self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
         )
 
-        long = (
-            self._dataframe["vix_spf_pct_change_diff"] > self._dataframe["pct_change"]
+        self._dataframe["pct_change_diff"] = (
+            self._dataframe["pct_change"] - self._dataframe["vix_spf_pct_change_diff"]
         )
-        short = (
-            self._dataframe["vix_spf_pct_change_diff"] < self._dataframe["pct_change"]
+
+        self._dataframe["prev_pct_change_diff"] = self._dataframe[
+            "pct_change_diff"
+        ].shift(1)
+
+        long = (
+            self._dataframe["pct_change_diff"] > self._dataframe["prev_pct_change_diff"]
         )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
+
+        short = (
+            self._dataframe["pct_change_diff"] < self._dataframe["prev_pct_change_diff"]
+        )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
