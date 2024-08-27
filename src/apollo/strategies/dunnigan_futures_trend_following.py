@@ -54,11 +54,11 @@ class DunniganTrendFollowing(
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["dft"] == self._dft_calculator.DOWN_TREND,
+            self._dataframe["dft"] == self._dft_calculator.UP_TREND,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["dft"] == self._dft_calculator.UP_TREND,
+            self._dataframe["dft"] == self._dft_calculator.DOWN_TREND,
             "signal",
         ] = SHORT_SIGNAL

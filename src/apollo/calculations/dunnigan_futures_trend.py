@@ -20,28 +20,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
     NOTE: there is a difference between Current Trend High and Low
     and curr high and low (check TSM source again)
-
-    CT = trend high or low
-
-    currhigh/low = start with inf -inf
-
-    !!!Appending up, down or no trend should be last!!!
-
-    Rewrite the logic from TSM to the letter, more work in this needed
-
-    VARIABLES TO DEFINE OUTSIDE THE WINDOW:
-
-    trend(0 | 1 | -1),
-    downtrend(false),
-    uptrend(false),
-    curlow(np.inf),
-    curhigh(-np.inf),
-    CTlow(0),
-    CThigh(0),
     """
-
-    # A constant to represent no trend
-    NO_TREND: float = 0.0
 
     # A constant to represent up trend
     UP_TREND: float = 1.0
@@ -60,7 +39,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
         self._up_trend = False
         self._down_trend = False
-        self._current_trend = self.NO_TREND
+        self._current_trend = 0.0
 
         self._trend_line: list[float] = []
 
@@ -116,12 +95,9 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # is greater than the previous two highs
         # and the current low is greater
         # than the previous two lows
-        # THIS CHUNK IS ALSO DIFFERENT IN TSM
         if (
-            h_at_t > h_at_t_minus_one
-            and h_at_t > h_at_t_minus_two
-            and l_at_t > l_at_t_minus_one
-            and l_at_t > l_at_t_minus_two
+            h_at_t > h_at_t_minus_one > h_at_t_minus_two
+            and l_at_t > l_at_t_minus_one > l_at_t_minus_two
         ):
             self._up_trend = True
             self._down_trend = False
@@ -131,10 +107,8 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # and the current low is lower
         # than the previous two lows
         elif (
-            h_at_t < h_at_t_minus_one
-            and h_at_t < h_at_t_minus_two
-            and l_at_t < l_at_t_minus_one
-            and l_at_t < l_at_t_minus_two
+            h_at_t < h_at_t_minus_one < h_at_t_minus_two
+            and l_at_t < l_at_t_minus_one < l_at_t_minus_two
         ):
             self._up_trend = False
             self._down_trend = True
@@ -195,5 +169,8 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
             self._curr_l = max(self._curr_l, l_at_t)
 
-        # Return the current trend
-        return self._current_trend
+        # Append the current trend to the trend line
+        self._trend_line.append(self._current_trend)
+
+        # Return dummy float
+        return 0.0
