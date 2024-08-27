@@ -155,14 +155,14 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         if self._current_trend == self.DOWN_TREND and prev_trend == self.UP_TREND:
             self._curr_l = l_at_t
 
-        # Record the current high of the short-term trend
+        # Record the current high of the current trend
         if self._current_trend == self.UP_TREND:
             if self._curr_h < h_at_t:
                 self._curr_h = h_at_t
 
             self._curr_h = min(self._curr_h, h_at_t)
 
-        # Record the current low of the short-term trend
+        # Record the current low of the current trend
         if self._current_trend == self.DOWN_TREND:
             if self._curr_l > l_at_t:
                 self._curr_l = l_at_t
