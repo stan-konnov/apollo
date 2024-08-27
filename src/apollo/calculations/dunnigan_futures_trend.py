@@ -3,9 +3,6 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
-# All WIP
-# ruff: noqa
-
 
 class DunniganFuturesTrendCalculator(BaseCalculator):
     """
@@ -58,8 +55,8 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         self._curr_l = np.inf
         self._curr_h = -np.inf
 
-        self._trend_l = 0.0
-        self._trend_h = 0.0
+        self._counter_trend_l = 0.0
+        self._counter_trend_h = 0.0
 
         self._up_trend = False
         self._down_trend = False
@@ -91,7 +88,7 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
         # Write futures trend to the dataframe
         self._dataframe["dft"] = self._trend_line
 
-    def _calc_dft(self, series: pd.Series) -> float:
+    def _calc_dft(self, series: pd.Series) -> float:  # noqa: C901
         """
         Calculate rolling Dunnigan's Futures Trend.
 
@@ -151,47 +148,52 @@ class DunniganFuturesTrendCalculator(BaseCalculator):
 
         # If we are in the downtrend and current low
         # is less than or equal to the trend low
-        elif self._down_trend and l_at_t <= self._curr_l:
+        if self._down_trend and l_at_t <= self._curr_l:
             # Then the trend is
             # confirmed as downtrend
             self._current_trend = self.DOWN_TREND
 
-        # # Otherwise
-        # else:
-        #     # No trend detected
-        #     self._current_trend = self.NO_TREND
+        # Record the current counter
+        # trend low in a short-term uptrend
+        if (
+            self._current_trend == self.UP_TREND
+            and h_at_t > self._curr_h
+            and h_at_t > h_at_t_minus_one
+        ):
+            self._counter_trend_l = l_at_t
 
-        # # If previous trend was downtrend
-        # # then recompute the trend high
-        # if prev_trend == self.DOWN_TREND:
-        #     self._trend_h = h_at_t
+        # Record the current counter
+        # trend high in a short-term downtrend
+        if (
+            self._current_trend == self.DOWN_TREND
+            and l_at_t < self._curr_l
+            and l_at_t < l_at_t_minus_one
+        ):
+            self._counter_trend_h = h_at_t
 
-        # # Otherwise,
-        # # recompute the trend low
-        # else:
-        #     self._trend_l = l_at_t
+        # Reset current high in the direction
+        # of the current trend when the trend changes
+        if self._current_trend == self.UP_TREND and prev_trend == self.DOWN_TREND:
+            self._curr_h = h_at_t
 
-        # If we are in the uptrend and current
-        # high is lower than the trend high
-        # if up_trend and h_at_t < self._trend_h:
-        #     # Then, recompute the trend high
-        #     self._trend_h = h_at_t
+        # Reset current low in the direction
+        # of the current trend when the trend changes
+        if self._current_trend == self.DOWN_TREND and prev_trend == self.UP_TREND:
+            self._curr_l = l_at_t
 
-        # # If previous trend was uptrend
-        # # then recompute the trend low
-        # if prev_trend == self.UP_TREND:
-        #     self._trend_l = l_at_t
+        # Record the current high of the short-term trend
+        if self._current_trend == self.UP_TREND:
+            if self._curr_h < h_at_t:
+                self._curr_h = h_at_t
 
-        # # Otherwise,
-        # # recompute the trend high
-        # else:
-        #     self._trend_h = h_at_t
+            self._curr_h = min(self._curr_h, h_at_t)
 
-        # If we are in the downtrend and current
-        # low is greater than the trend low
-        # if down_trend and l_at_t > self._trend_l:
-        #     # Then, recompute the trend low
-        #     self._trend_l = l_at_t
+        # Record the current low of the short-term trend
+        if self._current_trend == self.DOWN_TREND:
+            if self._curr_l > l_at_t:
+                self._curr_l = l_at_t
+
+            self._curr_l = max(self._curr_l, l_at_t)
 
         # Return the current trend
         return self._current_trend
