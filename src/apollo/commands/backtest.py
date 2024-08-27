@@ -46,7 +46,7 @@ def main() -> None:
 
     strategy = DunniganTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
+        window_size=10,
     )
 
     strategy.model_trading_signals()
@@ -56,7 +56,7 @@ def main() -> None:
         strategy_name="DunniganTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.8,
+        tp_volatility_multiplier=0.3,
         write_result_plot=True,
     )
 

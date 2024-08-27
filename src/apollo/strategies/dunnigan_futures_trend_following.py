@@ -128,3 +128,32 @@ class DunniganTrendFollowing(
         # self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
 
         ####
+
+        self._dataframe["pct_change"] = self._dataframe["adj close"].pct_change()
+
+        self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
+        self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()
+
+        self._dataframe["vix_spf_pct_change_diff"] = (
+            self._dataframe["vix_pct_change"] - self._dataframe["spf_pct_change"]
+        )
+
+        self._dataframe["pct_change_diff"] = (
+            self._dataframe["pct_change"] - self._dataframe["vix_spf_pct_change_diff"]
+        )
+
+        self._dataframe["prev_pct_change_diff"] = self._dataframe[
+            "pct_change_diff"
+        ].shift(1)
+
+        long = (
+            self._dataframe["pct_change_diff"] > self._dataframe["prev_pct_change_diff"]
+        )
+
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
+
+        short = (
+            self._dataframe["pct_change_diff"] < self._dataframe["prev_pct_change_diff"]
+        )
+
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
