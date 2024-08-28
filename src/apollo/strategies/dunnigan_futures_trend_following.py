@@ -10,6 +10,12 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 # ruff: noqa
 
+"""
+TODO: this should be renamed, calculator should incapsulate
+
+Enhancing strategy should be created
+"""
+
 
 class DunniganTrendFollowing(
     BaseStrategy,
