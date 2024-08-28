@@ -189,6 +189,8 @@ class DunniganTrendFollowing(
 
         POSITIVE RESULT (VIX CHANGE > SP500 CHANGE):
 
+        Divergence Growing
+
         Scenario A: VIX rises more than the S&P 500 falls (or VIX falls less than S&P 500 rises).
 
         Interpretation: The market is experiencing higher-than-usual fear or uncertainty.
@@ -206,6 +208,8 @@ class DunniganTrendFollowing(
         that the market's decline will continue without increased volatility.
 
         NEGATIVE RESULT (SP500 CHANGE > VIX CHANGE):
+
+        Convergence Growing
 
         Scenario A: S&P 500 rises more than the VIX falls.
         Interpretation: The market is in a risk-on mode, meaning investors are feeling confident,
@@ -239,6 +243,12 @@ class DunniganTrendFollowing(
         daily percentage change is greater than the VIX daily percentage change
         (i.e., the S&P 500 is rising more than the VIX is falling, or it's falling less than the VIX is rising).
         This indicates a convergence in market sentiment, where the market movement and volatility expectations are more aligned.
+
+        Increasing Difference (Divergence Growing):
+        Indicates rising fear or volatility expectations relative to market movements.
+
+        Decreasing Difference (Convergence Growing):
+        Indicates stabilizing market sentiment with volatility expectations more closely tracking market movements.
         """
 
         self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
