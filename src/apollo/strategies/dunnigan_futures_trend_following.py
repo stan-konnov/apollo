@@ -13,6 +13,10 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 TODO: this should be renamed, calculator should incapsulate
 
 Enhancing strategy should be created
+
+FROM EXPERIMENTS:
+
+Working version is TREND FOLLOWING
 """
 
 
@@ -25,8 +29,6 @@ class DunniganTrendFollowing(
 
     Massive work in progress:
     we might not even use Dunnigan, experimenting.
-
-    I'm actually mean reversion.
     """
 
     def __init__(
