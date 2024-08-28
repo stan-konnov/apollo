@@ -224,6 +224,21 @@ class DunniganTrendFollowing(
 
         Negative differences suggest market confidence, but the
         degree of VIX movement relative to S&P 500 can reveal how much caution or hedging is present.
+
+        DIVERGENCE = POSITIVE RESULT:
+
+        This occurs when the VIX daily percentage change is greater than the S&P 500 futures daily
+        percentage change (i.e., the VIX is rising more than the S&P 500 is falling,
+        or it's falling less than the S&P 500 is rising).
+        This indicates a divergence in market sentiment,
+        with higher levels of fear or caution relative to the actual market movement.
+
+        CONVERGENCE = NEGATIVE RESULT:
+
+        This occurs when the S&P 500 futures
+        daily percentage change is greater than the VIX daily percentage change
+        (i.e., the S&P 500 is rising more than the VIX is falling, or it's falling less than the VIX is rising).
+        This indicates a convergence in market sentiment, where the market movement and volatility expectations are more aligned.
         """
 
         self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
