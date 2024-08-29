@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from apollo.calculations.vix_futures_convergence_divergence import (
-    VixFutureConvergenceDivergenceCalculator,
+    VixFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
@@ -139,7 +139,7 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
         BaseStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
-        self._vfcd_calculator = VixFutureConvergenceDivergenceCalculator(
+        self._vfcd_calculator = VixFuturesConvergenceDivergenceCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )

@@ -3,7 +3,7 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 
-class VixFutureConvergenceDivergenceCalculator(BaseCalculator):
+class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
     """
     VIX Futures Convergence Divergence Calculator.
 
