@@ -10,34 +10,21 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 """
-TODO: this should be renamed, calculator should incapsulate
+NEGATIVE RESULT (SP500 CHANGE > VIX CHANGE):
 
-Enhancing strategy should be created
+Convergence Growing
 
-FROM EXPERIMENTS:
+Scenario A: S&P 500 rises more than the VIX falls.
+Interpretation: The market is in a risk-on mode, meaning investors are feeling confident
+and theres a strong upward movement in the S&P 500.
+The VIX falling less in comparison might indicate that while theres confidence,
+theres still some underlying caution about potential risks.
 
-Working version is TREND FOLLOWING
-"""
-
-"""
-Trend following:
-
-LONG:
-
-- Instrument is increasing
-- VIX is decreasing
-- S&P 500 Futures is increasing
-
-SHORT:
-
-- Instrument is decreasing
-- VIX is increasing
-- S&P 500 Futures is decreasing
-
-Daily Percentage Difference and What It Tells You
-If you're looking at the daily percentage change of both
-the VIX and S&P 500 futures and then subtracting the S&P 500's
-daily percentage change from the VIX's, here's what it generally means:
+Scenario B: Both VIX and S&P 500 are rising, but the S&P 500 rises more.
+Interpretation: This could indicate a somewhat unusual
+market condition where the market is bullish,
+but theres still significant hedging activity or concerns about future volatility,
+causing the VIX to rise even though the S&P 500 is also rising.
 
 POSITIVE RESULT (VIX CHANGE > SP500 CHANGE):
 
@@ -60,58 +47,6 @@ theres still a degree of caution or hedging going on.
 The S&P 500 might be falling,
 but the VIXs lesser drop indicates that traders arent fully confident
 that the market's decline will continue without increased volatility.
-
-NEGATIVE RESULT (SP500 CHANGE > VIX CHANGE):
-
-Convergence Growing
-
-Scenario A: S&P 500 rises more than the VIX falls.
-Interpretation: The market is in a risk-on mode, meaning investors are feeling confident
-and theres a strong upward movement in the S&P 500.
-The VIX falling less in comparison might indicate that while theres confidence,
-theres still some underlying caution about potential risks.
-
-Scenario B: Both VIX and S&P 500 are rising, but the S&P 500 rises more.
-Interpretation: This could indicate a somewhat unusual
-market condition where the market is bullish,
-but theres still significant hedging activity or concerns about future volatility,
-causing the VIX to rise even though the S&P 500 is also rising.
-
-#################################################################
-
-Key Takeaways:
-
-Positive differences often indicate heightened
-fear or caution relative to the market movement.
-
-Negative differences suggest market confidence, but the
-degree of VIX movement relative to S&P 500
-can reveal how much caution or hedging is present.
-
-DIVERGENCE = POSITIVE RESULT:
-
-This occurs when the VIX daily percentage change is
-greater than the S&P 500 futures daily
-percentage change (i.e., the VIX is rising more than the S&P 500 is falling,
-or it's falling less than the S&P 500 is rising).
-This indicates a divergence in market sentiment,
-with higher levels of fear or caution relative to the actual market movement.
-
-CONVERGENCE = NEGATIVE RESULT:
-
-This occurs when the S&P 500 futures
-daily percentage change is greater than the VIX daily percentage change
-(i.e., the S&P 500 is rising more than the VIX is falling,
-or it's falling less than the VIX is rising).
-This indicates a convergence in market sentiment,
-where the market movement and volatility expectations are more aligned.
-
-Increasing Difference (Divergence Growing):
-Indicates rising fear or volatility expectations relative to market movements.
-
-Decreasing Difference (Convergence Growing):
-Indicates stabilizing market sentiment with
-volatility expectations more closely tracking market movements.
 """
 
 
@@ -152,7 +87,7 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
     anticipation of increased volatility, occurring during market corrections.
 
     * Both VIX and S&P 500 futures are falling, but the VIX falls less -- a sign of
-    significant hedging activity or concerns about future volatility.
+    of bearish market accompanied by concerns about further growing volatility.
 
     Divergence is, therefore, used to confirm a potential downtrend.
 
