@@ -6,13 +6,15 @@ from apollo.calculations.vix_futures_convergence_divergence import (
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 
 """
-TODO: Precalculate prev_close and remove it from individual calculators.
+TODO:
 
-TODO: If the data for enhancing instruments is missing, strategy would still drop rows.
-The filler in enhancer might be unnecessary, needs testing.
+1. Precalculate prev_close and remove it from individual calculators.
 
-TODO: every enhanced strategy or strategy that relies on enhanced data
-should validate if the data is present in the dataframe before using it.
+2. If the data for enhancing instruments is missing, strategy would still drop rows.
+   The filler in enhancer might be unnecessary, needs testing.
+
+3. Every enhanced strategy or strategy that relies on enhanced data
+   should validate if the data is present in the dataframe before using it.
 """
 
 
