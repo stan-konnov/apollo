@@ -5,6 +5,11 @@ from apollo.calculations.vix_futures_convergence_divergence import (
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 
+"""
+TODO: Precalculate prev_close and remove it from individual calculators.
+TODO: If the data for enhancing instruments is missing, strategy would still drop rows.
+"""
+
 
 class VIXFuturesEnhancedStrategy:
     """
@@ -75,6 +80,7 @@ class VIXFuturesEnhancedStrategy:
             dataframe=dataframe,
             window_size=window_size,
         )
+        self._vfcd_calculator.calculate_vix_futures_convergence_divergence()
 
         # Mark VIX Futures enhanced signals to the dataframe
         dataframe["vix_spf_signal"] = NO_SIGNAL

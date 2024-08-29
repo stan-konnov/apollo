@@ -26,11 +26,6 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
     def calculate_vix_futures_convergence_divergence(self) -> None:
         """Calculate VIX Futures Convergence Divergence."""
 
-        # Get previous close price
-        # Is a necessary for strategies revolving
-        # around VIX and S&P 500 Futures percentage change
-        self._dataframe["prev_close"] = self._dataframe["adj close"].shift(1)
-
         # Calculate percentage change for VIX and S&P 500 Futures
         self._dataframe["vix_pct_change"] = self._dataframe["vix close"].pct_change()
         self._dataframe["spf_pct_change"] = self._dataframe["spf close"].pct_change()

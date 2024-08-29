@@ -24,9 +24,6 @@ class AverageTrueRangeCalculator(BaseCalculator):
     def calculate_average_true_range(self) -> None:
         """Calculate rolling ATR via rolling TR and EMA."""
 
-        # Precalculate previous close
-        self._dataframe["prev_close"] = self._dataframe["adj close"].shift(1)
-
         # Calculate rolling True Range
         self._dataframe["tr"] = (
             self._dataframe["adj close"].rolling(self._window_size).apply(self._calc_tr)
@@ -42,9 +39,6 @@ class AverageTrueRangeCalculator(BaseCalculator):
             )
             .mean()
         )
-
-        # Drop previous close as we no longer need it
-        self._dataframe.drop(columns=["prev_close"], inplace=True)
 
     def _calc_tr(self, series: pd.Series) -> float:
         """
