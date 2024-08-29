@@ -68,7 +68,7 @@ class VIXEnhancedStrategy:
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct VIX Reinforced Strategy.
+        Construct VIX Enhanced Strategy.
 
         Initialize PriceDataProvider with VIX index ticker,
         request VIX prices and enrich price dataframe with them.
@@ -84,7 +84,7 @@ class VIXEnhancedStrategy:
         )
         cvec_calculator.calculate_vix_expansion_contraction()
 
-        # Mark VIX reinforced signals to the dataframe
+        # Mark VIX enhanced signals to the dataframe
         dataframe["vix_signal"] = NO_SIGNAL
 
         dataframe.loc[
