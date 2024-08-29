@@ -50,7 +50,7 @@ class VIXExpansionContractionMeanReversion(
     The strategy, therefore, aims to reverse this logic
     and capture the reversal points in the underlying asset price.
 
-    NOTE: This strategy proved to effective as an enhancement
+    NOTE: This strategy proved to be effective as an enhancement
     strategy and is also used in conjunction with other strategies.
     The logic applied here can also be found in VIX Enhanced Strategy.
 
