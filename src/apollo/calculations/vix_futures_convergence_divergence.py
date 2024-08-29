@@ -23,7 +23,7 @@ class VixFutureConvergenceDivergenceCalculator(BaseCalculator):
         """
         super().__init__(dataframe, window_size)
 
-    def calculate_convergence_divergence(self) -> None:
+    def calculate_vix_futures_convergence_divergence(self) -> None:
         """Calculate VIX Futures Convergence Divergence."""
 
         # Get previous close price

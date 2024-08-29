@@ -10,7 +10,9 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.dunnigan_futures_trend_following import DunniganTrendFollowing
+from apollo.strategies.vix_fut_con_div_trend_following import (
+    VIXFuturesConvergenceDivergenceTrendFollowing,
+)
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -44,7 +46,7 @@ def main() -> None:
 
     dataframe = dataframe.where(dataframe["spf close"] != 0).dropna(how="all")
 
-    strategy = DunniganTrendFollowing(
+    strategy = VIXFuturesConvergenceDivergenceTrendFollowing(
         dataframe=dataframe,
         window_size=20,
     )
@@ -53,7 +55,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="DunniganTrendFollowing",
+        strategy_name="VIXFuturesConvergenceDivergenceTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
