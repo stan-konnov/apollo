@@ -12,6 +12,7 @@ TODO:
 
 2. If the data for enhancing instruments is missing, strategy would still drop rows.
    The filler in enhancer might be unnecessary, needs testing.
+   Perhaps, we should not drop rows after all?
 
 3. Every enhanced strategy or strategy that relies on enhanced data
    should validate if the data is present in the dataframe before using it.
