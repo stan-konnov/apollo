@@ -59,14 +59,16 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
 
     This strategy takes long positions when:
 
-    * Instrument close price is increasing, indicating a potential uptrend.
+    * Instrument close price is increasing,
+    indicating a potential uptrend.
 
     * VIX on Futures percentage difference is decreasing,
     indicating a convergence in market sentiment.
 
     This strategy takes short positions when:
 
-    * Instrument close price is decreasing, indicating a potential downtrend.
+    * Instrument close price is decreasing,
+    indicating a potential downtrend.
 
     * VIX on Futures percentage difference is increasing,
     indicating a divergence in market sentiment.
@@ -76,8 +78,8 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
     * S&P 500 rises more than the VIX falls -- a sign of market confidence
     and a strong (accompanied by volatility) upward movement in the S&P 500.
 
-    * Both VIX and S&P 500 are rising, but the S&P 500 rises more -- a sign of a still
-    bullish market accompanied by hedging activity or concerns about future volatility.
+    * Both VIX and S&P 500 are rising, but the S&P 500 rises more -- a sign of
+    a still bullish market accompanied by concerns about future volatility.
 
     Convergence is, therefore, used to confirm a potential uptrend.
 
@@ -87,7 +89,7 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
     anticipation of increased volatility, occurring during market corrections.
 
     * Both VIX and S&P 500 futures are falling, but the VIX falls less -- a sign of
-    of bearish market accompanied by concerns about further growing volatility.
+    of bearish market accompanied by concerns about even further growing volatility.
 
     Divergence is, therefore, used to confirm a potential downtrend.
 
