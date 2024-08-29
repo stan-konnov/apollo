@@ -9,46 +9,6 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
-"""
-NEGATIVE RESULT (SP500 CHANGE > VIX CHANGE):
-
-Convergence Growing
-
-Scenario A: S&P 500 rises more than the VIX falls.
-Interpretation: The market is in a risk-on mode, meaning investors are feeling confident
-and theres a strong upward movement in the S&P 500.
-The VIX falling less in comparison might indicate that while theres confidence,
-theres still some underlying caution about potential risks.
-
-Scenario B: Both VIX and S&P 500 are rising, but the S&P 500 rises more.
-Interpretation: This could indicate a somewhat unusual
-market condition where the market is bullish,
-but theres still significant hedging activity or concerns about future volatility,
-causing the VIX to rise even though the S&P 500 is also rising.
-
-POSITIVE RESULT (VIX CHANGE > SP500 CHANGE):
-
-Divergence Growing
-
-Scenario A: VIX rises more than the S&P 500 falls
-(or VIX falls less than S&P 500 rises).
-
-Interpretation: The market is experiencing higher-than-usual fear or uncertainty.
-If the VIX rises sharply while the S&P 500 falls,
-it indicates that the market is anticipating increased volatility.
-This can occur during market corrections,
-economic uncertainty, or when significant news impacts investor sentiment.
-
-Scenario B: Both VIX and S&P 500 futures are falling, but the VIX falls less.
-
-Interpretation: This could suggest that although the market is calm
-(hence the VIX is falling),
-theres still a degree of caution or hedging going on.
-The S&P 500 might be falling,
-but the VIXs lesser drop indicates that traders arent fully confident
-that the market's decline will continue without increased volatility.
-"""
-
 
 class VIXFuturesConvergenceDivergenceTrendFollowing(
     BaseStrategy,
