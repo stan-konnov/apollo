@@ -15,6 +15,9 @@ TODO:
 
 3. Every enhanced strategy or strategy that relies on enhanced data
    should validate if the data is present in the dataframe before using it.
+
+4. Go through every strategy top to bottom and figure out if they
+   can be enhanced with VIX Futures signals.
 """
 
 
