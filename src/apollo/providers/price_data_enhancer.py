@@ -23,11 +23,6 @@ class PriceDataEnhancer:
     and enrich the original price dataframe with new columns.
     """
 
-    """
-    TODO: If the data for enhancing instruments is missing, strategy would still drop.
-    This filler might be unnecessary, needs testing.
-    """
-
     # If there is more data in the price dataframe
     # than in the enhanced dataframe, missing values will be
     # filled with NaNs and subsequently dropped by the strategy
@@ -96,9 +91,9 @@ class PriceDataEnhancer:
                         )
                     )
 
-                    price_dataframe[
-                        ["spf open", "spf high", "spf low", "spf close"]
-                    ] = sp500_futures_price_dataframe[["open", "high", "low", "close"]]
+                    price_dataframe["spf close"] = sp500_futures_price_dataframe[
+                        "close"
+                    ]
 
                     if (
                         price_dataframe.shape[0]
@@ -106,9 +101,6 @@ class PriceDataEnhancer:
                     ):
                         price_dataframe.fillna(
                             {
-                                "spf open": self.MISSING_VALUE_FILLER,
-                                "spf high": self.MISSING_VALUE_FILLER,
-                                "spf low": self.MISSING_VALUE_FILLER,
                                 "spf close": self.MISSING_VALUE_FILLER,
                             },
                             inplace=True,
