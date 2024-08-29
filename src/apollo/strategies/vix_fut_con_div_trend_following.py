@@ -77,6 +77,8 @@ market condition where the market is bullish,
 but theres still significant hedging activity or concerns about future volatility,
 causing the VIX to rise even though the S&P 500 is also rising.
 
+#################################################################
+
 Key Takeaways:
 
 Positive differences often indicate heightened
@@ -118,10 +120,31 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
     VolatilityAdjustedStrategy,
 ):
     """
-    Work in progress.
+    VIX Futures Convergence Divergence Trend Following Strategy.
 
-    Massive work in progress:
-    we might not even use Dunnigan, experimenting.
+    This strategy takes long positions when:
+
+    * Instrument close price is increasing, indicating a potential uptrend.
+
+    * VIX on Futures daily percentage difference is decreasing,
+    indicating a convergence in market sentiment.
+
+    This strategy takes short positions when:
+
+    * Instrument close price is decreasing, indicating a potential downtrend.
+
+    * VIX on Futures daily percentage difference is increasing,
+    indicating a divergence in market sentiment.
+
+    Decreasing difference (convergence growing) captures two bullish scenarios:
+
+    * S&P 500 rises more than the VIX falls -- a sign of market confidence
+    and a strong (accompanied by volatility) upward movement in the S&P 500.
+
+    * Both VIX and S&P 500 are rising, but the S&P 500 rises more -- a sign of a still
+    bullish market accompanied by hedging activity or concerns about future volatility.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
     def __init__(
