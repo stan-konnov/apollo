@@ -23,6 +23,11 @@ class PriceDataEnhancer:
     and enrich the original price dataframe with new columns.
     """
 
+    """
+    TODO: If the data for enhancing instruments is missing, strategy would still drop.
+    This filler might be unnecessary, needs testing.
+    """
+
     # If there is more data in the price dataframe
     # than in the enhanced dataframe, missing values will be
     # filled with NaNs and subsequently dropped by the strategy
