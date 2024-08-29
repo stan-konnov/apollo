@@ -9,6 +9,7 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 TODO:
 
 1. Precalculate prev_close and remove it from individual calculators.
+   (Done, double check).
 
 2. If the data for enhancing instruments is missing, strategy would still drop rows.
    The filler in enhancer might be unnecessary, needs testing.
