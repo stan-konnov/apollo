@@ -20,6 +20,8 @@ TODO:
 
 4. Go through every strategy top to bottom and figure out if they
    can be enhanced with VIX Futures signals.
+
+5. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
 """
 
 
