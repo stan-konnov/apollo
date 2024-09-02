@@ -9,18 +9,12 @@ TODO:
    should validate if the data is present in the dataframe before using it.
 
 2. Go through every strategy top to bottom and figure out if they
-   can be enhanced with VIX Futures signals.
+   can be enhanced with Futures signals.
 
 3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
 
-4. Make specialized strategies tell enhancing strategies to be
-   either mean reverting or trend following.
-
-5. Try proper engulfing with VIX.
-
-6. WHAT WORKED WAS NOT ABOUT THE STRATEGY, IT WAS ABOUT NOT TRADING
-   IF THERE IS NO SIGNAL EITHER FROM SPECIALIZED STRATEGY OR ENHANCED STRATEGY.
-   HOW TO REPLICATE IT PROPERLY?
+4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
+   The high Sharpe was attributed to shorter backtesting period.
 """
 
 
@@ -41,7 +35,7 @@ class FuturesEnhancedStrategy:
         """
 
         # Mark Futures enhanced signals to the dataframe
-        dataframe["vix_spf_signal"] = NO_SIGNAL
+        dataframe["spf_signal"] = NO_SIGNAL
 
         # Mean reverting engulfing pattern
         # THIS IS GOOD!
