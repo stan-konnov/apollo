@@ -91,9 +91,9 @@ class PriceDataEnhancer:
                         )
                     )
 
-                    price_dataframe["spf close"] = sp500_futures_price_dataframe[
-                        "close"
-                    ]
+                    price_dataframe[["spf open", "spf close"]] = (
+                        sp500_futures_price_dataframe[["open", "close"]]
+                    )
 
                     if (
                         price_dataframe.shape[0]
