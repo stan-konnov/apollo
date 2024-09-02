@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
+from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 
 """
 TODO:
@@ -14,8 +14,7 @@ TODO:
 3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
 
 4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
-   The high Sharpe was attributed to shorter backtesting period.
-   Was it? More investigation needed
+   The high Sharpe was attributed to a bug.
 """
 
 
@@ -35,11 +34,8 @@ class FuturesEnhancedStrategy:
         :param dataframe: Dataframe with price data.
         """
 
-        # Mean reverting engulfing pattern
-        # THIS IS GOOD!
-        # Nope, you used the wrong column, lol
-        # Investigate this (on skewness strategy)
-        # Why are the numbers so good?
+        # Mark Futures enhanced signals to the dataframe
+        dataframe["spf_signal"] = NO_SIGNAL
 
         dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
         dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)
