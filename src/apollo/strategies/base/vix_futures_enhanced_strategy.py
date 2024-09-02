@@ -35,6 +35,7 @@ class VIXFuturesEnhancedStrategy:
         dataframe["spf_signal"] = NO_SIGNAL
 
         # Mean reverting engulfing pattern
+        # THIS IS GOOD!
 
         dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
         dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)
