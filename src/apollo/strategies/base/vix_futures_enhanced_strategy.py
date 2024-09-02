@@ -31,20 +31,26 @@ class VIXFuturesEnhancedStrategy:
         :param dataframe: Dataframe with price data.
         """
 
-        # Mark VIX Futures enhanced signals to the dataframe
-        dataframe["vix_spf_signal"] = NO_SIGNAL
+        # Mark Futures enhanced signals to the dataframe
+        dataframe["spf_signal"] = NO_SIGNAL
+
+        # Mean reverting engulfing pattern
 
         dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
         dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)
 
-        long = (dataframe["spf open"] > dataframe["spf_prev_open"]) & (
-            dataframe["spf close"] > dataframe["prev_spf_close"]
+        long = (
+            (dataframe["spf open"] > dataframe["spf_prev_open"])
+            & (dataframe["spf close"] < dataframe["spf_prev_close"])
+            & (dataframe["spf close"] < dataframe["spf open"])
         )
 
         dataframe.loc[long, "vix_spf_signal"] = LONG_SIGNAL
 
-        short = (dataframe["spf open"] < dataframe["spf_prev_open"]) & (
-            dataframe["spf close"] < dataframe["spf_prev_close"]
+        short = (
+            (dataframe["spf open"] < dataframe["spf_prev_open"])
+            & (dataframe["spf close"] > dataframe["spf_prev_close"])
+            & (dataframe["spf close"] > dataframe["spf open"])
         )
 
         dataframe.loc[short, "vix_spf_signal"] = SHORT_SIGNAL
