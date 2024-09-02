@@ -10,8 +10,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.skew_kurt_vol_trend_following import (
-    SkewnessKurtosisVolatilityTrendFollowing,
+from apollo.strategies.vix_fut_con_div_trend_following import (
+    VIXFuturesConvergenceDivergenceTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -44,18 +44,16 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+    strategy = VIXFuturesConvergenceDivergenceTrendFollowing(
         dataframe=dataframe,
         window_size=20,
-        kurtosis_threshold=0.5,
-        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
+        strategy_name="VIXFuturesConvergenceDivergenceTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
