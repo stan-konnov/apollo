@@ -15,6 +15,7 @@ TODO:
 
 4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
    The high Sharpe was attributed to shorter backtesting period.
+   Was it? More investigation needed
 """
 
 
