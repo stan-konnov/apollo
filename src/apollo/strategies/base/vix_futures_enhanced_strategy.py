@@ -11,9 +11,8 @@ TODO:
 1. Precalculate prev_close and remove it from individual calculators.
    (Done, double check).
 
-2. If the data for enhancing instruments is missing, strategy would still drop rows.
-   The filler in enhancer might be unnecessary, needs testing.
-   Perhaps, we should not drop rows after all? (Work in progress, do not drop rows).
+2. On missing data = we need to drop since we need valid ATR to calculate
+    entries and exits.
 
 3. Every enhanced strategy or strategy that relies on enhanced data
    should validate if the data is present in the dataframe before using it.
