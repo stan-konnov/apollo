@@ -46,8 +46,8 @@ def main() -> None:
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
-        window_size=20,
-        kurtosis_threshold=0.5,
+        window_size=5,
+        kurtosis_threshold=1.5,
         volatility_multiplier=1.0,
     )
 
