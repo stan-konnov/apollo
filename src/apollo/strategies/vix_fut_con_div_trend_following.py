@@ -85,6 +85,7 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
 
         self._calculate_indicators()
         self._mark_trading_signals()
+        self._dataframe.dropna(inplace=True)
 
     def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
