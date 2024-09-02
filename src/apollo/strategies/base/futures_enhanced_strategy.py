@@ -15,9 +15,9 @@ TODO:
 """
 
 
-class VIXFuturesEnhancedStrategy:
+class FuturesEnhancedStrategy:
     """
-    VIX Futures Enhanced Strategy class.
+    Futures Enhanced Strategy class.
 
     Massive work in progress.
 
