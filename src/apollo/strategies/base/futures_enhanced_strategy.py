@@ -15,6 +15,16 @@ TODO:
 
 4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
    The high Sharpe was attributed to a bug.
+
+   SkewnessKurtosisVolatilityTrendFollowing
+   | 2.095821210696717
+   | {
+        "window_size": 20.0,
+        "kurtosis_threshold": 0.5,
+        "volatility_multiplier": 1.0,
+        "sl_volatility_multiplier": 0.1,
+        "tp_volatility_multiplier": 0.4
+    }
 """
 
 

@@ -103,18 +103,28 @@ class SkewnessKurtosisVolatilityTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["skew"] < 0) & (
-            self._dataframe["kurt"] < self._kurtosis_threshold
-        ) & (
-            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
-        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+        long = (
+            (self._dataframe["skew"] < 0)
+            & (self._dataframe["kurt"] < self._kurtosis_threshold)
+            & (
+                self._dataframe["tr"]
+                > self._dataframe["atr"] * self._volatility_multiplier
+            )
+            | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+            | (self._dataframe["spf_signal"] == LONG_SIGNAL)
+        )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["skew"] > 0) & (
-            self._dataframe["kurt"] < self._kurtosis_threshold
-        ) & (
-            self._dataframe["tr"] > self._dataframe["atr"] * self._volatility_multiplier
-        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+        short = (
+            (self._dataframe["skew"] > 0)
+            & (self._dataframe["kurt"] < self._kurtosis_threshold)
+            & (
+                self._dataframe["tr"]
+                > self._dataframe["atr"] * self._volatility_multiplier
+            )
+            | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+            | (self._dataframe["spf_signal"] == SHORT_SIGNAL)
+        )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
