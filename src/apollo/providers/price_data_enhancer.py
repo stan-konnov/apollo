@@ -23,6 +23,12 @@ class PriceDataEnhancer:
     and enrich the original price dataframe with new columns.
     """
 
+    # If there is more data in the price dataframe
+    # than in the enhanced dataframe, missing values will be
+    # filled with NaNs and subsequently dropped by the strategy
+    # We, therefore, avoid this by filling the missing values with 0
+    MISSING_VALUE_FILLER = 0
+
     def __init__(self) -> None:
         """Construct Price Data Enhancer."""
 
@@ -65,6 +71,15 @@ class PriceDataEnhancer:
                         ["open", "close"]
                     ]
 
+                    if price_dataframe.shape[0] > vix_price_dataframe.shape[0]:
+                        price_dataframe.fillna(
+                            {
+                                "vix open": self.MISSING_VALUE_FILLER,
+                                "vix close": self.MISSING_VALUE_FILLER,
+                            },
+                            inplace=True,
+                        )
+
                 case "SP500 Futures":
                     sp500_futures_price_dataframe = (
                         self._price_data_provider.get_price_data(
@@ -79,6 +94,17 @@ class PriceDataEnhancer:
                     price_dataframe["spf close"] = sp500_futures_price_dataframe[
                         "close"
                     ]
+
+                    if (
+                        price_dataframe.shape[0]
+                        > sp500_futures_price_dataframe.shape[0]
+                    ):
+                        price_dataframe.fillna(
+                            {
+                                "spf close": self.MISSING_VALUE_FILLER,
+                            },
+                            inplace=True,
+                        )
 
                 case _:
                     raise ValueError(
