@@ -41,6 +41,7 @@ class FuturesEnhancedStrategy:
 
         # Mean reverting engulfing pattern
         # THIS IS GOOD!
+        # Nope, you used the wrong column, lol
 
         dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
         dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)
@@ -51,7 +52,7 @@ class FuturesEnhancedStrategy:
             & (dataframe["spf close"] < dataframe["spf open"])
         )
 
-        dataframe.loc[long, "vix_spf_signal"] = LONG_SIGNAL
+        dataframe.loc[long, "spf_signal"] = LONG_SIGNAL
 
         short = (
             (dataframe["spf open"] < dataframe["spf_prev_open"])
@@ -59,4 +60,4 @@ class FuturesEnhancedStrategy:
             & (dataframe["spf close"] > dataframe["spf open"])
         )
 
-        dataframe.loc[short, "vix_spf_signal"] = SHORT_SIGNAL
+        dataframe.loc[short, "spf_signal"] = SHORT_SIGNAL
