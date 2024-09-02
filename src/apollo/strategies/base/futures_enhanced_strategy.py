@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
+from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
 TODO:
@@ -34,9 +34,6 @@ class FuturesEnhancedStrategy:
 
         :param dataframe: Dataframe with price data.
         """
-
-        # Mark Futures enhanced signals to the dataframe
-        dataframe["vix_spf_signal"] = NO_SIGNAL
 
         # Mean reverting engulfing pattern
         # THIS IS GOOD!
