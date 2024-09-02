@@ -42,6 +42,8 @@ class FuturesEnhancedStrategy:
         # Mean reverting engulfing pattern
         # THIS IS GOOD!
         # Nope, you used the wrong column, lol
+        # Investigate this (on skewness strategy)
+        # Why are the numbers so good?
 
         dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
         dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)

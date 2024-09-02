@@ -1,5 +1,7 @@
 import logging
 
+import pandas as pd
+
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
@@ -52,6 +54,13 @@ def main() -> None:
     )
 
     strategy.model_trading_signals()
+
+    pd.options.display.max_rows = 100000
+    print(  # noqa: T201
+        dataframe[
+            ["open", "high", "low", "close", "signal", "vix_signal", "vix_spf_signal"]
+        ],
+    )
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
