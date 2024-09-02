@@ -110,7 +110,7 @@ class SkewnessKurtosisVolatilityTrendFollowing(
                 self._dataframe["tr"]
                 > self._dataframe["atr"] * self._volatility_multiplier
             )
-            | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+            # | (self._dataframe["vix_signal"] == LONG_SIGNAL)
             | (self._dataframe["spf_signal"] == LONG_SIGNAL)
         )
 
@@ -123,7 +123,7 @@ class SkewnessKurtosisVolatilityTrendFollowing(
                 self._dataframe["tr"]
                 > self._dataframe["atr"] * self._volatility_multiplier
             )
-            | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+            # | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
             | (self._dataframe["spf_signal"] == SHORT_SIGNAL)
         )
 
