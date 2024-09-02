@@ -41,7 +41,7 @@ def main() -> None:
 
     dataframe = price_data_enhancer.enhance_price_data(
         price_dataframe=dataframe,
-        additional_data_enhancers=["VIX", "SP500 Futures"],
+        additional_data_enhancers=["VIX"],
     )
 
     strategy = SkewnessKurtosisVolatilityTrendFollowing(

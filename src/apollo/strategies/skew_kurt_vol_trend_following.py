@@ -3,7 +3,6 @@ from pandas import DataFrame
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
-from apollo.strategies.base.futures_enhanced_strategy import FuturesEnhancedStrategy
 from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
@@ -13,7 +12,6 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 class SkewnessKurtosisVolatilityTrendFollowing(
     BaseStrategy,
     VIXEnhancedStrategy,
-    FuturesEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -79,7 +77,6 @@ class SkewnessKurtosisVolatilityTrendFollowing(
 
         BaseStrategy.__init__(self, dataframe, window_size)
         VIXEnhancedStrategy.__init__(self, dataframe, window_size)
-        FuturesEnhancedStrategy.__init__(self, dataframe)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._kurtosis_threshold = kurtosis_threshold
