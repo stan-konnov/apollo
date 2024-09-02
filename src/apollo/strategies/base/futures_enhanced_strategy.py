@@ -13,6 +13,9 @@ TODO:
 
 3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
 
+   More research needed around futures signals (perhaps we need a calculator for this).
+   Research!
+
 4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
    The high Sharpe was attributed to a bug.
 
