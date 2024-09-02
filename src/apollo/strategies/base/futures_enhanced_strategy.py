@@ -37,7 +37,7 @@ class FuturesEnhancedStrategy:
         """
 
         # Mark Futures enhanced signals to the dataframe
-        dataframe["spf_signal"] = NO_SIGNAL
+        dataframe["vix_spf_signal"] = NO_SIGNAL
 
         # Mean reverting engulfing pattern
         # THIS IS GOOD!
