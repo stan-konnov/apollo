@@ -8,19 +8,13 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 """
 TODO:
 
-1. Precalculate prev_close and remove it from individual calculators.
-   (Done, double check).
-
-2. On missing data = we need to drop since we need valid ATR to calculate
-    entries and exits.
-
-3. Every enhanced strategy or strategy that relies on enhanced data
+1. Every enhanced strategy or strategy that relies on enhanced data
    should validate if the data is present in the dataframe before using it.
 
-4. Go through every strategy top to bottom and figure out if they
+2. Go through every strategy top to bottom and figure out if they
    can be enhanced with VIX Futures signals.
 
-5. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
+3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
 """
 
 
