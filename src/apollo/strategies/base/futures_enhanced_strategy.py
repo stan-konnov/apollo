@@ -12,6 +12,11 @@ TODO:
    can be enhanced with VIX Futures signals.
 
 3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
+
+4. Make specialized strategies tell enhancing strategies to be
+   either mean reverting or trend following.
+
+5. Try proper engulfing with VIX.
 """
 
 
