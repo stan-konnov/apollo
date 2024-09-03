@@ -102,7 +102,7 @@ class VIXExpansionContractionMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION) & (
+        long = (self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION) | (
             self._dataframe["spf_signal"] == LONG_SIGNAL
         )
 
@@ -110,6 +110,6 @@ class VIXExpansionContractionMeanReversion(
 
         short = (
             self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION
-        ) & (self._dataframe["spf_signal"] == SHORT_SIGNAL)
+        ) | (self._dataframe["spf_signal"] == SHORT_SIGNAL)
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

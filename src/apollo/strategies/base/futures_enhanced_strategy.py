@@ -1,6 +1,11 @@
 import pandas as pd
 
-from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
+from apollo.settings import (
+    LONG_SIGNAL,
+    MISSING_DATA_PLACEHOLDER,
+    NO_SIGNAL,
+    SHORT_SIGNAL,
+)
 
 """
 TODO:
@@ -50,13 +55,15 @@ class FuturesEnhancedStrategy:
         dataframe["spf_prev_close"] = 0
 
         # Shift open and close prices only if the data is present
-        dataframe.loc[dataframe["spf open"].notna(), "spf_prev_open"] = dataframe[
-            "spf open"
-        ].shift(1)
+        dataframe.loc[
+            dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
+            "spf_prev_open",
+        ] = dataframe["spf open"].shift(1)
 
-        dataframe.loc[dataframe["spf close"].notna(), "spf_prev_close"] = dataframe[
-            "spf close"
-        ].shift(1)
+        dataframe.loc[
+            dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
+            "spf_prev_close",
+        ] = dataframe["spf close"].shift(1)
 
         # Build condition for
         # presence of necessary data
