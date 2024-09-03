@@ -10,7 +10,11 @@ TODO:
 
 2. Backtest new strategy and Futures enhancing on full period.
 
-3. Make sure VIX enhanced strategy does not drop rows either.
+3. Make sure VIX enhanced strategy does not drop rows.
+
+4. Make sure VIX strategy does not drop rows.
+
+5. Make sure VIX Futures strategy does not drop rows.
 """
 
 
