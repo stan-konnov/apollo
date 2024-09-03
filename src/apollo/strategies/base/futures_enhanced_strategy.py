@@ -41,17 +41,6 @@ class FuturesEnhancedStrategy:
         dataframe["spf_prev_open"] = 0
         dataframe["spf_prev_close"] = 0
 
-        # Shift open and close prices only if the data is present
-        dataframe.loc[dataframe["spf open"].notna(), "spf_prev_open"] = dataframe[
-            "spf open"
-        ].shift(1)
-
-        dataframe.loc[dataframe["spf close"].notna(), "spf_prev_close"] = dataframe[
-            "spf close"
-        ].shift(
-            1,
-        )
-
         # Build condition for
         # presence of necessary data
         necessary_data_present = (
@@ -61,7 +50,6 @@ class FuturesEnhancedStrategy:
             & dataframe["spf_prev_close"].notna()
         )
 
-        # And compute the signals
         long = (
             necessary_data_present
             & (dataframe["spf open"] > dataframe["spf_prev_open"])
