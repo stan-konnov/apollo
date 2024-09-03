@@ -33,7 +33,7 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
         # We, therefore, need to check against NaNs after calculation,
         # since calculating over missing data results in NaNs that are dropped
 
-        # Initialize necessary columns with 0s
+        # Initialize necessary columns with 0
         self._dataframe["vix_pct_change"] = 0
         self._dataframe["spf_pct_change"] = 0
         self._dataframe["vix_spf_pct_diff"] = 0
