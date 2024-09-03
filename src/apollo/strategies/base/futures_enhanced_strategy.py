@@ -5,29 +5,15 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 """
 TODO:
 
-1. Every enhanced strategy or strategy that relies on enhanced data
-   should validate if the data is present in the dataframe before using it.
+1. Make sure rows are not dropped for strategies
+   that rely on incomplete enhancing data.
 
-2. Go through every strategy top to bottom and figure out if they
-   can be enhanced with Futures signals.
+2. Avoid populating NaN in enhancers as calculations
+   will anyways lead to NaNs.
 
-3. Use futures high and low for enhancing instead of VIX Futures Conv Divergence.
+3. Reoptimize SkewKurtVol.
 
-   More research needed around futures signals (perhaps we need a calculator for this).
-   Research!
-
-4. Reoptimize SkewnessKurtosisVolatilityTrendFollowing.
-   The high Sharpe was attributed to a bug.
-
-   SkewnessKurtosisVolatilityTrendFollowing
-   | 2.095821210696717
-   | {
-        "window_size": 20.0,
-        "kurtosis_threshold": 0.5,
-        "volatility_multiplier": 1.0,
-        "sl_volatility_multiplier": 0.1,
-        "tp_volatility_multiplier": 0.4
-    }
+4. Backtest new strategy and Futures enhancing on full period.
 """
 
 
