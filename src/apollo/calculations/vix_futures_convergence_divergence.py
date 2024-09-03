@@ -1,6 +1,7 @@
 import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
+from apollo.settings import MISSING_DATA_PLACEHOLDER
 
 
 class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
@@ -40,12 +41,12 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
         # Calculate percentage change for VIX and
         # S&P 500 Futures only if the data is present
         self._dataframe.loc[
-            self._dataframe["vix close"] != 0,
+            self._dataframe["vix close"] != MISSING_DATA_PLACEHOLDER,
             "vix_pct_change",
         ] = self._dataframe["vix close"].pct_change()
 
         self._dataframe.loc[
-            self._dataframe["spf close"] != 0,
+            self._dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
             "spf_pct_change",
         ] = self._dataframe["spf close"].pct_change()
 

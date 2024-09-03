@@ -5,6 +5,7 @@ from apollo.settings import (
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
+    MISSING_DATA_PLACEHOLDER,
     SP500_FUTURES_TICKER,
     START_DATE,
     SUPPORTED_DATA_ENHANCERS,
@@ -22,12 +23,6 @@ class PriceDataEnhancer:
     Uses Price Data Provider to retrieve enhancing data
     and enrich the original price dataframe with new columns.
     """
-
-    # If there is more data in the price dataframe
-    # than in the enhanced dataframe, missing values will be
-    # filled with NaNs and subsequently dropped by the strategy
-    # We, therefore, avoid this by filling the missing values with 0
-    MISSING_VALUE_FILLER = 0
 
     def __init__(self) -> None:
         """Construct Price Data Enhancer."""
@@ -71,11 +66,15 @@ class PriceDataEnhancer:
                         ["open", "close"]
                     ]
 
+                    # If there is more data in the price dataframe
+                    # than in the enhanced dataframe, missing values will be
+                    # filled with NaNs and subsequently dropped by the strategy
+                    # We, therefore, avoid this by filling the values with placeholder
                     if price_dataframe.shape[0] > vix_price_dataframe.shape[0]:
                         price_dataframe.fillna(
                             {
-                                "vix open": self.MISSING_VALUE_FILLER,
-                                "vix close": self.MISSING_VALUE_FILLER,
+                                "vix open": MISSING_DATA_PLACEHOLDER,
+                                "vix close": MISSING_DATA_PLACEHOLDER,
                             },
                             inplace=True,
                         )
@@ -101,8 +100,8 @@ class PriceDataEnhancer:
                     ):
                         price_dataframe.fillna(
                             {
-                                "spf open": self.MISSING_VALUE_FILLER,
-                                "spf close": self.MISSING_VALUE_FILLER,
+                                "spf open": MISSING_DATA_PLACEHOLDER,
+                                "spf close": MISSING_DATA_PLACEHOLDER,
                             },
                             inplace=True,
                         )
