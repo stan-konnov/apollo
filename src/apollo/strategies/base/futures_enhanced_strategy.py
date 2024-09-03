@@ -5,10 +5,12 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 """
 TODO:
 
-3. Reoptimize SkewKurtVol.
+1. Reoptimize SkewKurtVol.
    Sharpe 2.095821210696717
 
-4. Backtest new strategy and Futures enhancing on full period.
+2. Backtest new strategy and Futures enhancing on full period.
+
+3. Make sure VIX enhanced strategy does not drop rows either.
 """
 
 
