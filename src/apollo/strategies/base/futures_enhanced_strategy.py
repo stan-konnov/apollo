@@ -28,15 +28,20 @@ class FuturesEnhancedStrategy:
         :param dataframe: Dataframe with price data.
         """
 
-        # Mark Futures enhanced signals to the dataframe
+        # Since we are working with multiple
+        # data sources, there is no guarantee that
+        # the data is present for all the rows in the dataframe
+        # We, therefore, need to check for the presence of the data
+        # to avoid excluding rows that will result in NaNs during calculations
+
+        # Mark futures enhanced signals to the dataframe
         dataframe["spf_signal"] = NO_SIGNAL
 
         # Initialize necessary columns with 0s
         dataframe["spf_prev_open"] = 0
         dataframe["spf_prev_close"] = 0
 
-        # Compute necessary columns
-        # only in case if data is present
+        # Shift open and close prices only if the data is present
         dataframe.loc[dataframe["spf open"].notna(), "spf_prev_open"] = dataframe[
             "spf open"
         ].shift(1)
@@ -47,15 +52,18 @@ class FuturesEnhancedStrategy:
             1,
         )
 
-        necessary_columns_present = (
+        # Build condition for
+        # presence of necessary data
+        necessary_data_present = (
             dataframe["spf open"].notna()
             & dataframe["spf close"].notna()
             & dataframe["spf_prev_open"].notna()
             & dataframe["spf_prev_close"].notna()
         )
 
+        # And compute the signals
         long = (
-            necessary_columns_present
+            necessary_data_present
             & (dataframe["spf open"] > dataframe["spf_prev_open"])
             & (dataframe["spf close"] < dataframe["spf_prev_close"])
             & (dataframe["spf close"] < dataframe["spf open"])
@@ -64,7 +72,7 @@ class FuturesEnhancedStrategy:
         dataframe.loc[long, "spf_signal"] = LONG_SIGNAL
 
         short = (
-            necessary_columns_present
+            necessary_data_present
             & (dataframe["spf open"] < dataframe["spf_prev_open"])
             & (dataframe["spf close"] > dataframe["spf_prev_close"])
             & (dataframe["spf close"] > dataframe["spf open"])
