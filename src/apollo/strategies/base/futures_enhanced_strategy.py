@@ -31,8 +31,8 @@ class FuturesEnhancedStrategy:
         # Since we are working with multiple
         # data sources, there is no guarantee that
         # the data is present for all the rows in the dataframe
-        # We, therefore, need to check for the presence of the data
-        # to avoid excluding rows that will result in NaNs during calculations
+        # We, therefore, need to check against NaNs after calculation,
+        # since calculating over missing data results in NaNs that are dropped
 
         # Mark futures enhanced signals to the dataframe
         dataframe["spf_signal"] = NO_SIGNAL
@@ -44,10 +44,7 @@ class FuturesEnhancedStrategy:
         # Build condition for
         # presence of necessary data
         necessary_data_present = (
-            dataframe["spf open"].notna()
-            & dataframe["spf close"].notna()
-            & dataframe["spf_prev_open"].notna()
-            & dataframe["spf_prev_close"].notna()
+            dataframe["spf_prev_open"].notna() & dataframe["spf_prev_close"].notna()
         )
 
         long = (
