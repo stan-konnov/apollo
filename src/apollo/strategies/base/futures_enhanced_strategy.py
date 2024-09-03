@@ -10,20 +10,17 @@ from apollo.settings import (
 """
 TODO:
 
-1. Reoptimize SkewKurtVol.
-   Sharpe 2.095821210696717
+1. Backtest all strategies with this enhancement (Swing Events + WSI left).
 
-2. Backtest all strategies with this enhancement (Swing Events + WSI left).
+2. Move calculations to a calculator file.
 
-3. Move calculations to a calculator file.
+3. Make sure VIX enhanced strategy does not drop rows.
 
-4. Make sure VIX enhanced strategy does not drop rows.
+4. Make sure VIX EC strategy does not drop rows.
 
-5. Make sure VIX EC strategy does not drop rows.
+5. Experiment with VIX FUT CD strategy as enhancer.
 
-6. Experiment with VIX FUT CD strategy as enhancer.
-
-7. Make this strategy a separate strategy.
+6. Make this strategy a separate strategy.
 """
 
 
@@ -41,6 +38,7 @@ class FuturesEnhancedStrategy:
         :param dataframe: Dataframe with price data.
         """
 
+        # REWORK THIS COMMENT
         # Since we are working with multiple
         # data sources, there is no guarantee that
         # the data is present for all the rows in the dataframe
