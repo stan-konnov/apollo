@@ -22,6 +22,8 @@ TODO:
 5. Make sure VIX strategy does not drop rows.
 
 7. Experiment with vix fut cd strategy as enhancer.
+
+8. Make this strategy a separate strategy.
 """
 
 
