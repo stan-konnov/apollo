@@ -5,6 +5,7 @@ from apollo.calculations.conners_vix_expansion_contraction import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.futures_enhanced_strategy import FuturesEnhancedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
@@ -12,6 +13,7 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 class VIXExpansionContractionMeanReversion(
     BaseStrategy,
+    FuturesEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -73,6 +75,7 @@ class VIXExpansionContractionMeanReversion(
         """
 
         BaseStrategy.__init__(self, dataframe, window_size)
+        FuturesEnhancedStrategy.__init__(self, dataframe)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._cvec_calculator = ConnersVixExpansionContractionCalculator(
@@ -96,11 +99,13 @@ class VIXExpansionContractionMeanReversion(
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION,
+            (self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION)
+            | (self._dataframe["spf_signal"] == LONG_SIGNAL),
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION,
+            (self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION)
+            | (self._dataframe["spf_signal"] == SHORT_SIGNAL),
             "signal",
         ] = SHORT_SIGNAL
