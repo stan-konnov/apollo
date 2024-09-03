@@ -5,12 +5,6 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 """
 TODO:
 
-1. Make sure rows are not dropped for strategies
-   that rely on incomplete enhancing data.
-
-2. Avoid populating NaN in enhancers as calculations
-   will anyways lead to NaNs.
-
 3. Reoptimize SkewKurtVol.
    Sharpe 2.095821210696717
 
@@ -21,8 +15,6 @@ TODO:
 class FuturesEnhancedStrategy:
     """
     Futures Enhanced Strategy class.
-
-    Massive work in progress.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
