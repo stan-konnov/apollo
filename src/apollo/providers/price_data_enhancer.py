@@ -101,6 +101,7 @@ class PriceDataEnhancer:
                     ):
                         price_dataframe.fillna(
                             {
+                                "spf open": self.MISSING_VALUE_FILLER,
                                 "spf close": self.MISSING_VALUE_FILLER,
                             },
                             inplace=True,

@@ -12,6 +12,7 @@ TODO:
    will anyways lead to NaNs.
 
 3. Reoptimize SkewKurtVol.
+   Sharpe 2.095821210696717
 
 4. Backtest new strategy and Futures enhancing on full period.
 """
