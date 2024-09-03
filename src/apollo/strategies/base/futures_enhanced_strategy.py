@@ -13,15 +13,13 @@ TODO:
 1. Reoptimize SkewKurtVol.
    Sharpe 2.095821210696717
 
-2. Backtest all strategies with this enhancement.
+2. Backtest all strategies with this enhancement (Swing Events + WSI left)
 
 3. Backtest new strategy and Futures enhancing on full period.
 
 4. Make sure VIX enhanced strategy does not drop rows.
 
 5. Make sure VIX strategy does not drop rows.
-
-6. Make sure VIX Futures strategy does not drop rows.
 
 7. Experiment with vix fut cd strategy as enhancer.
 """
@@ -50,7 +48,7 @@ class FuturesEnhancedStrategy:
         # Mark futures enhanced signals to the dataframe
         dataframe["spf_signal"] = NO_SIGNAL
 
-        # Initialize necessary columns with 0s
+        # Initialize necessary columns with 0
         dataframe["spf_prev_open"] = 0
         dataframe["spf_prev_close"] = 0
 
