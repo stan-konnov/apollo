@@ -15,6 +15,8 @@ TODO:
 4. Make sure VIX strategy does not drop rows.
 
 5. Make sure VIX Futures strategy does not drop rows.
+
+6. Experiment with vix fut strategy as enhancer.
 """
 
 
