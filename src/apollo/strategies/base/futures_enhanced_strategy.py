@@ -36,11 +36,32 @@ class FuturesEnhancedStrategy:
         # Mark Futures enhanced signals to the dataframe
         dataframe["spf_signal"] = NO_SIGNAL
 
-        dataframe["spf_prev_open"] = dataframe["spf open"].shift(1)
-        dataframe["spf_prev_close"] = dataframe["spf close"].shift(1)
+        # Initialize necessary columns with 0s
+        dataframe["spf_prev_open"] = 0
+        dataframe["spf_prev_close"] = 0
+
+        # Compute necessary columns
+        # only in case if data is present
+        dataframe.loc[dataframe["spf open"].notna(), "spf_prev_open"] = dataframe[
+            "spf open"
+        ].shift(1)
+
+        dataframe.loc[dataframe["spf close"].notna(), "spf_prev_close"] = dataframe[
+            "spf close"
+        ].shift(
+            1,
+        )
+
+        necessary_columns_present = (
+            dataframe["spf open"].notna()
+            & dataframe["spf close"].notna()
+            & dataframe["spf_prev_open"].notna()
+            & dataframe["spf_prev_close"].notna()
+        )
 
         long = (
-            (dataframe["spf open"] > dataframe["spf_prev_open"])
+            necessary_columns_present
+            & (dataframe["spf open"] > dataframe["spf_prev_open"])
             & (dataframe["spf close"] < dataframe["spf_prev_close"])
             & (dataframe["spf close"] < dataframe["spf open"])
         )
@@ -48,7 +69,8 @@ class FuturesEnhancedStrategy:
         dataframe.loc[long, "spf_signal"] = LONG_SIGNAL
 
         short = (
-            (dataframe["spf open"] < dataframe["spf_prev_open"])
+            necessary_columns_present
+            & (dataframe["spf open"] < dataframe["spf_prev_open"])
             & (dataframe["spf close"] > dataframe["spf_prev_close"])
             & (dataframe["spf close"] > dataframe["spf open"])
         )
