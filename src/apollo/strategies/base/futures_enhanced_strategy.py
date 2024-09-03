@@ -8,15 +8,17 @@ TODO:
 1. Reoptimize SkewKurtVol.
    Sharpe 2.095821210696717
 
-2. Backtest new strategy and Futures enhancing on full period.
+2. Backtest all strategies with this enhancement.
 
-3. Make sure VIX enhanced strategy does not drop rows.
+3. Backtest new strategy and Futures enhancing on full period.
 
-4. Make sure VIX strategy does not drop rows.
+4. Make sure VIX enhanced strategy does not drop rows.
 
-5. Make sure VIX Futures strategy does not drop rows.
+5. Make sure VIX strategy does not drop rows.
 
-6. Experiment with vix fut strategy as enhancer.
+6. Make sure VIX Futures strategy does not drop rows.
+
+7. Experiment with vix fut cd strategy as enhancer.
 """
 
 
