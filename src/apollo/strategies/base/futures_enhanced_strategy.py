@@ -21,9 +21,11 @@ TODO:
 
 5. Make sure VIX strategy does not drop rows.
 
-7. Experiment with vix fut cd strategy as enhancer.
+6. Experiment with vix fut cd strategy as enhancer.
 
-8. Make this strategy a separate strategy.
+7. Make this strategy a separate strategy.
+
+8. Move calculations to a calculator file.
 """
 
 
@@ -65,15 +67,8 @@ class FuturesEnhancedStrategy:
             "spf_prev_close",
         ] = dataframe["spf close"].shift(1)
 
-        # Build condition for
-        # presence of necessary data
-        necessary_data_present = (
-            dataframe["spf_prev_open"].notna() & dataframe["spf_prev_close"].notna()
-        )
-
         long = (
-            necessary_data_present
-            & (dataframe["spf open"] > dataframe["spf_prev_open"])
+            (dataframe["spf open"] > dataframe["spf_prev_open"])
             & (dataframe["spf close"] < dataframe["spf_prev_close"])
             & (dataframe["spf close"] < dataframe["spf open"])
         )
@@ -81,8 +76,7 @@ class FuturesEnhancedStrategy:
         dataframe.loc[long, "spf_signal"] = LONG_SIGNAL
 
         short = (
-            necessary_data_present
-            & (dataframe["spf open"] < dataframe["spf_prev_open"])
+            (dataframe["spf open"] < dataframe["spf_prev_open"])
             & (dataframe["spf close"] > dataframe["spf_prev_close"])
             & (dataframe["spf close"] > dataframe["spf open"])
         )
