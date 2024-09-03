@@ -10,6 +10,10 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
+"""
+TODO: comments
+"""
+
 
 class VIXExpansionContractionMeanReversion(
     BaseStrategy,
@@ -98,14 +102,14 @@ class VIXExpansionContractionMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        self._dataframe.loc[
-            (self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION)
-            | (self._dataframe["spf_signal"] == LONG_SIGNAL),
-            "signal",
-        ] = LONG_SIGNAL
+        long = (self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION) & (
+            self._dataframe["spf_signal"] == LONG_SIGNAL
+        )
 
-        self._dataframe.loc[
-            (self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION)
-            | (self._dataframe["spf_signal"] == SHORT_SIGNAL),
-            "signal",
-        ] = SHORT_SIGNAL
+        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
+
+        short = (
+            self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION
+        ) & (self._dataframe["spf_signal"] == SHORT_SIGNAL)
+
+        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
