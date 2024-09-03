@@ -54,9 +54,7 @@ class FuturesEnhancedStrategy:
 
         dataframe.loc[dataframe["spf close"].notna(), "spf_prev_close"] = dataframe[
             "spf close"
-        ].shift(
-            1,
-        )
+        ].shift(1)
 
         # Build condition for
         # presence of necessary data
