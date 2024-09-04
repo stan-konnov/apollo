@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
@@ -22,7 +22,7 @@ def test__vix_enhanced_strategy__for_calculating_vix_signals(
     control_dataframe = enhanced_dataframe.copy()
     control_dataframe["vix_signal"] = NO_SIGNAL
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )

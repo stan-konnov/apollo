@@ -6,7 +6,7 @@ from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
@@ -39,7 +39,7 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )

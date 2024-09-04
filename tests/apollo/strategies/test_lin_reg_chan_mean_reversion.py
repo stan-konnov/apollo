@@ -3,7 +3,7 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.linear_regression_channel import (
     LinearRegressionChannelCalculator,
@@ -37,7 +37,7 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )

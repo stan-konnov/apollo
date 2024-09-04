@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 
 UPSIDE_EXPANSION: float = 1.0
@@ -22,7 +22,7 @@ def test__calculate_vix_expansion_contraction__for_correct_columns(
     Resulting dataframe must drop "vix_prev_open" and "vix_prev_close" columns.
     """
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
@@ -48,7 +48,7 @@ def test__calculate_vix_expansion_contraction__for_correct_rolling_window(
     Since Contraction Expansion calculation must have at least N rows to be calculated.
     """
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
@@ -85,7 +85,7 @@ def test__calculate_vix_expansion_contraction__for_correct_cvec_calculation(
         )
     )
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
@@ -102,7 +102,7 @@ def mimic_calc_cvec(series: pd.Series, dataframe: pd.DataFrame) -> float:
     """
     Mimicry of Expansion Contraction calculation for testing purposes.
 
-    Please see ConnersVixExpansionContractionCalculator for detailed explanation.
+    Please see EngulfingVIXPatternCalculator for detailed explanation.
     """
 
     rolling_df = dataframe.loc[series.index]

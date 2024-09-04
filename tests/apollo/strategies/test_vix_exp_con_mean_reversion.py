@@ -3,7 +3,7 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.vix_exp_con_mean_reversion import (
@@ -31,7 +31,7 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )

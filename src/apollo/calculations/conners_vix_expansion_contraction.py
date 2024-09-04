@@ -3,34 +3,19 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
-"""
-TODO: this is indeed engulfing pattern,
-      adapt docstrings and name,
-      reference Conners' as inspiration.
-"""
 
-
-class ConnersVixExpansionContractionCalculator(BaseCalculator):
+class EngulfingVIXPatternCalculator(BaseCalculator):
     """
-    Conners' VIX Expansion Contraction Calculator.
+    Engulfing VIX Pattern Calculator.
 
-    Connors VIX Expansion Contraction (CVEC) ultimately aims to
-    capture VIX expansions to the upside and contractions to the downside.
+    Calculates bullish and bearish engulfing pattern for VIX.
 
-    This is a modified version of Conners' VIX Reversals
-    and does not follow the original logic to the letter.
+    Inspired initially by Connors VIX Expansion Contraction (CVEC) and
+    ultimately aims to capture expansions and contractions in VIX range.
 
     Expansions and contractions can be characterized as
     engulfing movements in either direction accompanied
     by increasing and decreasing VIX range, respectively.
-
-    This is somewhat similar to bullish and bearish engulfing
-    patterns, with the difference in the bearish pattern
-    being that the close is lower than the open.
-
-    Capturing downside movement as contraction in range
-    is necessary to further reinforce the decrease in
-    implied volatility and the potential for a reversal.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -49,16 +34,19 @@ class ConnersVixExpansionContractionCalculator(BaseCalculator):
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct Conners' VIX Expansion Contraction Calculator.
+        Construct Engulfing VIX Pattern Calculator.
 
-        :param dataframe: Dataframe to calculate VIX expansion contraction for.
-        :param window_size: Window size for VIX expansion and contraction calculation.
+        :param dataframe: Dataframe to calculate Engulfing Pattern for.
+        :param window_size: Window size for Engulfing Pattern calculation.
+
+        NOTE: even though we accept window_size parameter,
+        calculator does not perform any rolling calculations.
         """
 
         super().__init__(dataframe, window_size)
 
-    def calculate_vix_expansion_contraction(self) -> None:
-        """Calculate Conners' VIX Expansion Contraction."""
+    def calculate_engulfing_vix_pattern(self) -> None:
+        """Calculate Engulfing VIX Pattern."""
 
         # Since we are working with multiple
         # data sources, there is no guarantee that

@@ -3,7 +3,7 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
@@ -36,7 +36,7 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    cvec_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )

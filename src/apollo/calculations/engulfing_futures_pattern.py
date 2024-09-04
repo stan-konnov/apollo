@@ -33,6 +33,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
+
         super().__init__(dataframe, window_size)
 
     def calculate_engulfing_futures_pattern(self) -> None:

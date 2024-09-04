@@ -1,7 +1,7 @@
 import pandas as pd
 
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import (
     LONG_SIGNAL,
@@ -78,7 +78,7 @@ class VIXEnhancedStrategy:
         """
 
         # Calculate Conners' VIX Expansion and Contraction
-        cvec_calculator = ConnersVixExpansionContractionCalculator(
+        cvec_calculator = EngulfingVIXPatternCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )

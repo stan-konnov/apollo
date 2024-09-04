@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
@@ -75,7 +75,7 @@ class VIXExpansionContractionMeanReversion(
         BaseStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
-        self._cvec_calculator = ConnersVixExpansionContractionCalculator(
+        self._evp_calculator = EngulfingVIXPatternCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
@@ -90,17 +90,17 @@ class VIXExpansionContractionMeanReversion(
     def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self._cvec_calculator.calculate_vix_expansion_contraction()
+        self._evp_calculator.calculate_engulfing_vix_pattern()
 
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["vixep"] == self._cvec_calculator.BULLISH_ENGULFING,
+            self._dataframe["vixep"] == self._evp_calculator.BULLISH_ENGULFING,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["vixep"] == self._cvec_calculator.BEARISH_ENGULFING,
+            self._dataframe["vixep"] == self._evp_calculator.BEARISH_ENGULFING,
             "signal",
         ] = SHORT_SIGNAL
