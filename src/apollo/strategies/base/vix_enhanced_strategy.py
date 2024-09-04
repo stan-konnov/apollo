@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.calculations.conners_vix_expansion_contraction import (
+from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import (
@@ -13,6 +13,8 @@ from apollo.settings import (
 class VIXEnhancedStrategy:
     """
     VIX Enhanced Strategy class.
+
+    WIP DOCS.
 
     Uses VIX index prices to enhance signal
     generation logic of specialized strategies.
@@ -77,22 +79,22 @@ class VIXEnhancedStrategy:
         :param window_size: Size of the window for the strategy.
         """
 
-        # Calculate Conners' VIX Expansion and Contraction
-        cvec_calculator = EngulfingVIXPatternCalculator(
+        # Calculate Engulfing VIX Pattern
+        evp_calculator = EngulfingVIXPatternCalculator(
             dataframe=dataframe,
             window_size=window_size,
         )
-        cvec_calculator.calculate_vix_expansion_contraction()
+        evp_calculator.calculate_engulfing_vix_pattern()
 
         # Mark VIX enhanced signals to the dataframe
         dataframe["vix_signal"] = NO_SIGNAL
 
         dataframe.loc[
-            dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+            dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
             "vix_signal",
         ] = LONG_SIGNAL
 
         dataframe.loc[
-            dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+            dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
             "vix_signal",
         ] = SHORT_SIGNAL

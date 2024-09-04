@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.conners_vix_expansion_contraction import (
+from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

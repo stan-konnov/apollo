@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.conners_vix_expansion_contraction import (
+from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.linear_regression_channel import (

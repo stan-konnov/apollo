@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.conners_vix_expansion_contraction import (
+from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL

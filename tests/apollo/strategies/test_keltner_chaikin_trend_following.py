@@ -5,7 +5,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
-from apollo.calculations.conners_vix_expansion_contraction import (
+from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
