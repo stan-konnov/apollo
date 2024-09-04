@@ -27,7 +27,27 @@ class EngulfingFuturesMeanReversion(
     """
     Engulfing Futures Mean Reversion Strategy.
 
-    WIP.
+    This strategy takes long positions when:
+
+    * Bearish Engulfing Pattern is detected in S&P 500 Futures,
+    indicating a potential reversion after considerable price decrease.
+
+    OR
+
+    * VIX signal is long, indicating increasing volatility,
+    forcing the price down and potentially triggering a mean reversion.
+
+    This strategy takes short positions when:
+
+    * Bullish Engulfing Pattern is detected in S&P 500 Futures,
+    indicating a potential reversion after considerable price increase.
+
+    OR
+
+    * VIX signal is short, indicating decreasing volatility,
+    forcing the price up and potentially triggering a mean reversion.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
     def __init__(
