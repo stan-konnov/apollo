@@ -10,6 +10,9 @@ Acts as a central registry for all available strategies.
 """
 
 from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
+from apollo.strategies.engulfing_futures_mean_reversion import (
+    EngulfingFuturesMeanReversion,
+)
 from apollo.strategies.keltner_chaikin_mean_reversion import (
     KeltnerChaikinMeanReversion,
 )
@@ -37,6 +40,7 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
     "LogisticRegressionForecast": LogisticRegressionForecast,
     "KeltnerChaikinMeanReversion": KeltnerChaikinMeanReversion,
+    "EngulfingFuturesMeanReversion": EngulfingFuturesMeanReversion,
     "WildersSwingIndexTrendFollowing": WildersSwingIndexTrendFollowing,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "VIXExpansionContractionMeanReversion": VIXExpansionContractionMeanReversion,
