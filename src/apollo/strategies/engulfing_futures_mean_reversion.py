@@ -5,6 +5,7 @@ from apollo.calculations.engulfing_futures_pattern import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
+from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
@@ -12,6 +13,7 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 class EngulfingFuturesMeanReversion(
     BaseStrategy,
+    VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -34,6 +36,7 @@ class EngulfingFuturesMeanReversion(
         super().__init__(dataframe, window_size)
 
         BaseStrategy.__init__(self, dataframe, window_size)
+        VIXEnhancedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._efp_calculator = EngulfingFuturesPatternCalculator(
@@ -57,11 +60,13 @@ class EngulfingFuturesMeanReversion(
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["spfep"] == self._efp_calculator.BEARISH_ENGULFING,
+            (self._dataframe["spfep"] == self._efp_calculator.BEARISH_ENGULFING)
+            | (self._dataframe["vix_signal"] == LONG_SIGNAL),
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["spfep"] == self._efp_calculator.BULLISH_ENGULFING,
+            (self._dataframe["spfep"] == self._efp_calculator.BULLISH_ENGULFING)
+            | (self._dataframe["vix_signal"] == SHORT_SIGNAL),
             "signal",
         ] = SHORT_SIGNAL
