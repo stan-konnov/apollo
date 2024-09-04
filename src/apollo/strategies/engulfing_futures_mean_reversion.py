@@ -10,6 +10,14 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
+"""
+TODO:
+
+1. Make sure VIX enhanced strategy does not drop rows.
+
+2. Make sure VIX EC strategy does not drop rows.
+"""
+
 
 class EngulfingFuturesMeanReversion(
     BaseStrategy,
