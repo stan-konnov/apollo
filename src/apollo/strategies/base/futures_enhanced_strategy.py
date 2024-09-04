@@ -10,17 +10,15 @@ from apollo.settings import (
 """
 TODO:
 
-1. Backtest all strategies with this enhancement (Swing Events + WSI left).
+1. Move calculations to a calculator file.
 
-2. Move calculations to a calculator file.
+2. Make sure VIX enhanced strategy does not drop rows.
 
-3. Make sure VIX enhanced strategy does not drop rows.
+3. Make sure VIX EC strategy does not drop rows.
 
-4. Make sure VIX EC strategy does not drop rows.
+4. Experiment with VIX FUT CD strategy as enhancer.
 
-5. Experiment with VIX FUT CD strategy as enhancer.
-
-6. Make this strategy a separate strategy.
+5. Make this strategy a separate strategy.
 """
 
 
