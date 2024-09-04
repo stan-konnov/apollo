@@ -12,6 +12,9 @@ Acts as a central registry for all available strategies.
 from apollo.strategies.engulfing_futures_mean_reversion import (
     EngulfingFuturesMeanReversion,
 )
+from apollo.strategies.engulfing_vix_mean_reversion import (
+    EngulfingVIXMeanReversion,
+)
 from apollo.strategies.keltner_chaikin_mean_reversion import (
     KeltnerChaikinMeanReversion,
 )
@@ -22,9 +25,6 @@ from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
-from apollo.strategies.vix_exp_con_mean_reversion import (
-    VIXExpansionContractionMeanReversion,
-)
 from apollo.strategies.vix_fut_con_div_trend_following import (
     VIXFuturesConvergenceDivergenceTrendFollowing,
 )
@@ -35,11 +35,11 @@ from apollo.utils.types import StrategyCatalogueMap
 
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
+    "EngulfingVIXMeanReversion": EngulfingVIXMeanReversion,
     "KeltnerChaikinMeanReversion": KeltnerChaikinMeanReversion,
     "EngulfingFuturesMeanReversion": EngulfingFuturesMeanReversion,
     "WildersSwingIndexTrendFollowing": WildersSwingIndexTrendFollowing,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
-    "VIXExpansionContractionMeanReversion": VIXExpansionContractionMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
     "VIXFuturesConvergenceDivergenceTrendFollowing": VIXFuturesConvergenceDivergenceTrendFollowing,  # noqa: E501
 }

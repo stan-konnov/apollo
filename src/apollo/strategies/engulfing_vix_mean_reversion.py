@@ -10,12 +10,14 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 
-class VIXExpansionContractionMeanReversion(
+class EngulfingVIXMeanReversion(
     BaseStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
     VIX Expansion Contraction Mean Reversion Strategy.
+
+    WIP DOCS.
 
     This strategy takes long positions when:
 
@@ -66,7 +68,7 @@ class VIXExpansionContractionMeanReversion(
         window_size: int,
     ) -> None:
         """
-        Construct Linear Regression Channel Strategy.
+        Construct Engulfing VIX Mean Reversion Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.

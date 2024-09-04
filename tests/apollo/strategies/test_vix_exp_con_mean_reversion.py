@@ -6,8 +6,8 @@ from apollo.calculations.conners_vix_expansion_contraction import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.vix_exp_con_mean_reversion import (
-    VIXExpansionContractionMeanReversion,
+from apollo.strategies.engulfing_vix_mean_reversion import (
+    EngulfingVIXMeanReversion,
 )
 
 
@@ -49,7 +49,7 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    vix_exp_con_mean_reversion = VIXExpansionContractionMeanReversion(
+    vix_exp_con_mean_reversion = EngulfingVIXMeanReversion(
         enhanced_dataframe,
         window_size,
     )
