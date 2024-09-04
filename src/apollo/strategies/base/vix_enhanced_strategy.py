@@ -54,9 +54,6 @@ class VIXEnhancedStrategy:
         """
         Construct VIX Enhanced Strategy.
 
-        Initialize PriceDataProvider with VIX index ticker,
-        request VIX prices and enrich price dataframe with them.
-
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
         """
