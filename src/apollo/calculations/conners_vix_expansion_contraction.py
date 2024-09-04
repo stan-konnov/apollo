@@ -2,6 +2,10 @@ import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
+"""
+TODO: this is indeed engulfing pattern, adapt docstrings
+"""
+
 
 class ConnersVixExpansionContractionCalculator(BaseCalculator):
     """

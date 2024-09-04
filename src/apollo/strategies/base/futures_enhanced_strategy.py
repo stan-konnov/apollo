@@ -31,7 +31,7 @@ class FuturesEnhancedStrategy:
 
     def __init__(self, dataframe: pd.DataFrame) -> None:
         """
-        Construct VIX Futures Enhanced Strategy.
+        Construct Futures Enhanced Strategy.
 
         :param dataframe: Dataframe with price data.
         """
