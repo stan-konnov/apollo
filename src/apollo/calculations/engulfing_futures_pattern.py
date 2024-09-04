@@ -44,7 +44,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         # Since we are working with multiple
         # data sources, there is no guarantee that
         # the data is present for all the rows in the dataframe
-        # We, therefore, can calculate only over present data points
+        # We, therefore, can calculate only over present data points,
         # otherwise, the strategy using the results will drop missing rows
 
         # Mark engulfing patterns to the dataframe

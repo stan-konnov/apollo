@@ -36,15 +36,6 @@ class VIXEnhancedStrategy:
     Kaufman, Trading Systems and Methods, 2020, 6th ed., p 863.
 
     The strategy, therefore, aims to reverse this logic
-    and capture the reversal points in the instrument price.
-
-    "This capitalizes on the concept that non-professional traders liquidate
-    when volatility increases, and buy when volatility decreases,
-    commonly termed 'risk on' and 'risk off'".
-
-    Kaufman, Trading Systems and Methods, 2020, 6th ed., p 863.
-
-    The strategy, therefore, aims to reverse this logic
     and capture the reversal points in the underlying asset price.
 
     NOTE: This strategy class is not a standalone strategy
@@ -53,9 +44,6 @@ class VIXEnhancedStrategy:
     Yet, the logic of VIX signals proved to be effective
     enough and, therefore, is applied in isolation in
     Engulfing VIX Mean Reversion Strategy.
-
-    NOTE: This is an adapted version of Conners' VIX Reversals
-    and does not follow the original logic to the letter.
 
     Inspired by Conners' VIX Reversals.
 
