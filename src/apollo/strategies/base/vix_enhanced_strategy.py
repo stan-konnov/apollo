@@ -14,37 +14,29 @@ class VIXEnhancedStrategy:
     """
     VIX Enhanced Strategy class.
 
-    WIP DOCS.
-
     Uses VIX index prices to enhance signal
     generation logic of specialized strategies.
 
-    Calculates Conners' VIX Expansion and
-    Contraction and generates VIX enhanced signal.
-
     This strategy takes long positions when:
 
-    * Current VIX open is lower than the previous VIX open.
-
-    * Current VIX close is higher than the previous VIX close.
-
-    * Current VIX close is higher than the current VIX open.
-
-    Combination of these factors point to an upside
-    range expansion in implied volatility and a sharp decline
-    in the underlying asset price with the potential for a reversal.
+    * Bullish Engulfing Pattern is detected in VIX, indicating
+    an increase in implied volatility and a sharp decline in
+    the instrument price with the potential for a reversal.
 
     This strategy takes short positions when:
 
-    * Current VIX open is higher than the previous VIX open.
+    * Bearish Engulfing Pattern is detected in VIX, indicating
+    a decrease in implied volatility and a steady rise in the
+    instrument price with the potential for a reversal.
 
-    * Current VIX close is lower than the previous VIX close.
+    "This capitalizes on the concept that non-professional traders liquidate
+    when volatility increases, and buy when volatility decreases,
+    commonly termed 'risk on' and 'risk off'".
 
-    * Current VIX close is lower than the current VIX open.
+    Kaufman, Trading Systems and Methods, 2020, 6th ed., p 863.
 
-    Combination of these factors point to a downside
-    range contraction in implied volatility and a steady rise
-    in the underlying asset price with the potential for a reversal.
+    The strategy, therefore, aims to reverse this logic
+    and capture the reversal points in the instrument price.
 
     "This capitalizes on the concept that non-professional traders liquidate
     when volatility increases, and buy when volatility decreases,
@@ -60,10 +52,12 @@ class VIXEnhancedStrategy:
 
     Yet, the logic of VIX signals proved to be effective
     enough and, therefore, is applied in isolation in
-    VIX Expansion Contraction Mean Reversion class.
+    Engulfing VIX Mean Reversion Strategy.
 
     NOTE: This is an adapted version of Conners' VIX Reversals
     and does not follow the original logic to the letter.
+
+    Inspired by Conners' VIX Reversals.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
