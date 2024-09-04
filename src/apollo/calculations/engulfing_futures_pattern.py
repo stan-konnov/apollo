@@ -15,15 +15,15 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
     # Constant to
     # represent no pattern
-    NO_PATTERN: int = 0
+    NO_PATTERN: float = 0.0
 
     # Constant to represent
     # bullish engulfing pattern
-    BULLISH_ENGULFING: int = 1
+    BULLISH_ENGULFING: float = 1.0
 
     # Constant to represent
     # bearish engulfing pattern
-    BEARISH_ENGULFING: int = -1
+    BEARISH_ENGULFING: float = -1.0
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
