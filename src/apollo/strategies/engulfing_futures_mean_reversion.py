@@ -16,6 +16,10 @@ TODO:
 1. Make sure VIX enhanced strategy does not drop rows.
 
 2. Make sure VIX EC strategy does not drop rows.
+
+3. Rework VIX Convergence Divergence, since it's the same engulfing pattern.
+
+4. Double check if all new calculators drop unnecessary columns.
 """
 
 
