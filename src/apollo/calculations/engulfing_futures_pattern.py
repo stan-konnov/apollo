@@ -8,7 +8,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     """
     Engulfing Futures Pattern Calculator.
 
-    Calculates bullish and bearish engulfing patterns for S&P 500 Futures.
+    Calculates bullish and bearish engulfing pattern for S&P 500 Futures.
     """
 
     # Constant to
@@ -35,7 +35,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         """
         super().__init__(dataframe, window_size)
 
-    def calculate_vix_futures_convergence_divergence(self) -> None:
+    def calculate_engulfing_futures_pattern(self) -> None:
         """Calculate Engulfing Futures Pattern."""
 
         # Since we are working with multiple

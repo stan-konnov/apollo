@@ -10,8 +10,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.vix_exp_con_mean_reversion import (
-    VIXExpansionContractionMeanReversion,
+from apollo.strategies.engulfing_futures_mean_reversion import (
+    EngulfingFuturesMeanReversion,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -44,16 +44,16 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = VIXExpansionContractionMeanReversion(
+    strategy = EngulfingFuturesMeanReversion(
         dataframe=dataframe,
-        window_size=10,
+        window_size=5,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="VIXExpansionContractionMeanReversion",
+        strategy_name="EngulfingFuturesMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
