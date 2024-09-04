@@ -30,8 +30,8 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
         # Since we are working with multiple
         # data sources, there is no guarantee that
         # the data is present for all the rows in the dataframe
-        # We, therefore, need to check against NaNs after calculation,
-        # since calculating over missing data results in NaNs that are dropped
+        # We, therefore, can calculate only over present data points
+        # otherwise, the strategy using the results will drop missing rows
 
         # Initialize necessary columns with 0
         self._dataframe["vix_pct_change"] = 0
