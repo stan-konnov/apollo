@@ -15,7 +15,7 @@
     },
 
     "additional_data_enhancers": [
-        "VIX", "SP500 Futures"
+        "VIX"
     ],
 
     "strategy_specific_parameters": []
