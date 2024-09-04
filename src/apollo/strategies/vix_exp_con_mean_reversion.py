@@ -96,11 +96,11 @@ class VIXExpansionContractionMeanReversion(
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["cvec"] == self._cvec_calculator.UPSIDE_EXPANSION,
+            self._dataframe["cvec"] == self._cvec_calculator.BULLISH_ENGULFING,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["cvec"] == self._cvec_calculator.DOWNSIDE_CONTRACTION,
+            self._dataframe["cvec"] == self._cvec_calculator.BEARISH_ENGULFING,
             "signal",
         ] = SHORT_SIGNAL
