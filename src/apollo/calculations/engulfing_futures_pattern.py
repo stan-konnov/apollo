@@ -9,6 +9,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     Engulfing Futures Pattern Calculator.
 
     Calculates bullish and bearish engulfing pattern for S&P 500 Futures.
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
     # Constant to

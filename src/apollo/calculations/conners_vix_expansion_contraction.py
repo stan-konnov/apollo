@@ -10,13 +10,6 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
 
     Calculates bullish and bearish engulfing pattern for VIX.
 
-    Inspired initially by Connors VIX Expansion Contraction (CVEC) and
-    ultimately aims to capture expansions and contractions in VIX range.
-
-    Expansions and contractions can be characterized as
-    engulfing movements in either direction accompanied
-    by increasing and decreasing VIX range, respectively.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
