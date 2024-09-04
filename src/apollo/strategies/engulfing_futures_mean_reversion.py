@@ -13,10 +13,9 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 """
 TODO:
 
-1. Rework VIX Convergence Divergence and enhancing strategies,
-   since it's the same engulfing pattern.
+1. Double check if all new calculators drop unnecessary columns.
 
-2. Double check if all new calculators drop unnecessary columns.
+2. Massive docstrings update -- invest time in double-checking all the docstrings.
 """
 
 
