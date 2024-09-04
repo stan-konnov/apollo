@@ -15,33 +15,19 @@ class EngulfingVIXMeanReversion(
     VolatilityAdjustedStrategy,
 ):
     """
-    VIX Expansion Contraction Mean Reversion Strategy.
-
-    WIP DOCS.
+    Engulfing VIX Mean Reversion Strategy.
 
     This strategy takes long positions when:
 
-    * Current VIX open is lower than the previous VIX open.
-
-    * Current VIX close is higher than the previous VIX close.
-
-    * Current VIX close is higher than the current VIX open.
-
-    Combination of these factors point to an upside
-    range expansion in implied volatility and a sharp decline
-    in the underlying asset price with the potential for a reversal.
+    * Bullish Engulfing Pattern is detected in VIX, indicating
+    an increase in implied volatility and a sharp decline in
+    the instrument price with the potential for a reversal.
 
     This strategy takes short positions when:
 
-    * Current VIX open is higher than the previous VIX open.
-
-    * Current VIX close is lower than the previous VIX close.
-
-    * Current VIX close is lower than the current VIX open.
-
-    Combination of these factors point to a downside
-    range contraction in implied volatility and a steady rise
-    in the underlying asset price with the potential for a reversal.
+    * Bearish Engulfing Pattern is detected in VIX, indicating
+    a decrease in implied volatility and a steady rise in the
+    instrument price with the potential for a reversal.
 
     "This capitalizes on the concept that non-professional traders liquidate
     when volatility increases, and buy when volatility decreases,
@@ -50,14 +36,13 @@ class EngulfingVIXMeanReversion(
     Kaufman, Trading Systems and Methods, 2020, 6th ed., p 863.
 
     The strategy, therefore, aims to reverse this logic
-    and capture the reversal points in the underlying asset price.
+    and capture the reversal points in the instrument price.
 
     NOTE: This strategy proved to be effective as an enhancement
     strategy and is also used in conjunction with other strategies.
     The logic applied here can also be found in VIX Enhanced Strategy.
 
-    NOTE: This is an adapted version of Conners' VIX Reversals
-    and does not follow the original logic to the letter.
+    Inspired by Conners' VIX Reversals.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
