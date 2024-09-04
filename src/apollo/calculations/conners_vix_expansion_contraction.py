@@ -3,7 +3,9 @@ import pandas as pd
 from apollo.calculations.base_calculator import BaseCalculator
 
 """
-TODO: this is indeed engulfing pattern, adapt docstrings
+TODO: this is indeed engulfing pattern,
+      adapt docstrings and name,
+      reference Conners' as inspiration.
 """
 
 
