@@ -238,6 +238,7 @@ def test__parameter_optimizer__for_correct_result_output(
     """
     TODO: precalculation of shared values can be done
     via some kind of fixture, so we don't have to repeat it in every test
+    Or, perhaps, via a utility function that would be called in every test
     """
 
     # Precalculate shared values
