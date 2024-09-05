@@ -10,14 +10,6 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
-"""
-TODO:
-
-1. Double check if all new calculators drop unnecessary columns.
-
-2. Massive docstrings update -- invest time in double-checking all the docstrings.
-"""
-
 
 class EngulfingFuturesMeanReversion(
     BaseStrategy,
