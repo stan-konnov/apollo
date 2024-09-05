@@ -235,6 +235,9 @@ def test__parameter_optimizer__for_correct_result_output(
     Parameter Optimizer must call database connector with correct values.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     # Precalculate volatility
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()

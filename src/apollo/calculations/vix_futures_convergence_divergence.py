@@ -34,9 +34,9 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
         # otherwise, the strategy using the results will drop missing rows
 
         # Initialize necessary columns with 0
-        self._dataframe["vix_pct_change"] = 0
-        self._dataframe["spf_pct_change"] = 0
-        self._dataframe["vix_spf_pct_diff"] = 0
+        self._dataframe["vix_pct_change"] = 0.0
+        self._dataframe["spf_pct_change"] = 0.0
+        self._dataframe["vix_spf_pct_diff"] = 0.0
 
         # Calculate percentage change for VIX and
         # S&P 500 Futures only if the data is present

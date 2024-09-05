@@ -55,8 +55,8 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         self._dataframe["vixep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
-        self._dataframe["vix_prev_open"] = 0
-        self._dataframe["vix_prev_close"] = 0
+        self._dataframe["vix_prev_open"] = 0.0
+        self._dataframe["vix_prev_close"] = 0.0
 
         # Shift open and close prices only if the data is present
         self._dataframe.loc[

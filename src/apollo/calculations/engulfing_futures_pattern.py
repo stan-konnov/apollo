@@ -55,8 +55,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         self._dataframe["spfep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
-        self._dataframe["spf_prev_open"] = 0
-        self._dataframe["spf_prev_close"] = 0
+        self._dataframe["spf_prev_open"] = 0.0
+        self._dataframe["spf_prev_close"] = 0.0
 
         # Shift open and close prices only if the data is present
         self._dataframe.loc[
