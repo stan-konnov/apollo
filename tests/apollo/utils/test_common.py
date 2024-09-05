@@ -15,6 +15,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
     POSTGRES_URL,
+    SP500_FUTURES_TICKER,
     START_DATE,
     STRATEGY,
     SUPPORTED_DATA_ENHANCERS,
@@ -61,6 +62,7 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
         "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+        "SP500_FUTURES_TICKER": SP500_FUTURES_TICKER,
         "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
     }
 
