@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -67,7 +68,7 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
     """
     Test enhance_price_data method with enhanced data partially missing.
 
-    Price Data Enhancer should fill missing values with 0 if there
+    Price Data Enhancer should fill missing values with inf if there
     is more data in the price dataframe than in the enhanced dataframe.
 
     NOTE: we are using here enhanced_dataframe, even though it
@@ -89,8 +90,8 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
         additional_data_enhancers=["VIX"],
     )
 
-    assert all(control_dataframe.iloc[:5]["vix open"] == 0)
-    assert all(control_dataframe.iloc[:5]["vix close"] == 0)
+    assert all(control_dataframe.iloc[:5]["vix open"] == np.inf)
+    assert all(control_dataframe.iloc[:5]["vix close"] == np.inf)
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
