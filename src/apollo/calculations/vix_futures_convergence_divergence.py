@@ -59,3 +59,9 @@ class VixFuturesConvergenceDivergenceCalculator(BaseCalculator):
         self._dataframe["prev_vix_spf_pct_diff"] = self._dataframe[
             "vix_spf_pct_diff"
         ].shift(1)
+
+        # Drop unnecessary columns
+        self._dataframe.drop(
+            columns=["vix_pct_change", "spf_pct_change"],
+            inplace=True,
+        )

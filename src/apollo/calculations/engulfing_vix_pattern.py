@@ -86,3 +86,9 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
             ),
             "vixep",
         ] = self.BEARISH_ENGULFING
+
+        # Drop unnecessary columns
+        self._dataframe.drop(
+            columns=["vix_prev_open", "vix_prev_close"],
+            inplace=True,
+        )

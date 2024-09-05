@@ -86,3 +86,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             ),
             "spfep",
         ] = self.BEARISH_ENGULFING
+
+        # Drop unnecessary columns
+        self._dataframe.drop(
+            columns=["spf_prev_open", "spf_prev_close"],
+            inplace=True,
+        )
