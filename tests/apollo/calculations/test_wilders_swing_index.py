@@ -24,6 +24,9 @@ def test__calculate_swing_index__for_correct_columns(
     Resulting dataframe must not have "si", "asi", "prev_open", "prev_close" columns.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
         window_size=window_size,
@@ -36,7 +39,6 @@ def test__calculate_swing_index__for_correct_columns(
     assert "si" not in dataframe.columns
     assert "asi" not in dataframe.columns
     assert "prev_open" not in dataframe.columns
-    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -53,6 +55,9 @@ def test__calculate_swing_index__for_correct_rolling_window(
     Since SP calculation relies on 3 consecutive ASI values,
     and, in such, only available after first N rows.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
@@ -105,6 +110,9 @@ def test__calculate_swing_index__for_correct_sp_calculation(
 
     Resulting SP column must have correct values for each row.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     control_dataframe = dataframe.copy()
 
