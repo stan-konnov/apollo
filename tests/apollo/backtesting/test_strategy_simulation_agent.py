@@ -19,6 +19,9 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
     Strategy Simulation Agent must calculate correct stop loss and take profit levels.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()
 
@@ -64,6 +67,9 @@ def test__strategy_simulation_agent__for_correct_limit_entry_price_calculation(
 
     Strategy Simulation Agent must calculate correct limit entry price.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()
