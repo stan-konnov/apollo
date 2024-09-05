@@ -1,12 +1,11 @@
 from unittest.mock import Mock
 
-import numpy as np
 import pandas as pd
 import pytest
 
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
-from apollo.settings import SUPPORTED_DATA_ENHANCERS
+from apollo.settings import MISSING_DATA_PLACEHOLDER, SUPPORTED_DATA_ENHANCERS
 
 
 @pytest.mark.usefixtures("dataframe")
@@ -90,8 +89,8 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
         additional_data_enhancers=["VIX"],
     )
 
-    assert all(control_dataframe.iloc[:5]["vix open"] == np.inf)
-    assert all(control_dataframe.iloc[:5]["vix close"] == np.inf)
+    assert all(control_dataframe.iloc[:5]["vix open"] == MISSING_DATA_PLACEHOLDER)
+    assert all(control_dataframe.iloc[:5]["vix close"] == MISSING_DATA_PLACEHOLDER)
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
