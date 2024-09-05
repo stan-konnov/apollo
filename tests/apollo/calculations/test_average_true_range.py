@@ -13,8 +13,10 @@ def test__calculate_average_true_range__for_correct_columns(
     Test calculate_average_true_range method for correct columns.
 
     Resulting dataframe must have columns "tr" and "atr".
-    Resulting dataframe must drop "prev_close" column.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -25,7 +27,6 @@ def test__calculate_average_true_range__for_correct_columns(
 
     assert "tr" in dataframe.columns
     assert "atr" in dataframe.columns
-    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -44,6 +45,9 @@ def test__calculate_average_true_range__for_correct_rolling_window(
     Resulting dataframe must skip (WINDOW_SIZE - 1) * 2 rows for ATR column
     Since ATR calculation must have at least N rows of valid TR to calculate ATR.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -66,6 +70,9 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
 
     Resulting TR column must have correct values for each row.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     control_dataframe = dataframe.copy()
     control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
@@ -102,8 +109,10 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     Resulting ATR column must have correct values for each row.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     control_dataframe = dataframe.copy()
-    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
 
     control_dataframe["tr"] = (
         control_dataframe["adj close"]
