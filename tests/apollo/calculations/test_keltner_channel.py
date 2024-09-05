@@ -22,6 +22,9 @@ def test__calculate_keltner_channel__for_correct_columns(
     Resulting dataframe must have columns "lkc_bound" and "ukc_bound".
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
@@ -60,6 +63,9 @@ def test__calculate_keltner_channel__for_correct_rolling_window(
     ATR calculation that is based on TR calculation.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
@@ -93,6 +99,9 @@ def test__calculate_keltner_channel__for_correct_kc_calculation(
 
     Resulting "lkc_bound" and "ukc_bound" columns must have correct values for each row.
     """
+
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
 
     lkc_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()
     ukc_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()
