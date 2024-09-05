@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -15,8 +16,7 @@ def test__calculate_average_true_range__for_correct_columns(
     Resulting dataframe must have columns "tr" and "atr".
     """
 
-    # Precalculate shared values
-    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+    dataframe = precalculate_shared_values(dataframe)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -46,8 +46,7 @@ def test__calculate_average_true_range__for_correct_rolling_window(
     Since ATR calculation must have at least N rows of valid TR to calculate ATR.
     """
 
-    # Precalculate shared values
-    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+    dataframe = precalculate_shared_values(dataframe)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -71,8 +70,7 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     Resulting TR column must have correct values for each row.
     """
 
-    # Precalculate shared values
-    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
     control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
@@ -109,8 +107,7 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     Resulting ATR column must have correct values for each row.
     """
 
-    # Precalculate shared values
-    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
 

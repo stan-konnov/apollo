@@ -14,6 +14,7 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.keltner_chaikin_mean_reversion import (
     KeltnerChaikinMeanReversion,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
@@ -27,8 +28,7 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
-    # Precalculate shared values
-    enhanced_dataframe["prev_close"] = enhanced_dataframe["adj close"].shift(1)
+    enhanced_dataframe = precalculate_shared_values(enhanced_dataframe)
 
     volatility_multiplier = 0.5
 
