@@ -9,6 +9,10 @@ UPSIDE_EXPANSION: float = 1.0
 DOWNSIDE_CONTRACTION: float = -1.0
 NO_SIGNIFICANT_MOVEMENT: float = 0.0
 
+"""
+TODO: All new calculators should test for not calculating over missing data
+"""
+
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
 def test__calculate_vix_expansion_contraction__for_correct_columns(
