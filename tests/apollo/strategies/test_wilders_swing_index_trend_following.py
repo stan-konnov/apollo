@@ -20,6 +20,9 @@ def test__wilders_swing_index_trend_following__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     weighted_tr_multiplier = 0.1
 
     control_dataframe = dataframe.copy()

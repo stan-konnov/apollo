@@ -27,6 +27,9 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    # Precalculate shared values
+    enhanced_dataframe["prev_close"] = enhanced_dataframe["adj close"].shift(1)
+
     volatility_multiplier = 0.5
 
     control_dataframe = enhanced_dataframe.copy()

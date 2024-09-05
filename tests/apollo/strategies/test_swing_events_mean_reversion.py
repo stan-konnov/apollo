@@ -18,6 +18,9 @@ def test__swing_events_mean_reversion__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     swing_filter = 0.01
 
     control_dataframe = dataframe.copy()

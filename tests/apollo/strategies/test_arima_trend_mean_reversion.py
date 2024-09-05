@@ -18,6 +18,9 @@ def test__arima_trend_mean_reversion__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     control_dataframe = dataframe.copy()
     control_dataframe["signal"] = 0
 

@@ -18,6 +18,9 @@ def test__volatility_adjusted_strategy__for_calculating_volatility(
     Dataframe should have "tr" and "atr" columns.
     """
 
+    # Precalculate shared values
+    dataframe["prev_close"] = dataframe["adj close"].shift(1)
+
     control_dataframe = dataframe.copy()
 
     at_calculator = AverageTrueRangeCalculator(
