@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.vix_futures_convergence_divergence import (
-    VixFuturesConvergenceDivergenceCalculator,
+    VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
@@ -19,7 +19,7 @@ def test__calculate_vix_futures_convergence_divergence__for_correct_columns(
     Resulting dataframe must drop "vix_pct_change" and "spf_pct_change" columns.
     """
 
-    vfcd_calculator = VixFuturesConvergenceDivergenceCalculator(
+    vfcd_calculator = VIXFuturesConvergenceDivergenceCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
@@ -72,7 +72,7 @@ def test__calculate_vix_futures_convergence_divergence__for_correct_vixep_calcul
         inplace=True,
     )
 
-    vfcd_calculator = VixFuturesConvergenceDivergenceCalculator(
+    vfcd_calculator = VIXFuturesConvergenceDivergenceCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
@@ -132,7 +132,7 @@ def test__calculate_vix_futures_convergence_divergence__for_missing_data_calcula
         inplace=True,
     )
 
-    vfcd_calculator = VixFuturesConvergenceDivergenceCalculator(
+    vfcd_calculator = VIXFuturesConvergenceDivergenceCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )

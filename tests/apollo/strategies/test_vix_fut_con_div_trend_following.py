@@ -3,11 +3,11 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.vix_futures_convergence_divergence import (
-    VixFuturesConvergenceDivergenceCalculator,
+    VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.engulfing_vix_mean_reversion import (
-    EngulfingVIXMeanReversion,
+from apollo.strategies.vix_fut_con_div_trend_following import (
+    VIXFuturesConvergenceDivergenceTrendFollowing,
 )
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
@@ -34,7 +34,7 @@ def test__vix_fut_con_div_trend_following__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    vfcd_calculator = VixFuturesConvergenceDivergenceCalculator(
+    vfcd_calculator = VIXFuturesConvergenceDivergenceCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
@@ -60,12 +60,12 @@ def test__vix_fut_con_div_trend_following__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    engulfing_vix_mean_reversion = EngulfingVIXMeanReversion(
+    vix_fut_con_div_mean_reversion = VIXFuturesConvergenceDivergenceTrendFollowing(
         enhanced_dataframe,
         window_size,
     )
 
-    engulfing_vix_mean_reversion.model_trading_signals()
+    vix_fut_con_div_mean_reversion.model_trading_signals()
 
     pd.testing.assert_series_equal(
         control_dataframe["signal"],
