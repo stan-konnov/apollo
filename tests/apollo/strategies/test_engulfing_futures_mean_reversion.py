@@ -40,14 +40,12 @@ def test__engulfing_futures_mean_reversion__with_valid_parameters(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-
     evp_calculator.calculate_engulfing_vix_pattern()
 
     efp_calculator = EngulfingFuturesPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-
     efp_calculator.calculate_engulfing_futures_pattern()
 
     control_dataframe.loc[

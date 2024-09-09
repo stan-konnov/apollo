@@ -38,7 +38,6 @@ def test__engulfing_vix_mean_reversion__with_valid_parameters(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-
     evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
