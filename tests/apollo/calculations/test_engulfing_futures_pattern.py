@@ -4,9 +4,6 @@ import pytest
 from apollo.calculations.engulfing_futures_pattern import (
     EngulfingFuturesPatternCalculator,
 )
-from apollo.calculations.engulfing_vix_pattern import (
-    EngulfingVIXPatternCalculator,
-)
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
 NO_PATTERN: float = 0.0
@@ -103,74 +100,74 @@ def test__calculate_engulfing_futures_pattern__for_correct_vixep_calculation(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
+def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_engulfing_vix_pattern method for correct missing data calculation.
+    Test calculate_engulfing_futures_pattern method for missing data calculation.
 
-    Resulting "vixep" column must have NO_PATTERN for rows with missing data.
-    Resulting "vixep" column must have correct values for rows with valid data.
+    Resulting "spfep" column must have NO_PATTERN for rows with missing data.
+    Resulting "spfep" column must have correct values for rows with valid data.
     """
 
     enhanced_dataframe.reset_index(inplace=True)
 
-    # Mimic missing data for "vix open" and "vix close" columns
-    enhanced_dataframe.loc[0:5, "vix open"] = MISSING_DATA_PLACEHOLDER
-    enhanced_dataframe.loc[0:5, "vix close"] = MISSING_DATA_PLACEHOLDER
+    # Mimic missing data for "spf open" and "spf close" columns
+    enhanced_dataframe.loc[0:5, "spf open"] = MISSING_DATA_PLACEHOLDER
+    enhanced_dataframe.loc[0:5, "spf close"] = MISSING_DATA_PLACEHOLDER
 
     control_dataframe = enhanced_dataframe.copy()
 
-    control_dataframe["vixep"] = NO_PATTERN
+    control_dataframe["spfep"] = NO_PATTERN
 
-    control_dataframe["vix_prev_open"] = 0.0
-    control_dataframe["vix_prev_close"] = 0.0
-
-    control_dataframe.loc[
-        control_dataframe["vix open"] != MISSING_DATA_PLACEHOLDER,
-        "vix_prev_open",
-    ] = control_dataframe["vix open"].shift(1)
+    control_dataframe["spf_prev_open"] = 0.0
+    control_dataframe["spf_prev_close"] = 0.0
 
     control_dataframe.loc[
-        control_dataframe["vix close"] != MISSING_DATA_PLACEHOLDER,
-        "vix_prev_close",
-    ] = control_dataframe["vix close"].shift(1)
+        control_dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
+        "spf_prev_open",
+    ] = control_dataframe["spf open"].shift(1)
+
+    control_dataframe.loc[
+        control_dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
+        "spf_prev_close",
+    ] = control_dataframe["spf close"].shift(1)
 
     control_dataframe.loc[
         (
-            (control_dataframe["vix open"] < control_dataframe["vix_prev_open"])
-            & (control_dataframe["vix close"] > control_dataframe["vix_prev_close"])
-            & (control_dataframe["vix close"] > control_dataframe["vix open"])
+            (control_dataframe["spf open"] < control_dataframe["spf_prev_open"])
+            & (control_dataframe["spf close"] > control_dataframe["spf_prev_close"])
+            & (control_dataframe["spf close"] > control_dataframe["spf open"])
         ),
-        "vixep",
+        "spfep",
     ] = BULLISH_ENGULFING
 
     control_dataframe.loc[
         (
-            (control_dataframe["vix open"] > control_dataframe["vix_prev_open"])
-            & (control_dataframe["vix close"] < control_dataframe["vix_prev_close"])
-            & (control_dataframe["vix close"] < control_dataframe["vix open"])
+            (control_dataframe["spf open"] > control_dataframe["spf_prev_open"])
+            & (control_dataframe["spf close"] < control_dataframe["spf_prev_close"])
+            & (control_dataframe["spf close"] < control_dataframe["spf open"])
         ),
-        "vixep",
+        "spfep",
     ] = BEARISH_ENGULFING
 
     control_dataframe.drop(
-        columns=["vix_prev_open", "vix_prev_close"],
+        columns=["spf_prev_open", "spf_prev_close"],
         inplace=True,
     )
 
-    evp_calculator = EngulfingVIXPatternCalculator(
+    efp_calculator = EngulfingFuturesPatternCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
 
-    evp_calculator.calculate_engulfing_vix_pattern()
+    efp_calculator.calculate_engulfing_futures_pattern()
 
-    assert all(enhanced_dataframe["vixep"].iloc[0:5] == NO_PATTERN)
+    assert all(enhanced_dataframe["spfep"].iloc[0:5] == NO_PATTERN)
 
     assert (
-        control_dataframe["vixep"]
+        control_dataframe["spfep"]
         .iloc[0:5]
-        .equals(enhanced_dataframe["vixep"].iloc[0:5])
+        .equals(enhanced_dataframe["spfep"].iloc[0:5])
     )
