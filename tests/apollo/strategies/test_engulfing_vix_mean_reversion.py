@@ -43,12 +43,12 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
 
     control_dataframe.loc[
         control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
-        "vix_signal",
+        "signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
         control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
-        "vix_signal",
+        "signal",
     ] = SHORT_SIGNAL
 
     control_dataframe.dropna(inplace=True)
