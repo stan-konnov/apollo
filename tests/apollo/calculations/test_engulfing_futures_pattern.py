@@ -171,3 +171,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculat
         .iloc[0:5]
         .equals(enhanced_dataframe["spfep"].iloc[0:5])
     )
+
+    assert (
+        control_dataframe["spfep"].iloc[6:].equals(enhanced_dataframe["spfep"].iloc[6:])
+    )

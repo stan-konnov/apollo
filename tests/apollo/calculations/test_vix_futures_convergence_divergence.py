@@ -146,3 +146,9 @@ def test__calculate_vix_futures_convergence_divergence__for_missing_data_calcula
         .iloc[0:5]
         .equals(enhanced_dataframe["vix_spf_pct_diff"].iloc[0:5])
     )
+
+    assert (
+        control_dataframe["vix_spf_pct_diff"]
+        .iloc[6:]
+        .equals(enhanced_dataframe["vix_spf_pct_diff"].iloc[6:])
+    )

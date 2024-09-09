@@ -171,3 +171,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
         .iloc[0:5]
         .equals(enhanced_dataframe["vixep"].iloc[0:5])
     )
+
+    assert (
+        control_dataframe["vixep"].iloc[6:].equals(enhanced_dataframe["vixep"].iloc[6:])
+    )
