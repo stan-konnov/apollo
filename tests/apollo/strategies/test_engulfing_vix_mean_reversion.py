@@ -9,6 +9,7 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.engulfing_vix_mean_reversion import (
     EngulfingVIXMeanReversion,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
@@ -22,6 +23,8 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    enhanced_dataframe = precalculate_shared_values(enhanced_dataframe)
+
     control_dataframe = enhanced_dataframe.copy()
     control_dataframe["signal"] = NO_SIGNAL
 
@@ -31,20 +34,21 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = EngulfingVIXPatternCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
-        "signal",
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
-        "signal",
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        "vix_signal",
     ] = SHORT_SIGNAL
 
     control_dataframe.dropna(inplace=True)
