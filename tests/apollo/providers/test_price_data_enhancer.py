@@ -86,11 +86,13 @@ def test__enhance_price_data__with_enhanced_data_partially_missing(
 
     control_dataframe = price_data_enhancer.enhance_price_data(
         price_dataframe=dataframe,
-        additional_data_enhancers=["VIX"],
+        additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
     assert all(control_dataframe.iloc[:5]["vix open"] == MISSING_DATA_PLACEHOLDER)
     assert all(control_dataframe.iloc[:5]["vix close"] == MISSING_DATA_PLACEHOLDER)
+    assert all(control_dataframe.iloc[:5]["spf open"] == MISSING_DATA_PLACEHOLDER)
+    assert all(control_dataframe.iloc[:5]["spf close"] == MISSING_DATA_PLACEHOLDER)
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
@@ -117,8 +119,10 @@ def test__enhance_price_data__for_correctly_enhancing_price_data(
 
     control_dataframe = price_data_enhancer.enhance_price_data(
         price_dataframe=dataframe,
-        additional_data_enhancers=["VIX"],
+        additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
     assert all(control_dataframe["vix open"] == enhanced_dataframe["open"])
     assert all(control_dataframe["vix close"] == enhanced_dataframe["close"])
+    assert all(control_dataframe["spf open"] == enhanced_dataframe["open"])
+    assert all(control_dataframe["spf close"] == enhanced_dataframe["close"])
