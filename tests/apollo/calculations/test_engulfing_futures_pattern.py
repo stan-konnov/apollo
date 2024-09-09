@@ -1,6 +1,9 @@
 import pandas as pd
 import pytest
 
+from apollo.calculations.engulfing_futures_pattern import (
+    EngulfingFuturesPatternCalculator,
+)
 from apollo.calculations.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
@@ -12,27 +15,27 @@ BEARISH_ENGULFING: float = -1.0
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_vix_pattern__for_correct_columns(
+def test__calculate_engulfing_futures_pattern__for_correct_columns(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_engulfing_vix_pattern method for correct columns.
+    Test calculate_engulfing_futures_pattern method for correct columns.
 
-    Resulting dataframe must have "vixep" column.
-    Resulting dataframe must drop "vix_prev_open" and "vix_prev_close" columns.
+    Resulting dataframe must have "spfep" column.
+    Resulting dataframe must drop "spf_prev_open" and "spf_prev_close" columns.
     """
 
-    evp_calculator = EngulfingVIXPatternCalculator(
+    efp_calculator = EngulfingFuturesPatternCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
     )
 
-    evp_calculator.calculate_engulfing_vix_pattern()
+    efp_calculator.calculate_engulfing_futures_pattern()
 
-    assert "vixep" in enhanced_dataframe.columns
-    assert "vix_prev_open" not in enhanced_dataframe.columns
-    assert "vix_prev_close" not in enhanced_dataframe.columns
+    assert "spfep" in enhanced_dataframe.columns
+    assert "spf_prev_open" not in enhanced_dataframe.columns
+    assert "spf_prev_close" not in enhanced_dataframe.columns
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
