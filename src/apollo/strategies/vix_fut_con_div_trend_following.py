@@ -66,7 +66,7 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
         window_size: int,
     ) -> None:
         """
-        Work in progress.
+        Construct VIX Futures Convergence Divergence Trend Following Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
