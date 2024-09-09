@@ -40,7 +40,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_columns(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_vix_pattern__for_correct_cvec_calculation(
+def test__calculate_engulfing_vix_pattern__for_correct_vixep_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
@@ -100,4 +100,78 @@ def test__calculate_engulfing_vix_pattern__for_correct_cvec_calculation(
     pd.testing.assert_series_equal(
         control_dataframe["vixep"],
         enhanced_dataframe["vixep"],
+    )
+
+
+@pytest.mark.usefixtures("enhanced_dataframe", "window_size")
+def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
+    enhanced_dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test calculate_engulfing_vix_pattern method for correct missing data calculation.
+
+    Resulting "vixep" column must have NO_PATTERN for rows with missing data.
+    Resulting "vixep" column must have correct values for rows with valid data.
+    """
+
+    enhanced_dataframe.reset_index(inplace=True)
+
+    # Mimic missing data for "vix open" and "vix close" columns
+    enhanced_dataframe.loc[0:5, "vix open"] = MISSING_DATA_PLACEHOLDER
+    enhanced_dataframe.loc[0:5, "vix close"] = MISSING_DATA_PLACEHOLDER
+
+    control_dataframe = enhanced_dataframe.copy()
+
+    control_dataframe["vixep"] = NO_PATTERN
+
+    control_dataframe["vix_prev_open"] = 0.0
+    control_dataframe["vix_prev_close"] = 0.0
+
+    control_dataframe.loc[
+        control_dataframe["vix open"] != MISSING_DATA_PLACEHOLDER,
+        "vix_prev_open",
+    ] = control_dataframe["vix open"].shift(1)
+
+    control_dataframe.loc[
+        control_dataframe["vix close"] != MISSING_DATA_PLACEHOLDER,
+        "vix_prev_close",
+    ] = control_dataframe["vix close"].shift(1)
+
+    control_dataframe.loc[
+        (
+            (control_dataframe["vix open"] < control_dataframe["vix_prev_open"])
+            & (control_dataframe["vix close"] > control_dataframe["vix_prev_close"])
+            & (control_dataframe["vix close"] > control_dataframe["vix open"])
+        ),
+        "vixep",
+    ] = BULLISH_ENGULFING
+
+    control_dataframe.loc[
+        (
+            (control_dataframe["vix open"] > control_dataframe["vix_prev_open"])
+            & (control_dataframe["vix close"] < control_dataframe["vix_prev_close"])
+            & (control_dataframe["vix close"] < control_dataframe["vix open"])
+        ),
+        "vixep",
+    ] = BEARISH_ENGULFING
+
+    control_dataframe.drop(
+        columns=["vix_prev_open", "vix_prev_close"],
+        inplace=True,
+    )
+
+    evp_calculator = EngulfingVIXPatternCalculator(
+        dataframe=enhanced_dataframe,
+        window_size=window_size,
+    )
+
+    evp_calculator.calculate_engulfing_vix_pattern()
+
+    assert all(enhanced_dataframe["vixep"].iloc[0:5] == NO_PATTERN)
+
+    assert (
+        control_dataframe["vixep"]
+        .iloc[0:5]
+        .equals(enhanced_dataframe["vixep"].iloc[0:5])
     )
