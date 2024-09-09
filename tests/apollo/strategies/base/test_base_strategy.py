@@ -6,6 +6,10 @@ import pytest
 from apollo.settings import NO_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
 
+"""
+TODO: should pre-calculate shared values=
+"""
+
 
 @pytest.mark.usefixtures("dataframe", "window_size")
 def test__base_strategy__for_inserting_signal_column(
