@@ -40,11 +40,11 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = EngulfingVIXPatternCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     lrc_calculator = LinearRegressionChannelCalculator(
         dataframe=control_dataframe,
@@ -54,12 +54,12 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
     lrc_calculator.calculate_linear_regression_channel()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 
