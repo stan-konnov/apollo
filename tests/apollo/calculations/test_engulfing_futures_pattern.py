@@ -36,7 +36,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_columns(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_futures_pattern__for_correct_vixep_calculation(
+def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
