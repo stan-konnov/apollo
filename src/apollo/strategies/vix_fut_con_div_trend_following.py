@@ -53,10 +53,6 @@ class VIXFuturesConvergenceDivergenceTrendFollowing(
 
     Divergence is, therefore, used to confirm a potential downtrend.
 
-    NOTE: This strategy proved to be effective as an enhancement
-    strategy and is also used in conjunction with other strategies.
-    The logic applied here can also be found in VIX Futures Enhanced Strategy.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
