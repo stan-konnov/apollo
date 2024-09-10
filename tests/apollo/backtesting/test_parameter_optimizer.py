@@ -21,6 +21,7 @@ from apollo.settings import (
 )
 from apollo.utils.types import ParameterSet
 from tests.fixtures.window_size_and_dataframe import SameSeries
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
@@ -234,6 +235,8 @@ def test__parameter_optimizer__for_correct_result_output(
 
     Parameter Optimizer must call database connector with correct values.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     # Precalculate volatility
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)

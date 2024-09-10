@@ -3,6 +3,7 @@ from pandas import DataFrame
 
 from apollo.backtesting.strategy_simulation_agent import StrategySimulationAgent
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 SL_VOL_MULT = 0.01
 TP_VOL_MULT = 0.01
@@ -18,6 +19,8 @@ def test__strategy_simulation_agent__for_correct_sl_tp_calculation(
 
     Strategy Simulation Agent must calculate correct stop loss and take profit levels.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()
@@ -64,6 +67,8 @@ def test__strategy_simulation_agent__for_correct_limit_entry_price_calculation(
 
     Strategy Simulation Agent must calculate correct limit entry price.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     at_calculator = AverageTrueRangeCalculator(dataframe, window_size)
     at_calculator.calculate_average_true_range()

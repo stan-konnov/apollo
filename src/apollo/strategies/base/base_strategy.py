@@ -18,6 +18,7 @@ class BaseStrategy:
         Construct Base Strategy.
 
         Insert signal column.
+        Precalculate shared values.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
@@ -26,6 +27,7 @@ class BaseStrategy:
         self._dataframe = dataframe
         self._window_size = window_size
 
+        self._precalculate_shared_values()
         self._dataframe["signal"] = NO_SIGNAL
 
     def model_trading_signals(self) -> None:
@@ -70,3 +72,9 @@ class BaseStrategy:
                     f"Parameter {parameter_name} is "
                     f"not of expected type {expected_type.__name__}",
                 )
+
+    def _precalculate_shared_values(self) -> None:
+        """Precalculate values used in multiple strategies."""
+
+        # Precalculate previous close
+        self._dataframe["prev_close"] = self._dataframe["adj close"].shift(1)

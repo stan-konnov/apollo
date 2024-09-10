@@ -5,6 +5,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.swing_events import SwingEventsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -17,6 +18,8 @@ def test__swing_events_mean_reversion__with_valid_parameters(
 
     Strategy should properly calculate trading signals.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     swing_filter = 0.01
 

@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+from apollo.calculations.engulfing_vix_pattern import (
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
@@ -22,19 +22,20 @@ def test__vix_enhanced_strategy__for_calculating_vix_signals(
     control_dataframe = enhanced_dataframe.copy()
     control_dataframe["vix_signal"] = NO_SIGNAL
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 

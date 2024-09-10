@@ -15,7 +15,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
     on the difference between three consecutive
     ASI values, where ASI is the sum of the Swing Index values.
 
-    Kaufman, Trading Systems and Methods, 2020, p.174
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    Wilder, New Concepts in Technical Trading Systems, 1978.
     """
 
     # Constant to represent low swing point
@@ -57,9 +58,8 @@ class WildersSwingIndexCalculator(BaseCalculator):
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
-        # Shift to get previous open and previous close
+        # Shift to get previous open
         self._dataframe["prev_open"] = self._dataframe["adj open"].shift(1)
-        self._dataframe["prev_close"] = self._dataframe["adj close"].shift(1)
 
         # Calculate rolling Swing Index
         self._dataframe["si"] = (
@@ -85,10 +85,9 @@ class WildersSwingIndexCalculator(BaseCalculator):
         # the SP column by one to get the correct signal
         self._dataframe["sp"] = self._dataframe["sp"].shift(1)
 
-        # Drop swing and accumulated swing index,
-        # previous open and previous close columns
+        # Drop unnecessary columns
         self._dataframe.drop(
-            columns=["si", "asi", "prev_open", "prev_close"],
+            columns=["si", "asi", "prev_open"],
             inplace=True,
         )
 

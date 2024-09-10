@@ -5,8 +5,8 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
-from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+from apollo.calculations.engulfing_vix_pattern import (
+    EngulfingVIXPatternCalculator,
 )
 from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
@@ -14,6 +14,7 @@ from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.keltner_chaikin_mean_reversion import (
     KeltnerChaikinMeanReversion,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
@@ -27,6 +28,8 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     Strategy should properly calculate trading signals.
     """
 
+    enhanced_dataframe = precalculate_shared_values(enhanced_dataframe)
+
     volatility_multiplier = 0.5
 
     control_dataframe = enhanced_dataframe.copy()
@@ -39,11 +42,11 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     hma_calculator = HullMovingAverageCalculator(
         dataframe=control_dataframe,
@@ -65,12 +68,12 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 

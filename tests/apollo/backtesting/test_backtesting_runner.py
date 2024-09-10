@@ -61,7 +61,7 @@ def test__backtesting_runner__for_running_the_process(
     assert stats["_strategy"] == STRATEGY
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "clean_data")
 @patch("apollo.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_creating_plots_directory(
     dataframe: DataFrame,
@@ -89,7 +89,7 @@ def test__backtesting_runner__for_creating_plots_directory(
     assert Path.exists(PLOT_DIR)
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "clean_data")
 @patch("apollo.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_writing_result_plot(
     dataframe: DataFrame,
@@ -109,7 +109,7 @@ def test__backtesting_runner__for_writing_result_plot(
         lot_size_cash=BACKTESTING_CASH_SIZE,
         sl_volatility_multiplier=0.01,
         tp_volatility_multiplier=0.01,
-        write_result_plot=False,
+        write_result_plot=True,
     )
 
     backtesting_runner.run()

@@ -1,7 +1,7 @@
 {
     "window_size": {
-        "step": 1,
-        "range": [3, 6]
+        "step": 5,
+        "range": [5, 20]
     },
 
     "sl_volatility_multiplier": {
@@ -14,7 +14,9 @@
         "range": [0.1, 1.0]
     },
 
-    "additional_data_enhancers": [],
+    "additional_data_enhancers": [
+        "VIX", "SP500 Futures"
+    ],
 
     "strategy_specific_parameters": []
 }

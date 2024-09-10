@@ -2,25 +2,28 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
+from apollo.calculations.engulfing_vix_pattern import (
+    EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.vix_exp_con_mean_reversion import (
-    VIXExpansionContractionMeanReversion,
+from apollo.strategies.engulfing_vix_mean_reversion import (
+    EngulfingVIXMeanReversion,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__vix_exp_con_mean_reversion__with_valid_parameters(
+def test__engulfing_vix_mean_reversion__with_valid_parameters(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test VIX Expansion Contraction Mean Reversion Strategy with valid parameters.
+    Test Engulfing VIX Mean Reversion Strategy with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
+
+    enhanced_dataframe = precalculate_shared_values(enhanced_dataframe)
 
     control_dataframe = enhanced_dataframe.copy()
     control_dataframe["signal"] = NO_SIGNAL
@@ -31,30 +34,30 @@ def test__vix_exp_con_mean_reversion__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
         "signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
         "signal",
     ] = SHORT_SIGNAL
 
     control_dataframe.dropna(inplace=True)
 
-    vix_exp_con_mean_reversion = VIXExpansionContractionMeanReversion(
+    engulfing_vix_mean_reversion = EngulfingVIXMeanReversion(
         enhanced_dataframe,
         window_size,
     )
 
-    vix_exp_con_mean_reversion.model_trading_signals()
+    engulfing_vix_mean_reversion.model_trading_signals()
 
     pd.testing.assert_series_equal(
         control_dataframe["signal"],

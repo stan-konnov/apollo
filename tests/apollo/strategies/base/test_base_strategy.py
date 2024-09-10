@@ -14,10 +14,10 @@ def test__base_strategy__for_inserting_signal_column(
 ) -> None:
     """Test Base Strategy for inserting "signal" column."""
 
-    strategy = BaseStrategy(dataframe, window_size)
+    BaseStrategy(dataframe, window_size)
 
-    assert "signal" in strategy._dataframe.columns  # noqa: SLF001
-    assert strategy._dataframe["signal"].iloc[0] == NO_SIGNAL  # noqa: SLF001
+    assert "signal" in dataframe.columns
+    assert all(dataframe["signal"] == NO_SIGNAL)
 
 
 @pytest.mark.usefixtures("window_size")
@@ -106,3 +106,30 @@ def test__base_strategy__for_throwing_error_when_modelling_method_is_not_impleme
         strategy.model_trading_signals()
 
     assert str(exception.value) == exception_message
+
+
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__base_strategy__for_precalculating_shared_values(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Base Strategy for precalculating shared values.
+
+    Dataframe should have "prev_close" column.
+    """
+
+    control_dataframe = dataframe.copy()
+
+    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
+
+    strategy = BaseStrategy(dataframe, window_size)
+
+    strategy._precalculate_shared_values()  # noqa: SLF001
+
+    assert "prev_close" in dataframe.columns
+
+    pd.testing.assert_series_equal(
+        dataframe["prev_close"],
+        control_dataframe["prev_close"],
+    )

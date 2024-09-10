@@ -19,6 +19,7 @@ class HullMovingAverageCalculator(BaseCalculator):
     3. Calculate HMA of the difference between two using square root of the window size
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    "The Hull Moving Average" Technical Analyst, (July-September 2010).
     """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:

@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -13,8 +14,9 @@ def test__calculate_average_true_range__for_correct_columns(
     Test calculate_average_true_range method for correct columns.
 
     Resulting dataframe must have columns "tr" and "atr".
-    Resulting dataframe must drop "prev_close" column.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -25,7 +27,6 @@ def test__calculate_average_true_range__for_correct_columns(
 
     assert "tr" in dataframe.columns
     assert "atr" in dataframe.columns
-    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -44,6 +45,8 @@ def test__calculate_average_true_range__for_correct_rolling_window(
     Resulting dataframe must skip (WINDOW_SIZE - 1) * 2 rows for ATR column
     Since ATR calculation must have at least N rows of valid TR to calculate ATR.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     atr_calculator = AverageTrueRangeCalculator(
         dataframe=dataframe,
@@ -66,6 +69,8 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
 
     Resulting TR column must have correct values for each row.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
     control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
@@ -102,8 +107,9 @@ def test__calculate_average_true_range__for_correct_atr_calculation(
     Resulting ATR column must have correct values for each row.
     """
 
+    dataframe = precalculate_shared_values(dataframe)
+
     control_dataframe = dataframe.copy()
-    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
 
     control_dataframe["tr"] = (
         control_dataframe["adj close"]

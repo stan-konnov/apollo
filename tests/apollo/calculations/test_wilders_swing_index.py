@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.wilders_swing_index import WildersSwingIndexCalculator
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 LOW_SWING_POINT: float = -1.0
 HIGH_SWING_POINT: float = 1.0
@@ -24,6 +25,8 @@ def test__calculate_swing_index__for_correct_columns(
     Resulting dataframe must not have "si", "asi", "prev_open", "prev_close" columns.
     """
 
+    dataframe = precalculate_shared_values(dataframe)
+
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
         window_size=window_size,
@@ -36,7 +39,6 @@ def test__calculate_swing_index__for_correct_columns(
     assert "si" not in dataframe.columns
     assert "asi" not in dataframe.columns
     assert "prev_open" not in dataframe.columns
-    assert "prev_close" not in dataframe.columns
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -53,6 +55,8 @@ def test__calculate_swing_index__for_correct_rolling_window(
     Since SP calculation relies on 3 consecutive ASI values,
     and, in such, only available after first N rows.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     wsi_calculator = WildersSwingIndexCalculator(
         dataframe=dataframe,
@@ -105,6 +109,8 @@ def test__calculate_swing_index__for_correct_sp_calculation(
 
     Resulting SP column must have correct values for each row.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
 

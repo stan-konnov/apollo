@@ -108,7 +108,7 @@ class PriceDataProvider:
                 dataframe=price_data,
             )
 
-            logger.info("Requested price data from Yahoo Finance API.")
+            logger.info(f"Requested {ticker} price data from Yahoo Finance API.")
 
         # Otherwise, read from disk
         else:
@@ -120,7 +120,7 @@ class PriceDataProvider:
                 max_period=max_period,
             )
 
-            logger.info("Price data read from storage.")
+            logger.info(f"{ticker} price data read from storage.")
 
         return price_data
 
@@ -150,7 +150,7 @@ class PriceDataProvider:
 
         # In our case a simple string compare is enough
         # since at this point we adhere to YYYY-MM-DD format
-        if start_date > end_date:
+        if start_date >= end_date:
             raise ValueError("Start date must be before end date.")
 
     def _prepare_price_data(self, dataframe: pd.DataFrame, ticker: str) -> pd.DataFrame:

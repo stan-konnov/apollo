@@ -1,6 +1,7 @@
 import logging
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
@@ -8,7 +9,6 @@ from apollo.settings import (
     MAX_PERIOD,
     START_DATE,
     TICKER,
-    VIX_TICKER,
 )
 from apollo.strategies.keltner_chaikin_mean_reversion import KeltnerChaikinMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
@@ -27,6 +27,7 @@ def main() -> None:
     ensure_environment_is_configured()
 
     price_data_provider = PriceDataProvider()
+    price_data_enhancer = PriceDataEnhancer()
 
     dataframe = price_data_provider.get_price_data(
         ticker=str(TICKER),
@@ -36,16 +37,10 @@ def main() -> None:
         max_period=bool(MAX_PERIOD),
     )
 
-    vix_dataframe = price_data_provider.get_price_data(
-        ticker=str(VIX_TICKER),
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
+    dataframe = price_data_enhancer.enhance_price_data(
+        price_dataframe=dataframe,
+        additional_data_enhancers=["VIX", "SP500 Futures"],
     )
-
-    dataframe["vix open"] = vix_dataframe["open"]
-    dataframe["vix close"] = vix_dataframe["close"]
 
     strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
