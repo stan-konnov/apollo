@@ -9,6 +9,10 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
 
+"""
+NOTE: currently is not used as optimization takes unreasonably long time.
+"""
+
 
 class LogisticRegressionForecast(
     BaseStrategy,

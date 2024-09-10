@@ -5,6 +5,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -17,6 +18,8 @@ def test__volatility_adjusted_strategy__for_calculating_volatility(
 
     Dataframe should have "tr" and "atr" columns.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
 

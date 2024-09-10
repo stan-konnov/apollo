@@ -5,6 +5,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.models.arima_regression import ARIMARegressionModelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.arima_trend_mean_reversion import ARIMATrendMeanReversion
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
@@ -17,6 +18,8 @@ def test__arima_trend_mean_reversion__with_valid_parameters(
 
     Strategy should properly calculate trading signals.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
     control_dataframe["signal"] = 0

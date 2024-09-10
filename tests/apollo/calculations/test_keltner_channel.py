@@ -7,6 +7,7 @@ from apollo.calculations.hull_moving_average import (
     HullMovingAverageCalculator,
 )
 from apollo.calculations.keltner_channel import KeltnerChannelCalculator
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 VOLATILITY_MULTIPLIER = 0.5
 
@@ -21,6 +22,8 @@ def test__calculate_keltner_channel__for_correct_columns(
 
     Resulting dataframe must have columns "lkc_bound" and "ukc_bound".
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
@@ -60,6 +63,8 @@ def test__calculate_keltner_channel__for_correct_rolling_window(
     ATR calculation that is based on TR calculation.
     """
 
+    dataframe = precalculate_shared_values(dataframe)
+
     hma_calculator = HullMovingAverageCalculator(
         dataframe=dataframe,
         window_size=window_size,
@@ -93,6 +98,8 @@ def test__calculate_keltner_channel__for_correct_kc_calculation(
 
     Resulting "lkc_bound" and "ukc_bound" columns must have correct values for each row.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     lkc_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()
     ukc_bound = np.full((1, window_size - 1), np.nan).flatten().tolist()

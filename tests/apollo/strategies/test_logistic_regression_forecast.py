@@ -7,6 +7,7 @@ from apollo.calculations.models.logistic_regression import (
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.logistic_regression_forecast import LogisticRegressionForecast
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 TRAIN_SIZE = 0.4
 
@@ -21,6 +22,8 @@ def test__logistic_regression_forecast__with_valid_parameters(
 
     Strategy should properly calculate trading signals.
     """
+
+    dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
     control_dataframe["signal"] = 0

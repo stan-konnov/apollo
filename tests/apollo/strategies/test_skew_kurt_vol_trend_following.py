@@ -2,14 +2,15 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.conners_vix_expansion_contraction import (
-    ConnersVixExpansionContractionCalculator,
-)
 from apollo.calculations.distribution_moments import DistributionMomentsCalculator
+from apollo.calculations.engulfing_vix_pattern import (
+    EngulfingVIXPatternCalculator,
+)
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.skew_kurt_vol_trend_following import (
     SkewnessKurtosisVolatilityTrendFollowing,
 )
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
@@ -22,6 +23,8 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
 
     Strategy should properly calculate trading signals.
     """
+
+    enhanced_dataframe = precalculate_shared_values(enhanced_dataframe)
 
     kurtosis_threshold = 0.0
     volatility_multiplier = 0.5
@@ -36,11 +39,11 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     )
     atr_calculator.calculate_average_true_range()
 
-    cvec_calculator = ConnersVixExpansionContractionCalculator(
+    evp_calculator = EngulfingVIXPatternCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
     )
-    cvec_calculator.calculate_vix_expansion_contraction()
+    evp_calculator.calculate_engulfing_vix_pattern()
 
     dm_calculator = DistributionMomentsCalculator(
         dataframe=control_dataframe,
@@ -49,12 +52,12 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     dm_calculator.calculate_distribution_moments()
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.UPSIDE_EXPANSION,
+        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["cvec"] == cvec_calculator.DOWNSIDE_CONTRACTION,
+        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 

@@ -5,6 +5,8 @@ from apollo.settings import (
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
+    MISSING_DATA_PLACEHOLDER,
+    SP500_FUTURES_TICKER,
     START_DATE,
     SUPPORTED_DATA_ENHANCERS,
     VIX_TICKER,
@@ -21,12 +23,6 @@ class PriceDataEnhancer:
     Uses Price Data Provider to retrieve enhancing data
     and enrich the original price dataframe with new columns.
     """
-
-    # If there is more data in the price dataframe
-    # than in the enhanced dataframe, missing values will be
-    # filled with NaNs and subsequently dropped by the strategy
-    # We, therefore, avoid this by filling the missing values with 0
-    MISSING_VALUE_FILLER = 0
 
     def __init__(self) -> None:
         """Construct Price Data Enhancer."""
@@ -70,11 +66,42 @@ class PriceDataEnhancer:
                         ["open", "close"]
                     ]
 
+                    # If there is more data in the price dataframe
+                    # than in the enhanced dataframe, missing values will be
+                    # filled with NaNs and subsequently dropped by the strategy
+                    # We, therefore, avoid this by filling the values with placeholder
                     if price_dataframe.shape[0] > vix_price_dataframe.shape[0]:
                         price_dataframe.fillna(
                             {
-                                "vix open": self.MISSING_VALUE_FILLER,
-                                "vix close": self.MISSING_VALUE_FILLER,
+                                "vix open": MISSING_DATA_PLACEHOLDER,
+                                "vix close": MISSING_DATA_PLACEHOLDER,
+                            },
+                            inplace=True,
+                        )
+
+                case "SP500 Futures":
+                    sp500_futures_price_dataframe = (
+                        self._price_data_provider.get_price_data(
+                            ticker=str(SP500_FUTURES_TICKER),
+                            frequency=str(FREQUENCY),
+                            start_date=str(START_DATE),
+                            end_date=str(END_DATE),
+                            max_period=bool(MAX_PERIOD),
+                        )
+                    )
+
+                    price_dataframe[["spf open", "spf close"]] = (
+                        sp500_futures_price_dataframe[["open", "close"]]
+                    )
+
+                    if (
+                        price_dataframe.shape[0]
+                        > sp500_futures_price_dataframe.shape[0]
+                    ):
+                        price_dataframe.fillna(
+                            {
+                                "spf open": MISSING_DATA_PLACEHOLDER,
+                                "spf close": MISSING_DATA_PLACEHOLDER,
                             },
                             inplace=True,
                         )

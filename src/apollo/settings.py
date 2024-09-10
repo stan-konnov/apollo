@@ -2,12 +2,14 @@ from enum import Enum
 from os import curdir, getenv
 from pathlib import Path
 
+import numpy as np
 from dotenv import load_dotenv
 
 load_dotenv()
 
 TICKER = getenv("TICKER")
 VIX_TICKER = getenv("VIX_TICKER")
+SP500_FUTURES_TICKER = getenv("SP500_FUTURES_TICKER")
 EXCHANGE = getenv("EXCHANGE")
 STRATEGY = getenv("STRATEGY")
 START_DATE = getenv("START_DATE")
@@ -21,6 +23,7 @@ LONG_SIGNAL = 1
 SHORT_SIGNAL = -1
 
 BACKTESTING_CASH_SIZE = 1000
+MISSING_DATA_PLACEHOLDER = np.inf
 
 ROOT_DIR = Path(curdir).resolve()
 DATA_DIR = Path(f"{ROOT_DIR}/data")
