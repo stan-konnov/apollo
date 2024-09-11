@@ -90,9 +90,9 @@ class PriceDataEnhancer:
                         )
                     )
 
-                    price_dataframe[
-                        ["spf open", "spf high", "spf low", "spf close"]
-                    ] = sp500_futures_price_dataframe[["open", "high", "low", "close"]]
+                    price_dataframe[["spf open", "spf close"]] = (
+                        sp500_futures_price_dataframe[["open", "close"]]
+                    )
 
                     if (
                         price_dataframe.shape[0]
@@ -100,8 +100,6 @@ class PriceDataEnhancer:
                     ):
                         price_dataframe.fillna(
                             {
-                                "spf low": MISSING_DATA_PLACEHOLDER,
-                                "spf high": MISSING_DATA_PLACEHOLDER,
                                 "spf open": MISSING_DATA_PLACEHOLDER,
                                 "spf close": MISSING_DATA_PLACEHOLDER,
                             },
