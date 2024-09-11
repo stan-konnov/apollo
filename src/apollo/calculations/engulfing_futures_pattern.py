@@ -68,9 +68,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         self._dataframe["spfep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
-        self._dataframe["spf_low_tm1"] = 0.0
-        self._dataframe["spf_high_tm1"] = 0.0
-
         self._dataframe["spf_open_tm1"] = 0.0
         self._dataframe["spf_open_tm2"] = 0.0
 
