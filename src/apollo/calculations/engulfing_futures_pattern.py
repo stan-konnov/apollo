@@ -47,6 +47,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         # We consider a doji
         # between 0.5% and 1%
+        # NOTE: this should be a parameter
         doji_threshold = 0.007
 
         # Since we are working with multiple
