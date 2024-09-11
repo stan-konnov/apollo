@@ -90,6 +90,12 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf close"] > self._dataframe["spf open"])
         )
 
+        bearish_engulfing = (
+            (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
+            & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
+            & (self._dataframe["spf close"] < self._dataframe["spf open"])
+        )
+
         bullish_morning_star = (
             # Candle 1: Long Bearish Candle (t-2)
             (self._dataframe["spf_close_tm2"] < self._dataframe["spf_open_tm2"])
@@ -110,16 +116,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
                 > (self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"])
                 / 2
             )
-        )
-
-        self._dataframe.loc[(bullish_engulfing | bullish_morning_star), "spfep"] = (
-            self.BULLISH_ENGULFING
-        )
-
-        bearish_engulfing = (
-            (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
-            & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
-            & (self._dataframe["spf close"] < self._dataframe["spf open"])
         )
 
         bearish_evening_star = (
@@ -144,7 +140,11 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             )
         )
 
-        self._dataframe.loc[(bearish_engulfing | bearish_evening_star), "spfep"] = (
+        self._dataframe.loc[(bullish_engulfing | bearish_evening_star), "spfep"] = (
+            self.BULLISH_ENGULFING
+        )
+
+        self._dataframe.loc[(bearish_engulfing | bullish_morning_star), "spfep"] = (
             self.BEARISH_ENGULFING
         )
 
