@@ -45,6 +45,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     def calculate_engulfing_futures_pattern(self) -> None:
         """Calculate Engulfing Futures Pattern."""
 
+        doji_threshold = 0.003
+
         # Since we are working with multiple
         # data sources, there is no guarantee that
         # the data is present for all the rows in the dataframe
@@ -56,7 +58,10 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         # Initialize necessary columns with 0
         self._dataframe["spf_open_tm1"] = 0.0
+        self._dataframe["spf_open_tm2"] = 0.0
+
         self._dataframe["spf_close_tm1"] = 0.0
+        self._dataframe["spf_close_tm2"] = 0.0
 
         # Shift open and close prices only if the data is present
         self._dataframe.loc[
@@ -65,9 +70,19 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         ] = self._dataframe["spf open"].shift(1)
 
         self._dataframe.loc[
+            self._dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
+            "spf_open_tm2",
+        ] = self._dataframe["spf open"].shift(2)
+
+        self._dataframe.loc[
             self._dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
             "spf_close_tm1",
         ] = self._dataframe["spf close"].shift(1)
+
+        self._dataframe.loc[
+            self._dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
+            "spf_close_tm2",
+        ] = self._dataframe["spf close"].shift(2)
 
         bullish_engulfing = (
             (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
@@ -75,7 +90,31 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf close"] > self._dataframe["spf open"])
         )
 
-        self._dataframe.loc[bullish_engulfing, "spfep"] = self.BULLISH_ENGULFING
+        bullish_morning_star = (
+            # Candle 1: Long Bearish Candle (t-2)
+            (self._dataframe["spf_close_tm2"] < self._dataframe["spf_open_tm2"])
+            &
+            # Candle 2: Small Candle (t-1), open and close are close together (Doji)
+            (
+                abs(self._dataframe["spf_close_tm1"] - self._dataframe["spf_open_tm1"])
+                / self._dataframe["spf_open_tm1"]
+                < doji_threshold
+            )
+            &
+            # Candle 3: Long Bullish Candle (t)
+            (self._dataframe["spf close"] > self._dataframe["spf open"])
+            &
+            # Close of t is above the midpoint of t-2
+            (
+                self._dataframe["spf close"]
+                > (self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"])
+                / 2
+            )
+        )
+
+        self._dataframe.loc[(bullish_engulfing | bullish_morning_star), "spfep"] = (
+            self.BULLISH_ENGULFING
+        )
 
         bearish_engulfing = (
             (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
@@ -83,7 +122,31 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf close"] < self._dataframe["spf open"])
         )
 
-        self._dataframe.loc[bearish_engulfing, "spfep"] = self.BEARISH_ENGULFING
+        bearish_evening_star = (
+            # Candle 1: Long Bullish Candle (t-2)
+            (self._dataframe["spf_close_tm2"] > self._dataframe["spf_open_tm2"])
+            &
+            # Candle 2: Small Candle (t-1), open and close are close together (Doji)
+            (
+                abs(self._dataframe["spf_close_tm1"] - self._dataframe["spf_open_tm1"])
+                / self._dataframe["spf_open_tm1"]
+                < doji_threshold
+            )
+            &
+            # Candle 3: Long Bearish Candle (t)
+            (self._dataframe["spf close"] < self._dataframe["spf open"])
+            &
+            # Close of t is below the midpoint of t-2
+            (
+                self._dataframe["spf close"]
+                < (self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"])
+                / 2
+            )
+        )
+
+        self._dataframe.loc[(bearish_engulfing | bearish_evening_star), "spfep"] = (
+            self.BEARISH_ENGULFING
+        )
 
         # Drop unnecessary columns
         self._dataframe.drop(
