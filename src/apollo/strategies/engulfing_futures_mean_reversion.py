@@ -46,12 +46,14 @@ class EngulfingFuturesMeanReversion(
         self,
         dataframe: DataFrame,
         window_size: int,
+        doji_threshold: float,
     ) -> None:
         """
         Construct Engulfing Futures Mean Reversion Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
+        :param doji_threshold: Threshold for identifying candlestick as Doji.
         """
         super().__init__(dataframe, window_size)
 
@@ -62,6 +64,7 @@ class EngulfingFuturesMeanReversion(
         self._efp_calculator = EngulfingFuturesPatternCalculator(
             dataframe=dataframe,
             window_size=window_size,
+            doji_threshold=doji_threshold,
         )
 
     def model_trading_signals(self) -> None:

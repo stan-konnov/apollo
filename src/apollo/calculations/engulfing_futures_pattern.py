@@ -29,12 +29,18 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     # bearish engulfing pattern
     BEARISH_ENGULFING: float = -1.0
 
-    def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
+    def __init__(
+        self,
+        dataframe: pd.DataFrame,
+        window_size: int,
+        doji_threshold: float,
+    ) -> None:
         """
         Construct Engulfing Futures Pattern Calculator.
 
         :param dataframe: Dataframe to calculate Engulfing Pattern for.
         :param window_size: Size of the window for Engulfing Pattern calculation.
+        :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
         TODO: calculate midpoint for stars:
         midpoint_t_2 = (df['open_t_2'] + df['close_t_2']) / 2
@@ -45,13 +51,10 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         super().__init__(dataframe, window_size)
 
+        self._doji_threshold = doji_threshold
+
     def calculate_engulfing_futures_pattern(self) -> None:
         """Calculate Engulfing Futures Pattern."""
-
-        # We consider a doji
-        # between 0.5% and 1%
-        # NOTE: this should be a parameter
-        doji_threshold = 0.007
 
         # Since we are working with multiple
         # data sources, there is no guarantee that
@@ -113,7 +116,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (
                 abs(self._dataframe["spf_close_tm1"] - self._dataframe["spf_open_tm1"])
                 / self._dataframe["spf_open_tm1"]
-                < doji_threshold
+                < self._doji_threshold
             )
             &
             # Candle 3: Long Bullish Candle (t)
@@ -135,7 +138,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (
                 abs(self._dataframe["spf_close_tm1"] - self._dataframe["spf_open_tm1"])
                 / self._dataframe["spf_open_tm1"]
-                < doji_threshold
+                < self._doji_threshold
             )
             &
             # Candle 3: Long Bearish Candle (t)

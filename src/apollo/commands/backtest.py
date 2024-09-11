@@ -47,6 +47,7 @@ def main() -> None:
     strategy = EngulfingFuturesMeanReversion(
         dataframe=dataframe,
         window_size=10,
+        doji_threshold=0.007,
     )
 
     strategy.model_trading_signals()
