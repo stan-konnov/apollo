@@ -45,7 +45,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     def calculate_engulfing_futures_pattern(self) -> None:
         """Calculate Engulfing Futures Pattern."""
 
-        doji_threshold = 0.003
+        # We consider a doji
+        # threshold to be 0.5%
+        doji_threshold = 0.005
 
         # Since we are working with multiple
         # data sources, there is no guarantee that
