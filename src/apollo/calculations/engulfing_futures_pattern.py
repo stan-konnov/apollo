@@ -55,24 +55,24 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         self._dataframe["spfep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
-        self._dataframe["spf_prev_open"] = 0.0
-        self._dataframe["spf_prev_close"] = 0.0
+        self._dataframe["spf_open_tm1"] = 0.0
+        self._dataframe["spf_close_tm1"] = 0.0
 
         # Shift open and close prices only if the data is present
         self._dataframe.loc[
             self._dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
-            "spf_prev_open",
+            "spf_open_tm1",
         ] = self._dataframe["spf open"].shift(1)
 
         self._dataframe.loc[
             self._dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
-            "spf_prev_close",
+            "spf_close_tm1",
         ] = self._dataframe["spf close"].shift(1)
 
         self._dataframe.loc[
             (
-                (self._dataframe["spf open"] < self._dataframe["spf_prev_open"])
-                & (self._dataframe["spf close"] > self._dataframe["spf_prev_close"])
+                (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
+                & (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
                 & (self._dataframe["spf close"] > self._dataframe["spf open"])
             ),
             "spfep",
@@ -80,8 +80,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         self._dataframe.loc[
             (
-                (self._dataframe["spf open"] > self._dataframe["spf_prev_open"])
-                & (self._dataframe["spf close"] < self._dataframe["spf_prev_close"])
+                (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
+                & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
                 & (self._dataframe["spf close"] < self._dataframe["spf open"])
             ),
             "spfep",
@@ -89,6 +89,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         # Drop unnecessary columns
         self._dataframe.drop(
-            columns=["spf_prev_open", "spf_prev_close"],
+            columns=["spf_open_tm1", "spf_close_tm1"],
             inplace=True,
         )
