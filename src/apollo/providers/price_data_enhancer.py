@@ -100,6 +100,8 @@ class PriceDataEnhancer:
                     ):
                         price_dataframe.fillna(
                             {
+                                "spf low": MISSING_DATA_PLACEHOLDER,
+                                "spf high": MISSING_DATA_PLACEHOLDER,
                                 "spf open": MISSING_DATA_PLACEHOLDER,
                                 "spf close": MISSING_DATA_PLACEHOLDER,
                             },
