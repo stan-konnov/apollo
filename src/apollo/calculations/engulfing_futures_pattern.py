@@ -69,23 +69,21 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             "spf_close_tm1",
         ] = self._dataframe["spf close"].shift(1)
 
-        self._dataframe.loc[
-            (
-                (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
-                & (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
-                & (self._dataframe["spf close"] > self._dataframe["spf open"])
-            ),
-            "spfep",
-        ] = self.BULLISH_ENGULFING
+        bullish_engulfing = (
+            (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
+            & (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
+            & (self._dataframe["spf close"] > self._dataframe["spf open"])
+        )
 
-        self._dataframe.loc[
-            (
-                (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
-                & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
-                & (self._dataframe["spf close"] < self._dataframe["spf open"])
-            ),
-            "spfep",
-        ] = self.BEARISH_ENGULFING
+        self._dataframe.loc[bullish_engulfing, "spfep"] = self.BULLISH_ENGULFING
+
+        bearish_engulfing = (
+            (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
+            & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
+            & (self._dataframe["spf close"] < self._dataframe["spf open"])
+        )
+
+        self._dataframe.loc[bearish_engulfing, "spfep"] = self.BEARISH_ENGULFING
 
         # Drop unnecessary columns
         self._dataframe.drop(
