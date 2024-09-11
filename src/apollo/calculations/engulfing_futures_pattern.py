@@ -45,6 +45,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         TODO: calculate midpoint for stars:
         midpoint_t_2 = (df['open_t_2'] + df['close_t_2']) / 2
 
+        Calculate piercing line / dark cloud cover pattern
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
