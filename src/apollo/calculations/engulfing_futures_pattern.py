@@ -36,6 +36,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param dataframe: Dataframe to calculate Engulfing Pattern for.
         :param window_size: Size of the window for Engulfing Pattern calculation.
 
+        TODO: calculate midpoint for stars:
+        midpoint_t_2 = (df['open_t_2'] + df['close_t_2']) / 2
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
