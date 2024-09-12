@@ -95,6 +95,11 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             "spf_close_tm2",
         ] = self._dataframe["spf close"].shift(2)
 
+        # Precalculate candle midpoint necessary for stars
+        open_on_close_midpoint_tm2 = (
+            self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"]
+        ) / 2
+
         bullish_engulfing = (
             (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
             & (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
@@ -122,11 +127,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] > self._dataframe["spf open"])
             &
             # Close of t is above the midpoint of t-2
-            (
-                self._dataframe["spf close"]
-                > (self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"])
-                / 2
-            )
+            (self._dataframe["spf close"] > open_on_close_midpoint_tm2)
         )
 
         bearish_evening_star = (
@@ -144,11 +145,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] < self._dataframe["spf open"])
             &
             # Close of t is below the midpoint of t-2
-            (
-                self._dataframe["spf close"]
-                < (self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"])
-                / 2
-            )
+            (self._dataframe["spf close"] < open_on_close_midpoint_tm2)
         )
 
         self._dataframe.loc[
