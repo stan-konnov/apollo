@@ -42,7 +42,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: calculate the body momentum and use it as a filter
+        TODO: Move the signalling logic out of the calculator
+        and into the strategy level.
 
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
