@@ -42,8 +42,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: Calculate piercing line / dark cloud cover pattern
-
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
@@ -97,15 +95,23 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"]
         ) / 2
 
+        # Calculate bullish engulfing
         bullish_engulfing = (
+            # Open of t is below the close of t-1
             (self._dataframe["spf open"] < self._dataframe["spf_open_tm1"])
+            # Close of t is above the open of t-1
             & (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
+            # Close of t is above the open of t
             & (self._dataframe["spf close"] > self._dataframe["spf open"])
         )
 
+        # Calculate bearish engulfing
         bearish_engulfing = (
+            # Open of t is above the close of t-1
             (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
+            # Close of t is below the open of t-1
             & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
+            # Close of t is below the open of t
             & (self._dataframe["spf close"] < self._dataframe["spf open"])
         )
 
