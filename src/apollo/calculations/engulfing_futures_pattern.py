@@ -111,10 +111,13 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         # Calculate bearish engulfing
         bearish_engulfing = (
             # Open at T is above the close at T-1
+            # Candle opened above the close of the previous candle
             (self._dataframe["spf open"] > self._dataframe["spf_open_tm1"])
             # Close at T is below the open at T-1
+            # Candle closed below the open of the previous candle
             & (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
             # Close at T is below the open at T
+            # Candle closed in negative territory
             & (self._dataframe["spf close"] < self._dataframe["spf open"])
         )
 
