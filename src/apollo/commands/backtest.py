@@ -10,9 +10,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.engulfing_futures_mean_reversion import (
-    EngulfingFuturesMeanReversion,
-)
+from apollo.strategies.keltner_chaikin_mean_reversion import KeltnerChaikinMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -44,17 +42,17 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = EngulfingFuturesMeanReversion(
+    strategy = KeltnerChaikinMeanReversion(
         dataframe=dataframe,
-        window_size=5,
-        doji_threshold=0.007,
+        window_size=15,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="EngulfingFuturesMeanReversion",
+        strategy_name="KeltnerChaikinMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
