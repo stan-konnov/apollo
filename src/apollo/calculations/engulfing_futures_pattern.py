@@ -123,21 +123,26 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf close"] < self._dataframe["spf open"])
         )
 
+        # Calculate bullish morning star
         bullish_morning_star = (
-            # Candle 1: Long Bearish Candle (t-2)
+            # Close at T-2 is below the open at T-2
+            # Candle at T-2 closed in negative territory
             (self._dataframe["spf_close_tm2"] < self._dataframe["spf_open_tm2"])
             &
-            # Candle 2: Small Candle (t-1), open and close are close together (Doji)
+            # Difference between close at T-1 and
+            # open at T-1 is less than Doji threshold
+            # Previous candle closed in neutral territory
             (
                 abs(self._dataframe["spf_close_tm1"] - self._dataframe["spf_open_tm1"])
                 / self._dataframe["spf_open_tm1"]
                 < self._doji_threshold
             )
             &
-            # Candle 3: Long Bullish Candle (t)
+            # Close at T is above the open at T
+            # Candle closed in positive territory
             (self._dataframe["spf close"] > self._dataframe["spf open"])
             &
-            # Close of t is above the midpoint of t-2
+            # Close at T is above the midpoint of T-2 candle
             (self._dataframe["spf close"] > open_on_close_midpoint_tm2)
         )
 
