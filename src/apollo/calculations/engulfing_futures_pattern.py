@@ -42,10 +42,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: calculate midpoint for stars:
-        midpoint_t_2 = (df['open_t_2'] + df['close_t_2']) / 2
-
-        Calculate piercing line / dark cloud cover pattern
+        TODO: Calculate piercing line / dark cloud cover pattern
 
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
