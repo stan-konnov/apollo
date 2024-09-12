@@ -46,7 +46,7 @@ def main() -> None:
 
     strategy = EngulfingFuturesMeanReversion(
         dataframe=dataframe,
-        window_size=10,
+        window_size=5,
         doji_threshold=0.007,
     )
 
