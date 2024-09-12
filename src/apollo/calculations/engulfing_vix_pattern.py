@@ -36,6 +36,9 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         :param dataframe: Dataframe to calculate Engulfing Pattern for.
         :param window_size: Window size for Engulfing Pattern calculation.
 
+        NOTE: please revert me back to the original implementation
+        if does not prove to be useful.
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
@@ -44,6 +47,8 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
 
     def calculate_engulfing_vix_pattern(self) -> None:
         """Calculate Engulfing VIX Pattern."""
+
+        doji_threshold = 0.007
 
         # Since we are working with multiple
         # data sources, there is no guarantee that
@@ -55,40 +60,122 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         self._dataframe["vixep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
-        self._dataframe["vix_prev_open"] = 0.0
-        self._dataframe["vix_prev_close"] = 0.0
+        self._dataframe["vix_open_tm1"] = 0.0
+        self._dataframe["vix_open_tm2"] = 0.0
+
+        self._dataframe["vix_close_tm1"] = 0.0
+        self._dataframe["vix_close_tm2"] = 0.0
 
         # Shift open and close prices only if the data is present
         self._dataframe.loc[
             self._dataframe["vix open"] != MISSING_DATA_PLACEHOLDER,
-            "vix_prev_open",
+            "vix_open_tm1",
         ] = self._dataframe["vix open"].shift(1)
 
         self._dataframe.loc[
+            self._dataframe["vix open"] != MISSING_DATA_PLACEHOLDER,
+            "vix_open_tm2",
+        ] = self._dataframe["vix open"].shift(2)
+
+        self._dataframe.loc[
             self._dataframe["vix close"] != MISSING_DATA_PLACEHOLDER,
-            "vix_prev_close",
+            "vix_close_tm1",
         ] = self._dataframe["vix close"].shift(1)
 
         self._dataframe.loc[
+            self._dataframe["vix close"] != MISSING_DATA_PLACEHOLDER,
+            "vix_close_tm2",
+        ] = self._dataframe["vix close"].shift(2)
+
+        # Precalculate candle midpoint necessary for stars
+        open_on_close_midpoint_tm2 = (
+            self._dataframe["vix_open_tm2"] + self._dataframe["vix_close_tm2"]
+        ) / 2
+
+        # Calculate bullish engulfing
+        bullish_engulfing = (
+            # Open at T is below the close at T-1
+            # Candle opened below the close of the previous candle
+            (self._dataframe["vix open"] < self._dataframe["vix_open_tm1"])
+            # Close at T is above the open at T-1
+            # Candle closed above the open of the previous candle
+            & (self._dataframe["vix close"] > self._dataframe["vix_close_tm1"])
+            # Close at T is above the open at T
+            # Candle closed in positive territory
+            & (self._dataframe["vix close"] > self._dataframe["vix open"])
+        )
+
+        # Calculate bearish engulfing
+        bearish_engulfing = (
+            # Open at T is above the close at T-1
+            # Candle opened above the close of the previous candle
+            (self._dataframe["vix open"] > self._dataframe["vix_open_tm1"])
+            # Close at T is below the open at T-1
+            # Candle closed below the open of the previous candle
+            & (self._dataframe["vix close"] < self._dataframe["vix_close_tm1"])
+            # Close at T is below the open at T
+            # Candle closed in negative territory
+            & (self._dataframe["vix close"] < self._dataframe["vix open"])
+        )
+
+        # Calculate bullish morning star
+        bullish_morning_star = (
+            # Close at T-2 is below the open at T-2
+            # Candle at T-2 closed in negative territory
+            (self._dataframe["vix_close_tm2"] < self._dataframe["vix_open_tm2"])
+            &
+            # Difference between close at T-1 and
+            # open at T-1 is less than Doji threshold
+            # Previous candle closed in neutral territory
             (
-                (self._dataframe["vix open"] < self._dataframe["vix_prev_open"])
-                & (self._dataframe["vix close"] > self._dataframe["vix_prev_close"])
-                & (self._dataframe["vix close"] > self._dataframe["vix open"])
-            ),
+                abs(self._dataframe["vix_close_tm1"] - self._dataframe["vix_open_tm1"])
+                / self._dataframe["vix_open_tm1"]
+                < doji_threshold
+            )
+            &
+            # Close at T is above the open at T
+            # Candle closed in positive territory
+            (self._dataframe["vix close"] > self._dataframe["vix open"])
+            &
+            # Close at T is above the midpoint of T-2 candle
+            (self._dataframe["vix close"] > open_on_close_midpoint_tm2)
+        )
+
+        # Calculate bearish evening star
+        bearish_evening_star = (
+            # Close at T-2 is above the open at T-2
+            # Candle at T-2 closed in positive territory
+            (self._dataframe["vix_close_tm2"] > self._dataframe["vix_open_tm2"])
+            &
+            # Difference between close at T-1 and
+            # open at T-1 is less than Doji threshold
+            # Previous candle closed in neutral territory
+            (
+                abs(self._dataframe["vix_close_tm1"] - self._dataframe["vix_open_tm1"])
+                / self._dataframe["vix_open_tm1"]
+                < doji_threshold
+            )
+            &
+            # Close at T is below the open at T
+            # Candle closed in negative territory
+            (self._dataframe["vix close"] < self._dataframe["vix open"])
+            &
+            # Close at T is below the midpoint of T-2 candle
+            (self._dataframe["vix close"] < open_on_close_midpoint_tm2)
+        )
+
+        self._dataframe.loc[
+            (bullish_engulfing | bearish_evening_star),
             "vixep",
         ] = self.BULLISH_ENGULFING
 
         self._dataframe.loc[
-            (
-                (self._dataframe["vix open"] > self._dataframe["vix_prev_open"])
-                & (self._dataframe["vix close"] < self._dataframe["vix_prev_close"])
-                & (self._dataframe["vix close"] < self._dataframe["vix open"])
-            ),
+            (bearish_engulfing | bullish_morning_star),
             "vixep",
         ] = self.BEARISH_ENGULFING
 
         # Drop unnecessary columns
         self._dataframe.drop(
-            columns=["vix_prev_open", "vix_prev_close"],
+            columns=["vix_open_tm1", "vix_close_tm1"],
             inplace=True,
         )
