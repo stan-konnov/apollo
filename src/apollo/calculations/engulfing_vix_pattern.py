@@ -39,6 +39,8 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         NOTE: please revert me back to the original implementation
         if does not prove to be useful.
 
+        It works, move logic to the strategies.
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
