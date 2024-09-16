@@ -225,7 +225,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf_open_tm1"] >= self._dataframe["spf_close_tm2"])
         )
 
-        three_black_crows = (
+        three_black_soldiers = (
             # Three consecutive bearish candles
             (self._dataframe["spf close"] < self._dataframe["spf open"])
             & (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
@@ -254,7 +254,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         # Mark three patterns to the dataframe
         self._dataframe.loc[three_white_soldiers, "spf_tp"] = self.BULLISH_PATTERN
-        self._dataframe.loc[three_black_crows, "spf_tp"] = self.BEARISH_PATTERN
+        self._dataframe.loc[three_black_soldiers, "spf_tp"] = self.BEARISH_PATTERN
 
         # Shift star pattern by one and two observations
         self._dataframe["spf_sp_tm1"] = self._dataframe["spf_sp"].shift(1)
