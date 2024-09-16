@@ -42,6 +42,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
+        TODO: Improve comments.
+
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
         EngulfingFuturesMeanReversion,
