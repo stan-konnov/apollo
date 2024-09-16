@@ -45,6 +45,11 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         TODO: Move the signalling logic out of the calculator
         and into the strategy level.
 
+        TODO: Reoptimize
+        KeltnerChaikinMeanReversion,
+        EngulfingFuturesMeanReversion,
+        LinearRegressionChannelMeanReversion
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
