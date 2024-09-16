@@ -240,13 +240,13 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf_open_tm1"] <= self._dataframe["spf_close_tm2"])
         )
 
-        # Mark engulfing patterns to the dataframe
-        self._dataframe.loc[bullish_engulfing, "spf_ep"] = self.BULLISH_PATTERN
-        self._dataframe.loc[bearish_engulfing, "spf_ep"] = self.BEARISH_PATTERN
-
         # Mark harami patterns to the dataframe
         self._dataframe.loc[bullish_harami, "spf_hp"] = self.BULLISH_PATTERN
         self._dataframe.loc[bearish_harami, "spf_hp"] = self.BEARISH_PATTERN
+
+        # Mark engulfing patterns to the dataframe
+        self._dataframe.loc[bullish_engulfing, "spf_ep"] = self.BULLISH_PATTERN
+        self._dataframe.loc[bearish_engulfing, "spf_ep"] = self.BEARISH_PATTERN
 
         # Mark star patterns to the dataframe
         self._dataframe.loc[bullish_morning_star, "spf_sp"] = self.BULLISH_PATTERN
