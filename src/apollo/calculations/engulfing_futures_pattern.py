@@ -43,6 +43,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
         TODO: Improve comments.
+        TODO: Reoptimize again.
         TODO: Renames of calculator and strategy.
 
         TODO: Reoptimize
