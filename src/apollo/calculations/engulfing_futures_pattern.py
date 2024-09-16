@@ -67,8 +67,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         # Mark engulfing and star
         # patterns to the dataframe
         self._dataframe["spf_ep"] = self.NO_PATTERN
+        self._dataframe["spf_hp"] = self.NO_PATTERN
         self._dataframe["spf_sp"] = self.NO_PATTERN
-        self._dataframe["spf_hm"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
         self._dataframe["spf_open_tm1"] = 0.0
@@ -175,16 +175,57 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] < open_on_close_midpoint_tm2)
         )
 
+        # Calculate bullish harami
+        bullish_harami = (
+            # Candle 1: Long Bearish Candle (t-1)
+            (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
+            &
+            # Candle 2: Bullish Candle (t)
+            (self._dataframe["spf close"] > self._dataframe["spf open"])
+            &
+            # Candle 2 is completely within the body of Candle 1
+            (
+                self._dataframe["spf open"] > self._dataframe["spf_close_tm1"]
+            )  # Open of t > Close of t-1
+            & (
+                self._dataframe["spf close"] < self._dataframe["spf_open_tm1"]
+            )  # Close of t < Open of t-1
+        )
+
+        # Calculate bearish harami
+        bearish_harami = (
+            # Candle 1: Long Bullish Candle (t-1)
+            (self._dataframe["spf_close_tm1"] > self._dataframe["spf_open_tm1"])
+            &
+            # Candle 2: Bearish Candle (t)
+            (self._dataframe["spf close"] < self._dataframe["spf open"])
+            &
+            # Candle 2 is completely within the body of Candle 1
+            (
+                self._dataframe["spf open"] < self._dataframe["spf_close_tm1"]
+            )  # Open of t < Close of t-1
+            & (
+                self._dataframe["spf close"] > self._dataframe["spf_open_tm1"]
+            )  # Close of t > Open of t-1
+        )
+
         # Mark engulfing patterns to the dataframe
         self._dataframe.loc[bullish_engulfing, "spf_ep"] = self.BULLISH_PATTERN
         self._dataframe.loc[bearish_engulfing, "spf_ep"] = self.BEARISH_PATTERN
+
+        # Mark harami patterns to the dataframe
+        self._dataframe.loc[bullish_harami, "spf_hp"] = self.BULLISH_PATTERN
+        self._dataframe.loc[bearish_harami, "spf_hp"] = self.BEARISH_PATTERN
 
         # Mark star patterns to the dataframe
         self._dataframe.loc[bullish_morning_star, "spf_sp"] = self.BULLISH_PATTERN
         self._dataframe.loc[bearish_evening_star, "spf_sp"] = self.BEARISH_PATTERN
 
-        # Shift star patterns by one and two observations
+        # Shift star pattern by one and two observations
         self._dataframe["spf_sp_tm1"] = self._dataframe["spf_sp"].shift(1)
+
+        # Shift harami pattern by one observation
+        self._dataframe["spf_hp_tm1"] = self._dataframe["spf_ep"].shift(1)
 
         # Drop unnecessary columns
         self._dataframe.drop(

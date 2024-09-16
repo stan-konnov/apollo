@@ -91,6 +91,7 @@ class EngulfingFuturesMeanReversion(
                     == self._efp_calculator.BULLISH_PATTERN
                 )
             )
+            | (self._dataframe["spf_hp_tm1"] == self._efp_calculator.BULLISH_PATTERN)
             | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         )
 
@@ -105,6 +106,7 @@ class EngulfingFuturesMeanReversion(
                     == self._efp_calculator.BEARISH_PATTERN
                 )
             )
+            | (self._dataframe["spf_hp_tm1"] == self._efp_calculator.BEARISH_PATTERN)
             | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         )
 
