@@ -224,8 +224,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf_close_tm1"] > self._dataframe["spf_close_tm2"])
             &
             # Each candle opens within or near the previous candle's body (optional)
-            (self._dataframe["spf open"] >= self._dataframe["spf_close_tm1"])
-            & (self._dataframe["spf_open_tm1"] >= self._dataframe["spf_close_tm2"])
+            (self._dataframe["spf open"] <= self._dataframe["spf_close_tm1"])
+            & (self._dataframe["spf_open_tm1"] <= self._dataframe["spf_close_tm2"])
         )
 
         three_black_soldiers = (
@@ -239,8 +239,8 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             & (self._dataframe["spf_close_tm1"] < self._dataframe["spf_close_tm2"])
             &
             # Each candle opens within or near the previous candle's body (optional)
-            (self._dataframe["spf open"] <= self._dataframe["spf_close_tm1"])
-            & (self._dataframe["spf_open_tm1"] <= self._dataframe["spf_close_tm2"])
+            (self._dataframe["spf open"] >= self._dataframe["spf_close_tm1"])
+            & (self._dataframe["spf_open_tm1"] >= self._dataframe["spf_close_tm2"])
         )
 
         # Mark harami patterns to the dataframe
