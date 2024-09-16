@@ -82,14 +82,30 @@ class EngulfingFuturesMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["spfep"] == self._efp_calculator.BEARISH_ENGULFING) | (
-            self._dataframe["vix_signal"] == LONG_SIGNAL
+        long = (
+            (self._dataframe["spf_ep"] == self._efp_calculator.BEARISH_PATTERN)
+            | (
+                (self._dataframe["adj close"] < self._dataframe["prev_close"])
+                & (
+                    self._dataframe["spf_sp_tm1"]
+                    == self._efp_calculator.BULLISH_PATTERN
+                )
+            )
+            | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["spfep"] == self._efp_calculator.BULLISH_ENGULFING) | (
-            self._dataframe["vix_signal"] == SHORT_SIGNAL
+        short = (
+            (self._dataframe["spf_ep"] == self._efp_calculator.BULLISH_PATTERN)
+            | (
+                (self._dataframe["adj close"] > self._dataframe["prev_close"])
+                & (
+                    self._dataframe["spf_sp_tm1"]
+                    == self._efp_calculator.BEARISH_PATTERN
+                )
+            )
+            | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

@@ -21,13 +21,13 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
     # represent no pattern
     NO_PATTERN: float = 0.0
 
-    # Constant to represent
-    # bullish engulfing pattern
-    BULLISH_ENGULFING: float = 1.0
+    # Constant to
+    # represent bullish pattern
+    BULLISH_PATTERN: float = 1.0
 
-    # Constant to represent
-    # bearish engulfing pattern
-    BEARISH_ENGULFING: float = -1.0
+    # Constant to
+    # represent bearish pattern
+    BEARISH_PATTERN: float = -1.0
 
     def __init__(
         self,
@@ -41,9 +41,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param dataframe: Dataframe to calculate Engulfing Pattern for.
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
-
-        TODO: Move the signalling logic out of the calculator
-        and into the strategy level.
 
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
@@ -67,8 +64,11 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         # We, therefore, can calculate only over present data points,
         # otherwise, the strategy using the results will drop missing rows
 
-        # Mark engulfing patterns to the dataframe
-        self._dataframe["spfep"] = self.NO_PATTERN
+        # Mark engulfing and star
+        # patterns to the dataframe
+        self._dataframe["spf_ep"] = self.NO_PATTERN
+        self._dataframe["spf_sp"] = self.NO_PATTERN
+        self._dataframe["spf_hm"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
         self._dataframe["spf_open_tm1"] = 0.0
@@ -175,18 +175,19 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] < open_on_close_midpoint_tm2)
         )
 
-        self._dataframe.loc[
-            (bullish_engulfing | bearish_evening_star),
-            "spfep",
-        ] = self.BULLISH_ENGULFING
+        # Mark engulfing patterns to the dataframe
+        self._dataframe.loc[bullish_engulfing, "spf_ep"] = self.BULLISH_PATTERN
+        self._dataframe.loc[bearish_engulfing, "spf_ep"] = self.BEARISH_PATTERN
 
-        self._dataframe.loc[
-            (bearish_engulfing | bullish_morning_star),
-            "spfep",
-        ] = self.BEARISH_ENGULFING
+        # Mark star patterns to the dataframe
+        self._dataframe.loc[bullish_morning_star, "spf_sp"] = self.BULLISH_PATTERN
+        self._dataframe.loc[bearish_evening_star, "spf_sp"] = self.BEARISH_PATTERN
+
+        # Shift star patterns by one and two observations
+        self._dataframe["spf_sp_tm1"] = self._dataframe["spf_sp"].shift(1)
 
         # Drop unnecessary columns
         self._dataframe.drop(
-            columns=["spf_open_tm1", "spf_close_tm1"],
+            columns=["spf_open_tm1", "spf_open_tm2", "spf_close_tm1", "spf_close_tm2"],
             inplace=True,
         )
