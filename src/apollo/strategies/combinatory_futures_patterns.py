@@ -11,18 +11,36 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 
-class EngulfingFuturesMeanReversion(
+class CombinatoryFuturesPatterns(
     BaseStrategy,
     VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
-    Engulfing Futures Mean Reversion Strategy.
+    Combinatory Futures Patterns Strategy.
 
     This strategy takes long positions when:
 
-    * Bearish Engulfing Pattern is detected in S&P 500 Futures,
-    indicating a potential reversion after considerable price decrease.
+    * Bearish S&P500 Futures Engulfing Pattern is detected,
+    indicating a potential reversion in the instrument
+    after considerable price decrease.
+
+    OR
+
+    * Adjusted close of the instrument is lower than the previous close,
+    and the previous S&P500 Futures candlestick is a Bullish Morning Star,
+    indicating a potential reversion after a price decrease.
+
+    OR
+
+    * Bearish S&P500 Futures Three Black Soldiers Pattern is detected,
+    indicating a potential reversion in the instrument
+    after systemic price decrease.
+
+    OR
+
+    * Previous S&P500 Futures candlestick is a Bullish Harami Pattern,
+    indicating a potential reversion after a price decrease.
 
     OR
 
@@ -31,8 +49,26 @@ class EngulfingFuturesMeanReversion(
 
     This strategy takes short positions when:
 
-    * Bullish Engulfing Pattern is detected in S&P 500 Futures,
-    indicating a potential reversion after considerable price increase.
+    * Bullish S&P500 Futures Engulfing Pattern is detected,
+    indicating a potential reversion in the instrument
+    after considerable price increase.
+
+    OR
+
+    * Adjusted close of the instrument is higher than the previous close,
+    and the previous S&P500 Futures candlestick is a Bearish Evening Star,
+    indicating a potential reversion after a price increase.
+
+    OR
+
+    * Bullish S&P500 Futures Three White Soldiers Pattern is detected,
+    indicating a potential reversion in the instrument
+    after systemic price increase.
+
+    OR
+
+    * Previous S&P500 Futures candlestick is a Bearish Harami Pattern,
+    indicating a potential reversion after a price increase.
 
     OR
 
@@ -49,7 +85,7 @@ class EngulfingFuturesMeanReversion(
         doji_threshold: float,
     ) -> None:
         """
-        Construct Engulfing Futures Mean Reversion Strategy.
+        Construct Combinatory Futures Patterns Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.

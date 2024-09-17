@@ -7,8 +7,8 @@ from apollo.calculations.combinatory_futures_patterns import (
 )
 from apollo.calculations.engulfing_vix_pattern import EngulfingVIXPatternCalculator
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
-from apollo.strategies.engulfing_futures_mean_reversion import (
-    EngulfingFuturesMeanReversion,
+from apollo.strategies.combinatory_futures_patterns import (
+    CombinatoryFuturesPatterns,
 )
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
@@ -76,7 +76,7 @@ def test__engulfing_futures_mean_reversion__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    engulfing_futures_mean_reversion = EngulfingFuturesMeanReversion(
+    engulfing_futures_mean_reversion = CombinatoryFuturesPatterns(
         enhanced_dataframe,
         window_size,
     )

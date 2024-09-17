@@ -6,9 +6,14 @@ from apollo.settings import MISSING_DATA_PLACEHOLDER
 
 class CombinatoryFuturesPatternsCalculator(BaseCalculator):
     """
-    Engulfing Futures Pattern Calculator.
+    Combinatory Futures Patterns Calculator.
 
-    Calculates bullish and bearish engulfing pattern for S&P 500 Futures.
+    Calculates following bullish and bearish patterns for S&P 500 Futures:
+
+    * Morning | Evening Star
+    * Bullish | Bearish Harami
+    * Bullish | Bearish Engulfing
+    * Three White | Black Soldiers (Crows)
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -32,14 +37,12 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         doji_threshold: float,
     ) -> None:
         """
-        Construct Engulfing Futures Pattern Calculator.
+        Construct Combinatory Futures Patterns Calculator.
 
-        :param dataframe: Dataframe to calculate Engulfing Pattern for.
-        :param window_size: Size of the window for Engulfing Pattern calculation.
+        :param dataframe: Dataframe to calculate Combinatory Patterns for.
+        :param window_size: Size of the window for Combinatory Patterns calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: Reoptimize again.
-        TODO: Renames of calculator and strategy.
         TODO: Move VIX logic outside of the calculator.
 
         TODO: Reoptimize
@@ -55,7 +58,7 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         self._doji_threshold = doji_threshold
 
     def calculate_combinatory_futures_patterns(self) -> None:
-        """Calculate Engulfing Futures Pattern."""
+        """Calculate Combinatory Futures Patterns."""
 
         # Since we are working with multiple
         # data sources, there is no guarantee that
