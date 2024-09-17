@@ -45,11 +45,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         TODO: Improve comments.
         TODO: Reoptimize again.
         TODO: Renames of calculator and strategy.
-        TODO: Experiment with the prices of the instrument.
 
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
-        EngulfingFuturesMeanReversion,
         LinearRegressionChannelMeanReversion
 
         NOTE: even though we accept window_size parameter,
@@ -108,6 +106,50 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         open_on_close_midpoint_tm2 = (
             self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"]
         ) / 2
+
+        # Calculate bullish harami
+        bullish_harami = (
+            # Close at T-1 is below the open at T-1
+            # Candle at T-1 closed in negative territory
+            (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
+            &
+            # Close at T is above the open at T
+            # Candle closed in positive territory
+            (self._dataframe["spf close"] > self._dataframe["spf open"])
+            &
+            # Candle at T is completely
+            # within the body of candle at T-1
+            (
+                # Open at T is higher than close at T-1
+                self._dataframe["spf open"] > self._dataframe["spf_close_tm1"]
+            )
+            & (
+                # Close at T is lower than open at T-1
+                self._dataframe["spf close"] < self._dataframe["spf_open_tm1"]
+            )
+        )
+
+        # Calculate bearish harami
+        bearish_harami = (
+            # Close at T-1 is above the open at T-1
+            # Candle at T-1 closed in positive territory
+            (self._dataframe["spf_close_tm1"] > self._dataframe["spf_open_tm1"])
+            &
+            # Close at T is below the open at T
+            # Candle closed in negative territory
+            (self._dataframe["spf close"] < self._dataframe["spf open"])
+            &
+            # Candle at T is completely
+            # within the body of candle at T-1
+            (
+                # Open at T is lower than close at T-1
+                self._dataframe["spf open"] < self._dataframe["spf_close_tm1"]
+            )
+            & (
+                # Close at T is higher than open at T-1
+                self._dataframe["spf close"] > self._dataframe["spf_open_tm1"]
+            )
+        )
 
         # Calculate bullish engulfing
         bullish_engulfing = (
@@ -179,40 +221,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             &
             # Close at T is below the midpoint of T-2 candle
             (self._dataframe["spf close"] < open_on_close_midpoint_tm2)
-        )
-
-        # Calculate bullish harami
-        bullish_harami = (
-            # Candle 1: Long Bearish Candle (t-1)
-            (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
-            &
-            # Candle 2: Bullish Candle (t)
-            (self._dataframe["spf close"] > self._dataframe["spf open"])
-            &
-            # Candle 2 is completely within the body of Candle 1
-            (
-                self._dataframe["spf open"] > self._dataframe["spf_close_tm1"]
-            )  # Open of t > Close of t-1
-            & (
-                self._dataframe["spf close"] < self._dataframe["spf_open_tm1"]
-            )  # Close of t < Open of t-1
-        )
-
-        # Calculate bearish harami
-        bearish_harami = (
-            # Candle 1: Long Bullish Candle (t-1)
-            (self._dataframe["spf_close_tm1"] > self._dataframe["spf_open_tm1"])
-            &
-            # Candle 2: Bearish Candle (t)
-            (self._dataframe["spf close"] < self._dataframe["spf open"])
-            &
-            # Candle 2 is completely within the body of Candle 1
-            (
-                self._dataframe["spf open"] < self._dataframe["spf_close_tm1"]
-            )  # Open of t < Close of t-1
-            & (
-                self._dataframe["spf close"] > self._dataframe["spf_open_tm1"]
-            )  # Close of t > Open of t-1
         )
 
         three_white_soldiers = (
