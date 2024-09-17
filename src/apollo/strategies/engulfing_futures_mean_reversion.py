@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
-from apollo.calculations.engulfing_futures_pattern import (
-    EngulfingFuturesPatternCalculator,
+from apollo.calculations.combinatory_futures_patterns import (
+    CombinatoryFuturesPatternsCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
@@ -61,7 +61,7 @@ class EngulfingFuturesMeanReversion(
         VIXEnhancedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
-        self._efp_calculator = EngulfingFuturesPatternCalculator(
+        self._cfp_calculator = CombinatoryFuturesPatternsCalculator(
             dataframe=dataframe,
             window_size=window_size,
             doji_threshold=doji_threshold,
@@ -77,38 +77,38 @@ class EngulfingFuturesMeanReversion(
     def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self._efp_calculator.calculate_engulfing_futures_pattern()
+        self._cfp_calculator.calculate_engulfing_futures_pattern()
 
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self._dataframe["spf_ep"] == self._efp_calculator.BEARISH_PATTERN)
+            (self._dataframe["spf_ep"] == self._cfp_calculator.BEARISH_PATTERN)
             | (
                 (self._dataframe["adj close"] < self._dataframe["prev_close"])
                 & (
                     self._dataframe["spf_sp_tm1"]
-                    == self._efp_calculator.BULLISH_PATTERN
+                    == self._cfp_calculator.BULLISH_PATTERN
                 )
             )
-            | (self._dataframe["spf_tp"] == self._efp_calculator.BEARISH_PATTERN)
-            | (self._dataframe["spf_hp_tm1"] == self._efp_calculator.BULLISH_PATTERN)
+            | (self._dataframe["spf_tp"] == self._cfp_calculator.BEARISH_PATTERN)
+            | (self._dataframe["spf_hp_tm1"] == self._cfp_calculator.BULLISH_PATTERN)
             | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self._dataframe["spf_ep"] == self._efp_calculator.BULLISH_PATTERN)
+            (self._dataframe["spf_ep"] == self._cfp_calculator.BULLISH_PATTERN)
             | (
                 (self._dataframe["adj close"] > self._dataframe["prev_close"])
                 & (
                     self._dataframe["spf_sp_tm1"]
-                    == self._efp_calculator.BEARISH_PATTERN
+                    == self._cfp_calculator.BEARISH_PATTERN
                 )
             )
-            | (self._dataframe["spf_tp"] == self._efp_calculator.BULLISH_PATTERN)
-            | (self._dataframe["spf_hp_tm1"] == self._efp_calculator.BEARISH_PATTERN)
+            | (self._dataframe["spf_tp"] == self._cfp_calculator.BULLISH_PATTERN)
+            | (self._dataframe["spf_hp_tm1"] == self._cfp_calculator.BEARISH_PATTERN)
             | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         )
 

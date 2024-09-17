@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.engulfing_futures_pattern import (
+from apollo.calculations.combinatory_futures_patterns import (
     EngulfingFuturesPatternCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER

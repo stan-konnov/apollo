@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.engulfing_futures_pattern import (
+from apollo.calculations.combinatory_futures_patterns import (
     EngulfingFuturesPatternCalculator,
 )
 from apollo.calculations.engulfing_vix_pattern import EngulfingVIXPatternCalculator

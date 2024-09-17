@@ -4,7 +4,7 @@ from apollo.calculations.base_calculator import BaseCalculator
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
 
-class EngulfingFuturesPatternCalculator(BaseCalculator):
+class CombinatoryFuturesPatternsCalculator(BaseCalculator):
     """
     Engulfing Futures Pattern Calculator.
 
