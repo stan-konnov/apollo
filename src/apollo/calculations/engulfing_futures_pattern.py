@@ -269,7 +269,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         self._dataframe.loc[three_white_soldiers, "spf_tp"] = self.BULLISH_PATTERN
         self._dataframe.loc[three_black_soldiers, "spf_tp"] = self.BEARISH_PATTERN
 
-        # Shift star pattern by one and two observations
+        # Shift star pattern by one observation
         self._dataframe["spf_sp_tm1"] = self._dataframe["spf_sp"].shift(1)
 
         # Shift harami pattern by one observation
