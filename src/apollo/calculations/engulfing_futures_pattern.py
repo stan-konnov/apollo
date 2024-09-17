@@ -67,10 +67,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         # We, therefore, can calculate only over present data points,
         # otherwise, the strategy using the results will drop missing rows
 
-        # Mark engulfing and star
-        # patterns to the dataframe
-        self._dataframe["spf_ep"] = self.NO_PATTERN
+        # Mark patterns to the dataframe
         self._dataframe["spf_hp"] = self.NO_PATTERN
+        self._dataframe["spf_ep"] = self.NO_PATTERN
         self._dataframe["spf_sp"] = self.NO_PATTERN
         self._dataframe["spf_tp"] = self.NO_PATTERN
 
