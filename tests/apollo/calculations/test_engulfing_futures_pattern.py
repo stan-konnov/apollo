@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from apollo.calculations.combinatory_futures_patterns import (
-    EngulfingFuturesPatternCalculator,
+    CombinatoryFuturesPatternsCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
@@ -23,12 +23,12 @@ def test__calculate_engulfing_futures_pattern__for_correct_columns(
     Resulting dataframe must drop "spf_prev_open" and "spf_prev_close" columns.
     """
 
-    efp_calculator = EngulfingFuturesPatternCalculator(
+    cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
+        doji_threshold=0.005,
     )
-
-    efp_calculator.calculate_engulfing_futures_pattern()
+    cfp_calculator.calculate_combinatory_futures_patterns()
 
     assert "spfep" in enhanced_dataframe.columns
     assert "spf_prev_open" not in enhanced_dataframe.columns
@@ -86,12 +86,12 @@ def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
         inplace=True,
     )
 
-    efp_calculator = EngulfingFuturesPatternCalculator(
+    cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
+        doji_threshold=0.005,
     )
-
-    efp_calculator.calculate_engulfing_futures_pattern()
+    cfp_calculator.calculate_combinatory_futures_patterns()
 
     pd.testing.assert_series_equal(
         control_dataframe["spfep"],
@@ -157,12 +157,12 @@ def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculat
         inplace=True,
     )
 
-    efp_calculator = EngulfingFuturesPatternCalculator(
+    cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
+        doji_threshold=0.005,
     )
-
-    efp_calculator.calculate_engulfing_futures_pattern()
+    cfp_calculator.calculate_combinatory_futures_patterns()
 
     assert all(enhanced_dataframe["spfep"].iloc[0:5] == NO_PATTERN)
 

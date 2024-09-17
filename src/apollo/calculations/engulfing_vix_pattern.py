@@ -51,8 +51,8 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         # We, therefore, can calculate only over present data points,
         # otherwise, the strategy using the results will drop missing rows
 
-        # Mark engulfing patterns to the dataframe
-        self._dataframe["vixep"] = self.NO_PATTERN
+        # Mark engulfing pattern to the dataframe
+        self._dataframe["vix_ep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
         self._dataframe["vix_prev_open"] = 0.0
@@ -82,7 +82,7 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
                 # Candle closed in positive territory
                 & (self._dataframe["vix close"] > self._dataframe["vix open"])
             ),
-            "vixep",
+            "vix_ep",
         ] = self.BULLISH_ENGULFING
 
         # Calculate bearish engulfing
@@ -98,7 +98,7 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
                 # Candle closed in negative territory
                 & (self._dataframe["vix close"] < self._dataframe["vix open"])
             ),
-            "vixep",
+            "vix_ep",
         ] = self.BEARISH_ENGULFING
 
         # Drop unnecessary columns

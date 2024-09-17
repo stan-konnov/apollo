@@ -19,7 +19,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_columns(
     """
     Test calculate_engulfing_vix_pattern method for correct columns.
 
-    Resulting dataframe must have "vixep" column.
+    Resulting dataframe must have "vix_ep" column.
     Resulting dataframe must drop "vix_prev_open" and "vix_prev_close" columns.
     """
 
@@ -30,25 +30,25 @@ def test__calculate_engulfing_vix_pattern__for_correct_columns(
 
     evp_calculator.calculate_engulfing_vix_pattern()
 
-    assert "vixep" in enhanced_dataframe.columns
+    assert "vix_ep" in enhanced_dataframe.columns
     assert "vix_prev_open" not in enhanced_dataframe.columns
     assert "vix_prev_close" not in enhanced_dataframe.columns
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_vix_pattern__for_correct_vixep_calculation(
+def test__calculate_engulfing_vix_pattern__for_correct_vix_ep_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
     Test calculate_engulfing_vix_pattern method for correct Engulfing Pattern.
 
-    Resulting "vixep" column must have correct values for each row.
+    Resulting "vix_ep" column must have correct values for each row.
     """
 
     control_dataframe = enhanced_dataframe.copy()
 
-    control_dataframe["vixep"] = NO_PATTERN
+    control_dataframe["vix_ep"] = NO_PATTERN
 
     control_dataframe["vix_prev_open"] = 0.0
     control_dataframe["vix_prev_close"] = 0.0
@@ -69,7 +69,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_vixep_calculation(
             & (control_dataframe["vix close"] > control_dataframe["vix_prev_close"])
             & (control_dataframe["vix close"] > control_dataframe["vix open"])
         ),
-        "vixep",
+        "vix_ep",
     ] = BULLISH_ENGULFING
 
     control_dataframe.loc[
@@ -78,7 +78,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_vixep_calculation(
             & (control_dataframe["vix close"] < control_dataframe["vix_prev_close"])
             & (control_dataframe["vix close"] < control_dataframe["vix open"])
         ),
-        "vixep",
+        "vix_ep",
     ] = BEARISH_ENGULFING
 
     control_dataframe.drop(
@@ -94,8 +94,8 @@ def test__calculate_engulfing_vix_pattern__for_correct_vixep_calculation(
     evp_calculator.calculate_engulfing_vix_pattern()
 
     pd.testing.assert_series_equal(
-        control_dataframe["vixep"],
-        enhanced_dataframe["vixep"],
+        control_dataframe["vix_ep"],
+        enhanced_dataframe["vix_ep"],
     )
 
 
@@ -107,8 +107,8 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
     """
     Test calculate_engulfing_vix_pattern method for correct missing data calculation.
 
-    Resulting "vixep" column must have NO_PATTERN for rows with missing data.
-    Resulting "vixep" column must have correct values for rows with valid data.
+    Resulting "vix_ep" column must have NO_PATTERN for rows with missing data.
+    Resulting "vix_ep" column must have correct values for rows with valid data.
     """
 
     enhanced_dataframe.reset_index(inplace=True)
@@ -119,7 +119,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
 
     control_dataframe = enhanced_dataframe.copy()
 
-    control_dataframe["vixep"] = NO_PATTERN
+    control_dataframe["vix_ep"] = NO_PATTERN
 
     control_dataframe["vix_prev_open"] = 0.0
     control_dataframe["vix_prev_close"] = 0.0
@@ -140,7 +140,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
             & (control_dataframe["vix close"] > control_dataframe["vix_prev_close"])
             & (control_dataframe["vix close"] > control_dataframe["vix open"])
         ),
-        "vixep",
+        "vix_ep",
     ] = BULLISH_ENGULFING
 
     control_dataframe.loc[
@@ -149,7 +149,7 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
             & (control_dataframe["vix close"] < control_dataframe["vix_prev_close"])
             & (control_dataframe["vix close"] < control_dataframe["vix open"])
         ),
-        "vixep",
+        "vix_ep",
     ] = BEARISH_ENGULFING
 
     control_dataframe.drop(
@@ -164,14 +164,16 @@ def test__calculate_engulfing_vix_pattern__for_correct_missing_data_calculation(
 
     evp_calculator.calculate_engulfing_vix_pattern()
 
-    assert all(enhanced_dataframe["vixep"].iloc[0:5] == NO_PATTERN)
+    assert all(enhanced_dataframe["vix_ep"].iloc[0:5] == NO_PATTERN)
 
     assert (
-        control_dataframe["vixep"]
+        control_dataframe["vix_ep"]
         .iloc[0:5]
-        .equals(enhanced_dataframe["vixep"].iloc[0:5])
+        .equals(enhanced_dataframe["vix_ep"].iloc[0:5])
     )
 
     assert (
-        control_dataframe["vixep"].iloc[6:].equals(enhanced_dataframe["vixep"].iloc[6:])
+        control_dataframe["vix_ep"]
+        .iloc[6:]
+        .equals(enhanced_dataframe["vix_ep"].iloc[6:])
     )

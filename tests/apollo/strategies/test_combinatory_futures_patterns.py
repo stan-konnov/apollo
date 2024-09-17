@@ -3,7 +3,7 @@ import pytest
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.combinatory_futures_patterns import (
-    EngulfingFuturesPatternCalculator,
+    CombinatoryFuturesPatternsCalculator,
 )
 from apollo.calculations.engulfing_vix_pattern import EngulfingVIXPatternCalculator
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
@@ -14,12 +14,12 @@ from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__engulfing_futures_mean_reversion__with_valid_parameters(
+def test__combinatory_futures_patterns__with_valid_parameters(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test Engulfing Futures Mean Reversion Strategy with valid parameters.
+    Test Combinatory Futures Patterns Strategy with valid parameters.
 
     Strategy should properly calculate trading signals.
     """
@@ -42,25 +42,26 @@ def test__engulfing_futures_mean_reversion__with_valid_parameters(
     )
     evp_calculator.calculate_engulfing_vix_pattern()
 
-    efp_calculator = EngulfingFuturesPatternCalculator(
+    cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=control_dataframe,
         window_size=window_size,
+        doji_threshold=0.005,
     )
-    efp_calculator.calculate_engulfing_futures_pattern()
+    cfp_calculator.calculate_combinatory_futures_patterns()
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 
     control_dataframe.loc[
         (
-            (control_dataframe["spfep"] == efp_calculator.BEARISH_ENGULFING)
+            (control_dataframe["spfep"] == cfp_calculator.BEARISH_PATTERN)
             | (control_dataframe["vix_signal"] == LONG_SIGNAL)
         ),
         "signal",
@@ -68,7 +69,7 @@ def test__engulfing_futures_mean_reversion__with_valid_parameters(
 
     control_dataframe.loc[
         (
-            (control_dataframe["spfep"] == efp_calculator.BULLISH_ENGULFING)
+            (control_dataframe["spfep"] == cfp_calculator.BULLISH_PATTERN)
             | (control_dataframe["vix_signal"] == SHORT_SIGNAL)
         ),
         "signal",
@@ -76,12 +77,13 @@ def test__engulfing_futures_mean_reversion__with_valid_parameters(
 
     control_dataframe.dropna(inplace=True)
 
-    engulfing_futures_mean_reversion = CombinatoryFuturesPatterns(
+    combinatory_futures_patterns = CombinatoryFuturesPatterns(
         enhanced_dataframe,
         window_size,
+        doji_threshold=0.005,
     )
 
-    engulfing_futures_mean_reversion.model_trading_signals()
+    combinatory_futures_patterns.model_trading_signals()
 
     pd.testing.assert_series_equal(
         control_dataframe["signal"],

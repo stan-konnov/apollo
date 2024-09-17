@@ -30,12 +30,12 @@ def test__vix_enhanced_strategy__for_calculating_vix_signals(
     evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 
