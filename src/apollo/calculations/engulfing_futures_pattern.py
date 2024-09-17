@@ -45,6 +45,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         TODO: Improve comments.
         TODO: Reoptimize again.
         TODO: Renames of calculator and strategy.
+        TODO: Experiment with the prices of the instrument.
 
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
