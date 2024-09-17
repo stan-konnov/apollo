@@ -43,8 +43,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         :param window_size: Size of the window for Combinatory Patterns calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: Move VIX logic outside of the calculator.
-
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
         LinearRegressionChannelMeanReversion
