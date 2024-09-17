@@ -42,7 +42,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
         :param window_size: Size of the window for Engulfing Pattern calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: Improve comments.
         TODO: Reoptimize again.
         TODO: Renames of calculator and strategy.
 
@@ -222,8 +221,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] < open_on_close_midpoint_tm2)
         )
 
+        # Calculate three white soldiers
         three_white_soldiers = (
-            # Three consecutive bullish candles
+            # Three consecutive positive closes
             (self._dataframe["spf close"] > self._dataframe["spf open"])
             & (self._dataframe["spf_close_tm1"] > self._dataframe["spf_open_tm1"])
             & (self._dataframe["spf_close_tm2"] > self._dataframe["spf_open_tm2"])
@@ -232,13 +232,16 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] > self._dataframe["spf_close_tm1"])
             & (self._dataframe["spf_close_tm1"] > self._dataframe["spf_close_tm2"])
             &
-            # Each candle opens within or near the previous candle's body (optional)
+            # Each candle opens within or near the previous candle's body
+            # NOTE: this is a reversed version of the original definition
+            # Open must be within the previous candle's body to avoid gaps
             (self._dataframe["spf open"] <= self._dataframe["spf_close_tm1"])
             & (self._dataframe["spf_open_tm1"] <= self._dataframe["spf_close_tm2"])
         )
 
+        # Calculate three black soldiers
         three_black_soldiers = (
-            # Three consecutive bearish candles
+            # Three consecutive negative closes
             (self._dataframe["spf close"] < self._dataframe["spf open"])
             & (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
             & (self._dataframe["spf_close_tm2"] < self._dataframe["spf_open_tm2"])
@@ -247,7 +250,9 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
             (self._dataframe["spf close"] < self._dataframe["spf_close_tm1"])
             & (self._dataframe["spf_close_tm1"] < self._dataframe["spf_close_tm2"])
             &
-            # Each candle opens within or near the previous candle's body (optional)
+            # Each candle opens within or near the previous candle's body
+            # NOTE: this is a reversed version of the original definition
+            # Open must be within the previous candle's body to avoid gaps
             (self._dataframe["spf open"] >= self._dataframe["spf_close_tm1"])
             & (self._dataframe["spf_open_tm1"] >= self._dataframe["spf_close_tm2"])
         )
