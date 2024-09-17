@@ -10,10 +10,6 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
     Calculates bullish and bearish engulfing pattern for S&P 500 Futures.
 
-    NOTE: This calculator is identical to Engulfing VIX Pattern Calculator,
-    yet, is kept separate to maintain possibility of extending one
-    or the other with additional functionality in the future.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
@@ -44,6 +40,7 @@ class EngulfingFuturesPatternCalculator(BaseCalculator):
 
         TODO: Reoptimize again.
         TODO: Renames of calculator and strategy.
+        TODO: Move VIX logic outside of the calculator.
 
         TODO: Reoptimize
         KeltnerChaikinMeanReversion,
