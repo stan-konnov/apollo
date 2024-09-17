@@ -77,7 +77,7 @@ class EngulfingFuturesMeanReversion(
     def _calculate_indicators(self) -> None:
         """Calculate indicators necessary for the strategy."""
 
-        self._cfp_calculator.calculate_engulfing_futures_pattern()
+        self._cfp_calculator.calculate_combinatory_futures_patterns()
 
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""

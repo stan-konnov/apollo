@@ -54,7 +54,7 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
 
         self._doji_threshold = doji_threshold
 
-    def calculate_engulfing_futures_pattern(self) -> None:
+    def calculate_combinatory_futures_patterns(self) -> None:
         """Calculate Engulfing Futures Pattern."""
 
         # Since we are working with multiple
