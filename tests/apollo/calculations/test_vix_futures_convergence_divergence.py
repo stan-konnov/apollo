@@ -33,7 +33,7 @@ def test__calculate_vix_futures_convergence_divergence__for_correct_columns(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_vix_futures_convergence_divergence__for_correct_vixep_calculation(
+def test__calculate_vix_futures_convergence_divergence__for_correct_vix_ep_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:

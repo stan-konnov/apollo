@@ -10,10 +10,6 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
 
     Calculates bullish and bearish engulfing pattern for VIX.
 
-    NOTE: This calculator is identical to Engulfing Futures Pattern Calculator,
-    yet, is kept separate to maintain possibility of extending one
-    or the other with additional functionality in the future.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 
@@ -51,8 +47,8 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
         # We, therefore, can calculate only over present data points,
         # otherwise, the strategy using the results will drop missing rows
 
-        # Mark engulfing patterns to the dataframe
-        self._dataframe["vixep"] = self.NO_PATTERN
+        # Mark engulfing pattern to the dataframe
+        self._dataframe["vix_ep"] = self.NO_PATTERN
 
         # Initialize necessary columns with 0
         self._dataframe["vix_prev_open"] = 0.0
@@ -69,22 +65,36 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
             "vix_prev_close",
         ] = self._dataframe["vix close"].shift(1)
 
+        # Calculate bullish engulfing
         self._dataframe.loc[
             (
+                # Open at T is below the close at T-1
+                # Candle opened below the close of the previous candle
                 (self._dataframe["vix open"] < self._dataframe["vix_prev_open"])
+                # Close at T is above the open at T-1
+                # Candle closed above the open of the previous candle
                 & (self._dataframe["vix close"] > self._dataframe["vix_prev_close"])
+                # Close at T is above the open at T
+                # Candle closed in positive territory
                 & (self._dataframe["vix close"] > self._dataframe["vix open"])
             ),
-            "vixep",
+            "vix_ep",
         ] = self.BULLISH_ENGULFING
 
+        # Calculate bearish engulfing
         self._dataframe.loc[
             (
+                # Open at T is above the close at T-1
+                # Candle opened above the close of the previous candle
                 (self._dataframe["vix open"] > self._dataframe["vix_prev_open"])
+                # Close at T is below the open at T-1
+                # Candle closed below the open of the previous candle
                 & (self._dataframe["vix close"] < self._dataframe["vix_prev_close"])
+                # Close at T is below the open at T
+                # Candle closed in negative territory
                 & (self._dataframe["vix close"] < self._dataframe["vix open"])
             ),
-            "vixep",
+            "vix_ep",
         ] = self.BEARISH_ENGULFING
 
         # Drop unnecessary columns

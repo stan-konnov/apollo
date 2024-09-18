@@ -14,9 +14,17 @@
         "range": [0.1, 1.0]
     },
 
+    "doji_threshold": {
+        "step": 0.001,
+        "range": [0.005, 0.01]
+    },
+
     "additional_data_enhancers": [
-        "VIX", "SP500 Futures"
+        "VIX",
+        "SP500 Futures"
     ],
 
-    "strategy_specific_parameters": []
+    "strategy_specific_parameters": [
+        "doji_threshold"
+    ]
 }
