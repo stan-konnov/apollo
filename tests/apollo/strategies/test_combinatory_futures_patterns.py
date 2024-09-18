@@ -61,7 +61,16 @@ def test__combinatory_futures_patterns__with_valid_parameters(
 
     control_dataframe.loc[
         (
-            (control_dataframe["spfep"] == cfp_calculator.BEARISH_PATTERN)
+            (control_dataframe["spf_ep"] == cfp_calculator.BEARISH_PATTERN)
+            | (
+                (control_dataframe["adj close"] < control_dataframe["prev_close"])
+                & (control_dataframe["spf_ep_tm1"] == cfp_calculator.BULLISH_PATTERN)
+            )
+            | (control_dataframe["spf_tp"] == cfp_calculator.BEARISH_PATTERN)
+            | (
+                (control_dataframe["adj close"] < control_dataframe["prev_close"])
+                & (control_dataframe["spf_sp_tm1"] == cfp_calculator.BULLISH_PATTERN)
+            )
             | (control_dataframe["vix_signal"] == LONG_SIGNAL)
         ),
         "signal",
@@ -69,7 +78,16 @@ def test__combinatory_futures_patterns__with_valid_parameters(
 
     control_dataframe.loc[
         (
-            (control_dataframe["spfep"] == cfp_calculator.BULLISH_PATTERN)
+            (control_dataframe["spf_ep"] == cfp_calculator.BULLISH_PATTERN)
+            | (
+                (control_dataframe["adj close"] > control_dataframe["prev_close"])
+                & (control_dataframe["spf_ep_tm1"] == cfp_calculator.BEARISH_PATTERN)
+            )
+            | (control_dataframe["spf_tp"] == cfp_calculator.BULLISH_PATTERN)
+            | (
+                (control_dataframe["adj close"] > control_dataframe["prev_close"])
+                & (control_dataframe["spf_sp_tm1"] == cfp_calculator.BEARISH_PATTERN)
+            )
             | (control_dataframe["vix_signal"] == SHORT_SIGNAL)
         ),
         "signal",
