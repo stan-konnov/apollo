@@ -7,32 +7,42 @@ from apollo.calculations.combinatory_futures_patterns import (
 from apollo.settings import MISSING_DATA_PLACEHOLDER
 
 NO_PATTERN: float = 0.0
-BULLISH_ENGULFING: float = 1.0
-BEARISH_ENGULFING: float = -1.0
+BULLISH_PATTERN: float = 1.0
+BEARISH_PATTERN: float = -1.0
+DOJI_THRESHOLD: float = 0.005
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_futures_pattern__for_correct_columns(
+def test__calculate_combinatory_futures_patterns__for_correct_columns(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_engulfing_futures_pattern method for correct columns.
+    Test calculate_combinatory_futures_patterns method for correct columns.
 
-    Resulting dataframe must have "spfep" column.
-    Resulting dataframe must drop "spf_prev_open" and "spf_prev_close" columns.
+    Resulting dataframe must have following columns:
+    "spf_hp", "spf_ep", "spf_tp", "spf_sp".
+
+    Resulting dataframe must drop following columns:
+    "spf_open_tm1", "spf_close_tm1", "spf_open_tm2", "spf_close_tm2".
     """
 
     cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
-        doji_threshold=0.005,
+        doji_threshold=DOJI_THRESHOLD,
     )
     cfp_calculator.calculate_combinatory_futures_patterns()
 
-    assert "spfep" in enhanced_dataframe.columns
-    assert "spf_prev_open" not in enhanced_dataframe.columns
-    assert "spf_prev_close" not in enhanced_dataframe.columns
+    assert "spf_hp" in enhanced_dataframe.columns
+    assert "spf_ep" in enhanced_dataframe.columns
+    assert "spf_tp" in enhanced_dataframe.columns
+    assert "spf_sp" in enhanced_dataframe.columns
+
+    assert "spf_open_tm1" not in enhanced_dataframe.columns
+    assert "spf_open_tm2" not in enhanced_dataframe.columns
+    assert "spf_close_tm1" not in enhanced_dataframe.columns
+    assert "spf_close_tm2" not in enhanced_dataframe.columns
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
@@ -70,7 +80,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
             & (control_dataframe["spf close"] > control_dataframe["spf open"])
         ),
         "spfep",
-    ] = BULLISH_ENGULFING
+    ] = BULLISH_PATTERN
 
     control_dataframe.loc[
         (
@@ -79,7 +89,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
             & (control_dataframe["spf close"] < control_dataframe["spf open"])
         ),
         "spfep",
-    ] = BEARISH_ENGULFING
+    ] = BEARISH_PATTERN
 
     control_dataframe.drop(
         columns=["spf_prev_open", "spf_prev_close"],
@@ -89,7 +99,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
     cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
-        doji_threshold=0.005,
+        doji_threshold=DOJI_THRESHOLD,
     )
     cfp_calculator.calculate_combinatory_futures_patterns()
 
@@ -141,7 +151,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculat
             & (control_dataframe["spf close"] > control_dataframe["spf open"])
         ),
         "spfep",
-    ] = BULLISH_ENGULFING
+    ] = BULLISH_PATTERN
 
     control_dataframe.loc[
         (
@@ -150,7 +160,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculat
             & (control_dataframe["spf close"] < control_dataframe["spf open"])
         ),
         "spfep",
-    ] = BEARISH_ENGULFING
+    ] = BEARISH_PATTERN
 
     control_dataframe.drop(
         columns=["spf_prev_open", "spf_prev_close"],
@@ -160,7 +170,7 @@ def test__calculate_engulfing_futures_pattern__for_correct_missing_data_calculat
     cfp_calculator = CombinatoryFuturesPatternsCalculator(
         dataframe=enhanced_dataframe,
         window_size=window_size,
-        doji_threshold=0.005,
+        doji_threshold=DOJI_THRESHOLD,
     )
     cfp_calculator.calculate_combinatory_futures_patterns()
 
