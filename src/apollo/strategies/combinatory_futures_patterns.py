@@ -19,6 +19,8 @@ class CombinatoryFuturesPatterns(
     """
     Combinatory Futures Patterns Strategy.
 
+    TODO: and rewrite comments again since changes.
+
     This strategy takes long positions when:
 
     * Bearish S&P500 Futures Engulfing Pattern is detected,
