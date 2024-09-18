@@ -49,53 +49,121 @@ def test__calculate_combinatory_futures_patterns__for_correct_columns(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe", "window_size")
-def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
+def test__calculate_combinatory_futures_patterns__for_correct_patterns_calculation(
     enhanced_dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test calculate_engulfing_futures_pattern method for correct Engulfing Pattern.
+    Test calculate_combinatory_futures_patterns method for correct patterns calculation.
 
-    Resulting "spfep" column must have correct values for each row.
+    Following columns must have correct values for each row:
+    "spf_ep", "spf_ep_tm1", "spf_tp", "spf_sp", "spf_sp_tm1".
     """
 
     control_dataframe = enhanced_dataframe.copy()
 
-    control_dataframe["spfep"] = NO_PATTERN
+    control_dataframe["spf_ep"] = NO_PATTERN
+    control_dataframe["spf_sp"] = NO_PATTERN
+    control_dataframe["spf_tp"] = NO_PATTERN
 
-    control_dataframe["spf_prev_open"] = 0.0
-    control_dataframe["spf_prev_close"] = 0.0
+    control_dataframe["spf_open_tm1"] = 0.0
+    control_dataframe["spf_open_tm2"] = 0.0
+
+    control_dataframe["spf_close_tm1"] = 0.0
+    control_dataframe["spf_close_tm2"] = 0.0
 
     control_dataframe.loc[
         control_dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
-        "spf_prev_open",
+        "spf_open_tm1",
     ] = control_dataframe["spf open"].shift(1)
 
     control_dataframe.loc[
+        control_dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
+        "spf_open_tm2",
+    ] = control_dataframe["spf open"].shift(2)
+
+    control_dataframe.loc[
         control_dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
-        "spf_prev_close",
+        "spf_close_tm1",
     ] = control_dataframe["spf close"].shift(1)
 
     control_dataframe.loc[
-        (
-            (control_dataframe["spf open"] < control_dataframe["spf_prev_open"])
-            & (control_dataframe["spf close"] > control_dataframe["spf_prev_close"])
-            & (control_dataframe["spf close"] > control_dataframe["spf open"])
-        ),
-        "spfep",
-    ] = BULLISH_PATTERN
+        control_dataframe["spf close"] != MISSING_DATA_PLACEHOLDER,
+        "spf_close_tm2",
+    ] = control_dataframe["spf close"].shift(2)
 
-    control_dataframe.loc[
-        (
-            (control_dataframe["spf open"] > control_dataframe["spf_prev_open"])
-            & (control_dataframe["spf close"] < control_dataframe["spf_prev_close"])
-            & (control_dataframe["spf close"] < control_dataframe["spf open"])
-        ),
-        "spfep",
-    ] = BEARISH_PATTERN
+    open_on_close_midpoint_tm2 = (
+        control_dataframe["spf_open_tm2"] + control_dataframe["spf_close_tm2"]
+    ) / 2
+
+    bullish_engulfing = (
+        (control_dataframe["spf open"] < control_dataframe["spf_open_tm1"])
+        & (control_dataframe["spf close"] > control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf close"] > control_dataframe["spf open"])
+    )
+
+    bearish_engulfing = (
+        (control_dataframe["spf open"] > control_dataframe["spf_open_tm1"])
+        & (control_dataframe["spf close"] < control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf close"] < control_dataframe["spf open"])
+    )
+
+    bullish_morning_star = (
+        (control_dataframe["spf_close_tm2"] < control_dataframe["spf_open_tm2"])
+        & (
+            abs(control_dataframe["spf_close_tm1"] - control_dataframe["spf_open_tm1"])
+            / control_dataframe["spf_open_tm1"]
+            < DOJI_THRESHOLD
+        )
+        & (control_dataframe["spf close"] > control_dataframe["spf open"])
+        & (control_dataframe["spf close"] > open_on_close_midpoint_tm2)
+    )
+
+    bearish_evening_star = (
+        (control_dataframe["spf_close_tm2"] > control_dataframe["spf_open_tm2"])
+        & (
+            abs(control_dataframe["spf_close_tm1"] - control_dataframe["spf_open_tm1"])
+            / control_dataframe["spf_open_tm1"]
+            < DOJI_THRESHOLD
+        )
+        & (control_dataframe["spf close"] < control_dataframe["spf open"])
+        & (control_dataframe["spf close"] < open_on_close_midpoint_tm2)
+    )
+
+    three_white_soldiers = (
+        (control_dataframe["spf close"] > control_dataframe["spf open"])
+        & (control_dataframe["spf_close_tm1"] > control_dataframe["spf_open_tm1"])
+        & (control_dataframe["spf_close_tm2"] > control_dataframe["spf_open_tm2"])
+        & (control_dataframe["spf close"] > control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf_close_tm1"] > control_dataframe["spf_close_tm2"])
+        & (control_dataframe["spf open"] <= control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf_open_tm1"] <= control_dataframe["spf_close_tm2"])
+    )
+
+    three_black_soldiers = (
+        (control_dataframe["spf close"] < control_dataframe["spf open"])
+        & (control_dataframe["spf_close_tm1"] < control_dataframe["spf_open_tm1"])
+        & (control_dataframe["spf_close_tm2"] < control_dataframe["spf_open_tm2"])
+        & (control_dataframe["spf close"] < control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf_close_tm1"] < control_dataframe["spf_close_tm2"])
+        & (control_dataframe["spf open"] >= control_dataframe["spf_close_tm1"])
+        & (control_dataframe["spf_open_tm1"] >= control_dataframe["spf_close_tm2"])
+    )
+
+    control_dataframe.loc[bullish_engulfing, "spf_ep"] = BULLISH_PATTERN
+    control_dataframe.loc[bearish_engulfing, "spf_ep"] = BEARISH_PATTERN
+
+    control_dataframe.loc[bullish_morning_star, "spf_sp"] = BULLISH_PATTERN
+    control_dataframe.loc[bearish_evening_star, "spf_sp"] = BEARISH_PATTERN
+
+    control_dataframe.loc[three_white_soldiers, "spf_tp"] = BULLISH_PATTERN
+    control_dataframe.loc[three_black_soldiers, "spf_tp"] = BEARISH_PATTERN
+
+    control_dataframe["spf_ep_tm1"] = control_dataframe["spf_ep"].shift(1)
+    control_dataframe["spf_sp_tm1"] = control_dataframe["spf_sp"].shift(1)
 
     control_dataframe.drop(
-        columns=["spf_prev_open", "spf_prev_close"],
+        columns=["spf_open_tm1", "spf_open_tm2", "spf_close_tm1", "spf_close_tm2"],
         inplace=True,
     )
 
@@ -107,8 +175,26 @@ def test__calculate_engulfing_futures_pattern__for_correct_spfep_calculation(
     cfp_calculator.calculate_combinatory_futures_patterns()
 
     pd.testing.assert_series_equal(
-        control_dataframe["spfep"],
-        enhanced_dataframe["spfep"],
+        control_dataframe["spf_ep"],
+        enhanced_dataframe["spf_ep"],
+    )
+    pd.testing.assert_series_equal(
+        control_dataframe["spf_ep_tm1"],
+        enhanced_dataframe["spf_ep_tm1"],
+    )
+
+    pd.testing.assert_series_equal(
+        control_dataframe["spf_sp"],
+        enhanced_dataframe["spf_sp"],
+    )
+    pd.testing.assert_series_equal(
+        control_dataframe["spf_sp_tm1"],
+        enhanced_dataframe["spf_sp_tm1"],
+    )
+
+    pd.testing.assert_series_equal(
+        control_dataframe["spf_tp"],
+        enhanced_dataframe["spf_tp"],
     )
 
 
