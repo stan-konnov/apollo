@@ -19,8 +19,6 @@ class CombinatoryFuturesPatterns(
     """
     Combinatory Futures Patterns Strategy.
 
-    TODO: and rewrite comments again since changes.
-
     This strategy takes long positions when:
 
     * Bearish S&P500 Futures Engulfing Pattern is detected,
@@ -29,9 +27,9 @@ class CombinatoryFuturesPatterns(
 
     OR
 
-    * Adjusted close of the instrument is lower than the previous close,
-    and the previous S&P500 Futures candlestick is a Bullish Morning Star,
-    indicating a potential reversion after a price decrease.
+    # Adjusted close of the instrument is lower than the previous close,
+    and the previous S&P500 Futures candlestick is a Bullish Engulfing Pattern,
+    indicating a potential reversion after a price decrease caused by sell-off on spike.
 
     OR
 
@@ -41,7 +39,8 @@ class CombinatoryFuturesPatterns(
 
     OR
 
-    * Previous S&P500 Futures candlestick is a Bullish Harami Pattern,
+    * Adjusted close of the instrument is lower than the previous close,
+    and the previous S&P500 Futures candlestick is a Bullish Morning Star,
     indicating a potential reversion after a price decrease.
 
     OR
@@ -58,8 +57,8 @@ class CombinatoryFuturesPatterns(
     OR
 
     * Adjusted close of the instrument is higher than the previous close,
-    and the previous S&P500 Futures candlestick is a Bearish Evening Star,
-    indicating a potential reversion after a price increase.
+    and the previous S&P500 Futures candlestick is a Bearish Engulfing Pattern,
+    indicating a potential reversion after a price increase caused by buy-in on drop.
 
     OR
 
@@ -69,7 +68,8 @@ class CombinatoryFuturesPatterns(
 
     OR
 
-    * Previous S&P500 Futures candlestick is a Bearish Harami Pattern,
+    * Adjusted close of the instrument is higher than the previous close,
+    and the previous S&P500 Futures candlestick is a Bearish Evening Star,
     indicating a potential reversion after a price increase.
 
     OR
