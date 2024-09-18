@@ -21,7 +21,7 @@ def test__calculate_combinatory_futures_patterns__for_correct_columns(
     Test calculate_combinatory_futures_patterns method for correct columns.
 
     Resulting dataframe must have following columns:
-    "spf_hp", "spf_ep", "spf_tp", "spf_sp".
+    "spf_ep", "spf_ep_tm1", "spf_tp", "spf_sp", "spf_sp_tm1".
 
     Resulting dataframe must drop following columns:
     "spf_open_tm1", "spf_close_tm1", "spf_open_tm2", "spf_close_tm2".
@@ -34,10 +34,13 @@ def test__calculate_combinatory_futures_patterns__for_correct_columns(
     )
     cfp_calculator.calculate_combinatory_futures_patterns()
 
-    assert "spf_hp" in enhanced_dataframe.columns
     assert "spf_ep" in enhanced_dataframe.columns
+    assert "spf_ep_tm1" in enhanced_dataframe.columns
+
     assert "spf_tp" in enhanced_dataframe.columns
+
     assert "spf_sp" in enhanced_dataframe.columns
+    assert "spf_sp_tm1" in enhanced_dataframe.columns
 
     assert "spf_open_tm1" not in enhanced_dataframe.columns
     assert "spf_open_tm2" not in enhanced_dataframe.columns
