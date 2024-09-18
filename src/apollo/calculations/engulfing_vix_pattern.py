@@ -10,10 +10,6 @@ class EngulfingVIXPatternCalculator(BaseCalculator):
 
     Calculates bullish and bearish engulfing pattern for VIX.
 
-    NOTE: This calculator is identical to Engulfing Futures Pattern Calculator,
-    yet, is kept separate to maintain possibility of extending one
-    or the other with additional functionality in the future.
-
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
 

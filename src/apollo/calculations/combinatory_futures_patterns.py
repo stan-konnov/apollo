@@ -47,6 +47,9 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         KeltnerChaikinMeanReversion,
         LinearRegressionChannelMeanReversion
 
+        TODO: try to add more patterns to VIX
+        that do not involve optimized parameters (doji_threshold)
+
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
