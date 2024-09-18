@@ -71,7 +71,7 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         self._dataframe["spf_close_tm1"] = 0.0
         self._dataframe["spf_close_tm2"] = 0.0
 
-        # Shift open and close to t-1 and t-2
+        # Shift open and close to T-1 and T-2
         self._dataframe.loc[
             self._dataframe["spf open"] != MISSING_DATA_PLACEHOLDER,
             "spf_open_tm1",
