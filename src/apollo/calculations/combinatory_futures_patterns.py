@@ -42,10 +42,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         :param window_size: Size of the window for Combinatory Patterns calculation.
         :param doji_threshold: Threshold for identifying candlestick formation as Doji.
 
-        TODO: Reoptimize
-        KeltnerChaikinMeanReversion,
-        LinearRegressionChannelMeanReversion
-
         NOTE: even though we accept window_size parameter,
         calculator does not perform any rolling calculations.
         """
