@@ -83,11 +83,11 @@ class EngulfingVIXMeanReversion(
         """Mark long and short signals based on the strategy."""
 
         self._dataframe.loc[
-            self._dataframe["vixep"] == self._evp_calculator.BULLISH_ENGULFING,
+            self._dataframe["vix_ep"] == self._evp_calculator.BULLISH_ENGULFING,
             "signal",
         ] = LONG_SIGNAL
 
         self._dataframe.loc[
-            self._dataframe["vixep"] == self._evp_calculator.BEARISH_ENGULFING,
+            self._dataframe["vix_ep"] == self._evp_calculator.BEARISH_ENGULFING,
             "signal",
         ] = SHORT_SIGNAL

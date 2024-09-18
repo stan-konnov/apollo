@@ -41,12 +41,12 @@ def test__engulfing_vix_mean_reversion__with_valid_parameters(
     evp_calculator.calculate_engulfing_vix_pattern()
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
         "signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
         "signal",
     ] = SHORT_SIGNAL
 

@@ -9,8 +9,8 @@ the correct strategy class based on the configured name.
 Acts as a central registry for all available strategies.
 """
 
-from apollo.strategies.engulfing_futures_mean_reversion import (
-    EngulfingFuturesMeanReversion,
+from apollo.strategies.combinatory_futures_patterns import (
+    CombinatoryFuturesPatterns,
 )
 from apollo.strategies.engulfing_vix_mean_reversion import (
     EngulfingVIXMeanReversion,
@@ -36,8 +36,8 @@ from apollo.utils.types import StrategyCatalogueMap
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
     "EngulfingVIXMeanReversion": EngulfingVIXMeanReversion,
+    "CombinatoryFuturesPatterns": CombinatoryFuturesPatterns,
     "KeltnerChaikinMeanReversion": KeltnerChaikinMeanReversion,
-    "EngulfingFuturesMeanReversion": EngulfingFuturesMeanReversion,
     "WildersSwingIndexTrendFollowing": WildersSwingIndexTrendFollowing,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501

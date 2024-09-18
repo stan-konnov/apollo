@@ -68,12 +68,12 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     cad_calculator.calculate_chaikin_accumulation_distribution_line()
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 

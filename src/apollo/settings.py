@@ -26,11 +26,8 @@ BACKTESTING_CASH_SIZE = 1000
 MISSING_DATA_PLACEHOLDER = np.inf
 
 ROOT_DIR = Path(curdir).resolve()
-DATA_DIR = Path(f"{ROOT_DIR}/data")
 PARM_DIR = Path(f"{ROOT_DIR}/parameters")
-OPTP_DIR = Path(f"{ROOT_DIR}/parameters_opt")
 PLOT_DIR = Path(f"{ROOT_DIR}/backtesting_plots")
-BRES_DIR = Path(f"{ROOT_DIR}/backtesting_results")
 
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"

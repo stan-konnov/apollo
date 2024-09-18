@@ -69,11 +69,11 @@ class VIXEnhancedStrategy:
         dataframe["vix_signal"] = NO_SIGNAL
 
         dataframe.loc[
-            dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+            dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
             "vix_signal",
         ] = LONG_SIGNAL
 
         dataframe.loc[
-            dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+            dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
             "vix_signal",
         ] = SHORT_SIGNAL

@@ -52,12 +52,12 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
     dm_calculator.calculate_distribution_moments()
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BULLISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BULLISH_ENGULFING,
         "vix_signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        control_dataframe["vixep"] == evp_calculator.BEARISH_ENGULFING,
+        control_dataframe["vix_ep"] == evp_calculator.BEARISH_ENGULFING,
         "vix_signal",
     ] = SHORT_SIGNAL
 
