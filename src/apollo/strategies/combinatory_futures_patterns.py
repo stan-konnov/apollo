@@ -123,12 +123,18 @@ class CombinatoryFuturesPatterns(
             | (
                 (self._dataframe["adj close"] < self._dataframe["prev_close"])
                 & (
-                    self._dataframe["spf_sp_tm1"]
+                    self._dataframe["spf_ep_tm1"]
                     == self._cfp_calculator.BULLISH_PATTERN
                 )
             )
             | (self._dataframe["spf_tp"] == self._cfp_calculator.BEARISH_PATTERN)
-            | (self._dataframe["spf_hp_tm1"] == self._cfp_calculator.BULLISH_PATTERN)
+            | (
+                (self._dataframe["adj close"] < self._dataframe["prev_close"])
+                & (
+                    self._dataframe["spf_sp_tm1"]
+                    == self._cfp_calculator.BULLISH_PATTERN
+                )
+            )
             | (self._dataframe["vix_signal"] == LONG_SIGNAL)
         )
 
@@ -139,12 +145,18 @@ class CombinatoryFuturesPatterns(
             | (
                 (self._dataframe["adj close"] > self._dataframe["prev_close"])
                 & (
-                    self._dataframe["spf_sp_tm1"]
+                    self._dataframe["spf_ep_tm1"]
                     == self._cfp_calculator.BEARISH_PATTERN
                 )
             )
             | (self._dataframe["spf_tp"] == self._cfp_calculator.BULLISH_PATTERN)
-            | (self._dataframe["spf_hp_tm1"] == self._cfp_calculator.BEARISH_PATTERN)
+            | (
+                (self._dataframe["adj close"] > self._dataframe["prev_close"])
+                & (
+                    self._dataframe["spf_sp_tm1"]
+                    == self._cfp_calculator.BEARISH_PATTERN
+                )
+            )
             | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
         )
 

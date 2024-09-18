@@ -11,7 +11,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
     Calculates following bullish and bearish patterns for S&P 500 Futures:
 
     * Morning | Evening Star
-    * Bullish | Bearish Harami
     * Bullish | Bearish Engulfing
     * Three White | Black Soldiers (Crows)
 
@@ -65,7 +64,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         # otherwise, the strategy using the results will drop missing rows
 
         # Mark patterns to the dataframe
-        self._dataframe["spf_hp"] = self.NO_PATTERN
         self._dataframe["spf_ep"] = self.NO_PATTERN
         self._dataframe["spf_sp"] = self.NO_PATTERN
         self._dataframe["spf_tp"] = self.NO_PATTERN
@@ -102,50 +100,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         open_on_close_midpoint_tm2 = (
             self._dataframe["spf_open_tm2"] + self._dataframe["spf_close_tm2"]
         ) / 2
-
-        # Calculate bullish harami
-        bullish_harami = (
-            # Close at T-1 is below the open at T-1
-            # Candle at T-1 closed in negative territory
-            (self._dataframe["spf_close_tm1"] < self._dataframe["spf_open_tm1"])
-            &
-            # Close at T is above the open at T
-            # Candle closed in positive territory
-            (self._dataframe["spf close"] > self._dataframe["spf open"])
-            &
-            # Candle at T is completely
-            # within the body of candle at T-1
-            (
-                # Open at T is higher than close at T-1
-                self._dataframe["spf open"] > self._dataframe["spf_close_tm1"]
-            )
-            & (
-                # Close at T is lower than open at T-1
-                self._dataframe["spf close"] < self._dataframe["spf_open_tm1"]
-            )
-        )
-
-        # Calculate bearish harami
-        bearish_harami = (
-            # Close at T-1 is above the open at T-1
-            # Candle at T-1 closed in positive territory
-            (self._dataframe["spf_close_tm1"] > self._dataframe["spf_open_tm1"])
-            &
-            # Close at T is below the open at T
-            # Candle closed in negative territory
-            (self._dataframe["spf close"] < self._dataframe["spf open"])
-            &
-            # Candle at T is completely
-            # within the body of candle at T-1
-            (
-                # Open at T is lower than close at T-1
-                self._dataframe["spf open"] < self._dataframe["spf_close_tm1"]
-            )
-            & (
-                # Close at T is higher than open at T-1
-                self._dataframe["spf close"] > self._dataframe["spf_open_tm1"]
-            )
-        )
 
         # Calculate bullish engulfing
         bullish_engulfing = (
@@ -255,10 +209,6 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
             & (self._dataframe["spf_open_tm1"] >= self._dataframe["spf_close_tm2"])
         )
 
-        # Mark harami patterns to the dataframe
-        self._dataframe.loc[bullish_harami, "spf_hp"] = self.BULLISH_PATTERN
-        self._dataframe.loc[bearish_harami, "spf_hp"] = self.BEARISH_PATTERN
-
         # Mark engulfing patterns to the dataframe
         self._dataframe.loc[bullish_engulfing, "spf_ep"] = self.BULLISH_PATTERN
         self._dataframe.loc[bearish_engulfing, "spf_ep"] = self.BEARISH_PATTERN
@@ -271,11 +221,11 @@ class CombinatoryFuturesPatternsCalculator(BaseCalculator):
         self._dataframe.loc[three_white_soldiers, "spf_tp"] = self.BULLISH_PATTERN
         self._dataframe.loc[three_black_soldiers, "spf_tp"] = self.BEARISH_PATTERN
 
+        # Shift engulfing pattern by one observation
+        self._dataframe["spf_ep_tm1"] = self._dataframe["spf_ep"].shift(1)
+
         # Shift star pattern by one observation
         self._dataframe["spf_sp_tm1"] = self._dataframe["spf_sp"].shift(1)
-
-        # Shift harami pattern by one observation
-        self._dataframe["spf_hp_tm1"] = self._dataframe["spf_ep"].shift(1)
 
         # Drop unnecessary columns
         self._dataframe.drop(
