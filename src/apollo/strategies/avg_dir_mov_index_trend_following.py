@@ -53,7 +53,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self._dataframe["adx"] > self._dataframe["adxr"])
+            (self._dataframe["adx"] < self._dataframe["adxr"])
             & (self._dataframe["adx"] < self._dataframe["prev_adx"])
             & (self._dataframe["adxr"] < self._dataframe["prev_adxr"])
             & (abs(self._dataframe["pdi"]) > abs(self._dataframe["mdi"]))
@@ -62,7 +62,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self._dataframe["adx"] < self._dataframe["adxr"])
+            (self._dataframe["adx"] > self._dataframe["adxr"])
             & (self._dataframe["adx"] > self._dataframe["prev_adx"])
             & (self._dataframe["adxr"] > self._dataframe["prev_adxr"])
             & (abs(self._dataframe["pdi"]) < abs(self._dataframe["mdi"]))
