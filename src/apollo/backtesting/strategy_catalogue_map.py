@@ -9,6 +9,9 @@ the correct strategy class based on the configured name.
 Acts as a central registry for all available strategies.
 """
 
+from apollo.strategies.avg_dir_mov_index_mean_reversion import (
+    AverageDirectionalMovementIndexMeanReversion,
+)
 from apollo.strategies.combinatory_futures_patterns import (
     CombinatoryFuturesPatterns,
 )
@@ -41,5 +44,6 @@ STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "WildersSwingIndexTrendFollowing": WildersSwingIndexTrendFollowing,
     "LinearRegressionChannelMeanReversion": LinearRegressionChannelMeanReversion,
     "SkewnessKurtosisVolatilityTrendFollowing": SkewnessKurtosisVolatilityTrendFollowing,  # noqa: E501
+    "AverageDirectionalMovementIndexMeanReversion": AverageDirectionalMovementIndexMeanReversion,  # noqa: E501
     "VIXFuturesConvergenceDivergenceTrendFollowing": VIXFuturesConvergenceDivergenceTrendFollowing,  # noqa: E501
 }

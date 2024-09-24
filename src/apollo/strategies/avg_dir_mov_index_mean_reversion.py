@@ -11,7 +11,7 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 
-class AverageDirectionalMovementIndexTrendFollowing(
+class AverageDirectionalMovementIndexMeanReversion(
     BaseStrategy,
     VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
