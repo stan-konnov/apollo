@@ -22,6 +22,8 @@ class AverageDirectionalMovementIndexTrendFollowing(
         """
         Construct Average Directional Movement Index Trend Following Strategy.
 
+        TODO: I'm a mean reversion
+
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
         """
@@ -51,7 +53,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         """Mark long and short signals based on the strategy."""
 
         long = (
-            (self._dataframe["adx"] < self._dataframe["adxr"])
+            (self._dataframe["adx"] > self._dataframe["adxr"])
             & (self._dataframe["adx"] < self._dataframe["prev_adx"])
             & (self._dataframe["adxr"] < self._dataframe["prev_adxr"])
             & (abs(self._dataframe["pdi"]) > abs(self._dataframe["mdi"]))
@@ -60,7 +62,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
-            (self._dataframe["adx"] > self._dataframe["adxr"])
+            (self._dataframe["adx"] < self._dataframe["adxr"])
             & (self._dataframe["adx"] > self._dataframe["prev_adx"])
             & (self._dataframe["adxr"] > self._dataframe["prev_adxr"])
             & (abs(self._dataframe["pdi"]) < abs(self._dataframe["mdi"]))
