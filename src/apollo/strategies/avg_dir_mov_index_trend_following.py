@@ -52,11 +52,6 @@ class AverageDirectionalMovementIndexTrendFollowing(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        # Sharpe 1.91
-        # & (self._dataframe["adj close"] < self._dataframe["prev_close"])
-        # & (self._dataframe["dx"] < self._dataframe["adx"])
-        # & (self._dataframe["adx"] < self._dataframe["prev_adx"])
-
         long = (self._dataframe["adj close"] < self._dataframe["prev_close"]) & (
             self._dataframe["dx_adx_ampl"] < self._dataframe["prev_dx_adx_ampl"]
         )
@@ -64,11 +59,6 @@ class AverageDirectionalMovementIndexTrendFollowing(
         # | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
-
-        # Sharpe 1.91
-        # & (self._dataframe["adj close"] > self._dataframe["prev_close"])
-        # & (self._dataframe["dx"] > self._dataframe["adx"])
-        # & (self._dataframe["adx"] > self._dataframe["prev_adx"])
 
         short = (self._dataframe["adj close"] > self._dataframe["prev_close"]) & (
             self._dataframe["dx_adx_ampl"] > self._dataframe["prev_dx_adx_ampl"]
