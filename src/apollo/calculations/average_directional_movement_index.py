@@ -32,7 +32,7 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
 
         # Precalculate Minus Directional Movement (MDM)
         self._dataframe["mdm"] = (
-            self._dataframe["prev_low"] - self._dataframe["adj low"]
+            self._dataframe["adj low"] - self._dataframe["prev_low"]
         )
 
         # Precalculate Plus Directional Movement (PDM)
