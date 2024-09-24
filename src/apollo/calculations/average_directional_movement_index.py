@@ -39,3 +39,75 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
         self._dataframe["pdm"] = (
             self._dataframe["adj high"] - self._dataframe["prev_high"]
         )
+
+        # Smooth both MDM and PDM with Simple Moving Average
+        self._dataframe["mdm"] = (
+            self._dataframe["mdm"]
+            .rolling(
+                window=self._window_size,
+                min_periods=self._window_size,
+            )
+            .mean()
+        )
+
+        self._dataframe["pdm"] = (
+            self._dataframe["pdm"]
+            .rolling(
+                window=self._window_size,
+                min_periods=self._window_size,
+            )
+            .mean()
+        )
+
+        # Now, smooth MDM and PDM
+        # with Wilder's Exponential Moving Average
+        self._dataframe["mdm"] = (
+            self._dataframe["mdm"]
+            .ewm(
+                alpha=1 / self._window_size,
+                min_periods=self._window_size,
+                adjust=False,
+            )
+            .mean()
+        )
+
+        self._dataframe["pdm"] = (
+            self._dataframe["pdm"]
+            .ewm(
+                alpha=1 / self._window_size,
+                min_periods=self._window_size,
+                adjust=False,
+            )
+            .mean()
+        )
+
+        # NOTE: since all our strategies are volatility-based,
+        # this calculator implicitly has access to ATR
+        # which is the smoothed True Range series
+
+        # Given that we have MDM, PDM, and ATR,
+        # we can calculate Directional Movement Indicators (DMI)
+        self._dataframe["pdi"] = self._dataframe["pdm"] / self._dataframe["atr"]
+        self._dataframe["mdi"] = self._dataframe["mdm"] / self._dataframe["atr"]
+
+        # Given PDI and MDI, we can
+        # calculate True Directional Movement (DX)
+        # expressed as normalized difference between
+        # PDI and MDI subtraction and PDI and MDI addition
+        # NOTE: we normalize the result by multiplying by 100
+        self._dataframe["dx"] = 100 * (
+            abs(self._dataframe["pdi"] - self._dataframe["mdi"])
+            / (self._dataframe["pdi"] + self._dataframe["mdi"])
+        )
+
+        # Finally, we reach ADX by smoothing DX
+        # with Wilder's Exponential Moving Average
+        self._dataframe["adx"] = (
+            self._dataframe["dx"]
+            .ewm(
+                alpha=1 / self._window_size,
+                min_periods=self._window_size,
+                adjust=False,
+            )
+            .mean()
+        )
