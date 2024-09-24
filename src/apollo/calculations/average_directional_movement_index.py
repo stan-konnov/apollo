@@ -119,14 +119,13 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             self._dataframe["adx"] + self._dataframe["adx"].shift(self._window_size)
         ) / 2
 
-        # Shift both PDM and MDM by one observation
-        self._dataframe["prev_pdm"] = self._dataframe["pdm"].shift(1)
-        self._dataframe["prev_mdm"] = self._dataframe["mdm"].shift(1)
+        # Calculate the amplitude between ADX and ADXR
+        self._dataframe["adx_adxr_amp"] = abs(self._dataframe["adx"]) - abs(
+            self._dataframe["adxr"],
+        )
 
-        # Shift both PDI and MDI by one observation
-        self._dataframe["prev_pdi"] = self._dataframe["pdi"].shift(1)
-        self._dataframe["prev_mdi"] = self._dataframe["mdi"].shift(1)
-
-        # Shift both ADX and ADXR by one observation
+        # Shift ADX by one observation
         self._dataframe["prev_adx"] = self._dataframe["adx"].shift(1)
-        self._dataframe["prev_adxr"] = self._dataframe["adxr"].shift(1)
+
+        # Shift the amplitude by one observation
+        self._dataframe["prev_adx_adxr_amp"] = self._dataframe["adx_adxr_amp"].shift(1)
