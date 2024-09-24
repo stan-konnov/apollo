@@ -123,6 +123,10 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
         self._dataframe["prev_pdm"] = self._dataframe["pdm"].shift(1)
         self._dataframe["prev_mdm"] = self._dataframe["mdm"].shift(1)
 
+        # Shift both PDI and MDI by one observation
+        self._dataframe["prev_pdi"] = self._dataframe["pdi"].shift(1)
+        self._dataframe["prev_mdi"] = self._dataframe["mdi"].shift(1)
+
         # Shift both ADX and ADXR by one observation
         self._dataframe["prev_adx"] = self._dataframe["adx"].shift(1)
         self._dataframe["prev_adxr"] = self._dataframe["adxr"].shift(1)
