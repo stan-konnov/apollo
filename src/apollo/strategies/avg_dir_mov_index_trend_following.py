@@ -54,20 +54,26 @@ class AverageDirectionalMovementIndexTrendFollowing(
 
         long = (
             (self._dataframe["adj close"] < self._dataframe["prev_close"])
-            & (self._dataframe["adx"] > self._dataframe["prev_adx"])
-            & (self._dataframe["adxr"] > self._dataframe["prev_adxr"])
-            # & (self._dataframe["adx"] > self._dataframe["adxr"])
-            # & (abs(self._dataframe["pdi"]) > abs(self._dataframe["mdi"]))
+            & (self._dataframe["pdm"] > self._dataframe["prev_pdm"])
+            & (self._dataframe["mdm"] > self._dataframe["prev_mdm"])
+            # & (self._dataframe["adx"] > self._dataframe["prev_adx"])
+            # & (self._dataframe["adxr"] > self._dataframe["prev_adxr"])
         )
+
+        # & (self._dataframe["adx"] > self._dataframe["adxr"])
+        # & (abs(self._dataframe["pdi"]) > abs(self._dataframe["mdi"]))
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (
             (self._dataframe["adj close"] > self._dataframe["prev_close"])
-            & (self._dataframe["adx"] < self._dataframe["prev_adx"])
-            & (self._dataframe["adxr"] < self._dataframe["prev_adxr"])
-            # & (self._dataframe["adx"] < self._dataframe["adxr"])
-            # & (abs(self._dataframe["pdi"]) < abs(self._dataframe["mdi"]))
+            & (self._dataframe["pdm"] < self._dataframe["prev_pdm"])
+            & (self._dataframe["mdm"] < self._dataframe["prev_mdm"])
+            # & (self._dataframe["adx"] < self._dataframe["prev_adx"])
+            # & (self._dataframe["adxr"] < self._dataframe["prev_adxr"])
         )
+
+        # & (self._dataframe["adx"] < self._dataframe["adxr"])
+        # & (abs(self._dataframe["pdi"]) < abs(self._dataframe["mdi"]))
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
