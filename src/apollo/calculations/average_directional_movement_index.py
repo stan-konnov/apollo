@@ -40,25 +40,6 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             self._dataframe["adj high"] - self._dataframe["prev_high"]
         )
 
-        # Smooth both MDM and PDM with Simple Moving Average
-        self._dataframe["mdm"] = (
-            self._dataframe["mdm"]
-            .rolling(
-                window=self._window_size,
-                min_periods=self._window_size,
-            )
-            .mean()
-        )
-
-        self._dataframe["pdm"] = (
-            self._dataframe["pdm"]
-            .rolling(
-                window=self._window_size,
-                min_periods=self._window_size,
-            )
-            .mean()
-        )
-
         # Now, smooth MDM and PDM
         # with Wilder's Exponential Moving Average
         self._dataframe["mdm"] = (
@@ -112,20 +93,10 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             .mean()
         )
 
-        # As the last adjustment, we calculate
-        # Average Directional Movement Index Rating (ADXR)
-        # as the average of ADX and ADX shifted by window size
-        self._dataframe["adxr"] = (
-            self._dataframe["adx"] + self._dataframe["adx"].shift(self._window_size)
-        ) / 2
-
-        # Calculate the amplitude between ADX and ADXR
-        self._dataframe["adx_adxr_amp"] = abs(self._dataframe["adx"]) - abs(
-            self._dataframe["adxr"],
+        # Calculate the amplitude between DX and ADXR
+        self._dataframe["dx_adx_ampl"] = abs(self._dataframe["dx"]) - abs(
+            self._dataframe["adx"],
         )
 
-        # Shift ADX by one observation
-        self._dataframe["prev_adx"] = self._dataframe["adx"].shift(1)
-
         # Shift the amplitude by one observation
-        self._dataframe["prev_adx_adxr_amp"] = self._dataframe["adx_adxr_amp"].shift(1)
+        self._dataframe["prev_dx_adx_ampl"] = self._dataframe["dx_adx_ampl"].shift(1)

@@ -58,7 +58,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         # & (self._dataframe["adx"] < self._dataframe["prev_adx"])
 
         long = (self._dataframe["adj close"] < self._dataframe["prev_close"]) & (
-            self._dataframe["adx_adxr_amp"] < self._dataframe["prev_adx_adxr_amp"]
+            self._dataframe["dx_adx_ampl"] < self._dataframe["prev_dx_adx_ampl"]
         )
 
         # | (self._dataframe["vix_signal"] == LONG_SIGNAL)
@@ -71,7 +71,7 @@ class AverageDirectionalMovementIndexTrendFollowing(
         # & (self._dataframe["adx"] > self._dataframe["prev_adx"])
 
         short = (self._dataframe["adj close"] > self._dataframe["prev_close"]) & (
-            self._dataframe["adx_adxr_amp"] > self._dataframe["prev_adx_adxr_amp"]
+            self._dataframe["dx_adx_ampl"] > self._dataframe["prev_dx_adx_ampl"]
         )
 
         #  | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
