@@ -16,13 +16,11 @@ class AverageDirectionalMovementIndexMeanReversion(
     VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
-    """Average Directional Movement Index Trend Following Strategy."""
+    """Average Directional Movement Index Mean Reversion Strategy."""
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
-        Construct Average Directional Movement Index Trend Following Strategy.
-
-        TODO: I'm a mean reversion
+        Construct Average Directional Movement Index Mean Reversion Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
