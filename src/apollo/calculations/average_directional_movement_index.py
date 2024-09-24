@@ -93,6 +93,9 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             .mean()
         )
 
+        # Shift DX by one observation
+        self._dataframe["prev_dx"] = self._dataframe["dx"].shift(1)
+
         # Calculate the amplitude between DX and ADXR
         self._dataframe["dx_adx_ampl"] = abs(self._dataframe["dx"]) - abs(
             self._dataframe["adx"],
