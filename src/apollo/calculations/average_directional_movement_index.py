@@ -111,3 +111,10 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             )
             .mean()
         )
+
+        # As the last adjustment, we calculate
+        # Average Directional Movement Index Rating (ADXR)
+        # as the average of ADX and ADX shifted by window size
+        self._dataframe["adxr"] = (
+            self._dataframe["adx"] + self._dataframe["adx"].shift(self._window_size)
+        ) / 2
