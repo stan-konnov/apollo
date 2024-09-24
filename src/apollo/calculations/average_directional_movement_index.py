@@ -20,3 +20,22 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
         """
 
         super().__init__(dataframe, window_size)
+
+    def calculate_average_directional_movement_index(self) -> None:
+        """Calculate rolling ADX via rolling DX and EMA."""
+
+        # Precalculate previous low
+        self._dataframe["prev_low"] = self._dataframe["adj low"].shift(1)
+
+        # Precalculate previous high
+        self._dataframe["prev_high"] = self._dataframe["adj high"].shift(1)
+
+        # Precalculate Minus Directional Movement (MDM)
+        self._dataframe["mdm"] = (
+            self._dataframe["prev_low"] - self._dataframe["adj low"]
+        )
+
+        # Precalculate Plus Directional Movement (PDM)
+        self._dataframe["pdm"] = (
+            self._dataframe["adj high"] - self._dataframe["prev_high"]
+        )
