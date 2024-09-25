@@ -54,6 +54,11 @@ class AverageDirectionalMovementIndexMeanReversion(
             (self._dataframe["adj close"] < self._dataframe["prev_close"])
             & (self._dataframe["dx"] < self._dataframe["prev_dx"])
             & (self._dataframe["dx_adx_ampl"] < self._dataframe["prev_dx_adx_ampl"])
+            | (
+                (self._dataframe["adj close"] < self._dataframe["prev_close"])
+                & (self._dataframe["pdi"] > self._dataframe["prev_pdi"])
+                & (self._dataframe["mdi"] > self._dataframe["prev_mdi"])
+            )
         ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
@@ -62,6 +67,11 @@ class AverageDirectionalMovementIndexMeanReversion(
             (self._dataframe["adj close"] > self._dataframe["prev_close"])
             & (self._dataframe["dx"] > self._dataframe["prev_dx"])
             & (self._dataframe["dx_adx_ampl"] > self._dataframe["prev_dx_adx_ampl"])
+            | (
+                (self._dataframe["adj close"] > self._dataframe["prev_close"])
+                & (self._dataframe["pdi"] < self._dataframe["prev_pdi"])
+                & (self._dataframe["mdi"] < self._dataframe["prev_mdi"])
+            )
         ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
