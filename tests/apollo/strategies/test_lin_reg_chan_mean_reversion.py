@@ -63,14 +63,16 @@ def test__lin_reg_chan_mean_reversion__with_valid_parameters(
         "vix_signal",
     ] = SHORT_SIGNAL
 
-    long = (control_dataframe["adj close"] <= control_dataframe["l_bound"]) & (
-        control_dataframe["slope"] <= control_dataframe["prev_slope"]
+    long = (
+        (control_dataframe["adj close"] <= control_dataframe["l_bound"])
+        & (control_dataframe["slope"] <= control_dataframe["prev_slope"])
     ) | (control_dataframe["vix_signal"] == LONG_SIGNAL)
 
     control_dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-    short = (control_dataframe["adj close"] >= control_dataframe["u_bound"]) & (
-        control_dataframe["slope"] >= control_dataframe["prev_slope"]
+    short = (
+        (control_dataframe["adj close"] >= control_dataframe["u_bound"])
+        & (control_dataframe["slope"] >= control_dataframe["prev_slope"])
     ) | (control_dataframe["vix_signal"] == SHORT_SIGNAL)
 
     control_dataframe.loc[short, "signal"] = SHORT_SIGNAL
