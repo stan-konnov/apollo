@@ -10,8 +10,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.lin_reg_chan_mean_reversion import (
-    LinearRegressionChannelMeanReversion,
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -44,17 +44,18 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = LinearRegressionChannelMeanReversion(
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
         dataframe=dataframe,
-        window_size=5,
-        channel_sd_spread=1.0,
+        window_size=20,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=1.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="LinearRegressionChannelMeanReversion",
+        strategy_name="SkewnessKurtosisVolatilityTrendFollowing",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
