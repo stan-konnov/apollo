@@ -25,10 +25,11 @@ class AverageDirectionalMovementIndexMeanReversion(
     indicating that the price is decreasing.
 
     * True Directional Movement is below the previous value,
-    indicating that the instrument entered a negative trend.
+    indicating that the instrument is within a negative trend.
 
     * True Directional Movement Amplitude against it's average
-    is below the previous value, indicating that negative trend is shifting positive.
+    is below the previous value, indicating flattening of
+    the negative trend and potential mean reversion.
 
     OR
 
@@ -52,10 +53,11 @@ class AverageDirectionalMovementIndexMeanReversion(
     indicating that the price is increasing.
 
     * True Directional Movement is above the previous value,
-    indicating that the instrument entered a positive trend.
+    indicating that the instrument is within a positive trend.
 
     * True Directional Movement Amplitude against it's average
-    is above the previous value, indicating that positive trend is shifting negative.
+    is above the previous value, indicating sharpening of
+    the positive trend and potential mean reversion.
 
     OR
 
