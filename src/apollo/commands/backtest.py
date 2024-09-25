@@ -10,8 +10,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.combinatory_futures_patterns import (
-    CombinatoryFuturesPatterns,
+from apollo.strategies.avg_dir_mov_index_mean_reversion import (
+    AverageDirectionalMovementIndexMeanReversion,
 )
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -44,17 +44,16 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = CombinatoryFuturesPatterns(
+    strategy = AverageDirectionalMovementIndexMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        doji_threshold=0.005,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="CombinatoryFuturesPatterns",
+        strategy_name="AverageDirectionalMovementIndexMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
