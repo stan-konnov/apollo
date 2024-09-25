@@ -56,7 +56,7 @@ def main() -> None:
         strategy_name="AverageDirectionalMovementIndexMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.4,
+        tp_volatility_multiplier=0.7,
         write_result_plot=True,
     )
 
