@@ -40,10 +40,10 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             self._dataframe["adj high"] - self._dataframe["prev_high"]
         )
 
-        # Now, smooth MDM and PDM
+        # Now, smooth PDM and MDM
         # with Wilder's Exponential Moving Average
-        self._dataframe["mdm"] = (
-            self._dataframe["mdm"]
+        self._dataframe["pdm"] = (
+            self._dataframe["pdm"]
             .ewm(
                 alpha=1 / self._window_size,
                 min_periods=self._window_size,
@@ -52,8 +52,8 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
             .mean()
         )
 
-        self._dataframe["pdm"] = (
-            self._dataframe["pdm"]
+        self._dataframe["mdm"] = (
+            self._dataframe["mdm"]
             .ewm(
                 alpha=1 / self._window_size,
                 min_periods=self._window_size,
@@ -66,7 +66,7 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
         # this calculator implicitly has access to ATR
         # which is the smoothed True Range series
 
-        # Given that we have MDM, PDM, and ATR,
+        # Given that we have PDM, MDM, and ATR,
         # we can calculate Directional Movement Indicators (DMI)
         self._dataframe["pdi"] = self._dataframe["pdm"] / self._dataframe["atr"]
         self._dataframe["mdi"] = self._dataframe["mdm"] / self._dataframe["atr"]

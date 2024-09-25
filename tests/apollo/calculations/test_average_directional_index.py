@@ -120,8 +120,8 @@ def test__calculate_average_directional_movement_index__for_correct_calculation(
         control_dataframe["adj high"] - control_dataframe["prev_high"]
     )
 
-    control_dataframe["mdm"] = (
-        control_dataframe["mdm"]
+    control_dataframe["pdm"] = (
+        control_dataframe["pdm"]
         .ewm(
             alpha=1 / window_size,
             min_periods=window_size,
@@ -129,8 +129,8 @@ def test__calculate_average_directional_movement_index__for_correct_calculation(
         )
         .mean()
     )
-    control_dataframe["pdm"] = (
-        control_dataframe["pdm"]
+    control_dataframe["mdm"] = (
+        control_dataframe["mdm"]
         .ewm(
             alpha=1 / window_size,
             min_periods=window_size,
