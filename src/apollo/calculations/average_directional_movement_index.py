@@ -107,3 +107,9 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
 
         # Shift the amplitude by one observation
         self._dataframe["prev_dx_adx_ampl"] = self._dataframe["dx_adx_ampl"].shift(1)
+
+        # Drop unnecessary columns
+        self._dataframe.drop(
+            columns=["prev_low", "prev_high", "mdm", "pdm", "adx"],
+            inplace=True,
+        )
