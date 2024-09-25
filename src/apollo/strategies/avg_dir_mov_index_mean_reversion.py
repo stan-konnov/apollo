@@ -25,10 +25,10 @@ class AverageDirectionalMovementIndexMeanReversion(
     indicating that the price is decreasing.
 
     * Directional Movement Index is below the previous value,
-    indicating that the positive trend has weekend (DX is lagging indicator).
+    indicating that the instrument entered a negative trend.
 
     * Directional Movement Index Amplitude against it's average
-    is below the previous value, indicating that current trend direction is shifting.
+    is below the previous value, indicating that negative trend is shifting positive.
 
     OR
 
@@ -52,10 +52,10 @@ class AverageDirectionalMovementIndexMeanReversion(
     indicating that the price is increasing.
 
     * Directional Movement Index is above the previous value,
-    indicating that the negative trend has weekend (DX is lagging indicator).
+    indicating that the instrument entered a positive trend.
 
     * Directional Movement Index Amplitude against it's average
-    is above the previous value, indicating that current trend direction is shifting.
+    is above the previous value, indicating that positive trend is shifting negative.
 
     OR
 
