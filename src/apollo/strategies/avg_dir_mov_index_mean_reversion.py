@@ -24,10 +24,10 @@ class AverageDirectionalMovementIndexMeanReversion(
     * Adjusted close is below the previous close,
     indicating that the price is decreasing.
 
-    * Directional Movement Index is below the previous value,
+    * True Directional Movement is below the previous value,
     indicating that the instrument entered a negative trend.
 
-    * Directional Movement Index Amplitude against it's average
+    * True Directional Movement Amplitude against it's average
     is below the previous value, indicating that negative trend is shifting positive.
 
     OR
@@ -51,10 +51,10 @@ class AverageDirectionalMovementIndexMeanReversion(
     * Adjusted close is above the previous close,
     indicating that the price is increasing.
 
-    * Directional Movement Index is above the previous value,
+    * True Directional Movement is above the previous value,
     indicating that the instrument entered a positive trend.
 
-    * Directional Movement Index Amplitude against it's average
+    * True Directional Movement Amplitude against it's average
     is above the previous value, indicating that positive trend is shifting negative.
 
     OR
