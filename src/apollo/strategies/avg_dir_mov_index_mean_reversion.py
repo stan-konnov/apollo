@@ -16,7 +16,72 @@ class AverageDirectionalMovementIndexMeanReversion(
     VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
-    """Average Directional Movement Index Mean Reversion Strategy."""
+    """
+    Average Directional Movement Index Mean Reversion Strategy.
+
+    This strategy takes long positions when:
+
+    * Adjusted close is below the previous close,
+    indicating that the price is decreasing.
+
+    * Directional Movement Index is below the previous value,
+    indicating that the positive trend has weekend (DX is lagging indicator).
+
+    * Directional Movement Index Amplitude against it's average
+    is below the previous value, indicating that current trend direction is shifting.
+
+    OR
+
+    * Adjusted close is below the previous close,
+    indicating that the price is decreasing.
+
+    * Plus Directional Indicator is above the previous value,
+    indicating that the positive trend is strengthening.
+
+    * Minus Directional Indicator is above the previous value,
+    indicating that the negative trend is weakening.
+
+    OR
+
+    * VIX signal is long, indicating increasing volatility,
+    forcing the price down and potentially triggering a mean reversion.
+
+    This strategy takes short positions when:
+
+    * Adjusted close is above the previous close,
+    indicating that the price is increasing.
+
+    * Directional Movement Index is above the previous value,
+    indicating that the negative trend has weekend (DX is lagging indicator).
+
+    * Directional Movement Index Amplitude against it's average
+    is above the previous value, indicating that current trend direction is shifting.
+
+    OR
+
+    * Adjusted close is above the previous close,
+    indicating that the price is increasing.
+
+    * Plus Directional Indicator is below the previous value,
+    indicating that the positive trend is weakening.
+
+    * Minus Directional Indicator is below the previous value,
+    indicating that the negative trend is strengthening.
+
+    OR
+
+    * VIX signal is short, indicating decreasing volatility,
+    forcing the price up and potentially triggering a mean reversion.
+
+
+    NOTE: This logic is adapted from:
+
+    Kaufman, Trading Systems and Methods, 2020, 6th ed.
+    Colby, The Encyclopedia of Technical Market Indicators, 2003, 2nd ed.
+    Wilder, "Selection and Direction", Technical Analysis in Commodities, 1980.
+
+    And does not follow the original implementation to-the-letter.
+    """
 
     def __init__(self, dataframe: pd.DataFrame, window_size: int) -> None:
         """
