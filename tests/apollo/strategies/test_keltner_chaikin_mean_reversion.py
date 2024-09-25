@@ -78,15 +78,19 @@ def test__keltner_chaikin_trend_following__with_valid_parameters(
     ] = SHORT_SIGNAL
 
     control_dataframe.loc[
-        (control_dataframe["adj close"] < control_dataframe["lkc_bound"])
-        & (control_dataframe["adl"] < control_dataframe["prev_adl"])
+        (
+            (control_dataframe["adj close"] < control_dataframe["lkc_bound"])
+            & (control_dataframe["adl"] < control_dataframe["prev_adl"])
+        )
         | (control_dataframe["vix_signal"] == LONG_SIGNAL),
         "signal",
     ] = LONG_SIGNAL
 
     control_dataframe.loc[
-        (control_dataframe["adj close"] > control_dataframe["ukc_bound"])
-        & (control_dataframe["adl"] > control_dataframe["prev_adl"])
+        (
+            (control_dataframe["adj close"] > control_dataframe["ukc_bound"])
+            & (control_dataframe["adl"] > control_dataframe["prev_adl"])
+        )
         | (control_dataframe["vix_signal"] == SHORT_SIGNAL),
         "signal",
     ] = SHORT_SIGNAL
