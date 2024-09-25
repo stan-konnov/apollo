@@ -61,19 +61,19 @@ def test__skew_kurt_vol_trend_following__with_valid_parameters(
         "vix_signal",
     ] = SHORT_SIGNAL
 
-    long = (control_dataframe["skew"] < 0) & (
-        control_dataframe["kurt"] < kurtosis_threshold
-    ) & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier) | (
-        control_dataframe["vix_signal"] == LONG_SIGNAL
-    )
+    long = (
+        (control_dataframe["skew"] < 0)
+        & (control_dataframe["kurt"] < kurtosis_threshold)
+        & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
+    ) | (control_dataframe["vix_signal"] == LONG_SIGNAL)
 
     control_dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-    short = (control_dataframe["skew"] > 0) & (
-        control_dataframe["kurt"] < kurtosis_threshold
-    ) & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier) | (
-        control_dataframe["vix_signal"] == SHORT_SIGNAL
-    )
+    short = (
+        (control_dataframe["skew"] > 0)
+        & (control_dataframe["kurt"] < kurtosis_threshold)
+        & (control_dataframe["tr"] > control_dataframe["atr"] * volatility_multiplier)
+    ) | (control_dataframe["vix_signal"] == SHORT_SIGNAL)
 
     control_dataframe.loc[short, "signal"] = SHORT_SIGNAL
 
