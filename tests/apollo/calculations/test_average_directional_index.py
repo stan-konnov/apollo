@@ -17,7 +17,7 @@ def test__calculate_average_directional_movement_index__for_correct_columns(
     Test calculate_average_directional_movement_index method for correct columns.
 
     Resulting dataframe must have the following columns:
-    "dx", "pdi", "prev_pdi" "mdi", "prev_mdi", "dx_adx_ampl", "prev_dx_adx_ampl".
+    "dx", "pdi", "mdi", "prev_pdi", "prev_mdi", "dx_adx_ampl", "prev_dx_adx_ampl".
 
     Resulting dataframe must not have the following columns:
     "prev_low", "prev_high", "pdm", "mdm", "adx".
@@ -43,6 +43,7 @@ def test__calculate_average_directional_movement_index__for_correct_columns(
     assert "prev_pdi" in dataframe.columns
     assert "prev_mdi" in dataframe.columns
     assert "dx_adx_ampl" in dataframe.columns
+    assert "prev_dx_adx_ampl" in dataframe.columns
 
     assert "pdm" not in dataframe.columns
     assert "mdm" not in dataframe.columns
