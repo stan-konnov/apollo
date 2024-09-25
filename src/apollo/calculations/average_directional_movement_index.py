@@ -22,7 +22,7 @@ class AverageDirectionalMovementIndexCalculator(BaseCalculator):
         super().__init__(dataframe, window_size)
 
     def calculate_average_directional_movement_index(self) -> None:
-        """Calculate rolling ADX via rolling DX and EMA."""
+        """Calculate rolling ADX via DX and EMA."""
 
         # Precalculate previous low
         self._dataframe["prev_low"] = self._dataframe["adj low"].shift(1)
