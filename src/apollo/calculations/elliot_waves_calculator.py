@@ -94,5 +94,5 @@ class ElliotWavesCalculator(BaseCalculator):
             f_sequence[i] = f_sequence[i - 1] + f_sequence[i - 2]
             l_sequence[i] = l_sequence[i - 1] + l_sequence[i - 2]
 
-        # Merge and sort the sequences removing duplicates
+        # Merge the sequences removing duplicates
         return list(set(f_sequence) | set(l_sequence))
