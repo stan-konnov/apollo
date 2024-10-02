@@ -73,10 +73,17 @@ class ElliotWavesCalculator(BaseCalculator):
             len(self._dataframe),
         )
 
-        print(fibonacci_lucas_sequence)
+        # print(fibonacci_lucas_sequence)
 
     def _calculate_fibonacci_lucas_sequence(self, n: int) -> list[int]:
-        """Calculate Fibonacci Lucas Sequence up until the end of price series."""
+        """
+        Calculate Fibonacci Lucas Sequence up until the end of price series.
+
+        NOTE: we might use only Fibonacci; all work in progress.
+
+        :param n: Number of Fibonacci Lucas numbers to calculate.
+        :returns: Merged Fibonacci Lucas Sequence.
+        """
 
         # Initialize sequences
         f_sequence = np.zeros(n, dtype=int)
