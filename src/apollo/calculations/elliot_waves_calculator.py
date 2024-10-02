@@ -1,14 +1,18 @@
-import numpy as np
 import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
 
-# ruff: noqa
-# HEAVY WIP
-
 
 class ElliotWavesCalculator(BaseCalculator):
     """Elliot Waves Calculator."""
+
+    # Constant to
+    # represent Golden Ratio
+    GOLDEN_RATIO: float = 1.618
+
+    # Constant to
+    # represent Inverse Golden Ratio
+    INVERSE_GOLDEN_RATIO: float = 0.618
 
     def __init__(
         self,
@@ -66,40 +70,3 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["elliot_waves_oscillator"] = (
             self._dataframe["short_hla_sma"] - self._dataframe["long_hla_sma"]
         )
-
-        # Calculate Fibonacci Lucas
-        # for each entry in the dataframe
-        fibonacci_lucas_sequence = self._calculate_fibonacci_lucas_sequence(
-            len(self._dataframe),
-        )
-
-        # print(fibonacci_lucas_sequence)
-
-    def _calculate_fibonacci_lucas_sequence(self, n: int) -> list[int]:
-        """
-        Calculate Fibonacci Lucas Sequence up until the end of price series.
-
-        NOTE: we might use only Fibonacci; all work in progress.
-
-        :param n: Number of Fibonacci Lucas numbers to calculate.
-        :returns: Merged Fibonacci Lucas Sequence.
-        """
-
-        # Initialize sequences
-        f_sequence = np.zeros(n, dtype=int)
-        l_sequence = np.zeros(n, dtype=int)
-
-        # Initialize first pairs
-        f_sequence[0] = 1
-        f_sequence[1] = 1
-        l_sequence[0] = 1
-        l_sequence[1] = 3
-
-        # Loop in steps of 2 and
-        # sum the last two values
-        for i in range(2, n):
-            f_sequence[i] = f_sequence[i - 1] + f_sequence[i - 2]
-            l_sequence[i] = l_sequence[i - 1] + l_sequence[i - 2]
-
-        # Merge the sequences removing duplicates
-        return list(set(f_sequence) | set(l_sequence))
