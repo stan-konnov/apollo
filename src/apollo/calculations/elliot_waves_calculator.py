@@ -1,7 +1,10 @@
 import numpy as np
-from pandas import DataFrame
+import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
+
+# ruff: noqa
+# HEAVY WIP
 
 
 class ElliotWavesCalculator(BaseCalculator):
@@ -9,7 +12,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
     def __init__(
         self,
-        dataframe: DataFrame,
+        dataframe: pd.DataFrame,
         window_size: int,
         long_oscillator_period: int,
         short_oscillator_period: int,
@@ -66,38 +69,30 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Calculate Fibonacci Lucas
         # for each entry in the dataframe
-        fibonacci_sequence, lucas_sequence = self._calculate_fibonacci_lucas_sequences(
+        fibonacci_lucas_sequence = self._calculate_fibonacci_lucas_sequence(
             len(self._dataframe),
         )
 
-        # Write Fibonacci Lucas to the dataframe
-        self._dataframe["fib"] = fibonacci_sequence
-        self._dataframe["luc"] = lucas_sequence
+        print(fibonacci_lucas_sequence)
 
-    def _calculate_fibonacci_lucas_sequences(
-        self,
-        n: int,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        """Calculate Fibonacci Lucas Sequences up until end of dataframe."""
+    def _calculate_fibonacci_lucas_sequence(self, n: int) -> list[int]:
+        """Calculate Fibonacci Lucas Sequence up until the end of price series."""
 
         # Initialize sequences
-        fibonacci_sequence = np.zeros(n, dtype=int)
-        lucas_sequence = np.zeros(n, dtype=int)
+        f_sequence = np.zeros(n, dtype=int)
+        l_sequence = np.zeros(n, dtype=int)
 
         # Initialize first pairs
-        fibonacci_sequence[0] = 1
-        fibonacci_sequence[1] = 1
-
-        lucas_sequence[0] = 1
-        lucas_sequence[1] = 3
+        f_sequence[0] = 1
+        f_sequence[1] = 1
+        l_sequence[0] = 1
+        l_sequence[1] = 3
 
         # Loop in steps of 2 and
         # sum the last two values
         for i in range(2, n):
-            fibonacci_sequence[i] = (
-                fibonacci_sequence[i - 1] + fibonacci_sequence[i - 2]
-            )
+            f_sequence[i] = f_sequence[i - 1] + f_sequence[i - 2]
+            l_sequence[i] = l_sequence[i - 1] + l_sequence[i - 2]
 
-            lucas_sequence[i] = lucas_sequence[i - 1] + lucas_sequence[i - 2]
-
-        return (fibonacci_sequence, lucas_sequence)
+        # Merge and sort the sequences removing duplicates
+        return list(set(f_sequence) | set(l_sequence))

@@ -1,6 +1,7 @@
 import logging
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.calculations.elliot_waves_calculator import ElliotWavesCalculator
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -21,6 +22,9 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
+
+# ruff: noqa
+# HEAVY WIP
 
 
 def main() -> None:
@@ -44,25 +48,34 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = AverageDirectionalMovementIndexMeanReversion(
+    ew_calculator = ElliotWavesCalculator(
         dataframe=dataframe,
         window_size=5,
+        long_oscillator_period=35,
+        short_oscillator_period=5,
     )
 
-    strategy.model_trading_signals()
+    ew_calculator.calculate_elliot_waves()
 
-    backtesting_runner = BacktestingRunner(
-        dataframe=dataframe,
-        strategy_name="AverageDirectionalMovementIndexMeanReversion",
-        lot_size_cash=1000,
-        sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.4,
-        write_result_plot=True,
-    )
+    # strategy = AverageDirectionalMovementIndexMeanReversion(
+    #     dataframe=dataframe,
+    #     window_size=5,
+    # )
 
-    stats = backtesting_runner.run()
+    # strategy.model_trading_signals()
 
-    logger.info(stats)
+    # backtesting_runner = BacktestingRunner(
+    #     dataframe=dataframe,
+    #     strategy_name="AverageDirectionalMovementIndexMeanReversion",
+    #     lot_size_cash=1000,
+    #     sl_volatility_multiplier=0.1,
+    #     tp_volatility_multiplier=0.4,
+    #     write_result_plot=True,
+    # )
+
+    # stats = backtesting_runner.run()
+
+    # logger.info(stats)
 
 
 if __name__ == "__main__":
