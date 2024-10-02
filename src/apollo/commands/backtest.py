@@ -51,8 +51,8 @@ def main() -> None:
     ew_calculator = ElliotWavesCalculator(
         dataframe=dataframe,
         window_size=5,
-        s_oscillator_period=5,
-        l_oscillator_period=35,
+        fast_oscillator_period=5,
+        slow_oscillator_period=35,
     )
 
     ew_calculator.calculate_elliot_waves()
