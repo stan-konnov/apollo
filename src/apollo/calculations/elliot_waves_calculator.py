@@ -14,22 +14,22 @@ class ElliotWavesCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        long_oscillator_period: int,
-        short_oscillator_period: int,
+        s_oscillator_period: int,
+        l_oscillator_period: int,
     ) -> None:
         """
         Construct Elliot Waves Calculator.
 
         :param dataframe: Dataframe to calculate Elliot Waves for.
         :param window_size: Window size for rolling Elliot Waves calculation.
-        :param long_oscillator_period: Long period for Elliot Waves Oscillator.
-        :param short_oscillator_period: Short period for Elliot Waves Oscillator.
+        :param s_oscillator_period: Short period for Elliot Waves Oscillator.
+        :param l_oscillator_period: Long period for Elliot Waves Oscillator.
         """
 
         super().__init__(dataframe, window_size)
 
-        self._long_oscillator_period = long_oscillator_period
-        self._short_oscillator_period = short_oscillator_period
+        self._l_oscillator_period = l_oscillator_period
+        self._s_oscillator_period = s_oscillator_period
 
     def calculate_elliot_waves(self) -> None:
         """Calculate rolling Elliot Waves."""
@@ -45,8 +45,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["long_hla_sma"] = (
             self._dataframe["high_low_avg"]
             .rolling(
-                window=self._long_oscillator_period,
-                min_periods=self._long_oscillator_period,
+                window=self._l_oscillator_period,
+                min_periods=self._l_oscillator_period,
             )
             .mean()
         )
@@ -56,8 +56,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["short_hla_sma"] = (
             self._dataframe["high_low_avg"]
             .rolling(
-                window=self._short_oscillator_period,
-                min_periods=self._short_oscillator_period,
+                window=self._s_oscillator_period,
+                min_periods=self._s_oscillator_period,
             )
             .mean()
         )
