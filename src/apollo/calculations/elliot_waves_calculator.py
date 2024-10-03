@@ -14,6 +14,16 @@ class ElliotWavesCalculator(BaseCalculator):
     # represent Inverse Golden Ratio
     INVERSE_GOLDEN_RATIO: float = 0.618
 
+    # Constants to
+    # represent Elliot Waves
+    ELLIOT_WAVE_3: float = 3.0
+    ELLIOT_WAVE_5: float = 5.0
+
+    # Constants to
+    # represent Elliot Trends
+    UP_TREND: float = 1.0
+    DOWN_TREND: float = -1.0
+
     def __init__(
         self,
         dataframe: pd.DataFrame,
@@ -37,6 +47,8 @@ class ElliotWavesCalculator(BaseCalculator):
 
         self._ewo_l: float = 0.0
         self._ewo_h: float = 0.0
+
+        self._elliot_trend: float = 0.0
 
     def calculate_elliot_waves(self) -> None:
         """Calculate rolling Elliot Waves."""
@@ -84,5 +96,15 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Slice out a chunk of dataframe to work with
         _rolling_df = self._dataframe.loc[series.index]
+
+        # Determine the highest and the
+        # lowest EWO values within the window
+        ewo_l = _rolling_df["ewo"].min()
+        ewo_h = _rolling_df["ewo"].max()
+
+        # Preserve them if they
+        # exceed the previous values
+        self._ewo_l = min(self._ewo_l, ewo_l)
+        self._ewo_h = max(self._ewo_h, ewo_h)
 
         return 0.0
