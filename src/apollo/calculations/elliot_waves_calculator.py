@@ -115,14 +115,6 @@ class ElliotWavesCalculator(BaseCalculator):
         TODO: some experiments around the use
         of the golden ratio and inverse golden ratio required.
 
-        if osc = highest(osc,period) and trend = 0 then trend = 1;
-        if osc = lowest(osc, period) and trend = 0 then trend = -1;
-
-        if lowest(osc,period) < 0 and trend = -1 and
-        osc >  -1*trigger*lowest(osc,period) then trend = 1;
-        if highest(osc,period) > 0 and trend = 1 and
-        osc < -1*trigger*highest(osc,period) then trend = -1;
-
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
         """
@@ -185,5 +177,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # the trend as is
         else:
             self._elliot_waves_trend.append(self.NO_TREND)
+
+            # self._elliot_waves_trend.append(current_trend or self.NO_TREND)  # noqa: ERA001, E501
 
         return 0.0
