@@ -164,8 +164,6 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the trend as uptrend
             new_trend = self.UP_TREND
 
-            # print(rolling_df.index[-1], new_trend)  # noqa: ERA001
-
         # If the current trend is not set
         # and the current EWO is the lowest EWO
         if no_current_trend and current_ewo == ewo_l:
@@ -183,8 +181,6 @@ class ElliotWavesCalculator(BaseCalculator):
         ):
             # Mark the trend as downtrend
             new_trend = self.DOWN_TREND
-
-            # print(rolling_df.index[-1], new_trend)  # noqa: ERA001
 
         # Append the new trend to the
         # trend line or resolve to no trend
