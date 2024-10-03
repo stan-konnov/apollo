@@ -50,7 +50,7 @@ class ElliotWavesCalculator(BaseCalculator):
         self._ewo_l: float = 0.0
         self._ewo_h: float = 0.0
 
-        self._elliot_trend: list[float] = []
+        self._elliot_waves_trend: list[float] = []
 
     def calculate_elliot_waves(self) -> None:
         """Calculate rolling Elliot Waves."""
@@ -89,13 +89,13 @@ class ElliotWavesCalculator(BaseCalculator):
         )
 
         # Fill trend line array with N NaN, where N = window size
-        self._elliot_trend = (
+        self._elliot_waves_trend = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
-    def _calc_elliot_waves(self, series: pd.Series) -> float:
+    def _calc_elliot_waves_trend(self, series: pd.Series) -> float:
         """
-        Calculate rolling Elliot Waves.
+        Calculate rolling Elliot Waves Trend.
 
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
