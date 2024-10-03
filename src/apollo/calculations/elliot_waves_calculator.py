@@ -35,6 +35,9 @@ class ElliotWavesCalculator(BaseCalculator):
         self._fast_oscillator_period = fast_oscillator_period
         self._slow_oscillator_period = slow_oscillator_period
 
+        self._ewo_l: float = 0.0
+        self._ewo_h: float = 0.0
+
     def calculate_elliot_waves(self) -> None:
         """Calculate rolling Elliot Waves."""
 
@@ -70,3 +73,16 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["ewo"] = (
             self._dataframe["fast_hla_sma"] - self._dataframe["slow_hla_sma"]
         )
+
+    def _calc_elliot_waves(self, series: pd.Series) -> float:
+        """
+        Calculate rolling Elliot Waves.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Dummy float to satisfy Pandas' return value.
+        """
+
+        # Slice out a chunk of dataframe to work with
+        _rolling_df = self._dataframe.loc[series.index]
+
+        return 0.0
