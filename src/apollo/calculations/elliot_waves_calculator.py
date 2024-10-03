@@ -93,6 +93,18 @@ class ElliotWavesCalculator(BaseCalculator):
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
+        # Reset indices to integer to
+        # facilitate access of previous trend
+        self._dataframe.reset_index(inplace=True)
+
+        # Calculate rolling Elliot Waves Trend
+        self._dataframe["adj close"].rolling(self._window_size).apply(
+            self._calc_elliot_waves_trend,
+        )
+
+        # Reset indices back to date
+        self._dataframe.set_index("date", inplace=True)
+
     def _calc_elliot_waves_trend(self, series: pd.Series) -> float:
         """
         Calculate rolling Elliot Waves Trend.
@@ -101,12 +113,45 @@ class ElliotWavesCalculator(BaseCalculator):
         :returns: Dummy float to satisfy Pandas' return value.
         """
 
+        """
+        if osc = highest(osc,period) and trend = 0 then trend = 1;
+        if osc = lowest(osc, period) and trend = 0 then trend = -1;
+
+        if lowest(osc,period) < 0 and trend = -1 and
+            osc >  -1*trigger*lowest(osc,period) then trend = 1;
+        if highest(osc,period) > 0 and trend = 1 and
+            osc < -1*trigger*highest(osc,period) then trend = -1;
+        """
+
         # Slice out a chunk of dataframe to work with
-        _rolling_df = self._dataframe.loc[series.index]
+        rolling_df = self._dataframe.loc[series.index]
+
+        # Grab current trend value
+        current_trend = self._elliot_waves_trend[rolling_df.index[-2]]
+
+        # Determine if current trend is not set
+        no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
 
         # Determine the highest and the
         # lowest EWO values within the window
-        _ewo_h = _rolling_df["ewo"].max()
-        _ewo_l = _rolling_df["ewo"].min()
+        _ewo_h = rolling_df["ewo"].max()
+        _ewo_l = rolling_df["ewo"].min()
+
+        # If the current trend is not set and
+        # the current EWO is the highest so far
+        if no_current_trend and _ewo_h > self._ewo_h:
+            # Mark the trend as uptrend
+            self._elliot_waves_trend.append(self.UP_TREND)
+
+        # If the current trend is not set and
+        # the current EWO is the lowest so far
+        elif no_current_trend and _ewo_l < self._ewo_l:
+            # Mark the trend as downtrend
+            self._elliot_waves_trend.append(self.DOWN_TREND)
+
+        # Otherwise, keep
+        # the trend as is
+        else:
+            self._elliot_waves_trend.append(self.NO_TREND)
 
         return 0.0
