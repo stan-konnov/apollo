@@ -102,6 +102,9 @@ class ElliotWavesCalculator(BaseCalculator):
             self._calc_elliot_waves_trend,
         )
 
+        # Preserve elliot waves trend to the dataframe
+        self._dataframe["ewt"] = self._elliot_waves_trend
+
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
 
