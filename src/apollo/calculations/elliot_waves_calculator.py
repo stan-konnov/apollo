@@ -178,6 +178,4 @@ class ElliotWavesCalculator(BaseCalculator):
         else:
             self._elliot_waves_trend.append(self.NO_TREND)
 
-            # self._elliot_waves_trend.append(current_trend or self.NO_TREND)  # noqa: ERA001, E501
-
         return 0.0
