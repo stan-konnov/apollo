@@ -129,6 +129,18 @@ class ElliotWavesCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
+        # Initialize variable
+        # to hold the new trend
+        new_trend = self.NO_TREND
+
+        # Determine the highest and the
+        # lowest EWO values within the window
+        ewo_h = rolling_df["ewo"].max()
+        ewo_l = rolling_df["ewo"].min()
+
+        # Grab current EWO value
+        current_ewo = rolling_df.iloc[-1]["ewo"]
+
         # Grab current trend value
         # NOTE: we use second to last index from rolling
         # window since we populate trend line exactly one step behind
@@ -138,30 +150,22 @@ class ElliotWavesCalculator(BaseCalculator):
         # NOTE: we check against NaN to facilitate for the first iteration
         no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
 
-        # Grab current EWO value
-        current_ewo = rolling_df.iloc[-1]["ewo"]
-
-        # Determine the highest and the
-        # lowest EWO values within the window
-        ewo_h = rolling_df["ewo"].max()
-        ewo_l = rolling_df["ewo"].min()
-
         # If the current trend is not set and
         # the highest EWO is the highest so far
         if no_current_trend and ewo_h > self._ewo_h:
             # Mark the trend as uptrend
-            self._elliot_waves_trend.append(self.UP_TREND)
+            new_trend = self.UP_TREND
 
         # If the current trend is not set and
         # the lowest EWO is the lowest so far
         elif no_current_trend and ewo_l < self._ewo_l:
             # Mark the trend as downtrend
-            self._elliot_waves_trend.append(self.DOWN_TREND)
+            new_trend = self.DOWN_TREND
 
         # Otherwise, keep
         # the trend as is
         else:
-            self._elliot_waves_trend.append(self.NO_TREND)
+            new_trend = self.NO_TREND
 
         # Alternatively:
 
@@ -175,7 +179,7 @@ class ElliotWavesCalculator(BaseCalculator):
             and current_ewo > -1 * self.INVERSE_GOLDEN_RATIO * ewo_l
         ):
             # Mark the trend as uptrend
-            self._elliot_waves_trend.append(self.UP_TREND)
+            new_trend = self.UP_TREND
 
         # If the highest EWO is above 0,
         # the current trend is uptrend
@@ -187,11 +191,14 @@ class ElliotWavesCalculator(BaseCalculator):
             and current_ewo < -1 * self.GOLDEN_RATIO * ewo_h
         ):
             # Mark the trend as downtrend
-            self._elliot_waves_trend.append(self.DOWN_TREND)
+            new_trend = self.DOWN_TREND
 
         # Otherwise, keep
         # the trend as is
         else:
-            self._elliot_waves_trend.append(self.NO_TREND)
+            new_trend = current_trend
+
+        # Preserve the new trend
+        self._elliot_waves_trend.append(new_trend)
 
         return 0.0
