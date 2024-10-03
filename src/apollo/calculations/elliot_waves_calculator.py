@@ -152,14 +152,14 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # OR
         #
-        # If the lowest EWO is below 0,
+        # If the current EWO is below 0,
         # the current trend is downtrend
         # and current EWO is above lowest
-        # multiplied by golden ratio
+        # multiplied by inverse golden ratio
         if (no_current_trend and ewo_h > self._ewo_h) or (
-            ewo_l < 0
+            current_ewo < 0
             and current_trend == self.DOWN_TREND
-            and current_ewo > -1 * self.GOLDEN_RATIO * ewo_l
+            and current_ewo > self.INVERSE_GOLDEN_RATIO * ewo_l
         ):
             # Mark the trend as uptrend
             self._elliot_waves_trend.append(self.UP_TREND)
@@ -169,14 +169,14 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # OR
         #
-        # If the highest EWO is above 0,
+        # If the current EWO is above 0,
         # the current trend is uptrend
         # and current EWO is below highest
         # multiplied by inverse golden ratio
         elif (no_current_trend and ewo_l < self._ewo_l) or (
-            ewo_h > 0
+            current_ewo > 0
             and current_trend == self.UP_TREND
-            and current_ewo < -1 * self.INVERSE_GOLDEN_RATIO * ewo_h
+            and current_ewo < self.INVERSE_GOLDEN_RATIO * ewo_h
         ):
             # Mark the trend as downtrend
             self._elliot_waves_trend.append(self.DOWN_TREND)
