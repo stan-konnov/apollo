@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from apollo.calculations.base_calculator import BaseCalculator
@@ -48,7 +49,7 @@ class ElliotWavesCalculator(BaseCalculator):
         self._ewo_l: float = 0.0
         self._ewo_h: float = 0.0
 
-        self._elliot_trend: float = 0.0
+        self._elliot_trend: list[float] = []
 
     def calculate_elliot_waves(self) -> None:
         """Calculate rolling Elliot Waves."""
@@ -84,6 +85,11 @@ class ElliotWavesCalculator(BaseCalculator):
         # Calculate Elliot Waves Oscillator
         self._dataframe["ewo"] = (
             self._dataframe["fast_hla_sma"] - self._dataframe["slow_hla_sma"]
+        )
+
+        # Fill trend line array with N NaN, where N = window size
+        self._elliot_trend = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
     def _calc_elliot_waves(self, series: pd.Series) -> float:
