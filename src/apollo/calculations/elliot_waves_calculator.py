@@ -130,6 +130,7 @@ class ElliotWavesCalculator(BaseCalculator):
         current_trend = self._elliot_waves_trend[rolling_df.index[-2]]
 
         # Determine if current trend is not set
+        # NOTE: we check against NaN to facilitate for the first iteration
         no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
 
         # Determine the highest and the
