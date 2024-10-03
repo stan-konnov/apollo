@@ -130,6 +130,8 @@ class ElliotWavesCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Grab current trend value
+        # NOTE: we use second to last index from rolling
+        # window since we populate trend line exactly one step behind
         current_trend = self._elliot_waves_trend[rolling_df.index[-2]]
 
         # Determine if current trend is not set
