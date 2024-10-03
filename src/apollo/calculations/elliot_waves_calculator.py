@@ -18,6 +18,7 @@ class ElliotWavesCalculator(BaseCalculator):
     # Constants to
     # represent Elliot Waves
     ELLIOT_WAVE_3: float = 3.0
+    ELLIOT_WAVE_4: float = 4.0
     ELLIOT_WAVE_5: float = 5.0
 
     # Constants to
