@@ -136,20 +136,54 @@ class ElliotWavesCalculator(BaseCalculator):
         # NOTE: we check against NaN to facilitate for the first iteration
         no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
 
+        # Grab current EWO value
+        current_ewo = rolling_df.iloc[-1]["ewo"]
+
         # Determine the highest and the
         # lowest EWO values within the window
-        _ewo_h = rolling_df["ewo"].max()
-        _ewo_l = rolling_df["ewo"].min()
+        ewo_h = rolling_df["ewo"].max()
+        ewo_l = rolling_df["ewo"].min()
 
         # If the current trend is not set and
-        # the current EWO is the highest so far
-        if no_current_trend and _ewo_h > self._ewo_h:
+        # the highest EWO is the highest so far
+        if no_current_trend and ewo_h > self._ewo_h:
             # Mark the trend as uptrend
             self._elliot_waves_trend.append(self.UP_TREND)
 
         # If the current trend is not set and
-        # the current EWO is the lowest so far
-        elif no_current_trend and _ewo_l < self._ewo_l:
+        # the lowest EWO is the lowest so far
+        elif no_current_trend and ewo_l < self._ewo_l:
+            # Mark the trend as downtrend
+            self._elliot_waves_trend.append(self.DOWN_TREND)
+
+        # Otherwise, keep
+        # the trend as is
+        else:
+            self._elliot_waves_trend.append(self.NO_TREND)
+
+        # Alternatively:
+
+        # If the lowest EWO is below 0,
+        # the current trend is downtrend
+        # and current EWO is above lowest
+        # multiplied by inverse golden ratio
+        if (
+            ewo_l < 0
+            and current_trend == self.DOWN_TREND
+            and current_ewo > -1 * self.INVERSE_GOLDEN_RATIO * ewo_l
+        ):
+            # Mark the trend as uptrend
+            self._elliot_waves_trend.append(self.UP_TREND)
+
+        # If the highest EWO is above 0,
+        # the current trend is uptrend
+        # and current EWO is below highest
+        # multiplied by golden ratio
+        elif (
+            ewo_h > 0
+            and current_trend == self.UP_TREND
+            and current_ewo < -1 * self.GOLDEN_RATIO * ewo_h
+        ):
             # Mark the trend as downtrend
             self._elliot_waves_trend.append(self.DOWN_TREND)
 
