@@ -21,7 +21,7 @@ class ElliotWavesCalculator(BaseCalculator):
     ELLIOT_WAVE_5: float = 5.0
 
     # Constants to
-    # represent Elliot Trends
+    # represent Elliot Waves Trends
     NO_TREND: float = 0.0
     UP_TREND: float = 1.0
     DOWN_TREND: float = -1.0
