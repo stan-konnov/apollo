@@ -116,8 +116,8 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         Calculate rolling Elliot Waves Trend.
 
-        TODO: some experiments around the use
-        of the golden ratio and inverse golden ratio required.
+        TODO: some experiments around retracement logic required.
+        TODO: some experiments around golden ratio and inverse golden ratio required.
 
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
