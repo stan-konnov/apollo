@@ -48,9 +48,6 @@ class ElliotWavesCalculator(BaseCalculator):
         self._fast_oscillator_period = fast_oscillator_period
         self._slow_oscillator_period = slow_oscillator_period
 
-        self._ewo_l: float = 0.0
-        self._ewo_h: float = 0.0
-
         self._elliot_waves: list[float] = []
         self._elliot_waves_trend: list[float] = []
 
@@ -122,6 +119,14 @@ class ElliotWavesCalculator(BaseCalculator):
         TODO: some experiments around the use
         of the golden ratio and inverse golden ratio required.
 
+        if osc = highest(osc,period) and trend = 0 then trend = 1;
+        if osc = lowest(osc, period) and trend = 0 then trend = -1;
+
+        if lowest(osc,period) < 0 and trend = -1 and
+        osc >  -1*trigger*lowest(osc,period) then trend = 1;
+        if highest(osc,period) > 0 and trend = 1 and
+        osc < -1*trigger*highest(osc,period) then trend = -1;
+
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
         """
@@ -146,8 +151,8 @@ class ElliotWavesCalculator(BaseCalculator):
         # NOTE: we check against NaN to facilitate for the first iteration
         no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
 
-        # If the current trend is not set and
-        # the highest EWO is the highest so far
+        # If the current trend is not set
+        # and the current EWO is the highest EWO
         #
         # OR
         #
@@ -155,7 +160,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # the current trend is downtrend
         # and current EWO is above lowest
         # multiplied by inverse golden ratio
-        if (no_current_trend and ewo_h > self._ewo_h) or (
+        if (no_current_trend and current_ewo == ewo_h) or (
             current_ewo < 0
             and current_trend == self.DOWN_TREND
             and current_ewo > self.INVERSE_GOLDEN_RATIO * ewo_l
@@ -163,8 +168,8 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the trend as uptrend
             self._elliot_waves_trend.append(self.UP_TREND)
 
-        # If the current trend is not set and
-        # the lowest EWO is the lowest so far
+        # If the current trend is not set
+        # and the current EWO is the lowest EWO
         #
         # OR
         #
@@ -172,7 +177,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # the current trend is uptrend
         # and current EWO is below highest
         # multiplied by inverse golden ratio
-        elif (no_current_trend and ewo_l < self._ewo_l) or (
+        elif (no_current_trend and current_ewo == ewo_l) or (
             current_ewo > 0
             and current_trend == self.UP_TREND
             and current_ewo < self.INVERSE_GOLDEN_RATIO * ewo_h
