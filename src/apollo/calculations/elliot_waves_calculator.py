@@ -51,6 +51,7 @@ class ElliotWavesCalculator(BaseCalculator):
         self._ewo_l: float = 0.0
         self._ewo_h: float = 0.0
 
+        self._elliot_waves: list[float] = []
         self._elliot_waves_trend: list[float] = []
 
     def calculate_elliot_waves(self) -> None:
@@ -87,6 +88,11 @@ class ElliotWavesCalculator(BaseCalculator):
         # Calculate Elliot Waves Oscillator
         self._dataframe["ewo"] = (
             self._dataframe["fast_hla_sma"] - self._dataframe["slow_hla_sma"]
+        )
+
+        # Fill wave line array with N NaN, where N = window size
+        self._elliot_waves = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
         )
 
         # Fill trend line array with N NaN, where N = window size
