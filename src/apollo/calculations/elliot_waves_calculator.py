@@ -154,8 +154,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # If the current EWO is below 0,
         # the current trend is downtrend
-        # and current EWO is above lowest
-        # multiplied by inverse golden ratio
+        # and current EWO retraced from lowest
         if (
             current_ewo < 0
             and current_trend == self.DOWN_TREND
@@ -163,6 +162,8 @@ class ElliotWavesCalculator(BaseCalculator):
         ):
             # Mark the trend as uptrend
             new_trend = self.UP_TREND
+
+            # print(rolling_df.index[-1], new_trend)  # noqa: ERA001
 
         # If the current trend is not set
         # and the current EWO is the lowest EWO
@@ -172,8 +173,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # If the current EWO is above 0,
         # the current trend is uptrend
-        # and current EWO is below highest
-        # multiplied by inverse golden ratio
+        # and current EWO retraced from highest
         if (
             current_ewo > 0
             and current_trend == self.UP_TREND
@@ -181,6 +181,8 @@ class ElliotWavesCalculator(BaseCalculator):
         ):
             # Mark the trend as downtrend
             new_trend = self.DOWN_TREND
+
+            # print(rolling_df.index[-1], new_trend)  # noqa: ERA001
 
         # Append the new trend to the
         # trend line or resolve to no trend
