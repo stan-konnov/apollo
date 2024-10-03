@@ -134,6 +134,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
+        # Declare variable for new trend
+        new_trend = None
+
         # Determine the highest and the
         # lowest EWO values within the window
         ewo_h = rolling_df["ewo"].max()
@@ -153,41 +156,42 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # If the current trend is not set
         # and the current EWO is the highest EWO
-        #
-        # OR
-        #
+        if no_current_trend and current_ewo == ewo_h:
+            # Mark the trend as uptrend
+            new_trend = self.UP_TREND
+
         # If the current EWO is below 0,
         # the current trend is downtrend
         # and current EWO is above lowest
         # multiplied by inverse golden ratio
-        if (no_current_trend and current_ewo == ewo_h) or (
+        if (
             current_ewo < 0
             and current_trend == self.DOWN_TREND
             and current_ewo > self.INVERSE_GOLDEN_RATIO * ewo_l
         ):
             # Mark the trend as uptrend
-            self._elliot_waves_trend.append(self.UP_TREND)
+            new_trend = self.UP_TREND
 
         # If the current trend is not set
         # and the current EWO is the lowest EWO
-        #
-        # OR
-        #
+        if no_current_trend and current_ewo == ewo_l:
+            # Mark the trend as downtrend
+            new_trend = self.DOWN_TREND
+
         # If the current EWO is above 0,
         # the current trend is uptrend
         # and current EWO is below highest
         # multiplied by inverse golden ratio
-        elif (no_current_trend and current_ewo == ewo_l) or (
+        if (
             current_ewo > 0
             and current_trend == self.UP_TREND
             and current_ewo < self.INVERSE_GOLDEN_RATIO * ewo_h
         ):
             # Mark the trend as downtrend
-            self._elliot_waves_trend.append(self.DOWN_TREND)
+            new_trend = self.DOWN_TREND
 
-        # Otherwise, keep
-        # the trend as is
-        else:
-            self._elliot_waves_trend.append(self.NO_TREND)
+        # Append the new trend to the
+        # trend line or resolve to no trend
+        self._elliot_waves_trend.append(new_trend or self.NO_TREND)
 
         return 0.0
