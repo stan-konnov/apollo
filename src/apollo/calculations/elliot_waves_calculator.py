@@ -105,12 +105,15 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Determine the highest and the
         # lowest EWO values within the window
-        ewo_l = _rolling_df["ewo"].min()
         ewo_h = _rolling_df["ewo"].max()
+        _ewo_l = _rolling_df["ewo"].min()
 
-        # Preserve them if they
-        # exceed the previous values
-        self._ewo_l = min(self._ewo_l, ewo_l)
-        self._ewo_h = max(self._ewo_h, ewo_h)
+        # If the EWO making a new high
+        if ewo_h > self._ewo_h:
+            # Preserve it for future
+            self._ewo_h = ewo_h
+
+            # Resolve current trend to uptrend
+            self._elliot_trend.append(self.UP_TREND)
 
         return 0.0
