@@ -112,18 +112,11 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         Calculate rolling Elliot Waves Trend.
 
+        TODO: some experiments around the use
+        of the golden ratio and inverse golden ratio required.
+
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
-        """
-
-        """
-        if osc = highest(osc,period) and trend = 0 then trend = 1;
-        if osc = lowest(osc, period) and trend = 0 then trend = -1;
-
-        if lowest(osc,period) < 0 and trend = -1 and
-            osc >  -1*trigger*lowest(osc,period) then trend = 1;
-        if highest(osc,period) > 0 and trend = 1 and
-            osc < -1*trigger*highest(osc,period) then trend = -1;
         """
 
         # Slice out a chunk of dataframe to work with
