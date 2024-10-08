@@ -51,8 +51,6 @@ class ElliotWavesCalculator(BaseCalculator):
         # oscillator and high-low average
         self._ewo_h_1: float = -np.inf
         self._ewo_h_2: float = -np.inf
-        self._hla_h_1: float = -np.inf
-        self._hla_h_2: float = -np.inf
 
         # Declare variables for
         # Elliot Waves and Elliot Waves Trend
@@ -205,7 +203,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         return 0.0
 
-    def _calc_elliot_waves(self, series: pd.Series) -> float:  # noqa: C901
+    def _calc_elliot_waves(self, series: pd.Series) -> float:
         """
         Calculate rolling Elliot Waves Trend.
 
@@ -222,10 +220,6 @@ class ElliotWavesCalculator(BaseCalculator):
         # Declare variable
         # for current Elliot Wave
         curr_wave = None
-
-        # Determine the highest
-        # high-low average within the window
-        hla_h = rolling_df["high_low_avg"].max()
 
         # Grab current and previous trend values
         curr_trend = rolling_df.iloc[-1]["ewt"]
@@ -276,92 +270,6 @@ class ElliotWavesCalculator(BaseCalculator):
         if curr_ewo < 0 and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
-
-        # Test for beginning of wave 5:
-        #
-        # If the current wave is Elliot Wave 4
-        # and the current high-low average is highest
-        # abd oscillator is above 0
-        if curr_wave == self.ELLIOT_WAVE_4 and curr_hla == hla_h and curr_ewo > 0:
-            # Mark the wave as Elliot Wave 5
-            curr_wave = self.ELLIOT_WAVE_5
-
-            # Resolve EWO high 2
-            # to the current EWO
-            self._ewo_h_2 = curr_ewo
-
-            # Resolve high-low average high 2
-            # to the current high-low average
-            self._hla_h_2 = curr_hla
-
-        # If the current wave is Elliot Wave 5
-        if curr_wave == self.ELLIOT_WAVE_5:
-            # If the current EWO
-            # higher than the EWO high 2
-            if curr_ewo > self._ewo_h_2:
-                # Resolve EWO high 2
-                # to the current EWO
-                self._ewo_h_2 = curr_ewo
-
-            # If the current high-low average
-            # higher than the high-low average 2
-            if curr_hla > self._hla_h_2:
-                # Resolve high-low average high 2
-                # to the current high-low average
-                self._hla_h_2 = curr_hla
-
-        # Test for wave 5 turning into wave 3
-        #
-        # If the current wave is Elliot Wave 5
-        # and high-low average high 2 is higher than current
-        # and current trend is uptrend
-        if (
-            curr_wave == self.ELLIOT_WAVE_5
-            and self._hla_h_2 > curr_hla
-            and curr_trend == self.UP_TREND
-        ):
-            # Mark the wave as Elliot Wave 3
-            curr_wave = self.ELLIOT_WAVE_3
-
-            # Resolve EWO high 1
-            # to the EWO high 2
-            self._ewo_h_1 = self._ewo_h_2
-
-            # Resolve high-low average high 1
-            # to the high-low average 2
-            self._hla_h_1 = self._hla_h_2
-
-            # Resolve EWO high 2
-            # to negative ignorable
-            self._ewo_h_2 = -np.inf
-
-            # Resolve high-low average high 2
-            # to negative ignorable
-            self._hla_h_2 = -np.inf
-
-        # Test for wave 3 down within wave 5
-        #
-        # If the current wave is Elliot Wave 5
-        # and current trend is downtrend
-        if curr_wave == self.ELLIOT_WAVE_5 and curr_trend == self.DOWN_TREND:
-            # Mark the wave as Elliot Wave 3
-            curr_wave = self.ELLIOT_WAVE_3
-
-            # Resolve EWO high 1
-            # to negative ignorable
-            self._ewo_h_1 = -np.inf
-
-            # Resolve high-low average high 1
-            # to negative ignorable
-            self._hla_h_1 = -np.inf
-
-            # Resolve EWO high 2
-            # to negative ignorable
-            self._ewo_h_2 = -np.inf
-
-            # Resolve high-low average high 2
-            # to negative ignorable
-            self._hla_h_2 = -np.inf
 
         # Append the wave to the
         # wave line or resolve to no wave
