@@ -238,6 +238,8 @@ class ElliotWavesCalculator(BaseCalculator):
         # Grab current EWO SMA value
         current_ewo_sma = rolling_df.iloc[-1]["ewo_sma"]
 
+        # Not beginning, but end?
+
         # Test for beginning of wave 1:
         # If oscillator is above average
         # and the current trend is downtrend
