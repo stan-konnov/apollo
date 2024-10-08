@@ -12,10 +12,6 @@ class ElliotWavesCalculator(BaseCalculator):
     GOLDEN_RATIO: float = 1.618
 
     # Constant to
-    # represent Inverse Golden Ratio
-    INVERSE_GOLDEN_RATIO: float = 0.618
-
-    # Constant to
     # represent no value
     NO_VALUE: float = 0.0
 
@@ -143,7 +139,6 @@ class ElliotWavesCalculator(BaseCalculator):
         Calculate rolling Elliot Waves Trend.
 
         TODO: some experiments around retracement logic required.
-        TODO: some experiments around golden ratio and inverse golden ratio required.
 
         :param series: Series which is used for indexing out rolling window.
         :returns: Dummy float to satisfy Pandas' return value.
@@ -182,7 +177,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # If the current EWO is below 0,
         # the previous trend is downtrend
         # and current EWO retraces back up
-        # to one inverse golden ratio from lowest
+        # to one golden ratio from lowest
         if (
             current_ewo < 0
             and prev_trend == self.DOWN_TREND
@@ -200,7 +195,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # If the current EWO is above 0,
         # the previous trend is uptrend
         # and current EWO retraces back down
-        # to one inverse golden ratio from the highest
+        # to one golden ratio from the highest
         if (
             current_ewo > 0
             and prev_trend == self.UP_TREND
