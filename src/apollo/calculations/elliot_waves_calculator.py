@@ -187,3 +187,19 @@ class ElliotWavesCalculator(BaseCalculator):
         self._elliot_waves_trend.append(new_trend or self.NO_TREND)
 
         return 0.0
+
+    def _calc_elliot_waves(self, series: pd.Series) -> float:
+        """
+        Calculate rolling Elliot Waves Trend.
+
+        TODO: look into if this can be
+        combined with previous rolling method.
+
+        :param series: Series which is used for indexing out rolling window.
+        :returns: Dummy float to satisfy Pandas' return value.
+        """
+
+        # Slice out a chunk of dataframe to work with
+        _rolling_df = self._dataframe.loc[series.index]
+
+        return 0.0
