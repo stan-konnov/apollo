@@ -1,7 +1,6 @@
 import logging
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from apollo.calculations.elliot_waves_calculator import ElliotWavesCalculator
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -11,9 +10,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.avg_dir_mov_index_mean_reversion import (
-    AverageDirectionalMovementIndexMeanReversion,
-)
+from apollo.strategies.elliot_waves_mean_reversion import ElliotWavesMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -22,9 +19,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-# ruff: noqa
-# HEAVY WIP
 
 
 def main() -> None:
@@ -48,34 +42,27 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    ew_calculator = ElliotWavesCalculator(
+    strategy = ElliotWavesMeanReversion(
         dataframe=dataframe,
         window_size=5,
         fast_oscillator_period=5,
-        slow_oscillator_period=35,
+        slow_oscillator_period=10,
     )
 
-    ew_calculator.calculate_elliot_waves()
+    strategy.model_trading_signals()
 
-    # strategy = AverageDirectionalMovementIndexMeanReversion(
-    #     dataframe=dataframe,
-    #     window_size=5,
-    # )
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name="ElliotWavesMeanReversion",
+        lot_size_cash=1000,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.4,
+        write_result_plot=True,
+    )
 
-    # strategy.model_trading_signals()
+    stats = backtesting_runner.run()
 
-    # backtesting_runner = BacktestingRunner(
-    #     dataframe=dataframe,
-    #     strategy_name="AverageDirectionalMovementIndexMeanReversion",
-    #     lot_size_cash=1000,
-    #     sl_volatility_multiplier=0.1,
-    #     tp_volatility_multiplier=0.4,
-    #     write_result_plot=True,
-    # )
-
-    # stats = backtesting_runner.run()
-
-    # logger.info(stats)
+    logger.info(stats)
 
 
 if __name__ == "__main__":

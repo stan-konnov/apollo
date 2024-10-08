@@ -132,6 +132,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # Preserve Elliot Waves to the dataframe
         self._dataframe["ew"] = self._elliot_waves
 
+        # Shift Elliot Waves by one observation
+        self._dataframe["prev_ew"] = self._dataframe["ew"].shift(1)
+
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
 
