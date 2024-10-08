@@ -224,7 +224,12 @@ class ElliotWavesCalculator(BaseCalculator):
         rolling_df = self._dataframe.loc[series.index]
 
         # Declare variable for Elliot Wave
-        elliot_wave = None
+        new_elliot_wave = None
+
+        # Grab current wave value
+        # NOTE: we use second to last index from rolling
+        # window since we populate wave line exactly one step behind
+        current_elliot_wave = self._elliot_waves[rolling_df.index[-2]]
 
         # Grab current and previous trend values
         curr_trend = rolling_df.iloc[-1]["ewt"]
@@ -240,7 +245,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # and the previous trend was downtrend
         if curr_trend == self.UP_TREND and prev_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 3
-            elliot_wave = self.ELLIOT_WAVE_3
+            new_elliot_wave = self.ELLIOT_WAVE_3
 
             # Resolve EWO high
             # to the current EWO
@@ -250,8 +255,30 @@ class ElliotWavesCalculator(BaseCalculator):
             # to the current high-low average
             self._hla_h = curr_hla
 
+        # If the current wave is Elliot Wave 3
+        if current_elliot_wave == self.ELLIOT_WAVE_3:
+            # If the current EWO
+            # higher than the EWO high
+            if curr_ewo > self._ewo_h:
+                # Resolve EWO high
+                # to the current EWO
+                self._ewo_h = curr_ewo
+
+            # If the current high-low average
+            # higher than the high-low average high
+            if curr_hla > self._hla_h:
+                # Resolve high-low average high
+                # to the current high-low average
+                self._hla_h = curr_hla
+
+        # If oscillator is equal or below 0
+        # and the current trend is uptrend
+        if curr_ewo <= 0 and curr_trend == self.UP_TREND:
+            # Mark the wave as Elliot Wave 4
+            new_elliot_wave = self.ELLIOT_WAVE_4
+
         # Append the wave to the
         # wave line or resolve to no wave
-        self._elliot_waves.append(elliot_wave or self.NO_VALUE)
+        self._elliot_waves.append(new_elliot_wave or self.NO_VALUE)
 
         return 0.0
