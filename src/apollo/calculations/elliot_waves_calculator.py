@@ -353,6 +353,30 @@ class ElliotWavesCalculator(BaseCalculator):
             # to negative ignorable
             self._hla_h_2 = -np.inf
 
+        # Test for wave 3 down within wave 5
+        #
+        # If the current wave is Elliot Wave 5
+        # and current trend is downtrend
+        if current_elliot_wave == self.ELLIOT_WAVE_5 and curr_trend == self.DOWN_TREND:
+            # Mark the wave as Elliot Wave 3
+            new_elliot_wave = self.ELLIOT_WAVE_3
+
+            # Resolve EWO high 1
+            # to negative ignorable
+            self._ewo_h_1 = -np.inf
+
+            # Resolve high-low average high 1
+            # to negative ignorable
+            self._hla_h_1 = -np.inf
+
+            # Resolve EWO high 2
+            # to negative ignorable
+            self._ewo_h_2 = -np.inf
+
+            # Resolve high-low average high 2
+            # to negative ignorable
+            self._hla_h_2 = -np.inf
+
         # Append the wave to the
         # wave line or resolve to no wave
         self._elliot_waves.append(new_elliot_wave or self.NO_VALUE)
