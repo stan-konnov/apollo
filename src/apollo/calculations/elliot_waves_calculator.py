@@ -112,9 +112,6 @@ class ElliotWavesCalculator(BaseCalculator):
         # Preserve Elliot Waves Trend to the dataframe
         self._dataframe["ewt"] = self._elliot_waves_trend
 
-        # Shift Elliot Waves Trend by one observation
-        self._dataframe["prev_ewt"] = self._dataframe["ewt"].shift(1)
-
         # Calculate rolling Elliot Waves
         self._dataframe["adj close"].rolling(self._window_size).apply(
             self._calc_elliot_waves,
@@ -218,12 +215,11 @@ class ElliotWavesCalculator(BaseCalculator):
         # for current Elliot Wave
         curr_wave = None
 
-        # Grab current and previous trend values
-        curr_trend = rolling_df.iloc[-1]["ewt"]
-        prev_trend = rolling_df.iloc[-2]["prev_ewt"]
-
         # Grab current EWO value
         curr_ewo = rolling_df.iloc[-1]["ewo"]
+
+        # Grab current trend values
+        curr_trend = rolling_df.iloc[-1]["ewt"]
 
         # Test for beginning of wave 1:
         #
@@ -237,7 +233,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is downtrend
         # and the previous trend was uptrend
-        if curr_trend == self.DOWN_TREND and prev_trend == self.UP_TREND:
+        if curr_trend == self.DOWN_TREND and curr_ewo < 0:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
@@ -253,7 +249,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is uptrend
         # and the previous trend was downtrend
-        if curr_trend == self.UP_TREND and prev_trend == self.DOWN_TREND:
+        if curr_trend == self.UP_TREND and curr_ewo > 0:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
