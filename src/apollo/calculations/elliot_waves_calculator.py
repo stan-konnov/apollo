@@ -232,11 +232,6 @@ class ElliotWavesCalculator(BaseCalculator):
         # high-low average within the window
         hla_h = rolling_df["high_low_avg"].max()
 
-        # Grab current wave value
-        # NOTE: we use second to last index from rolling
-        # window since we populate wave line exactly one step behind
-        current_elliot_wave = self._elliot_waves[rolling_df.index[-2]]
-
         # Grab current and previous trend values
         curr_trend = rolling_df.iloc[-1]["ewt"]
         prev_trend = rolling_df.iloc[-2]["prev_ewt"]
@@ -264,7 +259,7 @@ class ElliotWavesCalculator(BaseCalculator):
             self._hla_h_1 = curr_hla
 
         # If the current wave is Elliot Wave 3
-        if current_elliot_wave == self.ELLIOT_WAVE_3:
+        if new_elliot_wave == self.ELLIOT_WAVE_3:
             # If the current EWO
             # higher than the EWO high 1
             if curr_ewo > self._ewo_h_1:
@@ -293,7 +288,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # and the current high-low average is highest
         # abd oscillator is equal or above 0
         if (
-            current_elliot_wave == self.ELLIOT_WAVE_4
+            new_elliot_wave == self.ELLIOT_WAVE_4
             and curr_hla == hla_h
             and curr_ewo >= 0
         ):
@@ -309,7 +304,7 @@ class ElliotWavesCalculator(BaseCalculator):
             self._hla_h_2 = curr_hla
 
         # If the current wave is Elliot Wave 5
-        if current_elliot_wave == self.ELLIOT_WAVE_5:
+        if new_elliot_wave == self.ELLIOT_WAVE_5:
             # If the current EWO
             # higher than the EWO high 2
             if curr_ewo > self._ewo_h_2:
@@ -330,7 +325,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # and high-low average high 2 is higher than current
         # and current trend is uptrend
         if (
-            current_elliot_wave == self.ELLIOT_WAVE_5
+            new_elliot_wave == self.ELLIOT_WAVE_5
             and self._hla_h_2 > curr_hla
             and curr_trend == self.UP_TREND
         ):
@@ -357,7 +352,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current wave is Elliot Wave 5
         # and current trend is downtrend
-        if current_elliot_wave == self.ELLIOT_WAVE_5 and curr_trend == self.DOWN_TREND:
+        if new_elliot_wave == self.ELLIOT_WAVE_5 and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 3
             new_elliot_wave = self.ELLIOT_WAVE_3
 
