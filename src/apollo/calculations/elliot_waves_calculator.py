@@ -186,7 +186,7 @@ class ElliotWavesCalculator(BaseCalculator):
         if (
             current_ewo < 0
             and prev_trend == self.DOWN_TREND
-            and current_ewo > self.INVERSE_GOLDEN_RATIO * ewo_l
+            and current_ewo > self.GOLDEN_RATIO * ewo_l
         ):
             # Mark the trend as uptrend
             curr_trend = self.UP_TREND
@@ -204,7 +204,7 @@ class ElliotWavesCalculator(BaseCalculator):
         if (
             current_ewo > 0
             and prev_trend == self.UP_TREND
-            and current_ewo < self.INVERSE_GOLDEN_RATIO * ewo_h
+            and current_ewo < self.GOLDEN_RATIO * ewo_h
         ):
             # Mark the trend as downtrend
             curr_trend = self.DOWN_TREND
