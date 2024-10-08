@@ -48,6 +48,11 @@ class ElliotWavesCalculator(BaseCalculator):
         self._fast_oscillator_period = fast_oscillator_period
         self._slow_oscillator_period = slow_oscillator_period
 
+        # Declare variables for highest
+        # oscillator and high-low average
+        self._ewo_h: float = 0.0
+        self._hla_h: float = 0.0
+
         self._elliot_waves: list[float] = []
         self._elliot_waves_trend: list[float] = []
 
