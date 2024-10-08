@@ -90,6 +90,16 @@ class ElliotWavesCalculator(BaseCalculator):
             self._dataframe["fast_hla_sma"] - self._dataframe["slow_hla_sma"]
         )
 
+        # Calculate EWO SMA
+        self._dataframe["ewo_sma"] = (
+            self._dataframe["ewo"]
+            .rolling(
+                window=self._window_size,
+                min_periods=self._window_size,
+            )
+            .mean()
+        )
+
         # Fill wave line array with N NaN, where N = window size
         self._elliot_waves = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
@@ -146,6 +156,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # Grab current EWO value
         current_ewo = rolling_df.iloc[-1]["ewo"]
 
+        # Grab current EWO SMA value
+        current_ewo_sma = rolling_df.iloc[-1]["ewo_sma"]
+
         # Grab previous trend value
         # NOTE: we use second to last index from rolling
         # window since we populate trend line up to one step behind
@@ -166,7 +179,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # and current EWO retraces back up
         # to one golden ratio from lowest
         if (
-            current_ewo < 0
+            current_ewo < current_ewo_sma
             and prev_trend == self.DOWN_TREND
             and current_ewo > self.GOLDEN_RATIO * ewo_l
         ):
@@ -184,7 +197,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # and current EWO retraces back down
         # to one golden ratio from the highest
         if (
-            current_ewo > 0
+            current_ewo > current_ewo_sma
             and prev_trend == self.UP_TREND
             and current_ewo < self.GOLDEN_RATIO * ewo_h
         ):
@@ -221,11 +234,14 @@ class ElliotWavesCalculator(BaseCalculator):
         # Grab current trend values
         curr_trend = rolling_df.iloc[-1]["ewt"]
 
+        # Grab current EWO SMA value
+        current_ewo_sma = rolling_df.iloc[-1]["ewo_sma"]
+
         # Test for beginning of wave 1:
         #
         # If oscillator is above 0
         # and the current trend is downtrend
-        if curr_ewo > 0 and curr_trend == self.DOWN_TREND:
+        if curr_ewo > current_ewo_sma and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
 
@@ -233,7 +249,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is downtrend
         # and the previous trend was uptrend
-        if curr_ewo < 0 and curr_trend == self.DOWN_TREND:
+        if curr_ewo < current_ewo_sma and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
@@ -241,7 +257,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If oscillator is below 0
         # and the current trend is uptrend
-        if curr_ewo < 0 and curr_trend == self.UP_TREND:
+        if curr_ewo < current_ewo_sma and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
@@ -249,7 +265,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is uptrend
         # and the previous trend was downtrend
-        if curr_ewo > 0 and curr_trend == self.UP_TREND:
+        if curr_ewo > current_ewo_sma and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
