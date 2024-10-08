@@ -211,7 +211,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         return 0.0
 
-    def _calc_elliot_waves(self, series: pd.Series) -> float:
+    def _calc_elliot_waves(self, series: pd.Series) -> float:  # noqa: C901
         """
         Calculate rolling Elliot Waves Trend.
 
@@ -323,6 +323,35 @@ class ElliotWavesCalculator(BaseCalculator):
                 # Resolve high-low average high 2
                 # to the current high-low average
                 self._hla_h_2 = curr_hla
+
+        # Test for wave 5 turning into wave 3
+        #
+        # If the current wave is Elliot Wave 5
+        # and high-low average high 2 is higher than current
+        # and current trend is uptrend
+        if (
+            current_elliot_wave == self.ELLIOT_WAVE_5
+            and self._hla_h_2 > curr_hla
+            and curr_trend == self.UP_TREND
+        ):
+            # Mark the wave as Elliot Wave 3
+            new_elliot_wave = self.ELLIOT_WAVE_3
+
+            # Resolve EWO high 1
+            # to the EWO high 2
+            self._ewo_h_1 = self._ewo_h_2
+
+            # Resolve high-low average high 1
+            # to the high-low average 2
+            self._hla_h_1 = self._hla_h_2
+
+            # Resolve EWO high 2
+            # to negative ignorable
+            self._ewo_h_2 = -np.inf
+
+            # Resolve high-low average high 2
+            # to negative ignorable
+            self._hla_h_2 = -np.inf
 
         # Append the wave to the
         # wave line or resolve to no wave
