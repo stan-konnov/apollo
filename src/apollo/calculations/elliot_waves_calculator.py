@@ -308,6 +308,22 @@ class ElliotWavesCalculator(BaseCalculator):
             # to the current high-low average
             self._hla_h_2 = curr_hla
 
+        # If the current wave is Elliot Wave 5
+        if current_elliot_wave == self.ELLIOT_WAVE_5:
+            # If the current EWO
+            # higher than the EWO high 2
+            if curr_ewo > self._ewo_h_2:
+                # Resolve EWO high 2
+                # to the current EWO
+                self._ewo_h_2 = curr_ewo
+
+            # If the current high-low average
+            # higher than the high-low average 2
+            if curr_hla > self._hla_h_2:
+                # Resolve high-low average high 2
+                # to the current high-low average
+                self._hla_h_2 = curr_hla
+
         # Append the wave to the
         # wave line or resolve to no wave
         self._elliot_waves.append(new_elliot_wave or self.NO_VALUE)
