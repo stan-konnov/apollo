@@ -233,7 +233,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is downtrend
         # and the previous trend was uptrend
-        if curr_trend == self.DOWN_TREND and curr_ewo < 0:
+        if curr_ewo < 0 and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
@@ -249,7 +249,7 @@ class ElliotWavesCalculator(BaseCalculator):
         #
         # If the current trend is uptrend
         # and the previous trend was downtrend
-        if curr_trend == self.UP_TREND and curr_ewo > 0:
+        if curr_ewo > 0 and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
