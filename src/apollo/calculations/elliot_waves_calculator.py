@@ -149,8 +149,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # Slice out a chunk of dataframe to work with
         rolling_df = self._dataframe.loc[series.index]
 
-        # Declare variable for new trend
-        new_trend = None
+        # Declare variable
+        # for current trend
+        curr_trend = None
 
         # Determine the highest and the
         # lowest EWO values within the window
@@ -160,54 +161,54 @@ class ElliotWavesCalculator(BaseCalculator):
         # Grab current EWO value
         current_ewo = rolling_df.iloc[-1]["ewo"]
 
-        # Grab current trend value
+        # Grab previous trend value
         # NOTE: we use second to last index from rolling
-        # window since we populate trend line exactly one step behind
-        current_trend = self._elliot_waves_trend[rolling_df.index[-2]]
+        # window since we populate trend line up to one step behind
+        prev_trend = self._elliot_waves_trend[rolling_df.index[-2]]
 
-        # Determine if current trend is not set
+        # Determine if previous trend is not set
         # NOTE: we check against NaN to facilitate for the first iteration
-        no_current_trend = current_trend == self.NO_VALUE or np.isnan(current_trend)
+        no_prev_trend = prev_trend == self.NO_VALUE or np.isnan(prev_trend)
 
-        # If the current trend is not set
+        # If the previous trend is not set
         # and the current EWO is the highest EWO
-        if no_current_trend and current_ewo == ewo_h:
+        if no_prev_trend and current_ewo == ewo_h:
             # Mark the trend as uptrend
-            new_trend = self.UP_TREND
+            curr_trend = self.UP_TREND
 
         # If the current EWO is below 0,
-        # the current trend is downtrend
+        # the previous trend is downtrend
         # and current EWO retraces back up
         # to one inverse golden ratio from lowest
         if (
             current_ewo < 0
-            and current_trend == self.DOWN_TREND
+            and prev_trend == self.DOWN_TREND
             and current_ewo > self.INVERSE_GOLDEN_RATIO * ewo_l
         ):
             # Mark the trend as uptrend
-            new_trend = self.UP_TREND
+            curr_trend = self.UP_TREND
 
-        # If the current trend is not set
+        # If the previous trend is not set
         # and the current EWO is the lowest EWO
-        if no_current_trend and current_ewo == ewo_l:
+        if no_prev_trend and current_ewo == ewo_l:
             # Mark the trend as downtrend
-            new_trend = self.DOWN_TREND
+            curr_trend = self.DOWN_TREND
 
         # If the current EWO is above 0,
-        # the current trend is uptrend
+        # the previous trend is uptrend
         # and current EWO retraces back down
         # to one inverse golden ratio from the highest
         if (
             current_ewo > 0
-            and current_trend == self.UP_TREND
+            and prev_trend == self.UP_TREND
             and current_ewo < self.INVERSE_GOLDEN_RATIO * ewo_h
         ):
             # Mark the trend as downtrend
-            new_trend = self.DOWN_TREND
+            curr_trend = self.DOWN_TREND
 
-        # Append the new trend to the
+        # Append the current trend to the
         # trend line or resolve to no trend
-        self._elliot_waves_trend.append(new_trend or self.NO_VALUE)
+        self._elliot_waves_trend.append(curr_trend or self.NO_VALUE)
 
         return 0.0
 
