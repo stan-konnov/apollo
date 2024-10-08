@@ -69,13 +69,15 @@ class ElliotWavesMeanReversion(
         """Mark long and short signals based on the strategy."""
 
         long = (self._dataframe["ewo"] < 0) & (
-            self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_4
+            (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_2)
+            | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_4)
         )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
         short = (self._dataframe["ewo"] > 0) & (
-            self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_3
+            (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_1)
+            | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_3)
         )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

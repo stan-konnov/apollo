@@ -17,6 +17,8 @@ class ElliotWavesCalculator(BaseCalculator):
 
     # Constants to
     # represent Elliot Waves
+    ELLIOT_WAVE_1: float = 1.0
+    ELLIOT_WAVE_2: float = 2.0
     ELLIOT_WAVE_3: float = 3.0
     ELLIOT_WAVE_4: float = 4.0
     ELLIOT_WAVE_5: float = 5.0
@@ -46,11 +48,6 @@ class ElliotWavesCalculator(BaseCalculator):
 
         self._fast_oscillator_period = fast_oscillator_period
         self._slow_oscillator_period = slow_oscillator_period
-
-        # Declare variables for highest
-        # oscillator and high-low average
-        self._ewo_h_1: float = -np.inf
-        self._ewo_h_2: float = -np.inf
 
         # Declare variables for
         # Elliot Waves and Elliot Waves Trend
@@ -228,8 +225,21 @@ class ElliotWavesCalculator(BaseCalculator):
         # Grab current EWO value
         curr_ewo = rolling_df.iloc[-1]["ewo"]
 
-        # Grab current high-low average value
-        curr_hla = rolling_df.iloc[-1]["high_low_avg"]
+        # Test for beginning of wave 1:
+        #
+        # If oscillator is below 0
+        # and the current trend is uptrend
+        if curr_ewo > 0 and curr_trend == self.DOWN_TREND:
+            # Mark the wave as Elliot Wave 1
+            curr_wave = self.ELLIOT_WAVE_1
+
+        # Test for beginning of wave 2:
+        #
+        # If oscillator is below 0
+        # and the current trend is uptrend
+        if curr_trend == self.DOWN_TREND and prev_trend == self.UP_TREND:
+            # Mark the wave as Elliot Wave 2
+            curr_wave = self.ELLIOT_WAVE_2
 
         # Test for beginning of wave 3:
         #
@@ -238,30 +248,6 @@ class ElliotWavesCalculator(BaseCalculator):
         if curr_trend == self.UP_TREND and prev_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
-
-            # Resolve EWO high 1
-            # to the current EWO
-            self._ewo_h_1 = curr_ewo
-
-            # Resolve high-low average high 1
-            # to the current high-low average
-            self._hla_h_1 = curr_hla
-
-        # If the current wave is Elliot Wave 3
-        if curr_wave == self.ELLIOT_WAVE_3:
-            # If the current EWO
-            # higher than the EWO high 1
-            if curr_ewo > self._ewo_h_1:
-                # Resolve EWO high 1
-                # to the current EWO
-                self._ewo_h_1 = curr_ewo
-
-            # If the current high-low average
-            # higher than the high-low average 1
-            if curr_hla > self._hla_h_1:
-                # Resolve high-low average high 1
-                # to the current high-low average
-                self._hla_h_1 = curr_hla
 
         # Test for beginning of wave 4:
         #
