@@ -53,6 +53,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._ewo_h: float = 0.0
         self._hla_h: float = 0.0
 
+        # Declare variables for
+        # Elliot Waves and Elliot Waves Trend
         self._elliot_waves: list[float] = []
         self._elliot_waves_trend: list[float] = []
 
@@ -111,8 +113,16 @@ class ElliotWavesCalculator(BaseCalculator):
             self._calc_elliot_waves_trend,
         )
 
-        # Preserve elliot waves trend to the dataframe
+        # Preserve Elliot Waves Trend to the dataframe
         self._dataframe["ewt"] = self._elliot_waves_trend
+
+        # Shift Elliot Waves Trend by one observation
+        self._dataframe["prev_ewt"] = self._dataframe["ewt"].shift(1)
+
+        # Calculate rolling Elliot Waves
+        self._dataframe["adj close"].rolling(self._window_size).apply(
+            self._calc_elliot_waves,
+        )
 
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
