@@ -15,6 +15,10 @@ class ElliotWavesCalculator(BaseCalculator):
     # represent Inverse Golden Ratio
     INVERSE_GOLDEN_RATIO: float = 0.618
 
+    # Constant to
+    # represent no value
+    NO_VALUE: float = 0.0
+
     # Constants to
     # represent Elliot Waves
     ELLIOT_WAVE_3: float = 3.0
@@ -23,7 +27,6 @@ class ElliotWavesCalculator(BaseCalculator):
 
     # Constants to
     # represent Elliot Waves Trends
-    NO_TREND: float = 0.0
     UP_TREND: float = 1.0
     DOWN_TREND: float = -1.0
 
@@ -124,6 +127,9 @@ class ElliotWavesCalculator(BaseCalculator):
             self._calc_elliot_waves,
         )
 
+        # Preserve Elliot Waves to the dataframe
+        self._dataframe["ew"] = self._elliot_waves
+
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
 
@@ -159,7 +165,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Determine if current trend is not set
         # NOTE: we check against NaN to facilitate for the first iteration
-        no_current_trend = current_trend == self.NO_TREND or np.isnan(current_trend)
+        no_current_trend = current_trend == self.NO_VALUE or np.isnan(current_trend)
 
         # If the current trend is not set
         # and the current EWO is the highest EWO
@@ -199,7 +205,7 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Append the new trend to the
         # trend line or resolve to no trend
-        self._elliot_waves_trend.append(new_trend or self.NO_TREND)
+        self._elliot_waves_trend.append(new_trend or self.NO_VALUE)
 
         return 0.0
 
@@ -215,6 +221,37 @@ class ElliotWavesCalculator(BaseCalculator):
         """
 
         # Slice out a chunk of dataframe to work with
-        _rolling_df = self._dataframe.loc[series.index]
+        rolling_df = self._dataframe.loc[series.index]
+
+        # Declare variable for Elliot Wave
+        elliot_wave = None
+
+        # Grab current and previous trend values
+        curr_trend = rolling_df.iloc[-1]["ewt"]
+        prev_trend = rolling_df.iloc[-2]["prev_ewt"]
+
+        # Grab current EWO value
+        curr_ewo = rolling_df.iloc[-1]["ewo"]
+
+        # Grab current high-low average value
+        curr_hla = rolling_df.iloc[-1]["high_low_avg"]
+
+        # If the current trend is uptrend
+        # and the previous trend was downtrend
+        if curr_trend == self.UP_TREND and prev_trend == self.DOWN_TREND:
+            # Mark the wave as Elliot Wave 3
+            elliot_wave = self.ELLIOT_WAVE_3
+
+            # Resolve EWO high
+            # to the current EWO
+            self._ewo_h = curr_ewo
+
+            # Resolve high-low average high
+            # to the current high-low average
+            self._hla_h = curr_hla
+
+        # Append the wave to the
+        # wave line or resolve to no wave
+        self._elliot_waves.append(elliot_wave or self.NO_VALUE)
 
         return 0.0
