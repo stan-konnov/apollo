@@ -21,7 +21,6 @@ class ElliotWavesCalculator(BaseCalculator):
     ELLIOT_WAVE_2: float = 2.0
     ELLIOT_WAVE_3: float = 3.0
     ELLIOT_WAVE_4: float = 4.0
-    ELLIOT_WAVE_5: float = 5.0
 
     # Constants to
     # represent Elliot Waves Trends
@@ -37,6 +36,8 @@ class ElliotWavesCalculator(BaseCalculator):
     ) -> None:
         """
         Construct Elliot Waves Calculator.
+
+        TODO: massive comments improvement.
 
         :param dataframe: Dataframe to calculate Elliot Waves for.
         :param window_size: Window size for Elliot Waves calculation.
