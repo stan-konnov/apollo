@@ -37,6 +37,7 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         Construct Elliot Waves Calculator.
 
+        TODO: drop unnecessary columns.
         TODO: massive comments improvement.
 
         :param dataframe: Dataframe to calculate Elliot Waves for.
