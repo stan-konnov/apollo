@@ -71,14 +71,14 @@ class ElliotWavesMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (self._dataframe["ewo"] < self._dataframe["ewo_h"]) & (
+        long = (self._dataframe["ewo"] < self._dataframe["ewo_hp"]) & (
             (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_2)
             | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_4)
         ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (self._dataframe["ewo"] > self._dataframe["ewo_l"]) & (
+        short = (self._dataframe["ewo"] > self._dataframe["ewo_lp"]) & (
             (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_1)
             | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_3)
         ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)

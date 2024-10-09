@@ -52,8 +52,8 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Declare variables for
         # Elliot Waves Oscillator peaks
-        self._ewo_l: list[float] = []
-        self._ewo_h: list[float] = []
+        self._ewo_l_peaks: list[float] = []
+        self._ewo_h_peaks: list[float] = []
 
         # Declare variables for
         # Elliot Waves and Elliot Waves Trend
@@ -107,8 +107,13 @@ class ElliotWavesCalculator(BaseCalculator):
         )
 
         # Fill peak lines array with N NaN, where N = window size
-        self._ewo_l = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
-        self._ewo_h = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        self._ewo_l_peaks = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        )
+
+        self._ewo_h_peaks = (
+            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        )
 
         # Fill wave line array with N NaN, where N = window size
         self._elliot_waves = (
@@ -133,8 +138,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["ew"] = self._elliot_waves
 
         # Preserve peaks to the dataframe
-        self._dataframe["ewo_l"] = self._ewo_l
-        self._dataframe["ewo_h"] = self._ewo_h
+        self._dataframe["ewo_lp"] = self._ewo_l_peaks
+        self._dataframe["ewo_hp"] = self._ewo_h_peaks
 
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
@@ -250,8 +255,8 @@ class ElliotWavesCalculator(BaseCalculator):
             curr_wave = self.ELLIOT_WAVE_4
 
         # Append local oscillator peaks
-        self._ewo_l.append(ewo_l)
-        self._ewo_h.append(ewo_h)
+        self._ewo_l_peaks.append(ewo_l)
+        self._ewo_h_peaks.append(ewo_h)
 
         # Append the wave to the
         # wave line or resolve to no wave
