@@ -208,7 +208,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # Now that we have a trend
         # we can determine the wave
 
-        # Not beginning, but end?
+        """
+        TODO: Not beginning, but end?
+        """
 
         # Test for beginning of wave 1:
         # If oscillator is above average
