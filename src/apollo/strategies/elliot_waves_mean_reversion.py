@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.elliot_waves_calculator import ElliotWavesCalculator
+from apollo.calculations.elliot_waves import ElliotWavesCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
 from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
