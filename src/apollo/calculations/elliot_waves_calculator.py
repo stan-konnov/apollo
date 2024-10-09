@@ -51,6 +51,11 @@ class ElliotWavesCalculator(BaseCalculator):
         self._slow_oscillator_period = slow_oscillator_period
 
         # Declare variables for
+        # Elliot Waves Oscillator peaks
+        self._ewo_l: list[float] = []
+        self._ewo_h: list[float] = []
+
+        # Declare variables for
         # Elliot Waves and Elliot Waves Trend
         self._elliot_waves: list[float] = []
         self._elliot_waves_trend: list[float] = []
@@ -101,6 +106,10 @@ class ElliotWavesCalculator(BaseCalculator):
             .mean()
         )
 
+        # Fill peak lines array with N NaN, where N = window size
+        self._ewo_l = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+        self._ewo_h = np.full((1, self._window_size - 1), np.nan).flatten().tolist()
+
         # Fill wave line array with N NaN, where N = window size
         self._elliot_waves = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
@@ -122,6 +131,10 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Preserve Elliot Waves to the dataframe
         self._dataframe["ew"] = self._elliot_waves
+
+        # Preserve peaks to the dataframe
+        self._dataframe["ewo_l"] = self._ewo_l
+        self._dataframe["ewo_h"] = self._ewo_h
 
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
@@ -201,10 +214,6 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the trend as downtrend
             curr_trend = self.DOWN_TREND
 
-        # Append the current trend to the
-        # trend line or resolve to no trend
-        self._elliot_waves_trend.append(curr_trend or self.NO_VALUE)
-
         # Now that we have a trend
         # we can determine the wave
 
@@ -240,8 +249,16 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
+        # Append local oscillator peaks
+        self._ewo_l.append(ewo_l)
+        self._ewo_h.append(ewo_h)
+
         # Append the wave to the
         # wave line or resolve to no wave
         self._elliot_waves.append(curr_wave or self.NO_VALUE)
+
+        # Append the current trend to the
+        # trend line or resolve to no trend
+        self._elliot_waves_trend.append(curr_trend or self.NO_VALUE)
 
         return 0.0
