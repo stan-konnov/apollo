@@ -215,28 +215,28 @@ class ElliotWavesCalculator(BaseCalculator):
         # Test for beginning of wave 1:
         # If oscillator is above average
         # and the current trend is downtrend
-        if curr_ewo > curr_ewo_sma and curr_trend == self.DOWN_TREND:
+        if curr_ewo > ewo_l and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
 
         # Test for beginning of wave 2:
         # If oscillator is below average
         # and the current trend is downtrend
-        if curr_ewo < curr_ewo_sma and curr_trend == self.DOWN_TREND:
+        if curr_ewo < ewo_h and curr_trend == self.DOWN_TREND:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
         # Test for beginning of wave 3:
         # If oscillator is below average
         # and the current trend is uptrend
-        if curr_ewo < curr_ewo_sma and curr_trend == self.UP_TREND:
+        if curr_ewo < ewo_h and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
         # Test for beginning of wave 4:
         # If oscillator is above average
         # and the current trend is uptrend
-        if curr_ewo > curr_ewo_sma and curr_trend == self.UP_TREND:
+        if curr_ewo > ewo_l and curr_trend == self.UP_TREND:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
