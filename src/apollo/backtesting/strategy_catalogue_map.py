@@ -15,6 +15,7 @@ from apollo.strategies.avg_dir_mov_index_mean_reversion import (
 from apollo.strategies.combinatory_futures_patterns import (
     CombinatoryFuturesPatterns,
 )
+from apollo.strategies.elliot_waves_mean_reversion import ElliotWavesMeanReversion
 from apollo.strategies.engulfing_vix_mean_reversion import (
     EngulfingVIXMeanReversion,
 )
@@ -38,6 +39,7 @@ from apollo.utils.types import StrategyCatalogueMap
 
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
+    "ElliotWavesMeanReversion": ElliotWavesMeanReversion,
     "EngulfingVIXMeanReversion": EngulfingVIXMeanReversion,
     "CombinatoryFuturesPatterns": CombinatoryFuturesPatterns,
     "KeltnerChaikinMeanReversion": KeltnerChaikinMeanReversion,

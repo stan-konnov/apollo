@@ -26,8 +26,8 @@ class ElliotWavesMeanReversion(
         self,
         dataframe: DataFrame,
         window_size: int,
-        fast_oscillator_period: int,
-        slow_oscillator_period: int,
+        fast_oscillator_period: float,
+        slow_oscillator_period: float,
     ) -> None:
         """
         Construct Linear Regression Channel Strategy.
@@ -40,8 +40,8 @@ class ElliotWavesMeanReversion(
 
         self._validate_parameters(
             [
-                ("fast_oscillator_period", fast_oscillator_period, int),
-                ("slow_oscillator_period", slow_oscillator_period, int),
+                ("fast_oscillator_period", fast_oscillator_period, float),
+                ("slow_oscillator_period", slow_oscillator_period, float),
             ],
         )
 

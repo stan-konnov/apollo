@@ -31,12 +31,13 @@ class ElliotWavesCalculator(BaseCalculator):
         self,
         dataframe: pd.DataFrame,
         window_size: int,
-        fast_oscillator_period: int,
-        slow_oscillator_period: int,
+        fast_oscillator_period: float,
+        slow_oscillator_period: float,
     ) -> None:
         """
         Construct Elliot Waves Calculator.
 
+        TODO: rename the file.
         TODO: massive comments improvement.
 
         :param dataframe: Dataframe to calculate Elliot Waves for.
@@ -74,8 +75,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["fast_hla_sma"] = (
             self._dataframe["high_low_avg"]
             .rolling(
-                window=self._fast_oscillator_period,
-                min_periods=self._fast_oscillator_period,
+                window=int(self._fast_oscillator_period),
+                min_periods=int(self._fast_oscillator_period),
             )
             .mean()
         )
@@ -85,8 +86,8 @@ class ElliotWavesCalculator(BaseCalculator):
         self._dataframe["slow_hla_sma"] = (
             self._dataframe["high_low_avg"]
             .rolling(
-                window=self._slow_oscillator_period,
-                min_periods=self._slow_oscillator_period,
+                window=int(self._slow_oscillator_period),
+                min_periods=int(self._slow_oscillator_period),
             )
             .mean()
         )
