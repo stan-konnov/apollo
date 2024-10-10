@@ -24,9 +24,7 @@
         "range": [10, 25]
     },
 
-    "additional_data_enhancers": [
-        "VIX"
-    ],
+    "additional_data_enhancers": [],
 
     "strategy_specific_parameters": [
         "fast_oscillator_period",

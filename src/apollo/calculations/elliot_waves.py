@@ -272,6 +272,7 @@ class ElliotWavesCalculator(BaseCalculator):
             curr_wave = self.ELLIOT_WAVE_4
 
         # Append local oscillator peaks
+        # WE DON'T HAVE TO APPEND THE PEAKS
         self._ewo_l_peaks.append(ewo_l)
         self._ewo_h_peaks.append(ewo_h)
 

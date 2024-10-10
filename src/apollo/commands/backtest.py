@@ -45,7 +45,7 @@ def main() -> None:
     strategy = ElliotWavesMeanReversion(
         dataframe=dataframe,
         window_size=5,
-        fast_oscillator_period=15.0,
+        fast_oscillator_period=5.0,
         slow_oscillator_period=25.0,
     )
 
