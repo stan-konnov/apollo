@@ -241,24 +241,30 @@ class ElliotWavesCalculator(BaseCalculator):
         The numbering for waves is wrong, rethink the naming
 
         This is both mean reversion and trend following
+
+        Rename to combinatory elliot waves
         """
 
-        # Long, beginning uptrend (beginning of wave 1 or 3)
+        # Long, beginning uptrend
+        # (beginning of wave 1, 3, 5)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
-        # Short, beginning of correction (beginning of wave 2 or 4)
+        # Short, beginning downtrend
+        # (beginning of wave 2 or 4)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
-        # Long, end of wave 1 within correction
+        # Long, beginning of correction relief
+        # (end of wave 1, beginning of wave 2)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
-        # Short, end of wave 2 within correction
+        # Short, end of correction relief
+        # (end of wave 2, beginning of wave 3)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
