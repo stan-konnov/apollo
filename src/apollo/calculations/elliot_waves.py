@@ -227,13 +227,13 @@ class ElliotWavesCalculator(BaseCalculator):
             curr_wave = self.UPWARD_WAVE
 
         # Short, beginning of downtrend
-        # (beginning of wave 2 or 4)
+        # (beginning of wave 2 or 4, or corrective 1)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.DOWNWARD_WAVE
 
         # Long, beginning of correction relief
-        # (end of wave 1, beginning of wave 2)
+        # (end of corrective wave 1, beginning of wave 2)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.UPWARD_WAVE
