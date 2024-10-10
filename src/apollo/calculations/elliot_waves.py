@@ -35,8 +35,6 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         Construct Elliot Waves Calculator.
 
-        TODO: massive comments improvement.
-
         :param dataframe: Dataframe to calculate Elliot Waves for.
         :param window_size: Window size for Elliot Waves calculation.
         :param fast_oscillator_period: Fast period for Elliot Waves Oscillator.
@@ -216,18 +214,19 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         TODO:
 
-        This is both mean reversion and trend following.
-        Rename to combinatory elliot waves.
-        Reoptimize again.
+        1. This is both mean reversion and trend following.
+        2. Rename to combinatory elliot waves.
+        3. Reoptimize again.
+        4. Comments.
         """
 
-        # Long, beginning uptrend
+        # Long, beginning of uptrend
         # (beginning of wave 1, 3, 5)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.UPWARD_WAVE
 
-        # Short, beginning downtrend
+        # Short, beginning of downtrend
         # (beginning of wave 2 or 4)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 4
