@@ -16,16 +16,14 @@ class ElliotWavesCalculator(BaseCalculator):
     NO_VALUE: float = 0.0
 
     # Constants to
-    # represent Elliot Waves
-    ELLIOT_WAVE_1: float = 1.0
-    ELLIOT_WAVE_2: float = 2.0
-    ELLIOT_WAVE_3: float = 3.0
-    ELLIOT_WAVE_4: float = 4.0
-
-    # Constants to
-    # represent Elliot Waves Trends
+    # represent Waves Trends
     UP_TREND: float = 1.0
     DOWN_TREND: float = -1.0
+
+    # Constants to
+    # represent Elliot Waves
+    UPWARD_WAVE: float = 1.0
+    DOWNWARD_WAVE: float = -1.0
 
     def __init__(
         self,
@@ -49,11 +47,6 @@ class ElliotWavesCalculator(BaseCalculator):
 
         self._fast_oscillator_period = fast_oscillator_period
         self._slow_oscillator_period = slow_oscillator_period
-
-        # Declare variables for
-        # Elliot Waves Oscillator peaks
-        self._ewo_l_peaks: list[float] = []
-        self._ewo_h_peaks: list[float] = []
 
         # Declare variables for
         # Elliot Waves and Elliot Waves Trend
@@ -106,15 +99,6 @@ class ElliotWavesCalculator(BaseCalculator):
             .mean()
         )
 
-        # Fill peak lines array with N NaN, where N = window size
-        self._ewo_l_peaks = (
-            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
-        )
-
-        self._ewo_h_peaks = (
-            np.full((1, self._window_size - 1), np.nan).flatten().tolist()
-        )
-
         # Fill wave line array with N NaN, where N = window size
         self._elliot_waves = (
             np.full((1, self._window_size - 1), np.nan).flatten().tolist()
@@ -136,10 +120,6 @@ class ElliotWavesCalculator(BaseCalculator):
 
         # Preserve Elliot Waves to the dataframe
         self._dataframe["ew"] = self._elliot_waves
-
-        # Preserve peaks to the dataframe
-        self._dataframe["ewo_lp"] = self._ewo_l_peaks
-        self._dataframe["ewo_hp"] = self._ewo_h_peaks
 
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
@@ -234,45 +214,36 @@ class ElliotWavesCalculator(BaseCalculator):
         # we can determine the wave
 
         """
-        Long 2, 3
+        TODO:
 
-        Short 1, 4
-
-        The numbering for waves is wrong, rethink the naming
-
-        This is both mean reversion and trend following
-
-        Rename to combinatory elliot waves
+        This is both mean reversion and trend following.
+        Rename to combinatory elliot waves.
+        Reoptimize again.
         """
 
         # Long, beginning uptrend
         # (beginning of wave 1, 3, 5)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 3
-            curr_wave = self.ELLIOT_WAVE_3
+            curr_wave = self.UPWARD_WAVE
 
         # Short, beginning downtrend
         # (beginning of wave 2 or 4)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 4
-            curr_wave = self.ELLIOT_WAVE_4
+            curr_wave = self.DOWNWARD_WAVE
 
         # Long, beginning of correction relief
         # (end of wave 1, beginning of wave 2)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 2
-            curr_wave = self.ELLIOT_WAVE_2
+            curr_wave = self.UPWARD_WAVE
 
         # Short, end of correction relief
         # (end of wave 2, beginning of wave 3)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 1
-            curr_wave = self.ELLIOT_WAVE_1
-
-        # Append local oscillator peaks
-        # WE DON'T HAVE TO APPEND THE PEAKS
-        self._ewo_l_peaks.append(ewo_l)
-        self._ewo_h_peaks.append(ewo_h)
+            curr_wave = self.DOWNWARD_WAVE
 
         # Append the wave to the
         # wave line or resolve to no wave
