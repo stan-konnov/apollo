@@ -145,6 +145,17 @@ class ElliotWavesCalculator(BaseCalculator):
         # Reset indices back to date
         self._dataframe.set_index("date", inplace=True)
 
+        # Drop unnecessary columns
+        self._dataframe.drop(
+            columns=[
+                "high_low_avg",
+                "fast_hla_sma",
+                "slow_hla_sma",
+                "ewo_sma",
+            ],
+            inplace=True,
+        )
+
     def _calc_elliot_waves(self, series: pd.Series) -> float:
         """
         Calculate rolling Elliot Waves.
