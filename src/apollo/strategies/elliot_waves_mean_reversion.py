@@ -3,7 +3,6 @@ from pandas import DataFrame
 from apollo.calculations.elliot_waves import ElliotWavesCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
-from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
 from apollo.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )
@@ -11,7 +10,6 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 
 class ElliotWavesMeanReversion(
     BaseStrategy,
-    VIXEnhancedStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
@@ -46,7 +44,6 @@ class ElliotWavesMeanReversion(
         )
 
         BaseStrategy.__init__(self, dataframe, window_size)
-        VIXEnhancedStrategy.__init__(self, dataframe, window_size)
         VolatilityAdjustedStrategy.__init__(self, dataframe, window_size)
 
         self._ew_calculator = ElliotWavesCalculator(
@@ -71,16 +68,14 @@ class ElliotWavesMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = (
-            (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_2)
-            | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_3)
-        ) | (self._dataframe["vix_signal"] == LONG_SIGNAL)
+        long = (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_2) | (
+            self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_3
+        )
 
         self._dataframe.loc[long, "signal"] = LONG_SIGNAL
 
-        short = (
-            (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_1)
-            | (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_4)
-        ) | (self._dataframe["vix_signal"] == SHORT_SIGNAL)
+        short = (self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_1) | (
+            self._dataframe["ew"] == self._ew_calculator.ELLIOT_WAVE_4
+        )
 
         self._dataframe.loc[short, "signal"] = SHORT_SIGNAL

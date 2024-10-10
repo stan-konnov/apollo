@@ -234,9 +234,9 @@ class ElliotWavesCalculator(BaseCalculator):
         # we can determine the wave
 
         """
-        Long 2, 4
+        Long 2, 3
 
-        Short 1, 3
+        Short 1, 4
 
         NOTE: 3 and 4 never happen
         """
@@ -257,7 +257,6 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
-        # ? make me long
         # Test for formation of wave 3:
         # If the current trend is uptrend
         # and oscillator is below it's high peak
@@ -265,7 +264,6 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
-        # ? make me short
         # Test for formation of wave 4:
         # If the current trend is uptrend
         # and oscillator is above it's low peak
