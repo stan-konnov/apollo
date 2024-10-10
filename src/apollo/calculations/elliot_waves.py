@@ -243,37 +243,25 @@ class ElliotWavesCalculator(BaseCalculator):
         This is both mean reversion and trend following
         """
 
-        # Test for formation of wave 1:
-        # If the current trend is downtrend
-        # and oscillator is above it's low peak
-        # Short
-        if curr_trend == self.DOWN_TREND and curr_ewo > ewo_l:
-            # Mark the wave as Elliot Wave 1
-            curr_wave = self.ELLIOT_WAVE_1
-
-        # Test for formation of wave 2:
-        # If the current trend is downtrend
-        # and oscillator is below it's high peak
-        # Long
-        if curr_trend == self.DOWN_TREND and curr_ewo < ewo_h:
-            # Mark the wave as Elliot Wave 2
-            curr_wave = self.ELLIOT_WAVE_2
-
-        # Test for formation of wave 3:
-        # If the current trend is uptrend
-        # and oscillator is below it's high peak
-        # Long
+        # Long, beginning uptrend (beginning of wave 1 or 3)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
-        # Test for formation of wave 4:
-        # If the current trend is uptrend
-        # and oscillator is above it's low peak
-        # Short
+        # Short, beginning of correction (beginning of wave 2 or 4)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
+
+        # Long, end of wave 1 within correction
+        if curr_trend == self.DOWN_TREND and curr_ewo < ewo_h:
+            # Mark the wave as Elliot Wave 2
+            curr_wave = self.ELLIOT_WAVE_2
+
+        # Short, end of wave 2 within correction
+        if curr_trend == self.DOWN_TREND and curr_ewo > ewo_l:
+            # Mark the wave as Elliot Wave 1
+            curr_wave = self.ELLIOT_WAVE_1
 
         # Append local oscillator peaks
         # WE DON'T HAVE TO APPEND THE PEAKS
