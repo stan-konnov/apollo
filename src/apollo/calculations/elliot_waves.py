@@ -233,9 +233,16 @@ class ElliotWavesCalculator(BaseCalculator):
         # Now that we have a trend
         # we can determine the wave
 
+        """
+        Long 2, 4
+
+        Short 1, 3
+        """
+
         # Test for formation of wave 1:
         # If the current trend is downtrend
         # and oscillator is above it's low peak
+        # This is B in downtrend
         if curr_trend == self.DOWN_TREND and curr_ewo > ewo_l:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
@@ -243,6 +250,7 @@ class ElliotWavesCalculator(BaseCalculator):
         # Test for formation of wave 2:
         # If the current trend is downtrend
         # and oscillator is below it's high peak
+        # This is C in downtrend
         if curr_trend == self.DOWN_TREND and curr_ewo < ewo_h:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
