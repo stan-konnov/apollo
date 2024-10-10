@@ -253,18 +253,13 @@ class ElliotWavesCalculator(BaseCalculator):
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
-        """
-        NOTE: conditions below overlap between each other
-        since ewo can be in between high and low within downtrend
-        """
-
         # Long, end of wave 1 within correction
-        if curr_trend == self.DOWN_TREND and curr_ewo < ewo_h:
+        if curr_trend == self.DOWN_TREND and curr_ewo == ewo_l:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
         # Short, end of wave 2 within correction
-        if curr_trend == self.DOWN_TREND and curr_ewo > ewo_l:
+        if curr_trend == self.DOWN_TREND and curr_ewo == ewo_h:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
 
