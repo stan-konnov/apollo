@@ -37,7 +37,6 @@ class ElliotWavesCalculator(BaseCalculator):
         """
         Construct Elliot Waves Calculator.
 
-        TODO: drop unnecessary columns.
         TODO: massive comments improvement.
 
         :param dataframe: Dataframe to calculate Elliot Waves for.
@@ -234,35 +233,31 @@ class ElliotWavesCalculator(BaseCalculator):
         # Now that we have a trend
         # we can determine the wave
 
-        """
-        TODO: Not beginning, but end?
-        """
-
-        # Test for beginning of wave 1:
-        # If oscillator is above average
-        # and the current trend is downtrend
-        if curr_ewo > ewo_l and curr_trend == self.DOWN_TREND:
+        # Test for formation of wave 1:
+        # If the current trend is downtrend
+        # and oscillator is above it's low peak
+        if curr_trend == self.DOWN_TREND and curr_ewo > ewo_l:
             # Mark the wave as Elliot Wave 1
             curr_wave = self.ELLIOT_WAVE_1
 
-        # Test for beginning of wave 2:
-        # If oscillator is below average
-        # and the current trend is downtrend
-        if curr_ewo < ewo_h and curr_trend == self.DOWN_TREND:
+        # Test for formation of wave 2:
+        # If the current trend is downtrend
+        # and oscillator is below it's high peak
+        if curr_trend == self.DOWN_TREND and curr_ewo < ewo_h:
             # Mark the wave as Elliot Wave 2
             curr_wave = self.ELLIOT_WAVE_2
 
-        # Test for beginning of wave 3:
-        # If oscillator is below average
-        # and the current trend is uptrend
-        if curr_ewo < ewo_h and curr_trend == self.UP_TREND:
+        # Test for formation of wave 3:
+        # If the current trend is uptrend
+        # and oscillator is below it's high peak
+        if curr_trend == self.UP_TREND and curr_ewo < ewo_h:
             # Mark the wave as Elliot Wave 3
             curr_wave = self.ELLIOT_WAVE_3
 
-        # Test for beginning of wave 4:
-        # If oscillator is above average
-        # and the current trend is uptrend
-        if curr_ewo > ewo_l and curr_trend == self.UP_TREND:
+        # Test for formation of wave 4:
+        # If the current trend is uptrend
+        # and oscillator is above it's low peak
+        if curr_trend == self.UP_TREND and curr_ewo > ewo_l:
             # Mark the wave as Elliot Wave 4
             curr_wave = self.ELLIOT_WAVE_4
 
