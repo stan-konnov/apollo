@@ -125,10 +125,11 @@ class ElliotWavesCalculator(BaseCalculator):
         # Drop unnecessary columns
         self._dataframe.drop(
             columns=[
-                "high_low_avg",
-                "fast_hla_sma",
-                "slow_hla_sma",
+                "ewo",
                 "ewo_sma",
+                "slow_hla_sma",
+                "fast_hla_sma",
+                "high_low_avg",
             ],
             inplace=True,
         )
