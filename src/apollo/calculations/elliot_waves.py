@@ -211,14 +211,6 @@ class ElliotWavesCalculator(BaseCalculator):
         # Now that we have a trend
         # we can determine the wave
 
-        """
-        TODO:
-
-        1. This is both mean reversion and trend following.
-        2. Rename to combinatory elliot waves.
-        3. Reoptimize again.
-        """
-
         # Identify beginning of one of the upward
         # waves within the uptrend (waves 1, 3, or 5)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:

@@ -12,10 +12,10 @@ Acts as a central registry for all available strategies.
 from apollo.strategies.avg_dir_mov_index_mean_reversion import (
     AverageDirectionalMovementIndexMeanReversion,
 )
+from apollo.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
 from apollo.strategies.combinatory_futures_patterns import (
     CombinatoryFuturesPatterns,
 )
-from apollo.strategies.elliot_waves_mean_reversion import ElliotWavesMeanReversion
 from apollo.strategies.engulfing_vix_mean_reversion import (
     EngulfingVIXMeanReversion,
 )
@@ -38,8 +38,8 @@ from apollo.strategies.wilders_swing_index_trend_following import (
 from apollo.utils.types import StrategyCatalogueMap
 
 STRATEGY_CATALOGUE_MAP: StrategyCatalogueMap = {
+    "CombinatoryElliotWaves": CombinatoryElliotWaves,
     "SwingEventsMeanReversion": SwingEventsMeanReversion,
-    "ElliotWavesMeanReversion": ElliotWavesMeanReversion,
     "EngulfingVIXMeanReversion": EngulfingVIXMeanReversion,
     "CombinatoryFuturesPatterns": CombinatoryFuturesPatterns,
     "KeltnerChaikinMeanReversion": KeltnerChaikinMeanReversion,

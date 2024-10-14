@@ -8,14 +8,16 @@ from apollo.strategies.base.volatility_adjusted_strategy import (
 )
 
 
-class ElliotWavesMeanReversion(
+class CombinatoryElliotWaves(
     BaseStrategy,
     VolatilityAdjustedStrategy,
 ):
     """
-    Elliot Waves Mean Reversion.
+    Combinatory Elliot Waves Strategy.
 
     WIP.
+
+    1. Reoptimize again.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -28,7 +30,7 @@ class ElliotWavesMeanReversion(
         slow_oscillator_period: float,
     ) -> None:
         """
-        Construct Linear Regression Channel Strategy.
+        Construct Combinatory Elliot Waves Strategy.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
@@ -68,10 +70,12 @@ class ElliotWavesMeanReversion(
     def _mark_trading_signals(self) -> None:
         """Mark long and short signals based on the strategy."""
 
-        long = self._dataframe["ew"] == self._ew_calculator.UPWARD_WAVE
+        self._dataframe.loc[
+            self._dataframe["ew"] == self._ew_calculator.UPWARD_WAVE,
+            "signal",
+        ] = LONG_SIGNAL
 
-        self._dataframe.loc[long, "signal"] = LONG_SIGNAL
-
-        short = self._dataframe["ew"] == self._ew_calculator.DOWNWARD_WAVE
-
-        self._dataframe.loc[short, "signal"] = SHORT_SIGNAL
+        self._dataframe.loc[
+            self._dataframe["ew"] == self._ew_calculator.DOWNWARD_WAVE,
+            "signal",
+        ] = SHORT_SIGNAL

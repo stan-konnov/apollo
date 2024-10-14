@@ -10,7 +10,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.elliot_waves_mean_reversion import ElliotWavesMeanReversion
+from apollo.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -42,7 +42,7 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = ElliotWavesMeanReversion(
+    strategy = CombinatoryElliotWaves(
         dataframe=dataframe,
         window_size=5,
         fast_oscillator_period=5.0,
@@ -53,7 +53,7 @@ def main() -> None:
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="ElliotWavesMeanReversion",
+        strategy_name="CombinatoryElliotWaves",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
