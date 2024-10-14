@@ -202,8 +202,8 @@ def mimic_calc_si(series: pd.Series, dataframe: pd.DataFrame) -> float:
     return (
         (
             (curr_close - prev_close)
-            + (WEIGHTED_TR_MULTIPLIER * (curr_close - curr_open))
-            + (WEIGHTED_TR_MULTIPLIER * (prev_close - prev_open))
+            + (WEIGHTED_TR_MULTIPLIER_CURR * (curr_close - curr_open))
+            + (WEIGHTED_TR_MULTIPLIER_PREV * (prev_close - prev_open))
         )
         / weighted_true_range
     ) * highest_value
