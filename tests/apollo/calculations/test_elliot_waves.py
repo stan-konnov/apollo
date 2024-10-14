@@ -46,3 +46,36 @@ def test__calculate_elliot_waves__for_correct_columns(
     assert "slow_hla_sma" not in dataframe.columns
     assert "fast_hla_sma" not in dataframe.columns
     assert "high_low_avg" not in dataframe.columns
+
+
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__calculate_elliot_waves__for_correct_rolling_window(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test calculate_elliot_waves method for correct rolling window.
+
+    Where N = WINDOW_SIZE.
+
+    Resulting dataframe must skip WINDOW_SIZE - 1 rows for "ew" column
+    Since Elliot Waves calculation must have at least N rows to be calculated.
+    """
+
+    dataframe = precalculate_shared_values(dataframe)
+
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=dataframe,
+        window_size=window_size,
+    )
+    atr_calculator.calculate_average_true_range()
+
+    ew_calculator = ElliotWavesCalculator(
+        dataframe=dataframe,
+        window_size=window_size,
+        fast_oscillator_period=FAST_OSCILLATOR_PERIOD,
+        slow_oscillator_period=SLOW_OSCILLATOR_PERIOD,
+    )
+    ew_calculator.calculate_elliot_waves()
+
+    assert dataframe["ew"].isna().sum() == window_size - 1
