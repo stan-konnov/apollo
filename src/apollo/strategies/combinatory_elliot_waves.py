@@ -38,8 +38,6 @@ class CombinatoryElliotWaves(
         """
         Construct Combinatory Elliot Waves Strategy.
 
-        TODO: Reoptimize again.
-
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
         :param fast_oscillator_period: Fast period for Elliot Waves Oscillator.
