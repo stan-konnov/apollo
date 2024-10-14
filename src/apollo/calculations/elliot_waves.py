@@ -217,31 +217,30 @@ class ElliotWavesCalculator(BaseCalculator):
         1. This is both mean reversion and trend following.
         2. Rename to combinatory elliot waves.
         3. Reoptimize again.
-        4. Comments.
         """
 
-        # Long, beginning of uptrend
-        # (beginning of wave 1, 3, 5)
+        # Identify beginning of one of the upward
+        # waves within the uptrend (waves 1, 3, or 5)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_h:
-            # Mark the wave as Elliot Wave 3
+            # Mark the wave as upward wave
             curr_wave = self.UPWARD_WAVE
 
-        # Short, beginning of downtrend
-        # (beginning of wave 2 or 4, or corrective 1)
+        # Identify beginning of one of the
+        # downward waves within the uptrend (waves 2 or 4)
         if curr_trend == self.UP_TREND and curr_ewo == ewo_l:
-            # Mark the wave as Elliot Wave 4
+            # Mark the wave as downward wave
             curr_wave = self.DOWNWARD_WAVE
 
-        # Long, beginning of correction relief
-        # (end of corrective wave 1, beginning of wave 2)
+        # Identify beginning of one of the upward
+        # waves within the downtrend (wave 2)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_l:
-            # Mark the wave as Elliot Wave 2
+            # Mark the wave as upward wave
             curr_wave = self.UPWARD_WAVE
 
-        # Short, end of correction relief
-        # (end of wave 2, beginning of wave 3)
+        # Identify beginning of one of the downward
+        # waves within the downtrend (waves 1 and 3)
         if curr_trend == self.DOWN_TREND and curr_ewo == ewo_h:
-            # Mark the wave as Elliot Wave 1
+            # Mark the wave as downward wave
             curr_wave = self.DOWNWARD_WAVE
 
         # Append the wave to the
