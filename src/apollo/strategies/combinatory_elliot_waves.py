@@ -15,9 +15,15 @@ class CombinatoryElliotWaves(
     """
     Combinatory Elliot Waves Strategy.
 
-    WIP.
+    This strategy takes long positions when:
 
-    1. Reoptimize again.
+    * One of the upward Elliot Waves is detected.
+    Namely, waves 1, 3, or 5 within the uptrend, or wave 2 within the downtrend.
+
+    This strategy takes short positions when:
+
+    * One of the downward Elliot Waves is detected.
+    Namely, waves 2 or 4 within the uptrend, or waves 1 and 3 within the downtrend.
 
     Kaufman, Trading Systems and Methods, 2020, 6th ed.
     """
@@ -31,6 +37,8 @@ class CombinatoryElliotWaves(
     ) -> None:
         """
         Construct Combinatory Elliot Waves Strategy.
+
+        TODO: Reoptimize again.
 
         :param dataframe: Dataframe with price data.
         :param window_size: Size of the window for the strategy.
