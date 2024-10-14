@@ -181,7 +181,6 @@ def mimic_calc_elliot_waves(
     curr_ewo_sma = rolling_df.iloc[-1]["ewo_sma"]
 
     prev_trend = elliot_waves_trend[rolling_df.index[-2]]
-
     no_prev_trend = prev_trend == NO_VALUE or np.isnan(prev_trend)
 
     if no_prev_trend and curr_ewo == ewo_h:
