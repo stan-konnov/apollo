@@ -10,7 +10,7 @@ from tests.fixtures.files_and_directories import TEST_DIR
 WINDOW_SIZE = 5
 
 
-@pytest.fixture(name="dataframe", scope="module")
+@pytest.fixture(name="dataframe")
 def get_price_dataframe() -> pd.DataFrame:
     """Fixture to get test dataframe from file system."""
 
@@ -23,7 +23,7 @@ def get_price_dataframe() -> pd.DataFrame:
     return test_dataframe
 
 
-@pytest.fixture(name="enhanced_dataframe", scope="module")
+@pytest.fixture(name="enhanced_dataframe")
 def get_enhanced_price_dataframe() -> pd.DataFrame:
     """Fixture to get enhanced test dataframe from file system."""
 

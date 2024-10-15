@@ -195,8 +195,8 @@ def test__read_price_data__for_reading_data_slice(
     InfluxDbConnector should remove influx columns.
     """
 
-    start_date = "2007-01-10"
-    end_date = "2007-01-20"
+    start_date = "2024-01-10"
+    end_date = "2024-01-20"
 
     dataframe = dataframe.copy()
     dataframe["frequency"] = FREQUENCY
