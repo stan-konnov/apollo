@@ -95,6 +95,10 @@ class StrategySimulationAgent(Strategy):
             )
         )
 
+        # NOTE: calculate closing existing position
+        # here based of new SL and TP levels
+        # Library quirks
+
         # Enter the trade if signal identified
         if signal_identified:
             # Identify if signal is long or short
@@ -135,6 +139,9 @@ class StrategySimulationAgent(Strategy):
                 # and entry is a limit order -- price above or equal our limit
                 self.sell(limit=short_limit)
 
+        # NOTE: This might need to be manually recalculated?
+        # Library quirks
+        # given limitations of the library
         # Loop through open positions
         # And assign SL and TP to open position(s)
         for trade in self.trades:
