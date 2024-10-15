@@ -10,9 +10,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.avg_dir_mov_index_mean_reversion import (
-    AverageDirectionalMovementIndexMeanReversion,
-)
+from apollo.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -44,16 +42,18 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = AverageDirectionalMovementIndexMeanReversion(
+    strategy = CombinatoryElliotWaves(
         dataframe=dataframe,
         window_size=5,
+        fast_oscillator_period=5.0,
+        slow_oscillator_period=25.0,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="AverageDirectionalMovementIndexMeanReversion",
+        strategy_name="CombinatoryElliotWaves",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,

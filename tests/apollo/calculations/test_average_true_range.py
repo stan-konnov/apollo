@@ -73,7 +73,6 @@ def test__calculate_average_true_range__for_correct_tr_calculation(
     dataframe = precalculate_shared_values(dataframe)
 
     control_dataframe = dataframe.copy()
-    control_dataframe["prev_close"] = control_dataframe["adj close"].shift(1)
 
     control_dataframe["tr"] = (
         control_dataframe["adj close"]
