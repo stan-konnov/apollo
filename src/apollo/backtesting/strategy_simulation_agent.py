@@ -26,11 +26,11 @@ the library only triggers the limit order, naturally, leading to dubious results
 Example:
 
 Security closes at $97.51. We submit a short
-limit order at $101 with a stop loss at $96.60.
+limit order at $96.60 with a stop loss at $97.96.
 
 The next day, security gaps up to $99.66.
 The library triggers the limit order, opening a trade $99.66.
-but the stop loss is not triggered, as the security never reached $96.60.
+but the stop loss is not triggered, as the security never reached $97.96.
 
 In real trading, the stop loss would trigger at the market price,
 leading to a vague result of entering and exiting the trade simultaneously.
@@ -44,6 +44,8 @@ limit order on close (clearly, it does not support extended hours trading).
 
 We mitigate all this by placing market orders instead of limit orders,
 and, during execution, place our limit orders with the same price as the market order.
+
+RELY ON ALGORITHM INSTEAD OF SL/TP ORDERS.
 """
 
 
