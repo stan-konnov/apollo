@@ -39,7 +39,7 @@ Moreover, the library will carry the short
 position to the open of the next after next day
 and close it at the open price, which is not realistic.
 
-We can factor in by placing market orders instead of limit orders,
+We factor in by placing market orders instead of limit orders,
 and, during execution, place our limit orders with the same price as the market order.
 """
 
