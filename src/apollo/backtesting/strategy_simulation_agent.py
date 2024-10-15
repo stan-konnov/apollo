@@ -9,6 +9,24 @@ NOTE: this is plain wrong, take time to go through documentation
 and figure out the best approach to model things according to execution:
 https://docs.alpaca.markets/docs/orders-at-alpaca
 
+A day order is eligible for execution only on the day it is live.
+By default, the order is only valid during Regular Trading Hours (9:30am - 4:00pm ET).
+If unfilled after the closing auction, it is automatically canceled.
+If submitted after the close, it is queued and submitted the following trading day.
+However, if marked as eligible for extended hours,
+the order can also execute during supported extended hours.
+
+Thus, submit limit order after close and mark it as eligible for extended hours.
+
+Whether it gets filled or not = cannot be modelled here, but we assume so.
+Worst case scenario, we avoid directional risk.
+
+Then, on next day, recalculate the bracket, and submit two new orders:
+- one for stop loss
+- one for take profit
+
+#####
+
 As with any other backtesting approaches, this one takes on several assumptions:
 
 * We are allowed to trade on close (during extended hours)
@@ -101,7 +119,7 @@ class StrategySimulationAgent(Strategy):
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
                 # and entry is a limit order -- price below or equal our limit
-                self.buy(sl=long_sl, tp=long_tp, limit=long_limit)
+                self.buy(limit=long_limit)
 
             if short_signal:
                 # Skip if we already have short position
@@ -115,7 +133,7 @@ class StrategySimulationAgent(Strategy):
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
                 # and entry is a limit order -- price above or equal our limit
-                self.sell(sl=short_sl, tp=short_tp, limit=short_limit)
+                self.sell(limit=short_limit)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
