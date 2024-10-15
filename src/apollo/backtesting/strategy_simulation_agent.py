@@ -90,10 +90,6 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_long:
                     return
 
-                # Otherwise, close short position (if any)
-                if self.position.is_short:
-                    self.position.close()
-
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
                 # and entry is a limit order -- price below or equal our limit
@@ -103,10 +99,6 @@ class StrategySimulationAgent(Strategy):
                 # Skip if we already have short position
                 if self.position.is_short:
                     return
-
-                # Otherwise, close long position (if any)
-                if self.position.is_long:
-                    self.position.close()
 
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
