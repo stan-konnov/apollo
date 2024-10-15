@@ -79,12 +79,6 @@ class StrategySimulationAgent(Strategy):
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
-            # Calculate limit entry price for long and short signals
-            long_limit, short_limit = self._calculate_limit_entry_price(
-                close,
-                average_true_range,
-            )
-
             if long_signal:
                 # Skip if we already have long position
                 if self.position.is_long:
@@ -92,8 +86,8 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price below or equal our limit
-                self.buy(sl=long_sl, tp=long_tp, limit=long_limit)
+                # and entry is a market order -- price at the close
+                self.buy(sl=long_sl, tp=long_tp)
 
             if short_signal:
                 # Skip if we already have short position
@@ -102,8 +96,8 @@ class StrategySimulationAgent(Strategy):
 
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price above or equal our limit
-                self.sell(sl=short_sl, tp=short_tp, limit=short_limit)
+                # and entry is a market order -- price at the close
+                self.sell(sl=short_sl, tp=short_tp)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
