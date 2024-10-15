@@ -58,6 +58,7 @@ def main() -> None:
         sl_volatility_multiplier=0.1,
         tp_volatility_multiplier=0.4,
         write_result_plot=True,
+        write_result_trades=True,
     )
 
     stats = backtesting_runner.run()

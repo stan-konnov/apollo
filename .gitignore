@@ -3,6 +3,7 @@
 **/__pycache__
 
 **/backtesting_plots
+**/backtesting_trades
 
 **/.coverage*
 !.coveragerc
