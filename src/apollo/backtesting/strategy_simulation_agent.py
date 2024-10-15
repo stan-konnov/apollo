@@ -5,6 +5,10 @@ from backtesting import Strategy
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
+NOTE: this is plain wrong, take time to go through documentation
+and figure out the best approach to model things according to execution:
+https://docs.alpaca.markets/docs/orders-at-alpaca
+
 As with any other backtesting approaches, this one takes on several assumptions:
 
 * We are allowed to trade on close (during extended hours)
@@ -16,36 +20,6 @@ These assumptions are partially validated by our broker documentation (Alpaca).
 Alpaca indeed allows trading during extended hours (pre-market and after-hours).
 Alpaca also allows limit orders, yet there is no guarantee that they will be filled.
 Alpaca does not charge trading commissions for US equities, but does for other assets.
-
-There are a few considerations to the library we are using:
-
-First, when submitting a limit order with accompanying stop loss,
-and in case security considerably gaps up or down (above/below the stop loss),
-the library only triggers the limit order, naturally, leading to dubious results.
-
-Example:
-
-Security closes at $97.51. We submit a short
-limit order at $96.60 with a stop loss at $97.96.
-
-The next day, security gaps up to $99.66.
-The library triggers the limit order, opening a trade $99.66.
-but the stop loss is not triggered, as the security never reached $97.96.
-
-In real trading, the stop loss would trigger at the market price,
-leading to a vague result of entering and exiting the trade simultaneously.
-
-Moreover, the library will carry the short
-position to the open of the next after next day
-and close it at the open price, which is not realistic.
-
-And, as you already figured out the library does not actually triggers
-limit order on close (clearly, it does not support extended hours trading).
-
-We mitigate all this by placing market orders instead of limit orders,
-and, during execution, place our limit orders with the same price as the market order.
-
-RELY ON ALGORITHM INSTEAD OF SL/TP ORDERS.
 """
 
 
@@ -109,25 +83,39 @@ class StrategySimulationAgent(Strategy):
             long_signal = self.data["signal"][-1] == LONG_SIGNAL
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
+            # Calculate limit entry price for long and short signals
+            long_limit, short_limit = self._calculate_limit_entry_price(
+                close,
+                average_true_range,
+            )
+
             if long_signal:
                 # Skip if we already have long position
                 if self.position.is_long:
                     return
 
+                # Otherwise, close short position (if any)
+                if self.position.is_short:
+                    self.position.close()
+
                 # And open new long position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a market order -- price at the close
-                self.buy(sl=long_sl, tp=long_tp)
+                # and entry is a limit order -- price below or equal our limit
+                self.buy(sl=long_sl, tp=long_tp, limit=long_limit)
 
             if short_signal:
                 # Skip if we already have short position
                 if self.position.is_short:
                     return
 
+                # Otherwise, close long position (if any)
+                if self.position.is_long:
+                    self.position.close()
+
                 # And open new short position, where:
                 # stop loss and take profit are our trailing levels
-                # and entry is a market order -- price at the close
-                self.sell(sl=short_sl, tp=short_tp)
+                # and entry is a limit order -- price above or equal our limit
+                self.sell(sl=short_sl, tp=short_tp, limit=short_limit)
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
