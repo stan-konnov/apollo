@@ -102,8 +102,8 @@ class BacktestingRunner:
 
             stats["_trades"].to_csv(f"{TRDS_DIR}/{self._strategy_name}.csv")
 
-        # Rename the strategy name in stats
-        # to display proper strategy name
+        # Rename the strategy name in
+        # stats to display proper strategy name
         stats["_strategy"] = self._strategy_name
 
         return stats
