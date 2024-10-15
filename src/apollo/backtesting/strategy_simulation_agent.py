@@ -39,7 +39,10 @@ Moreover, the library will carry the short
 position to the open of the next after next day
 and close it at the open price, which is not realistic.
 
-We factor in by placing market orders instead of limit orders,
+And, as you already figured out the library does not actually triggers
+limit order on close (clearly, it does not support extended hours trading).
+
+We mitigate all this by placing market orders instead of limit orders,
 and, during execution, place our limit orders with the same price as the market order.
 """
 
