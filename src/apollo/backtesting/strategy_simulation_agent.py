@@ -16,6 +16,31 @@ These assumptions are partially validated by our broker documentation (Alpaca).
 Alpaca indeed allows trading during extended hours (pre-market and after-hours).
 Alpaca also allows limit orders, yet there is no guarantee that they will be filled.
 Alpaca does not charge trading commissions for US equities, but does for other assets.
+
+There are a few considerations to the library we are using:
+
+First, when submitting a limit order with accompanying stop loss,
+and in case security considerably gaps up or down (above/below the stop loss),
+the library only triggers the limit order, naturally, leading to dubious results.
+
+Example:
+
+Security closes at $97.51. We submit a short
+limit order at $101 with a stop loss at $96.60.
+
+The next day, security gaps up to $99.66.
+The library triggers the limit order, opening a trade $99.66.
+but the stop loss is not triggered, as the security never reached $96.60.
+
+In real trading, the stop loss would trigger at the market price,
+leading to a vague result of entering and exiting the trade simultaneously.
+
+Moreover, the library will carry the short
+position to the open of the next after next day
+and close it at the open price, which is not realistic.
+
+We can factor in by placing market orders instead of limit orders,
+and, during execution, place our limit orders with the same price as the market order.
 """
 
 
