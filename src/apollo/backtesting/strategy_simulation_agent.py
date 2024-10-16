@@ -7,13 +7,13 @@ from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 """
 https://docs.alpaca.markets/docs/orders-at-alpaca
 
-1. After hours, we are allowed only limit orders.
+!1. After hours, we are allowed only limit orders.
 
-2. There is not execution guarantee, so we assume we fill on next open.
+!2. There is not execution guarantee, so we assume we fill on next open.
 
 3. TIF is day, therefore, any non-filled position older than a day is cancelled.
 
-4. Brackets are not allowed. We manually compute SL/TP and send them as separate orders.
+!4. Brackets are not allowed. We manually compute SL/TP and send as separate orders.
 """
 
 
@@ -71,9 +71,9 @@ class StrategySimulationAgent(Strategy):
             )
         )
 
-        # NOTE: calculate closing existing position
-        # here based of new SL and TP levels
-        # Library quirks
+        # If we (any) open position
+        # Calculate if we need to close it
+        # based on trailing stop loss and take profit
 
         # Enter the trade if signal identified
         if signal_identified:
@@ -115,11 +115,11 @@ class StrategySimulationAgent(Strategy):
                 # and entry is a limit order -- price above or equal our limit
                 self.sell(limit=short_limit)
 
-        # NOTE: This might need to be manually recalculated?
-        # Library quirks
-        # given limitations of the library
         # Loop through open positions
         # And assign SL and TP to open position(s)
+        # Given the internals of the library, this will
+        # effectively close the position if SL or TP is hit
+        # on the next open, adhering to limitations imposed by the broker
         for trade in self.trades:
             if trade.is_long:
                 trade.sl = long_sl
