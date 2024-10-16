@@ -11,7 +11,7 @@ https://docs.alpaca.markets/docs/orders-at-alpaca
 
 !2. There is not execution guarantee, so we assume we fill on next open.
 
-3. TIF is day, therefore, any non-filled position older than a day is cancelled.
+!3. TIF is day, therefore, any non-filled position older than a day is cancelled.
 
 !4. Brackets are not allowed. We manually compute SL/TP and send as separate orders.
 """
@@ -41,7 +41,7 @@ class StrategySimulationAgent(Strategy):
         """
         super().init()
 
-    def next(self) -> None:
+    def next(self) -> None:  # noqa: C901
         """
         Process each row in the supplied dataframe.
 
@@ -71,9 +71,11 @@ class StrategySimulationAgent(Strategy):
             )
         )
 
-        # If we (any) open position
-        # Calculate if we need to close it
-        # based on trailing stop loss and take profit
+        # If by now we have outstanding
+        # orders it means they were not filled.
+        # We cancel them to adhere to the execution
+        if len(self.orders) > 0:
+            self.orders[0].cancel()
 
         # Enter the trade if signal identified
         if signal_identified:
@@ -117,9 +119,14 @@ class StrategySimulationAgent(Strategy):
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
+        #
         # Given the internals of the library, this will
         # effectively close the position if SL or TP is hit
-        # on the next open, adhering to limitations imposed by the broker
+        # on the next open, adhering to broker-imposed limitations
+        #
+        # NOTE: in reality this would translate into two separate
+        # buy or sell limit orders executed at market price given
+        # price meets conditions and, thus, are not true SL/TP orders
         for trade in self.trades:
             if trade.is_long:
                 trade.sl = long_sl
