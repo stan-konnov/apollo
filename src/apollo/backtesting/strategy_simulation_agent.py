@@ -15,20 +15,6 @@ https://docs.alpaca.markets/docs/orders-at-alpaca
 
 !4. Brackets are not allowed. We manually compute SL/TP and send as separate orders.
 
-The old backtesting might still work with this approach (except trade on close).
-
-Look at the numbers again:
-
-If we submit limit at T (without SL/TP),
-but we test with SL and TP, and we trade on open;
-
-Then SL/TP execute on the next bar. And we can mimic
-it in the execution module as described above (SL/TP as separate limit orders).
-
-And we still need to cancel the order if it is not filled by the next open.
-
-So, the only change: trade on open, cancel the order if not filled by the next open.
-
 Old backtesting works:
 
 We backtest as trade-on-close with limit, without SL/TP (T).
@@ -129,9 +115,8 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_long:
                     return
 
-                # And open new long position, where:
-                # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price below or equal our limit
+                # And open new long position, where entry is a
+                # limit order -- price below or equal our limit
                 self.buy(limit=long_limit)
 
             if short_signal:
@@ -139,9 +124,8 @@ class StrategySimulationAgent(Strategy):
                 if self.position.is_short:
                     return
 
-                # And open new short position, where:
-                # stop loss and take profit are our trailing levels
-                # and entry is a limit order -- price above or equal our limit
+                # And open new short position, where entry is a
+                # limit order -- price above or equal our limit
                 self.sell(limit=short_limit)
 
         # Loop through open positions
