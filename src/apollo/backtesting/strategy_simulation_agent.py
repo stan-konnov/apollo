@@ -5,39 +5,15 @@ from backtesting import Strategy
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
-NOTE: this is plain wrong, take time to go through documentation
-and figure out the best approach to model things according to execution:
 https://docs.alpaca.markets/docs/orders-at-alpaca
 
-A day order is eligible for execution only on the day it is live.
-By default, the order is only valid during Regular Trading Hours (9:30am - 4:00pm ET).
-If unfilled after the closing auction, it is automatically canceled.
-If submitted after the close, it is queued and submitted the following trading day.
-However, if marked as eligible for extended hours,
-the order can also execute during supported extended hours.
+1. After hours, we are allowed only limit orders.
 
-Thus, submit limit order after close and mark it as eligible for extended hours.
+2. There is not execution guarantee, so we assume we fill on next open.
 
-Whether it gets filled or not = cannot be modelled here, but we assume so.
-Worst case scenario, we avoid directional risk.
+3. TIF is day, therefore, any non-filled position older than a day is cancelled.
 
-Then, on next day, recalculate the bracket, and submit two new orders:
-- one for stop loss
-- one for take profit
-
-#####
-
-As with any other backtesting approaches, this one takes on several assumptions:
-
-* We are allowed to trade on close (during extended hours)
-* We will get filled on our limit orders
-* There are no commissions
-
-These assumptions are partially validated by our broker documentation (Alpaca).
-
-Alpaca indeed allows trading during extended hours (pre-market and after-hours).
-Alpaca also allows limit orders, yet there is no guarantee that they will be filled.
-Alpaca does not charge trading commissions for US equities, but does for other assets.
+4. Brackets are not allowed. We manually compute SL/TP and send them as separate orders.
 """
 
 
