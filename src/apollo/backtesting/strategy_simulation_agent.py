@@ -14,6 +14,20 @@ https://docs.alpaca.markets/docs/orders-at-alpaca
 !3. TIF is day, therefore, any non-filled position older than a day is cancelled.
 
 !4. Brackets are not allowed. We manually compute SL/TP and send as separate orders.
+
+The old backtesting might still work with this approach (except trade on close).
+
+Look at the numbers again:
+
+If we submit limit at T (without SL/TP),
+but we test with SL and TP, and we trade on open;
+
+Then SL/TP execute on the next bar. And we can mimic
+it in the execution module as described above (SL/TP as separate limit orders).
+
+And we still need to cancel the order if it is not filled by the next open.
+
+So, the only change: trade on open, cancel the order if not filled by the next open.
 """
 
 
