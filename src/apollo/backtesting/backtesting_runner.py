@@ -78,6 +78,7 @@ class BacktestingRunner:
             strategy=self._strategy_sim_agent,
             cash=self._lot_size_cash,
             exclusive_orders=True,
+            trade_on_close=True,
         )
 
         stats = backtesting_process.run()
