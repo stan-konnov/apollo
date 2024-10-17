@@ -5,8 +5,8 @@ import pytest
 from pandas import DataFrame
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
-from apollo.settings import BACKTESTING_CASH_SIZE, STRATEGY, TRDS_DIR
-from tests.fixtures.files_and_directories import PLOT_DIR
+from apollo.settings import BACKTESTING_CASH_SIZE, STRATEGY
+from tests.fixtures.files_and_directories import PLOT_DIR, TRDS_DIR
 
 
 @pytest.mark.usefixtures("dataframe")
