@@ -28,6 +28,12 @@ limit OCO order after hours (T+1) or after open (T+2).
 This results in closing position
 on the next open if SL/TP is hit. (T+2).
 
+If the counter signal arrives, we cancel the
+open position via OCO or market order (on open, or on close if possible).
+
+And open new counter for the same (or other security), on open, since
+previous needs to be executed to open another one.
+
 TODO:
 
 Write a proper comment explaining how this translates to real trading.
