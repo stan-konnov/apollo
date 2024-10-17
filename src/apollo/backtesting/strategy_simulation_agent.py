@@ -28,6 +28,9 @@ yet this is the closest approximation we can make given the limitations.
 
 More on IOC orders: https://docs.alpaca.markets/docs/orders-at-alpaca#time-in-force
 
+NOTE: as of 2024-10-17, this is up to debate and has to be
+tested against simple limit orders when the execution model is ready.
+
 ----
 
 We backtest attaching dynamic Stop Loss and Take Profit levels.
