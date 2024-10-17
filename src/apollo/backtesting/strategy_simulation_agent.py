@@ -75,21 +75,30 @@ Given the above, our Trade Lifecycle is following:
 
 (T+1 AH): Generate Stop Loss and Take Profit levels after market close.
 
-(T+2 MH): Ignore signal and Place OCO order on market open to close the position.
+(T+2 MH): Ignore non-counter signal and Place OCO order on market open to close.
 
-(T+2 MH): Use signal and place market/limit order on market open to close the position.
+(T+2 MH): Use counter signal and place market/limit order on market open to close.
 
 (T+2 MH): Given previous step, place IOC order on market open to open counter position.
+
+In case we received a signal for another security and
+we have an open position, we resolve to the following logic:
+
+If we received counter signal for the same security,
+we close the position on the next open and open a new for another security.
+
+Otherwise, if we did not receive a counter for the same security, we ignore signal
+for another security and place a limit IOC order on market open for open position.
 
 ---
 
 Further considerations:
 
 Our broker does not charge commissions, yet, if one
-does not pay in commissions, one pays in slippage.
+does not pay in commissions, one pays in slippage and spread.
 
 At this point in time, we do not have enough data to
-approximate the slippage and, thus, we do not factor it in.
+approximate the slippage and, thus, we do not yet factor it in.
 
 More on orders: https://docs.alpaca.markets/docs/orders-at-alpaca
 """
