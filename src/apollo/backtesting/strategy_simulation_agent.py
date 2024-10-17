@@ -67,7 +67,7 @@ limit or market order has to be tested when the execution module is ready.
 
 Given the above, our Trade Lifecycle is following:
 
-(T AH): Generate a signal after market close.
+(T+0 AH): Generate a signal after market close.
 
 (T+1 MH): Place a limit IOC order on market open.
 
@@ -196,14 +196,6 @@ class StrategySimulationAgent(Strategy):
 
         # Loop through open positions
         # And assign SL and TP to open position(s)
-        #
-        # Given the internals of the library, this will
-        # effectively close the position if SL or TP is hit
-        # on the next open, adhering to broker-imposed limitations
-        #
-        # NOTE: in reality this would translate into two separate
-        # buy or sell limit orders executed at market price given
-        # price meets conditions and, thus, are not true SL/TP orders
         for trade in self.trades:
             if trade.is_long:
                 trade.sl = long_sl
