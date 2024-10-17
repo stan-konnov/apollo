@@ -88,7 +88,7 @@ If we received counter signal for the same security,
 we close the position on the next open and open a new for another security.
 
 Otherwise, if we did not receive a counter for the same security, we ignore signal
-for another security and place a limit IOC order on market open for open position.
+for another security and place a OCO order on market open for currently open position.
 
 ---
 
