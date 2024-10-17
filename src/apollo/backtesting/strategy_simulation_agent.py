@@ -53,15 +53,45 @@ In the context of the library, this would translate to ignoring
 any signal if we already have similar (long or short) position.
 
 Additionally, we would close the position
-on the next open if we receive a counter signal.
+on the next open if we receive a counter signal
+and open a new position in the opposite direction.
 
-To mirror this approach during trade execution, we resolve to closing the
-position on the next open if we receive a counter signal via limit or market order.
+To mirror this approach during trade execution, we resolve to closing the position
+on the next open if we receive a counter signal via limit or market order
+and opening a new position in the opposite direction via IOC order.
 
 NOTE: as of 2024-10-17, this is up to debate and using either
 limit or market order has to be tested when the execution module is ready.
 
 ---
+
+Given the above, our Trade Lifecycle is following:
+
+(T AH): Generate a signal after market close.
+
+(T+1 MH): Place a limit IOC order on market open.
+
+(T+1 AH): Generate another signal after market close.
+
+(T+1 AH): Generate Stop Loss and Take Profit levels after market close.
+
+(T+2 MH): Ignore signal and Place OCO order on market open to close the position.
+
+(T+2 MH): Use signal and place market/limit order on market open to close the position.
+
+(T+2 MH): Given previous step, place IOC order on market open to open counter position.
+
+---
+
+Further considerations:
+
+Our broker does not charge commissions, yet, if one
+does not pay in commissions, one pays in slippage.
+
+At this point in time, we do not have enough data to
+approximate the slippage and, thus, we do not factor it in.
+
+More on orders: https://docs.alpaca.markets/docs/orders-at-alpaca
 """
 
 
