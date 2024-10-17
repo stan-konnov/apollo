@@ -7,6 +7,7 @@ import pytest
 
 TEMP_TEST_DIR = Path(f"{Path(curdir).resolve()}/tests/temp")
 PLOT_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_plots")
+TRDS_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_trades")
 TEST_DIR = "tests/test_data"
 
 
