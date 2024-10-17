@@ -29,7 +29,7 @@ This results in closing position
 on the next open if SL/TP is hit. (T+2).
 
 If the counter signal arrives, we cancel the
-open position via OCO or market order (on open, or on close if possible).
+open position via  market or limit order (on open).
 
 And open new counter for the same (or other security), on open, since
 previous needs to be executed to open another one.
