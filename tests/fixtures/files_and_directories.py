@@ -11,7 +11,7 @@ TRDS_DIR = Path(f"{TEMP_TEST_DIR}/backtesting_trades")
 TEST_DIR = "tests/test_data"
 
 
-@pytest.fixture(name="clean_data", scope="module")
+@pytest.fixture(name="clean_data")
 def _clean_data() -> Generator[None, None, None]:
     """Clean temp test data directory after tests."""
     yield
