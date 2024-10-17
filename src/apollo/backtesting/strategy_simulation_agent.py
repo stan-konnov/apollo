@@ -34,7 +34,8 @@ open position via OCO or market order (on open, or on close if possible).
 And open new counter for the same (or other security), on open, since
 previous needs to be executed to open another one.
 
-Given that, we also can just avoid sending orders after hours?
+Given that, we also can just avoid sending orders after hours and simply act
+on signals on open, since we are not guaranteed to fill them anyway.
 
 TODO:
 
