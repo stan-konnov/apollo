@@ -6,7 +6,7 @@ from backtesting import Backtest
 from pandas import DataFrame, Series
 
 from apollo.backtesting.strategy_simulation_agent import StrategySimulationAgent
-from apollo.settings import PLOT_DIR
+from apollo.settings import PLOT_DIR, TRDS_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ class BacktestingRunner:
         sl_volatility_multiplier: float,
         tp_volatility_multiplier: float,
         write_result_plot: bool = False,
+        write_result_trades: bool = False,
     ) -> None:
         """
         Construct Backtesting runner.
@@ -39,7 +40,8 @@ class BacktestingRunner:
         :param lot_size_cash: Initial cash amount to backtest with.
         :param sl_volatility_multiplier: Stop loss volatility multiplier.
         :param tp_volatility_multiplier: Take profit volatility multiplier.
-        :param write_result_plot: Flag to plot backtesting results.
+        :param write_result_plot: Flag to write backtesting plot.
+        :param write_result_trades: Flag to write backtesting trades.
         """
 
         dataframe.rename(
@@ -57,6 +59,7 @@ class BacktestingRunner:
         self._strategy_name = strategy_name
         self._lot_size_cash = lot_size_cash
         self._write_result_plot = write_result_plot
+        self._write_result_trades = write_result_trades
 
         self._strategy_sim_agent = StrategySimulationAgent
         self._strategy_sim_agent.sl_volatility_multiplier = sl_volatility_multiplier
@@ -92,8 +95,15 @@ class BacktestingRunner:
                 filename=f"{PLOT_DIR}/{self._strategy_name}.html",
             )
 
-        # Rename the strategy name in stats
-        # to display proper strategy name
+        if self._write_result_trades:
+            # Make sure directory for trades exists
+            if not Path.is_dir(TRDS_DIR):
+                TRDS_DIR.mkdir(parents=True, exist_ok=True)
+
+            stats["_trades"].to_csv(f"{TRDS_DIR}/{self._strategy_name}.csv")
+
+        # Rename the strategy name in
+        # stats to display proper strategy name
         stats["_strategy"] = self._strategy_name
 
         return stats

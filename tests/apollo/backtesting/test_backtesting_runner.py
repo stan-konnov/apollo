@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.settings import BACKTESTING_CASH_SIZE, STRATEGY
-from tests.fixtures.files_and_directories import PLOT_DIR
+from tests.fixtures.files_and_directories import PLOT_DIR, TRDS_DIR
 
 
 @pytest.mark.usefixtures("dataframe")
@@ -115,3 +115,59 @@ def test__backtesting_runner__for_writing_result_plot(
     backtesting_runner.run()
 
     assert Path.exists(Path(f"{PLOT_DIR}/{STRATEGY}.html"))
+
+
+@pytest.mark.usefixtures("dataframe", "clean_data")
+@patch("apollo.backtesting.backtesting_runner.TRDS_DIR", TRDS_DIR)
+def test__backtesting_runner__for_creating_trades_directory(
+    dataframe: DataFrame,
+) -> None:
+    """
+    Test Backtesting Runner for creating trades directory.
+
+    Backtesting runner must create trades directory if it doesn't exist.
+    """
+
+    dataframe["atr"] = 0
+    dataframe["signal"] = 0
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
+        write_result_trades=True,
+    )
+
+    backtesting_runner.run()
+
+    assert Path.exists(TRDS_DIR)
+
+
+@pytest.mark.usefixtures("dataframe", "clean_data")
+@patch("apollo.backtesting.backtesting_runner.TRDS_DIR", TRDS_DIR)
+def test__backtesting_runner__for_writing_result_trades(
+    dataframe: DataFrame,
+) -> None:
+    """
+    Test Backtesting Runner for writing the result trades.
+
+    Backtesting runner must write the result trades if requested.
+    """
+
+    dataframe["atr"] = 0
+    dataframe["signal"] = 0
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.01,
+        tp_volatility_multiplier=0.01,
+        write_result_trades=True,
+    )
+
+    backtesting_runner.run()
+
+    assert Path.exists(Path(f"{TRDS_DIR}/{STRATEGY}.csv"))
