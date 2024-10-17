@@ -29,7 +29,7 @@ yet this is the closest approximation we can make given the limitations.
 More on IOC orders: https://docs.alpaca.markets/docs/orders-at-alpaca#time-in-force
 
 NOTE: as of 2024-10-17, this is up to debate and has to be
-tested against simple limit orders when the execution model is ready.
+tested against simple limit orders when the execution module is ready.
 
 ----
 
@@ -37,44 +37,31 @@ We backtest attaching dynamic Stop Loss and Take Profit levels.
 In the context of the library, this would translate to filling
 those orders on the next open, given the price meets the conditions.
 
+To mirror this approach during trade execution, we resolve
+to placing OCO (One Cancels Other) orders on next market open.
 
-https://docs.alpaca.markets/docs/orders-at-alpaca
+OCO orders are two-legged orders where one leg cancels the other
+given it is filled. This ensures that we either hit our Stop Loss
+or Take Profit level, while the other order is cancelled.
 
-!1. After hours, we are allowed only limit orders.
+More on OCO orders: https://docs.alpaca.markets/docs/orders-at-alpaca#time-in-force
 
-!2. There is not execution guarantee, so we assume we fill on next open.
+---
 
-!3. TIF is day, therefore, any non-filled position older than a day is cancelled.
+We backtest exclusive orders and closing positions on counter signals.
+In the context of the library, this would translate to ignoring
+any signal if we already have similar (long or short) position.
 
-!4. Brackets are not allowed. We manually compute SL/TP and send as separate orders.
+Additionally, we would close the position
+on the next open if we receive a counter signal.
 
-Old backtesting works:
+To mirror this approach during trade execution, we resolve to closing the
+position on the next open if we receive a counter signal via limit or market order.
 
-We backtest as trade-on-close with limit, without SL/TP (T).
+NOTE: as of 2024-10-17, this is up to debate and using either
+limit or market order has to be tested when the execution module is ready.
 
-This results in submitting limit order
-after hours that will get filled next open (T+1).
-
-End of next day we recalculate SL/TP and dispatch
-limit OCO order after hours (T+1) or after open (T+2).
-
-This results in closing position
-on the next open if SL/TP is hit. (T+2).
-
-If the counter signal arrives, we cancel the
-open position via  market or limit order (on open).
-
-And open new counter for the same (or other security), on open, since
-previous needs to be executed to open another one.
-
-Given that, we also can just avoid sending orders after hours and simply act
-on signals on open, since we are not guaranteed to fill them anyway.
-
-TODO:
-
-Write a proper comment explaining how this translates to real trading.
-Based on rules from above.
-Write out a ticket on how to adapt the execution!.
+---
 """
 
 
