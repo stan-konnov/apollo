@@ -5,6 +5,36 @@ from backtesting import Strategy
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
+The step-by-step of matching the nature of
+backtesting library with realities of execution is following:
+
+----
+
+Or entries backtested as limit orders traded on close.
+In the context of the library, this would translate to filling
+the limit order on the next open, given the price meets the conditions.
+
+To mirror this approach during trade execution,
+we resolve to placing limit orders on market open.
+
+Since we also want to factor in the risk of partial fills,
+we dispatch our orders as IOC (Immediate or Cancel) orders.
+
+This ensures that we fill at least the portion of the
+order at desired price, while the rest is cancelled.
+
+Clearly, this does skew the results of the backtest,
+yet this is the closest approximation we can make given the limitations.
+
+More on IOC orders: https://docs.alpaca.markets/docs/orders-at-alpaca#time-in-force
+
+----
+
+We backtest attaching dynamic Stop Loss and Take Profit levels.
+In the context of the library, this would translate to filling
+those orders on the next open, given the price meets the conditions.
+
+
 https://docs.alpaca.markets/docs/orders-at-alpaca
 
 !1. After hours, we are allowed only limit orders.
