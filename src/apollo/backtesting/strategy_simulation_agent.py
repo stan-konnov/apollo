@@ -19,22 +19,20 @@ Old backtesting works:
 
 We backtest as trade-on-close with limit, without SL/TP (T).
 
-This results in submitting limit order after hours that will get filled next open (T+1).
+This results in submitting limit order
+after hours that will get filled next open (T+1).
 
-End of next day we recalculate SL/TP and dispatch 2 separate limit orders (T+1).
+End of next day we recalculate SL/TP and dispatch
+limit OCO order after hours (T+1) or after open (T+2).
 
-This results in closing position on the next open if SL/TP is hit. (T+2).
+This results in closing position
+on the next open if SL/TP is hit. (T+2).
 
 TODO:
 
-Reoptimize.
-And write a proper comment explaining how this translates to real trading.
+Write a proper comment explaining how this translates to real trading.
 Based on rules from above.
-
-Write out a ticket on how to adapt the execution!:
-
-1. Submit limit without SL/TP.
-2. Recalculate SL/TP and submit as separate limit orders next evening.
+Write out a ticket on how to adapt the execution!.
 """
 
 
