@@ -35,7 +35,7 @@ class PriceDataAvailabilityHelper:
         :returns: Boolean indicating if prices need to be re-queried.
         """
 
-        # Get the date in configured exchange
+        # Get today date in configured exchange
         configured_exchange_date = datetime.now(
             tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
         ).date()
@@ -100,11 +100,13 @@ class PriceDataAvailabilityHelper:
         :returns: Boolean indicating if queried price data includes intraday.
         """
 
-        # Get current date
-        now_date = datetime.now(tz=ZoneInfo("UTC")).date()
+        # Get today date in configured exchange
+        configured_exchange_date = datetime.now(
+            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        ).date()
 
         # Check if today is a business day
-        is_business_day = bool(is_busday(now_date))
+        is_business_day = bool(is_busday(configured_exchange_date))
 
         # Get the time in configured exchange
         configured_exchange_time = datetime.now(
@@ -125,7 +127,7 @@ class PriceDataAvailabilityHelper:
 
         # Check if last queried date is today
         # and if the data was queried during exchange hours
-        return last_queried_date == now_date and (
+        return last_queried_date == configured_exchange_date and (
             is_business_day
             and configured_exchange_open
             <= configured_exchange_time
