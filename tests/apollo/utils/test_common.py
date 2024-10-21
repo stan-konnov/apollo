@@ -15,6 +15,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
     POSTGRES_URL,
+    SP500_COMPONENTS_URL,
     SP500_FUTURES_TICKER,
     START_DATE,
     STRATEGY,
@@ -64,6 +65,7 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
         "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
         "SP500_FUTURES_TICKER": SP500_FUTURES_TICKER,
         "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
+        "SP500_COMPONENTS_URL": SP500_COMPONENTS_URL,
     }
 
     exception_message = (
