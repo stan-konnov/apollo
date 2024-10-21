@@ -15,7 +15,7 @@ class PriceDataAvailabilityHelper:
     Price Data Availability Helper class.
 
     Determines if data should be re-queried from the source
-    based on provided last record date and current point in time.
+    based on provided last record date and current point in time in exchange.
     Determines if queried price data includes intraday values that should be avoided.
 
     NOTE: This does not yet factor in exchange holidays or partial trading days.
@@ -36,12 +36,12 @@ class PriceDataAvailabilityHelper:
         """
 
         # Get the date in configured exchange
-        now_date = datetime.now(
+        configured_exchange_date = datetime.now(
             tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
         ).date()
 
         # Get previous business day
-        previous_business_day = now_date - timedelta(days=1)
+        previous_business_day = configured_exchange_date - timedelta(days=1)
 
         # If minus one day offset falls on weekend
         # loop back until we get to the previous business day
@@ -51,7 +51,7 @@ class PriceDataAvailabilityHelper:
         # Check if the data is available from the exchange
         data_available_from_exchange = (
             PriceDataAvailabilityHelper.check_if_price_data_available_from_exchange(
-                now_date,
+                configured_exchange_date,
             )
         )
 
@@ -63,16 +63,18 @@ class PriceDataAvailabilityHelper:
         )
 
     @staticmethod
-    def check_if_price_data_available_from_exchange(now_date: date) -> bool:
+    def check_if_price_data_available_from_exchange(
+        configured_exchange_date: date,
+    ) -> bool:
         """
         Check if price data is available from the exchange.
 
-        :param now_date: Current date.
-        :returns: Boolean indicating if data available from exchange.
+        :param configured_exchange_date: Current date in configured exchange.
+        :returns: Boolean indicating if data is available from exchange.
         """
 
-        # Check if today is a business day
-        is_business_day = bool(is_busday(now_date))
+        # Check if today is a business day in configured exchange
+        is_business_day = bool(is_busday(configured_exchange_date))
 
         # Get the time in configured exchange
         configured_exchange_time = datetime.now(
