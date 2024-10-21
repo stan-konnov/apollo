@@ -5,18 +5,16 @@ import pytest
 
 
 @pytest.fixture(name="requests_get_call")
-def requests_get_call_fixture(
-    request: pytest.FixtureRequest,
-) -> Generator[Mock, None, None]:
+def requests_get_call(request: pytest.FixtureRequest) -> Generator[Mock, None, None]:
     """
     Simulate call to requests.get by patching dynamic path.
 
     Usage example:
 
     @pytest.mark.parametrize(
-        'requests_get_call',
+        "requests_get_call",
         ["path.to.patch.get"],
-        indirect=True,
+        indirect=True
     )
     """
 
