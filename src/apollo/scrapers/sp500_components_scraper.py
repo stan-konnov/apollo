@@ -1,5 +1,5 @@
 import logging
-import re
+from re import sub
 from sys import exit
 
 from bs4 import BeautifulSoup, Tag
@@ -91,7 +91,7 @@ class SP500ComponentsScraper:
         # Remove any non-alphanumeric
         # characters from the list and return
         sp500_components_tickers = [
-            re.sub("[^0-9a-zA-Z]+", "", ticker) for ticker in sp500_components_tickers
+            sub("[^0-9a-zA-Z]+", "", ticker) for ticker in sp500_components_tickers
         ]
 
         # Finally, we assume if there are values
