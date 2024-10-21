@@ -5,8 +5,20 @@ import pytest
 
 
 @pytest.fixture(name="requests_get_call")
-def requests_get_call_fixture() -> Generator[Mock, None, None]:
-    """Simulate call to requests.get."""
+def requests_get_call_fixture(
+    request: pytest.FixtureRequest,
+) -> Generator[Mock, None, None]:
+    """
+    Simulate call to requests.get by patching dynamic path.
 
-    with patch("apollo.scrapers.sp500_components_scraper.get") as mock_requests_get:
+    Usage example:
+
+    @pytest.mark.parametrize(
+        'requests_get_call',
+        ["path.to.patch.get"],
+        indirect=True,
+    )
+    """
+
+    with patch(request.param) as mock_requests_get:
         yield mock_requests_get
