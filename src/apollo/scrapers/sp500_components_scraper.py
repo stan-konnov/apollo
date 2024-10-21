@@ -15,7 +15,7 @@ class SP500ComponentsScraper:
     """
     S&P 500 Components Scraper.
 
-    Scraps the list of S&P 500 components from Wikipedia.
+    Scraps the list of S&P 500 component tickers from Wikipedia.
     """
 
     # Constant to represent
