@@ -85,8 +85,16 @@ class SP500ComponentsScraper:
         # Extract tickers from the rows given
         # that the first column contains the ticker
         sp500_components_tickers = [
-            row.find_all("td")[0].text for row in sp500_components_rows
+            row.find_all("td")[0].text
+            for row in sp500_components_rows
+            if len(row.find_all("td")) > 0 and row.find_all("td")[0].text
         ]
+
+        # And raise if no tickers are found
+        if not sp500_components_tickers:
+            raise HTMLStructureChangedError(
+                "The HTML structure of the SP500 components table row has changed.",
+            )
 
         # Remove any non-alphanumeric
         # characters from the list and return
