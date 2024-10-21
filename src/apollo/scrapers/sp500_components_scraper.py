@@ -18,13 +18,17 @@ class SP500ComponentsScraper:
     Scraps the list of S&P 500 components from Wikipedia.
     """
 
+    # Constant to represent
+    # maximum ticker length
+    MAX_TICKER_LENGTH = 5
+
     def __init__(self) -> None:
         """
         Construct S&P 500 Components Scraper.
 
-        Visit the URL with S&P 500 components and load it into beautiful soup.
+        Visit the S&P 500 components page and load it into Beautiful Soup.
 
-        :raises RequestException: If the page cannot be loaded.
+        :raises RequestException: If page cannot be found or accessed due to network.
         """
 
         try:
@@ -45,7 +49,7 @@ class SP500ComponentsScraper:
 
     def scrape_sp500_components(self) -> list[str]:
         """
-        Scrape S&P 500 components.
+        Scrape S&P 500 tickers from the page.
 
         :returns: List of strings representing S&P 500 components.
 
@@ -64,26 +68,40 @@ class SP500ComponentsScraper:
                 "The HTML structure of the SP500 components page has changed.",
             )
 
-        # Find all rows in the table
+        # Find all the rows in the table
         if isinstance(sp500_components_table, Tag):
             sp500_components_rows = sp500_components_table.find_all("tr")
 
-        # Raise if rows are not found
+        # And raise if rows are not found
         else:
             raise HTMLStructureChangedError(
-                "The HTML structure of the SP500 components page has changed.",
+                "The HTML structure of the SP500 components table has changed.",
             )
 
-        # Remove the header row
-        sp500_components_rows = sp500_components_rows[1:]
+        # Remove the header row as
+        # it corresponds to the column names
+        sp500_components_rows: list[Tag] = sp500_components_rows[1:]
 
-        # Extract ticker symbols from the rows
+        # Extract tickers from the rows given
+        # that the first column contains the ticker
         sp500_components_tickers = [
             row.find_all("td")[0].text for row in sp500_components_rows
         ]
 
         # Remove any non-alphanumeric
-        # characters from the tickers and return
-        return [
+        # characters from the list and return
+        sp500_components_tickers = [
             re.sub("[^0-9a-zA-Z]+", "", ticker) for ticker in sp500_components_tickers
         ]
+
+        # Finally, we assume if there are values
+        # longer than five characters, the page structure
+        # has changed, since maximum ticker length is five characters
+        if any(
+            len(ticker) > self.MAX_TICKER_LENGTH for ticker in sp500_components_tickers
+        ):
+            raise HTMLStructureChangedError(
+                "The HTML structure of the SP500 components table row has changed.",
+            )
+
+        return sp500_components_tickers
