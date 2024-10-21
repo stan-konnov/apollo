@@ -35,8 +35,10 @@ class PriceDataAvailabilityHelper:
         :returns: Boolean indicating if prices need to be re-queried.
         """
 
-        # Get current date
-        now_date = datetime.now(tz=ZoneInfo("UTC")).date()
+        # Get the date in configured exchange
+        now_date = datetime.now(
+            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        ).date()
 
         # Get previous business day
         previous_business_day = now_date - timedelta(days=1)
