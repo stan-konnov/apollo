@@ -27,8 +27,6 @@ class SP500ComponentsScraper:
         Construct S&P 500 Components Scraper.
 
         Visit the S&P 500 components page and load it into Beautiful Soup.
-
-        :raises RequestException: If page cannot be found or accessed due to network.
         """
 
         try:
