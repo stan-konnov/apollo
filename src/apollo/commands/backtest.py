@@ -33,6 +33,8 @@ def main() -> None:
 
     sp500_components = sp500_components_scraper.scrape_sp500_components()
 
+    print(sp500_components)
+
     # price_data_provider = PriceDataProvider()
     # price_data_enhancer = PriceDataEnhancer()
 

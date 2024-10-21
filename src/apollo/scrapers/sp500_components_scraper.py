@@ -1,7 +1,8 @@
 import logging
+import re
 from sys import exit
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from requests import RequestException, get
 
 from apollo.errors.scraping import HTMLStructureChangedError
@@ -63,4 +64,26 @@ class SP500ComponentsScraper:
                 "The HTML structure of the SP500 components page has changed.",
             )
 
-        return []
+        # Find all rows in the table
+        if isinstance(sp500_components_table, Tag):
+            sp500_components_rows = sp500_components_table.find_all("tr")
+
+        # Raise if rows are not found
+        else:
+            raise HTMLStructureChangedError(
+                "The HTML structure of the SP500 components page has changed.",
+            )
+
+        # Remove the header row
+        sp500_components_rows = sp500_components_rows[1:]
+
+        # Extract ticker symbols from the rows
+        sp500_components_tickers = [
+            row.find_all("td")[0].text for row in sp500_components_rows
+        ]
+
+        # Remove any non-alphanumeric
+        # characters from the tickers and return
+        return [
+            re.sub("[^0-9a-zA-Z]+", "", ticker) for ticker in sp500_components_tickers
+        ]
