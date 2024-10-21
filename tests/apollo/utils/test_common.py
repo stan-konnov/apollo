@@ -51,21 +51,21 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
 
     required_variables = {
         "TICKER": TICKER,
-        "VIX_TICKER": VIX_TICKER,
         "EXCHANGE": EXCHANGE,
         "STRATEGY": STRATEGY,
         "START_DATE": START_DATE,
         "END_DATE": END_DATE,
         "FREQUENCY": FREQUENCY,
+        "VIX_TICKER": VIX_TICKER,
         "POSTGRES_URL": POSTGRES_URL,
-        "INFLUXDB_BUCKET": INFLUXDB_BUCKET,
+        "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_ORG": INFLUXDB_ORG,
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
-        "INFLUXDB_URL": INFLUXDB_URL,
+        "INFLUXDB_BUCKET": INFLUXDB_BUCKET,
         "INFLUXDB_MEASUREMENT": INFLUXDB_MEASUREMENT,
+        "SP500_COMPONENTS_URL": SP500_COMPONENTS_URL,
         "SP500_FUTURES_TICKER": SP500_FUTURES_TICKER,
         "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
-        "SP500_COMPONENTS_URL": SP500_COMPONENTS_URL,
     }
 
     exception_message = (
