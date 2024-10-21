@@ -57,6 +57,7 @@ class SP500ComponentsScraper:
             {"id": "constituents"},
         )
 
+        # Raise if table is not found
         if sp500_components_table is None:
             raise HTMLStructureChangedError(
                 "The HTML structure of the SP500 components page has changed.",
