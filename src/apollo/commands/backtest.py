@@ -71,9 +71,9 @@ def main() -> None:
         write_result_trades=True,
     )
 
-    backtesting_runner.run()
+    stats = backtesting_runner.run()
 
-    # logger.info(stats)  # noqa: ERA001
+    logger.info(stats)
 
 
 if __name__ == "__main__":
