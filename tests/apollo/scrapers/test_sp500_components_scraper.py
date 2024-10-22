@@ -76,7 +76,7 @@ def test__sp500_components_scraper__for_raising_and_exiting_if_page_cannot_be_ac
     indirect=True,
 )
 @pytest.mark.usefixtures("sp500_components_page")
-def test__sp500_components_scraper__for_raising_and_exiting_if_table_cannot_be_found(
+def test__sp500_components_scraper__for_raising_if_table_cannot_be_found(
     requests_get_call: Mock,
     sp500_components_page: str,
 ) -> None:
@@ -112,7 +112,7 @@ def test__sp500_components_scraper__for_raising_and_exiting_if_table_cannot_be_f
     indirect=True,
 )
 @pytest.mark.usefixtures("sp500_components_page")
-def test__sp500_components_scraper__for_raising_and_exiting_if_rows_cannot_be_found(
+def test__sp500_components_scraper__for_raising_if_rows_cannot_be_found(
     requests_get_call: Mock,
     sp500_components_page: str,
 ) -> None:
@@ -152,7 +152,7 @@ def test__sp500_components_scraper__for_raising_and_exiting_if_rows_cannot_be_fo
     indirect=True,
 )
 @pytest.mark.usefixtures("sp500_components_page")
-def test__sp500_components_scraper__for_raising_and_exiting_if_tickers_cannot_be_found(
+def test__sp500_components_scraper__for_raising_if_tickers_cannot_be_found(
     requests_get_call: Mock,
     sp500_components_page: str,
 ) -> None:
