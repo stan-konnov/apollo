@@ -174,9 +174,54 @@ def test__sp500_components_scraper__for_raising_if_tickers_cannot_be_found(
         sp500_components_rows = sp500_components_table.find_all("tr")
         sp500_components_rows = sp500_components_rows[1:]
 
-        # Remove first column with tickers from the page
+        # Mutate first cells of
+        # each row into empty strings
         for row in sp500_components_rows:
-            row.find_all("td")[0].decompose()
+            row.find_all("td")[0].string = ""
+
+    exception_message = (
+        "The HTML structure of the SP500 components table row has changed."
+    )
+
+    with pytest.raises(
+        HTMLStructureChangedError,
+        match=exception_message,
+    ) as exception:
+        sp500_components_scraper.scrape_sp500_components()
+
+    assert str(exception.value) == exception_message
+
+
+@pytest.mark.parametrize(
+    "requests_get_call",
+    ["apollo.scrapers.sp500_components_scraper.get"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("sp500_components_page")
+def test__sp500_components_scraper__for_raising_if_tickers_are_malformed(
+    requests_get_call: Mock,
+    sp500_components_page: str,
+) -> None:
+    """
+    Test SP500 Components Scraper for raising HTMLStructureChangedError.
+
+    If the tickers of S&P 500 components cannot be located on the accessed page.
+    """
+
+    requests_get_call.return_value = Mock(text=sp500_components_page)
+    sp500_components_scraper = SP500ComponentsScraper()
+
+    sp500_components_table = sp500_components_scraper._sp500_components_page.find(  # noqa: SLF001
+        "table",
+        {"id": "constituents"},
+    )
+
+    if isinstance(sp500_components_table, Tag):
+        sp500_components_rows = sp500_components_table.find_all("tr")
+        sp500_components_rows = sp500_components_rows[1:]
+
+        # Mutate the first ticker into an invalid string
+        sp500_components_rows[0].find_all("td")[0].string = "INVALID"
 
     exception_message = (
         "The HTML structure of the SP500 components table row has changed."
