@@ -23,7 +23,7 @@ class AnnualizedVolatilityCalculator(BaseCalculator):
         super().__init__(dataframe, window_size)
 
     def calculate_annualized_volatility(self) -> None:
-        """Calculate Annualized Volatility."""
+        """Calculate rolling annualized volatility."""
 
         # Calculate log returns
         log_returns = self._dataframe["adj close"].pct_change()
