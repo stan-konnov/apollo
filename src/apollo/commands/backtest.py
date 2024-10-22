@@ -1,6 +1,9 @@
 import logging
 
 from apollo.backtesting.backtesting_runner import BacktestingRunner
+from apollo.calculations.kaufman_efficiency_ratio import (
+    KaufmanEfficiencyRatioCalculator,
+)
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -42,6 +45,13 @@ def main() -> None:
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
+    ker_calculator = KaufmanEfficiencyRatioCalculator(
+        dataframe=dataframe,
+        window_size=5,
+    )
+
+    ker_calculator.calculate_kaufman_efficiency_ratio()
+
     strategy = CombinatoryElliotWaves(
         dataframe=dataframe,
         window_size=5,
@@ -61,9 +71,9 @@ def main() -> None:
         write_result_trades=True,
     )
 
-    stats = backtesting_runner.run()
+    backtesting_runner.run()
 
-    logger.info(stats)
+    # logger.info(stats)  # noqa: ERA001
 
 
 if __name__ == "__main__":
