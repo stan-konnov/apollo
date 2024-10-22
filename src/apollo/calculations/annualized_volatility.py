@@ -29,7 +29,8 @@ class AnnualizedVolatilityCalculator(BaseCalculator):
 
         # Calculate rolling standard deviation
         rolling_std = log_returns.rolling(
-            self._window_size,
+            window=self._window_size,
+            min_periods=self._window_size,
         ).std()
 
         # Calculate annualized rolling volatility
