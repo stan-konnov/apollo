@@ -16,3 +16,13 @@ def _clean_data() -> Generator[None, None, None]:
     """Clean temp test data directory after tests."""
     yield
     rmtree(TEMP_TEST_DIR)
+
+
+@pytest.fixture(name="sp500_components_page")
+def get_sp500_components_page() -> str:
+    """Return S&P 500 components page HTML."""
+
+    with Path.open(
+        Path(f"{TEST_DIR}/sp500_components_page.html"),
+    ) as sp500_components_page_file:
+        return sp500_components_page_file.read()
