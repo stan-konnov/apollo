@@ -1,11 +1,8 @@
 import logging
 
-# ruff: noqa
-
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
-from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
@@ -29,50 +26,44 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    sp500_components_scraper = SP500ComponentsScraper()
+    price_data_provider = PriceDataProvider()
+    price_data_enhancer = PriceDataEnhancer()
 
-    sp500_components = sp500_components_scraper.scrape_sp500_components()
+    dataframe = price_data_provider.get_price_data(
+        ticker=str(TICKER),
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
+    )
 
-    print(sp500_components)
+    dataframe = price_data_enhancer.enhance_price_data(
+        price_dataframe=dataframe,
+        additional_data_enhancers=["VIX", "SP500 Futures"],
+    )
 
-    # price_data_provider = PriceDataProvider()
-    # price_data_enhancer = PriceDataEnhancer()
+    strategy = CombinatoryElliotWaves(
+        dataframe=dataframe,
+        window_size=5,
+        fast_oscillator_period=5.0,
+        slow_oscillator_period=25.0,
+    )
 
-    # dataframe = price_data_provider.get_price_data(
-    #     ticker=str(TICKER),
-    #     frequency=str(FREQUENCY),
-    #     start_date=str(START_DATE),
-    #     end_date=str(END_DATE),
-    #     max_period=bool(MAX_PERIOD),
-    # )
+    strategy.model_trading_signals()
 
-    # dataframe = price_data_enhancer.enhance_price_data(
-    #     price_dataframe=dataframe,
-    #     additional_data_enhancers=["VIX", "SP500 Futures"],
-    # )
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name="CombinatoryElliotWaves",
+        lot_size_cash=1000,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.4,
+        write_result_plot=True,
+        write_result_trades=True,
+    )
 
-    # strategy = CombinatoryElliotWaves(
-    #     dataframe=dataframe,
-    #     window_size=5,
-    #     fast_oscillator_period=5.0,
-    #     slow_oscillator_period=25.0,
-    # )
+    stats = backtesting_runner.run()
 
-    # strategy.model_trading_signals()
-
-    # backtesting_runner = BacktestingRunner(
-    #     dataframe=dataframe,
-    #     strategy_name="CombinatoryElliotWaves",
-    #     lot_size_cash=1000,
-    #     sl_volatility_multiplier=0.1,
-    #     tp_volatility_multiplier=0.4,
-    #     write_result_plot=True,
-    #     write_result_trades=True,
-    # )
-
-    # stats = backtesting_runner.run()
-
-    # logger.info(stats)
+    logger.info(stats)
 
 
 if __name__ == "__main__":
