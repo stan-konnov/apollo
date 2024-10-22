@@ -66,19 +66,22 @@ class SP500ComponentsScraper:
                 "The HTML structure of the SP500 components page has changed.",
             )
 
+        # Declare variable to store rows
+        sp500_components_rows: list[Tag] = []
+
         # Find all the rows in the table
         if isinstance(sp500_components_table, Tag):
             sp500_components_rows = sp500_components_table.find_all("tr")
 
         # And raise if rows are not found
-        else:
+        if not sp500_components_rows:
             raise HTMLStructureChangedError(
                 "The HTML structure of the SP500 components table has changed.",
             )
 
         # Remove the header row as
         # it corresponds to the column names
-        sp500_components_rows: list[Tag] = sp500_components_rows[1:]
+        sp500_components_rows = sp500_components_rows[1:]
 
         # Extract tickers from the rows given
         # that the first column contains the ticker
