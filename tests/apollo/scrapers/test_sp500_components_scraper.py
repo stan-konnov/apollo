@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 import pytest
 from requests import RequestException
 
+from apollo.errors.scraping import HTMLStructureChangedError
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 
 
@@ -66,3 +67,39 @@ def test__sp500_components_scraper__for_raising_and_exiting_if_page_cannot_be_ac
     )
 
     assert exception.value.code == 1
+
+
+@pytest.mark.parametrize(
+    "requests_get_call",
+    ["apollo.scrapers.sp500_components_scraper.get"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("sp500_components_page")
+def test__sp500_components_scraper__for_raising_and_exiting_if_table_cannot_be_found(
+    requests_get_call: Mock,
+    sp500_components_page: str,
+) -> None:
+    """
+    Test SP500 Components Scraper for raising HTMLStructureChangedError.
+
+    If the table with S&P 500 components cannot be located on the accessed page.
+    """
+
+    requests_get_call.return_value = Mock(text=sp500_components_page)
+    sp500_components_scraper = SP500ComponentsScraper()
+
+    # Remove table with S&P 500 components from the page
+    sp500_components_scraper._sp500_components_page.find(  # noqa: SLF001
+        "table",
+        {"id": "constituents"},
+    ).decompose()  # type: ignore  # noqa: PGH003
+
+    exception_message = "The HTML structure of the SP500 components page has changed."
+
+    with pytest.raises(
+        HTMLStructureChangedError,
+        match=exception_message,
+    ) as exception:
+        sp500_components_scraper.scrape_sp500_components()
+
+    assert str(exception.value) == exception_message
