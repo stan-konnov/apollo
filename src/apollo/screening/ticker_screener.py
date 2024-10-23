@@ -29,6 +29,10 @@ class TickerScreener:
     based on the measures of volatility and noise with the
     purpose of identifying the most suitable ticker to trade.
 
+    TODO: exclude by liquidity (avoid partial fills).
+          exclude by upcoming earnings (no surprises).
+          exclude by Hurst - avoid brownian motion (no random walk).
+
     Is multiprocessing capable and runs in parallel.
     """
 
@@ -60,9 +64,6 @@ class TickerScreener:
             batch_count=batch_count,
             tickers_to_batch=sp500_components_tickers,
         )
-
-        # Initialize the results dataframe
-        results_dataframe: pd.DataFrame = pd.DataFrame()
 
         # Process each batch in parallel
         with Pool(processes=batch_count) as pool:
@@ -109,23 +110,28 @@ class TickerScreener:
             inplace=True,
         )
 
-        # And, finally, select the ticker
-        # that falls right in the middle of the set
+        # Reset the indices to use
+        # integer indexing for selection
+        results_dataframe.reset_index(inplace=True)
+
         logger.info(results_dataframe)
 
         # Calculate the mean score
         mean_score = results_dataframe["atr_ker_score"].mean()
 
-        # Find the row where the
-        # score is closest to the mean
-        closest_row_index = (
-            (results_dataframe["atr_ker_score"] - mean_score).abs().idxmin()
+        # Locate the index that
+        # is closest to the mean score
+        closest_row_index = int(
+            (results_dataframe["atr_ker_score"] - mean_score).abs().idxmin(),
         )
 
-        # Select the ticker with the closest score to the mean
-        _selected_ticker = results_dataframe.loc[closest_row_index]["ticker"]
+        # And, finally, select the suitable ticker
+        selected_ticker = results_dataframe.iloc[closest_row_index]["ticker"]
 
-        logger.info(f"Selected ticker: {_selected_ticker}")
+        logger.info(f"Selected ticker: {selected_ticker}")
+        logger.info(
+            results_dataframe.loc[results_dataframe["ticker"] == selected_ticker],
+        )
 
     def _batch_tickers(
         self,
@@ -207,7 +213,13 @@ class TickerScreener:
                 )
 
                 """
-                TODO: Move shared values into separate calculator
+                TODO: Move shared values into new Price Data Adapter
+                it should also include the adjustment of the price data
+                and used in conjunction with the Price Data Provider?
+
+                How to manage enhanced data? This would not work?
+
+                Maybe, just a separate shared values calculator?
                 """
 
                 # Precalculate previous close necessary for ATR calculation
