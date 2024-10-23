@@ -41,6 +41,7 @@ run_test_suite = "pytest -v --cov=src --cov-report term-missing"
 
 test = ["migrate_test", "run_test_suite"]
 
+screen = "python3 src/apollo/commands/screen.py"
 optimize = "python3 src/apollo/commands/optimize.py"
 backtest = "python3 src/apollo/commands/backtest.py"
 
