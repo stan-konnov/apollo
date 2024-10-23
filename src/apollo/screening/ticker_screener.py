@@ -7,4 +7,6 @@ class TickerScreener:
     purpose of identifying the most suitable instrument to trade.
 
     Makes use of SP500ComponentsScraper to get the list of S&P500 tickers for screening.
+
+    Is multiprocessing capable and runs in parallel.
     """
