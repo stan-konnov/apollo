@@ -79,7 +79,7 @@ class TickerScreener:
             ]
 
             # Combine results into single dataframe
-            results_dataframe = pd.DataFrame(flattened_results).transpose()
+            results_dataframe = pd.DataFrame(flattened_results)
 
             logger.info(results_dataframe)
 
@@ -203,6 +203,6 @@ class TickerScreener:
             """
             TODO: Manage empty responses better
             """
-            logger.warning("API returned empty response, skipping ticker")
+            logger.warning("API returned empty response, skipping ticker.")
 
         return result_dataframes
