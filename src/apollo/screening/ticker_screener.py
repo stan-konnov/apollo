@@ -1,4 +1,4 @@
-from multiprocessing import cpu_count
+from multiprocessing import Pool
 
 import pandas as pd
 
@@ -45,14 +45,34 @@ class TickerScreener:
             self._sp500_components_scraper.scrape_sp500_components()
         )
 
-        # Get the number of available CPU cores
-        available_cores = cpu_count()
+        # Set the number of
+        # batches to split tickers into
+        # NOTE: due to API limitations we
+        # are limited to 10 connections at a time
+        batch_count = 10
 
         # Split tickers into batches
-        _ticker_batches = self._batch_tickers(
-            batch_count=available_cores,
+        ticker_batches = self._batch_tickers(
+            batch_count=batch_count,
             tickers_to_batch=sp500_components_tickers,
         )
+
+        # Process each batch in parallel
+        with Pool(processes=batch_count) as pool:
+            # Request the prices
+            # and calculate volatility and noise
+            # for each ticker in provided batches
+            results = pool.map(
+                self._calculate_volatility_and_noise,
+                (ticker_batches,),
+            )
+
+            # Flatten the computed results
+            _flattened_results = [
+                ticker_results
+                for batch_results in results
+                for ticker_results in batch_results
+            ]
 
     def _batch_tickers(
         self,
@@ -96,7 +116,7 @@ class TickerScreener:
 
         return batches_to_return
 
-    def _calculate_volatility_and_noise(self, tickers: list[str]) -> list[pd.DataFrame]:
+    def _calculate_volatility_and_noise(self, tickers: list[str]) -> list[pd.Series]:
         """
         Calculate volatility and noise for each ticker.
 
@@ -111,7 +131,7 @@ class TickerScreener:
         price_data_provider = PriceDataProvider()
 
         # Initialize list to store the results
-        result_dataframes: list[pd.DataFrame] = []
+        result_dataframes: list[pd.Series] = []
 
         for ticker in tickers:
             # Request price data for the current ticker
@@ -140,5 +160,13 @@ class TickerScreener:
 
             # Calculate Kaufman Efficiency Ratio
             ker_calculator.calculate_kaufman_efficiency_ratio()
+
+            # For the purposes of screening we are
+            # only interested in the most recent values
+            # of Average True Range and Kaufman Efficiency Ratio
+            relevant_result = price_dataframe.iloc[-1][["ticker", "atr", "ker"]]
+
+            # Append the result to the list
+            result_dataframes.append(relevant_result)
 
         return result_dataframes
