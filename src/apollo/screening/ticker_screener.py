@@ -61,6 +61,9 @@ class TickerScreener:
             tickers_to_batch=sp500_components_tickers,
         )
 
+        # Initialize the results dataframe
+        results_dataframe: pd.DataFrame = pd.DataFrame()
+
         # Process each batch in parallel
         with Pool(processes=batch_count) as pool:
             # Request the prices
@@ -81,7 +84,48 @@ class TickerScreener:
             # Combine results into single dataframe
             results_dataframe = pd.DataFrame(flattened_results)
 
-            logger.info(results_dataframe)
+        # Given that we computed the volatility and noise
+        # we now can combine them into a single sortable score
+
+        # First, we normalize ATR against adjusted close
+        # to represent it as ratio and not absolute value
+        results_dataframe["atr"] = (
+            results_dataframe["atr"] / results_dataframe["adj close"]
+        )
+
+        # Then, deduce equal
+        # weight for each measure
+        weight = 1 / 2
+
+        # Calculate the combined score
+        results_dataframe["atr_ker_score"] = (
+            weight * results_dataframe["atr"] + weight * results_dataframe["ker"]
+        )
+
+        # Sort the results in descending order
+        results_dataframe.sort_values(
+            by="atr_ker_score",
+            ascending=False,
+            inplace=True,
+        )
+
+        # And, finally, select the ticker
+        # that falls right in the middle of the set
+        logger.info(results_dataframe)
+
+        # Calculate the mean score
+        mean_score = results_dataframe["atr_ker_score"].mean()
+
+        # Find the row where the
+        # score is closest to the mean
+        closest_row_index = (
+            (results_dataframe["atr_ker_score"] - mean_score).abs().idxmin()
+        )
+
+        # Select the ticker with the closest score to the mean
+        _selected_ticker = results_dataframe.loc[closest_row_index]["ticker"]
+
+        logger.info(f"Selected ticker: {_selected_ticker}")
 
     def _batch_tickers(
         self,
@@ -193,8 +237,9 @@ class TickerScreener:
 
                 # For the purposes of screening we are
                 # only interested in the most recent values
-                # of Average True Range and Kaufman Efficiency Ratio
-                relevant_result = price_dataframe.iloc[-1][["ticker", "atr", "ker"]]
+                relevant_result = price_dataframe.iloc[-1][
+                    ["ticker", "atr", "ker", "adj close"]
+                ]
 
                 # Append the result to the list
                 result_dataframes.append(relevant_result)
