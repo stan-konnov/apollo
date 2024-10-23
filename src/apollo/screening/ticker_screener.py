@@ -1,6 +1,20 @@
 from multiprocessing import cpu_count
 
+import pandas as pd
+
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.calculations.kaufman_efficiency_ratio import (
+    KaufmanEfficiencyRatioCalculator,
+)
+from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
+from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
+    MAX_PERIOD,
+    SCREENING_WINDOW_SIZE,
+    START_DATE,
+)
 
 
 class TickerScreener:
@@ -81,3 +95,50 @@ class TickerScreener:
             start_index += current_batch_size
 
         return batches_to_return
+
+    def _calculate_volatility_and_noise(self, tickers: list[str]) -> list[pd.DataFrame]:
+        """
+        Calculate volatility and noise for each ticker.
+
+        Request historical data for each ticker and calculate volatility
+        expressed as Average True Range and noise as Kaufman Efficiency Ratio.
+
+        :param tickers: List of tickers to screen.
+        :returns: List of DataFrames with volatility and noise measures.
+        """
+
+        # Instantiate price data provider
+        price_data_provider = PriceDataProvider()
+
+        # Initialize list to store the results
+        result_dataframes: list[pd.DataFrame] = []
+
+        for ticker in tickers:
+            # Request price data for the current ticker
+            price_dataframe = price_data_provider.get_price_data(
+                ticker=ticker,
+                frequency=str(FREQUENCY),
+                start_date=str(START_DATE),
+                end_date=str(END_DATE),
+                max_period=bool(MAX_PERIOD),
+            )
+
+            # Instantiate Average True Range calculator
+            atr_calculator = AverageTrueRangeCalculator(
+                dataframe=price_dataframe,
+                window_size=int(str(SCREENING_WINDOW_SIZE)),
+            )
+
+            # Calculate Average True Range
+            atr_calculator.calculate_average_true_range()
+
+            # Calculate Kaufman Efficiency Ratio
+            ker_calculator = KaufmanEfficiencyRatioCalculator(
+                dataframe=price_dataframe,
+                window_size=int(str(SCREENING_WINDOW_SIZE)),
+            )
+
+            # Calculate Kaufman Efficiency Ratio
+            ker_calculator.calculate_kaufman_efficiency_ratio()
+
+        return result_dataframes
