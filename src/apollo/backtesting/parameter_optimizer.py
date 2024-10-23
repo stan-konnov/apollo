@@ -127,7 +127,7 @@ class ParameterOptimizer:
         combinations_count = len(combinations)
 
         # Calculate the base size of each batch
-        batch_base_size = combinations_count // batch_count
+        base_batch_size = combinations_count // batch_count
 
         # Calculate the size of the remainder batch
         remainder_batch_size = combinations_count % batch_count
@@ -138,7 +138,7 @@ class ParameterOptimizer:
         # Iterate over the number of batches
         for i in range(batch_count):
             # Calculate the current batch size
-            current_batch_size = batch_base_size + (
+            current_batch_size = base_batch_size + (
                 1 if i < remainder_batch_size else 0
             )
 
