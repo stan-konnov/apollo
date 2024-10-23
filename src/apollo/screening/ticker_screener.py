@@ -1,3 +1,4 @@
+from logging import getLogger
 from multiprocessing import Pool
 
 import pandas as pd
@@ -6,6 +7,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
+from apollo.errors.api import EmptyApiResponseError
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 from apollo.settings import (
@@ -15,6 +17,8 @@ from apollo.settings import (
     SCREENING_WINDOW_SIZE,
     START_DATE,
 )
+
+logger = getLogger(__name__)
 
 
 class TickerScreener:
@@ -64,21 +68,26 @@ class TickerScreener:
             # for each ticker in provided batches
             results = pool.map(
                 self._calculate_volatility_and_noise,
-                (ticker_batches,),
+                ticker_batches,
             )
 
             # Flatten the computed results
-            _flattened_results = [
+            flattened_results = [
                 ticker_results
                 for batch_results in results
                 for ticker_results in batch_results
             ]
 
+            # Combine results into single dataframe
+            results_dataframe = pd.DataFrame(flattened_results).transpose()
+
+            logger.info(results_dataframe)
+
     def _batch_tickers(
         self,
         batch_count: int,
         tickers_to_batch: list[str],
-    ) -> list[str]:
+    ) -> list[list[str]]:
         """
         Split scraper tickers into equal batches.
 
@@ -133,40 +142,58 @@ class TickerScreener:
         # Initialize list to store the results
         result_dataframes: list[pd.Series] = []
 
-        for ticker in tickers:
-            # Request price data for the current ticker
-            price_dataframe = price_data_provider.get_price_data(
-                ticker=ticker,
-                frequency=str(FREQUENCY),
-                start_date=str(START_DATE),
-                end_date=str(END_DATE),
-                max_period=bool(MAX_PERIOD),
-            )
+        try:
+            for ticker in tickers:
+                # Request price data for the current ticker
+                price_dataframe = price_data_provider.get_price_data(
+                    ticker=ticker,
+                    frequency=str(FREQUENCY),
+                    start_date=str(START_DATE),
+                    end_date=str(END_DATE),
+                    max_period=bool(MAX_PERIOD),
+                )
 
-            # Instantiate Average True Range calculator
-            atr_calculator = AverageTrueRangeCalculator(
-                dataframe=price_dataframe,
-                window_size=int(str(SCREENING_WINDOW_SIZE)),
-            )
+                """
+                TODO: Move shared values into separate calculator
+                """
 
-            # Calculate Average True Range
-            atr_calculator.calculate_average_true_range()
+                # Precalculate previous close necessary for ATR calculation
+                price_dataframe["prev_close"] = price_dataframe["adj close"].shift(1)
 
-            # Calculate Kaufman Efficiency Ratio
-            ker_calculator = KaufmanEfficiencyRatioCalculator(
-                dataframe=price_dataframe,
-                window_size=int(str(SCREENING_WINDOW_SIZE)),
-            )
+                # Instantiate Average True Range calculator
+                atr_calculator = AverageTrueRangeCalculator(
+                    dataframe=price_dataframe,
+                    # We map to integer from string since
+                    # environment variables are expressed as strings
+                    window_size=int(str(SCREENING_WINDOW_SIZE)),
+                )
 
-            # Calculate Kaufman Efficiency Ratio
-            ker_calculator.calculate_kaufman_efficiency_ratio()
+                # Calculate Average True Range
+                atr_calculator.calculate_average_true_range()
 
-            # For the purposes of screening we are
-            # only interested in the most recent values
-            # of Average True Range and Kaufman Efficiency Ratio
-            relevant_result = price_dataframe.iloc[-1][["ticker", "atr", "ker"]]
+                # Calculate Kaufman Efficiency Ratio
+                ker_calculator = KaufmanEfficiencyRatioCalculator(
+                    dataframe=price_dataframe,
+                    # We map to integer from string since
+                    # environment variables are expressed as strings
+                    window_size=int(str(SCREENING_WINDOW_SIZE)),
+                )
 
-            # Append the result to the list
-            result_dataframes.append(relevant_result)
+                # Calculate Kaufman Efficiency Ratio
+                ker_calculator.calculate_kaufman_efficiency_ratio()
+
+                # For the purposes of screening we are
+                # only interested in the most recent values
+                # of Average True Range and Kaufman Efficiency Ratio
+                relevant_result = price_dataframe.iloc[-1][["ticker", "atr", "ker"]]
+
+                # Append the result to the list
+                result_dataframes.append(relevant_result)
+
+        except EmptyApiResponseError:
+            """
+            TODO: Manage empty responses better
+            """
+            logger.warning("API returned empty response, skipping ticker")
 
         return result_dataframes
