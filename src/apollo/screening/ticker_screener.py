@@ -132,6 +132,15 @@ class TickerScreener:
         Request historical data for each ticker and calculate volatility
         expressed as Average True Range and noise as Kaufman Efficiency Ratio.
 
+        NOTE: We choose an arbitrary window size for both measures.
+
+        Clearly, there has to be a better,
+        data-driven way to determine the optimal window
+        size for each measure, but due to the absence of a more
+        robust solution we (for now) settle for the last (rolling) trading week.
+
+        Please see SCREENING_WINDOW_SIZE in the settings.
+
         :param tickers: List of tickers to screen.
         :returns: List of DataFrames with volatility and noise measures.
         """
