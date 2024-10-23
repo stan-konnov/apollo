@@ -29,9 +29,20 @@ class TickerScreener:
     based on the measures of volatility and noise with the
     purpose of identifying the most suitable ticker to trade.
 
-    TODO: exclude by liquidity (avoid partial fills).
-          exclude by upcoming earnings (no surprises).
-          exclude by Hurst - avoid brownian motion (no random walk).
+    TODO: Exclude by liquidity (avoid partial fills).
+          Exclude by upcoming earnings (no surprises).
+          Exclude by Hurst - avoid brownian motion (no random walk).
+
+    TODO: Look into using all the cores (maybe we cab bump the lib limit).
+
+    TODO: Look into avoiding selecting arbitrary window size.
+
+    TODO: Move shared values (prev close) to a separate calculator?
+          Remove the from BaseStrategy and avoid calculating them here.
+
+    TODO: Manage empty API responses better.
+
+    TODO: modelling and writing the Position with ticker into the database.
 
     Is multiprocessing capable and runs in parallel.
     """
@@ -116,8 +127,6 @@ class TickerScreener:
         # integer indexing for selection
         results_dataframe.reset_index(inplace=True)
 
-        logger.info(results_dataframe)
-
         # Calculate the mean score
         mean_score = results_dataframe["atr_ker_score"].mean()
 
@@ -131,9 +140,6 @@ class TickerScreener:
         selected_ticker = results_dataframe.iloc[closest_row_index]["ticker"]
 
         logger.info(f"Selected ticker: {selected_ticker}")
-        logger.info(
-            results_dataframe.loc[results_dataframe["ticker"] == selected_ticker],
-        )
 
     def _batch_tickers(
         self,
@@ -214,16 +220,6 @@ class TickerScreener:
                     max_period=bool(MAX_PERIOD),
                 )
 
-                """
-                TODO: Move shared values into new Price Data Adapter
-                it should also include the adjustment of the price data
-                and used in conjunction with the Price Data Provider?
-
-                How to manage enhanced data? This would not work?
-
-                Maybe, just a separate shared values calculator?
-                """
-
                 # Precalculate previous close necessary for ATR calculation
                 price_dataframe["prev_close"] = price_dataframe["adj close"].shift(1)
 
@@ -259,9 +255,6 @@ class TickerScreener:
                 result_dataframes.append(relevant_result)
 
         except EmptyApiResponseError:
-            """
-            TODO: Manage empty responses better
-            """
             logger.warning("API returned empty response, skipping ticker.")
 
         return result_dataframes
