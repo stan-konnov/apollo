@@ -95,8 +95,10 @@ class TickerScreener:
         )
 
         # Then, deduce equal
-        # weight for each measure
-        weight = 1 / 2
+        # weight for each measure:
+        # we use a constant value for both
+        # since we only have two measures to combine
+        weight = 0.5
 
         # Calculate the combined score
         results_dataframe["atr_ker_score"] = (
