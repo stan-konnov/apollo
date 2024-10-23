@@ -9,8 +9,6 @@ class TickerScreener:
     based on the measures of volatility and noise with the
     purpose of identifying the most suitable instrument to trade.
 
-    Makes use of S&P 500 Components Scraper to get the list of S&P500 tickers.
-
     Is multiprocessing capable and runs in parallel.
     """
 
@@ -22,3 +20,13 @@ class TickerScreener:
         """
 
         self._sp500_components_scraper = SP500ComponentsScraper()
+
+    def identify_suitable_ticker(self) -> None:
+        """
+        Identify suitable ticker for trading.
+
+        Screens tickers based on volatility expressed
+        via Average True Range and noise via Kaufman Efficiency Ratio.
+        """
+
+        self._sp500_components_scraper.scrape_sp500_components()
