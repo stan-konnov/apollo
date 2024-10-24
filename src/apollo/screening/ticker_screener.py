@@ -1,5 +1,5 @@
 from logging import getLogger
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 
 import pandas as pd
 
@@ -17,11 +17,12 @@ from apollo.settings import (
     SCREENING_WINDOW_SIZE,
     START_DATE,
 )
+from apollo.utils.multiprocessor import Multiprocessor
 
 logger = getLogger(__name__)
 
 
-class TickerScreener:
+class TickerScreener(Multiprocessor):
     """
     Ticker Screener class.
 
@@ -35,8 +36,6 @@ class TickerScreener:
 
     TODO: Look into avoiding selecting arbitrary window size.
 
-    TODO: Separated batching into a utility class: MultiprocessingCapable.
-
     TODO: modelling and writing the Position with ticker into the database.
 
     Is multiprocessing capable and runs in parallel.
@@ -49,9 +48,11 @@ class TickerScreener:
         Initializes S&P500 Components Scraper.
         """
 
+        super().__init__()
+
         self._sp500_components_scraper = SP500ComponentsScraper()
 
-    def screen_in_parallel(self) -> None:
+    def process_in_parallel(self) -> None:
         """Run the screening process in parallel."""
 
         # Scrape S&P500 components tickers
@@ -59,18 +60,13 @@ class TickerScreener:
             self._sp500_components_scraper.scrape_sp500_components()
         )
 
-        # Set the number of
-        # batches to the number of cores
-        batch_count = cpu_count()
-
         # Split tickers into batches
-        ticker_batches = self._batch_tickers(
-            batch_count=batch_count,
-            tickers_to_batch=sp500_components_tickers,
+        ticker_batches = self._batch_collection(
+            collection=sp500_components_tickers,
         )
 
         # Process each batch in parallel
-        with Pool(processes=batch_count) as pool:
+        with Pool(processes=self._batch_count) as pool:
             # Request the prices
             # and calculate volatility and noise
             # for each ticker in provided batches
@@ -134,48 +130,6 @@ class TickerScreener:
         selected_ticker = results_dataframe.iloc[closest_row_index]["ticker"]
 
         logger.info(f"Selected ticker: {selected_ticker}")
-
-    def _batch_tickers(
-        self,
-        batch_count: int,
-        tickers_to_batch: list[str],
-    ) -> list[list[str]]:
-        """
-        Split scraper tickers into equal batches.
-
-        :param batch_count: Number of batches to split tickers into.
-        :param tickers_to_batch: List of tickers to split into batches.
-        :returns: List of batches with tickers.
-        """
-
-        # Calculate the total number of tickers
-        tickers_count = len(tickers_to_batch)
-
-        # Calculate the base size of each batch
-        base_batch_size = tickers_count // batch_count
-
-        # Calculate the size of the remainder batch
-        remainder_batch_size = tickers_count % batch_count
-
-        start_index = 0
-        batches_to_return = []
-
-        # Iterate over the number of batches
-        for i in range(batch_count):
-            # Calculate the current batch size
-            current_batch_size = base_batch_size + (
-                1 if i < remainder_batch_size else 0
-            )
-
-            # Slice and append the current batch
-            batches_to_return.append(
-                tickers_to_batch[start_index : start_index + current_batch_size],
-            )
-
-            # Update the start index for the next batch
-            start_index += current_batch_size
-
-        return batches_to_return
 
     def _calculate_volatility_and_noise(self, tickers: list[str]) -> list[pd.Series]:
         """

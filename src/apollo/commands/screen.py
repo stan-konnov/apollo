@@ -17,7 +17,7 @@ def main() -> None:
     ensure_environment_is_configured()
 
     ticker_screener = TickerScreener()
-    ticker_screener.screen_in_parallel()
+    ticker_screener.process_in_parallel()
 
 
 if __name__ == "__main__":
