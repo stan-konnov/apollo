@@ -1,5 +1,5 @@
 from logging import getLogger
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 import pandas as pd
 
@@ -33,9 +33,9 @@ class TickerScreener:
           Exclude by upcoming earnings (no surprises).
           Exclude by Hurst - avoid brownian motion (no random walk).
 
-    TODO: Look into using all the cores (maybe we cab bump the lib limit).
-
     TODO: Look into avoiding selecting arbitrary window size.
+
+    TODO: Separated batching into a utility class: MultiprocessingCapable.
 
     TODO: modelling and writing the Position with ticker into the database.
 
@@ -60,10 +60,8 @@ class TickerScreener:
         )
 
         # Set the number of
-        # batches to split tickers into
-        # NOTE: due to API limitations we
-        # are limited to 10 connections at a time
-        batch_count = 10
+        # batches to the number of cores
+        batch_count = cpu_count()
 
         # Split tickers into batches
         ticker_batches = self._batch_tickers(
