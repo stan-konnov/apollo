@@ -21,7 +21,7 @@ class Multiprocessor:
         """
         Process the task in parallel.
 
-        Is required to be implemented by subclasses.
+        Is required to be implemented by child classes.
         """
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
