@@ -1,6 +1,6 @@
 from itertools import product
 from logging import getLogger
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from sys import exit
 
 import pandas as pd
@@ -22,6 +22,7 @@ from apollo.settings import (
     TICKER,
 )
 from apollo.utils.configuration import Configuration
+from apollo.utils.multiprocessor import Multiprocessor
 from apollo.utils.types import (
     ParameterCombinations,
     ParameterKeysAndCombinations,
@@ -31,7 +32,7 @@ from apollo.utils.types import (
 logger = getLogger(__name__)
 
 
-class ParameterOptimizer:
+class ParameterOptimizer(Multiprocessor):
     """
     Parameter Optimizer class.
 
@@ -50,6 +51,8 @@ class ParameterOptimizer:
         Instantiate configuration that parses strategy parameters file.
         Instantiate database connector that writes backtesting results into database.
         """
+
+        super().__init__()
 
         self._configuration = Configuration()
         self._database_connector = PostgresConnector()
@@ -78,9 +81,6 @@ class ParameterOptimizer:
             self._configuration.parameter_set["additional_data_enhancers"],
         )
 
-        # Get the number of available CPU cores
-        available_cores = cpu_count()
-
         # Extract the parameter set from the configuration
         parameter_set = self._configuration.parameter_set
 
@@ -90,7 +90,7 @@ class ParameterOptimizer:
         )
 
         # Break down combinations into equal batches
-        batches = self._batch_combinations(available_cores, combinations)
+        batches = self._batch_collection(combinations)
 
         # Create arguments to supply to each process
         batch_arguments = [
@@ -98,7 +98,7 @@ class ParameterOptimizer:
         ]
 
         # Process each batch in parallel
-        with Pool(processes=available_cores) as pool:
+        with Pool(processes=self._batch_count) as pool:
             results = pool.starmap(self._process, batch_arguments)
 
             # Concatenate the results from each process
@@ -106,51 +106,6 @@ class ParameterOptimizer:
 
             # Output the results to the database
             self._output_results(combined_results)
-
-    def _batch_combinations(
-        self,
-        batch_count: int,
-        combinations: ParameterCombinations,
-    ) -> list[list[ParameterCombinations]]:
-        """
-        Split combinations into equal batches.
-
-        :param batch_count: Number of batches to split combinations into.
-        :param combinations: Iterable of tuples with parameter combinations.
-        :returns: List of batches with parameter combinations.
-        """
-
-        # Cast the product to a list
-        combinations = list(combinations)
-
-        # Calculate the total number of combinations
-        combinations_count = len(combinations)
-
-        # Calculate the base size of each batch
-        base_batch_size = combinations_count // batch_count
-
-        # Calculate the size of the remainder batch
-        remainder_batch_size = combinations_count % batch_count
-
-        start_index = 0
-        batches_to_return = []
-
-        # Iterate over the number of batches
-        for i in range(batch_count):
-            # Calculate the current batch size
-            current_batch_size = base_batch_size + (
-                1 if i < remainder_batch_size else 0
-            )
-
-            # Slice and append the current batch
-            batches_to_return.append(
-                combinations[start_index : start_index + current_batch_size],
-            )
-
-            # Update the start index for the next batch
-            start_index += current_batch_size
-
-        return batches_to_return
 
     def _process(
         self,

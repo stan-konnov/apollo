@@ -1,16 +1,13 @@
 from multiprocessing import cpu_count
-from typing import Any
+from typing import Any, Iterable
 
 
 class Multiprocessor:
     """
     Base class for multiprocessing tasks.
 
-    Contains common attributes and methods for child
-    classes and batching logic necessary for parallel processing.
-
-    TODO: make process_in_parallel abstract method to force implementation.
-          do the same for strategy model_trading_signals.
+    Contains common attributes for child classes
+    and batching logic necessary for parallel processing.
     """
 
     def __init__(self) -> None:
@@ -29,13 +26,18 @@ class Multiprocessor:
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
 
-    def _batch_collection(self, collection: list[Any]) -> list[list[Any]]:
+    def _batch_collection(self, collection: Iterable[Any]) -> list[list[Any]]:
         """
         Split collection into equal batches.
 
         :param collection: Collection to split into batches.
         :returns: List of batches with collection items.
         """
+
+        # Map collection to list if it is not one already
+        collection = (
+            list(collection) if not isinstance(collection, list) else collection
+        )
 
         # Calculate the
         # total number of items
