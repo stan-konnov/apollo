@@ -91,6 +91,7 @@ class TickerScreener:
 
         # Given that we computed the volatility and noise
         # we now can combine them into a single sortable score
+        # NOTE: this should be a separate method
 
         # First, we normalize ATR against adjusted close
         # to represent it as ratio and not absolute value
