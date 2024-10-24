@@ -11,8 +11,6 @@ class Multiprocessor:
 
     TODO: make process_in_parallel abstract method to force implementation.
           do the same for strategy model_trading_signals.
-
-    TODO: is generic faster than Any?
     """
 
     def __init__(self) -> None:
