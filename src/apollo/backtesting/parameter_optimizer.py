@@ -111,7 +111,7 @@ class ParameterOptimizer:
         self,
         batch_count: int,
         combinations: ParameterCombinations,
-    ) -> list[ParameterCombinations]:
+    ) -> list[list[ParameterCombinations]]:
         """
         Split combinations into equal batches.
 
