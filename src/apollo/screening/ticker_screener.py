@@ -4,7 +4,6 @@ from multiprocessing import Pool
 import pandas as pd
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.base.common_values import CommonValuesCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
@@ -221,13 +220,8 @@ class TickerScreener:
                     max_period=bool(MAX_PERIOD),
                 )
 
-                # Instantiate Common Values Calculator
-                cv_calculator = CommonValuesCalculator(
-                    dataframe=price_dataframe,
-                )
-
-                # Calculate common values
-                cv_calculator.calculate_common_values()
+                # Precalculate previous close necessary for ATR calculation
+                price_dataframe["prev_close"] = price_dataframe["adj close"].shift(1)
 
                 # Instantiate Average True Range calculator
                 atr_calculator = AverageTrueRangeCalculator(

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.calculations.base.base_calculator import BaseCalculator
+from apollo.calculations.base_calculator import BaseCalculator
 
 
 class AverageTrueRangeCalculator(BaseCalculator):
