@@ -37,11 +37,6 @@ class TickerScreener:
 
     TODO: Look into avoiding selecting arbitrary window size.
 
-    TODO: Move shared values (prev close) to a separate calculator?
-          Remove the from BaseStrategy and avoid calculating them here.
-
-    TODO: Manage empty API responses better.
-
     TODO: modelling and writing the Position with ticker into the database.
 
     Is multiprocessing capable and runs in parallel.
