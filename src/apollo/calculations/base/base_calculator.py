@@ -12,7 +12,7 @@ class BaseCalculator:
         """
         Construct Base calculator.
 
-        :param dataframe: DataFrame to calculate values for.
+        :param dataframe: Dataframe to calculate values for.
         :param window_size: Window size for rolling calculation.
         """
 
