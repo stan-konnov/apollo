@@ -62,20 +62,15 @@ class TickerScreener(MultiprocessingCapable):
             self._sp500_components_scraper.scrape_sp500_components()
         )
 
-        # Split tickers into batches
-        ticker_batches = self._batch_collection(
-            collection=sp500_components_tickers,
-        )
+        # Break down tickers into equal batches
+        batches = self._batch_inputs_collection(sp500_components_tickers)
 
         # Process each batch in parallel
         with Pool(processes=self._available_cores) as pool:
             # Request the prices
             # and calculate volatility and noise
             # for each ticker in provided batches
-            results = pool.map(
-                self._calculate_volatility_and_noise,
-                ticker_batches,
-            )
+            results = pool.map(self._calculate_measures, batches)
 
             # Flatten the computed results
             flattened_results = [
@@ -87,53 +82,12 @@ class TickerScreener(MultiprocessingCapable):
             # Combine results into single dataframe
             results_dataframe = pd.DataFrame(flattened_results)
 
-        # Given that we computed the volatility and noise
-        # we now can combine them into a single sortable score
-        # NOTE: this should be a separate method
+            # Select the most suitable ticker
+            selected_ticker = self._select_suitable_ticker(results_dataframe)
 
-        # First, we normalize ATR against adjusted close
-        # to represent it as ratio and not absolute value
-        results_dataframe["atr"] = (
-            results_dataframe["atr"] / results_dataframe["adj close"]
-        )
+            logger.info(f"Selected ticker: {selected_ticker}")
 
-        # Then, deduce equal
-        # weight for each measure:
-        # we use a constant value for both
-        # since we only have two measures to combine
-        weight = 0.5
-
-        # Calculate the combined score
-        results_dataframe["atr_ker_score"] = (
-            weight * results_dataframe["atr"] + weight * results_dataframe["ker"]
-        )
-
-        # Sort the results in descending order
-        results_dataframe.sort_values(
-            by="atr_ker_score",
-            ascending=False,
-            inplace=True,
-        )
-
-        # Reset the indices to use
-        # integer indexing for selection
-        results_dataframe.reset_index(inplace=True)
-
-        # Calculate the mean score
-        mean_score = results_dataframe["atr_ker_score"].mean()
-
-        # Locate the index that
-        # is closest to the mean score
-        closest_row_index = int(
-            (results_dataframe["atr_ker_score"] - mean_score).abs().idxmin(),
-        )
-
-        # And, finally, select the suitable ticker
-        selected_ticker = results_dataframe.iloc[closest_row_index]["ticker"]
-
-        logger.info(f"Selected ticker: {selected_ticker}")
-
-    def _calculate_volatility_and_noise(self, tickers: list[str]) -> list[pd.Series]:
+    def _calculate_measures(self, tickers: list[str]) -> list[pd.Series]:
         """
         Calculate volatility and noise for each ticker.
 
@@ -208,3 +162,57 @@ class TickerScreener(MultiprocessingCapable):
             logger.warning("API returned empty response, skipping ticker.")
 
         return result_dataframes
+
+    def _select_suitable_ticker(self, results_dataframe: pd.DataFrame) -> str:
+        """
+        Select the most suitable ticker.
+
+        Construct an equal-weighted score based
+        on volatility and noise measures and select
+        the ticker that falls in the middle of the set.
+
+        TODO: explain why middle.
+
+        :param results_dataframe: Dataframe with measures.
+        :returns: Ticker symbol of the most suitable ticker.
+        """
+
+        # First, we normalize ATR against adjusted close
+        # to represent it as ratio and not absolute value
+        results_dataframe["atr"] = (
+            results_dataframe["atr"] / results_dataframe["adj close"]
+        )
+
+        # Then, deduce equal
+        # weight for each measure:
+        # we use a constant value for both
+        # since we only have two measures to combine
+        weight = 0.5
+
+        # Calculate the combined score
+        results_dataframe["atr_ker_score"] = (
+            weight * results_dataframe["atr"] + weight * results_dataframe["ker"]
+        )
+
+        # Sort the results in descending order
+        results_dataframe.sort_values(
+            by="atr_ker_score",
+            ascending=False,
+            inplace=True,
+        )
+
+        # Reset the indices to use
+        # integer indexing for selection
+        results_dataframe.reset_index(inplace=True)
+
+        # Calculate the mean score
+        mean_score = results_dataframe["atr_ker_score"].mean()
+
+        # Locate the index that
+        # is closest to the mean score
+        closest_row_index = int(
+            (results_dataframe["atr_ker_score"] - mean_score).abs().idxmin(),
+        )
+
+        # And, finally, select the suitable ticker
+        return results_dataframe.iloc[closest_row_index]["ticker"]

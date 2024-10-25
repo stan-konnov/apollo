@@ -1,7 +1,7 @@
 from multiprocessing import cpu_count
 from typing import Iterable, TypeVar
 
-# Declare a generic type for the
+# Declare a generic type for inputs
 # collection item since different tasks
 # operate on different types of data structures
 TItem = TypeVar("TItem")
@@ -30,22 +30,20 @@ class MultiprocessingCapable:
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
 
-    def _batch_collection(self, collection: Iterable[TItem]) -> list[list[TItem]]:
+    def _batch_inputs_collection(self, inputs: Iterable[TItem]) -> list[list[TItem]]:
         """
-        Split collection into equal batches.
+        Split inputs collection into equal batches.
 
-        :param collection: Collection to batch.
+        :param inputs: Inputs collection to batch.
         :returns: List of batches with collection items.
         """
 
-        # Map collection to list if it is not one already
-        collection = (
-            list(collection) if not isinstance(collection, list) else collection
-        )
+        # Map inputs to list if it is not one already
+        inputs = list(inputs) if not isinstance(inputs, list) else inputs
 
         # Calculate the
         # total number of items
-        items_count = len(collection)
+        items_count = len(inputs)
 
         # Calculate the base size of each batch
         base_batch_size = items_count // self._available_cores
@@ -65,7 +63,7 @@ class MultiprocessingCapable:
 
             # Slice and append the current batch
             batches_to_return.append(
-                collection[start_index : start_index + current_batch_size],
+                inputs[start_index : start_index + current_batch_size],
             )
 
             # Update the start index for the next batch
