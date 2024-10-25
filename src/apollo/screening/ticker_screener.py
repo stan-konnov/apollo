@@ -25,7 +25,6 @@ logger = getLogger(__name__)
 """
 TODO: Exclude by upcoming earnings (no surprises).
       Exclude by Hurst - avoid brownian motion (no random walk).
-      Exclude by liquidity via dollar volume (avoid partial fills).
 
 TODO: Look into avoiding selecting arbitrary window size.
 
