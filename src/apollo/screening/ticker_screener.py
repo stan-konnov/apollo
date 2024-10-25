@@ -188,7 +188,7 @@ class TickerScreener(MultiprocessingCapable):
         :returns: Ticker symbol of the most suitable ticker.
         """
 
-        # Include only those ticker with
+        # Include only those tickers with
         # Dollar Volume in configured quantile
         results_dataframe = results_dataframe.loc[
             results_dataframe["dollar_volume"]
