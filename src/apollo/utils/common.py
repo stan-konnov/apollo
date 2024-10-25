@@ -14,6 +14,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
     POSTGRES_URL,
+    SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
     SP500_COMPONENTS_URL,
     SP500_FUTURES_TICKER,
@@ -69,6 +70,7 @@ def ensure_environment_is_configured() -> None:
         "SP500_FUTURES_TICKER": SP500_FUTURES_TICKER,
         "SCREENING_WINDOW_SIZE": SCREENING_WINDOW_SIZE,
         "SUPPORTED_DATA_ENHANCERS": SUPPORTED_DATA_ENHANCERS,
+        "SCREENING_LIQUIDITY_THRESHOLD": SCREENING_LIQUIDITY_THRESHOLD,
     }
 
     # Check if any of the required variables are not set

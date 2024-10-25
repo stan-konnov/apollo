@@ -14,6 +14,7 @@ from apollo.settings import (
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
+    SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
     START_DATE,
 )
@@ -189,10 +190,15 @@ class TickerScreener(MultiprocessingCapable):
         :returns: Ticker symbol of the most suitable ticker.
         """
 
-        # Exclude tickers with Dollar Volume below mean
+        # Include only those ticker with
+        # Dollar Volume in configured quantile
         results_dataframe = results_dataframe.loc[
             results_dataframe["dollar_volume"]
-            > results_dataframe["dollar_volume"].mean()
+            > results_dataframe["dollar_volume"].quantile(
+                # We map to float from string since
+                # environment variables are expressed as strings
+                1 - float(str(SCREENING_LIQUIDITY_THRESHOLD)),
+            )
         ]
 
         # First, we normalize ATR against adjusted close
