@@ -171,7 +171,14 @@ class TickerScreener(MultiprocessingCapable):
         on volatility and noise measures and select
         the ticker that falls in the middle of the set.
 
-        TODO: explain why middle.
+        We choose the ticker that is closest to the mean score
+        since we are looking for the balance between calculated measures.
+
+        Specifically, we are aiming to avoid extremes:
+        too high volatility/noise can lead to excessive risk
+        while too low volatility/noise can lead to suboptimal returns.
+
+        In such we settle on the ticker that exhibits healthy balance.
 
         :param results_dataframe: Dataframe with measures.
         :returns: Ticker symbol of the most suitable ticker.
