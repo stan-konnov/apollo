@@ -149,10 +149,15 @@ class TickerScreener(MultiprocessingCapable):
                 # Calculate Kaufman Efficiency Ratio
                 ker_calculator.calculate_kaufman_efficiency_ratio()
 
+                # Calculate Dollar Volume
+                price_dataframe["dollar_volume"] = (
+                    price_dataframe["adj close"] * price_dataframe["adj volume"]
+                )
+
                 # For the purposes of screening we are
                 # only interested in the most recent values
                 relevant_result = price_dataframe.iloc[-1][
-                    ["ticker", "atr", "ker", "adj close"]
+                    ["ticker", "atr", "ker", "adj close", "dollar_volume"]
                 ]
 
                 # Append the result to the list
@@ -183,6 +188,12 @@ class TickerScreener(MultiprocessingCapable):
         :param results_dataframe: Dataframe with measures.
         :returns: Ticker symbol of the most suitable ticker.
         """
+
+        # Exclude tickers with Dollar Volume below mean
+        results_dataframe = results_dataframe.loc[
+            results_dataframe["dollar_volume"]
+            > results_dataframe["dollar_volume"].mean()
+        ]
 
         # First, we normalize ATR against adjusted close
         # to represent it as ratio and not absolute value
