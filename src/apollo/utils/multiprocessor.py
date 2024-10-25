@@ -1,5 +1,10 @@
 from multiprocessing import cpu_count
-from typing import Any, Iterable
+from typing import Iterable, TypeVar
+
+# Declare a generic type for the
+# collection item since different tasks
+# operate on different types of data structures
+TCollectionItem = TypeVar("TCollectionItem")
 
 
 class Multiprocessor:
@@ -26,11 +31,14 @@ class Multiprocessor:
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
 
-    def _batch_collection(self, collection: Iterable[Any]) -> list[list[Any]]:
+    def _batch_collection(
+        self,
+        collection: Iterable[TCollectionItem],
+    ) -> list[list[TCollectionItem]]:
         """
         Split collection into equal batches.
 
-        :param collection: Collection to split into batches.
+        :param collection: Collection to batch.
         :returns: List of batches with collection items.
         """
 

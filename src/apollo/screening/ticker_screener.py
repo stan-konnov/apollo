@@ -21,6 +21,16 @@ from apollo.utils.multiprocessor import Multiprocessor
 
 logger = getLogger(__name__)
 
+"""
+TODO: Exclude by liquidity (avoid partial fills).
+        Exclude by upcoming earnings (no surprises).
+        Exclude by Hurst - avoid brownian motion (no random walk).
+
+TODO: Look into avoiding selecting arbitrary window size.
+
+TODO: modelling and writing the Position with ticker into the database.
+"""
+
 
 class TickerScreener(Multiprocessor):
     """
@@ -29,14 +39,6 @@ class TickerScreener(Multiprocessor):
     Responsible for screening various ticker symbols
     based on the measures of volatility and noise with the
     purpose of identifying the most suitable ticker to trade.
-
-    TODO: Exclude by liquidity (avoid partial fills).
-          Exclude by upcoming earnings (no surprises).
-          Exclude by Hurst - avoid brownian motion (no random walk).
-
-    TODO: Look into avoiding selecting arbitrary window size.
-
-    TODO: modelling and writing the Position with ticker into the database.
 
     Is multiprocessing capable and runs in parallel.
     """
