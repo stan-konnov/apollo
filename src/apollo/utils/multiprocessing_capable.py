@@ -4,10 +4,10 @@ from typing import Iterable, TypeVar
 # Declare a generic type for the
 # collection item since different tasks
 # operate on different types of data structures
-TCollectionItem = TypeVar("TCollectionItem")
+TItem = TypeVar("TItem")
 
 
-class Multiprocessor:
+class MultiprocessingCapable:
     """
     Base class for multiprocessing tasks.
 
@@ -16,11 +16,10 @@ class Multiprocessor:
     """
 
     def __init__(self) -> None:
-        """Construct Multiprocessor."""
+        """Construct Multiprocessing Capable class."""
 
-        # Resolve batch count
-        # to number of available cores
-        self._batch_count = cpu_count()
+        # Get number of available cores
+        self._available_cores = cpu_count()
 
     def process_in_parallel(self) -> None:
         """
@@ -31,10 +30,7 @@ class Multiprocessor:
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
 
-    def _batch_collection(
-        self,
-        collection: Iterable[TCollectionItem],
-    ) -> list[list[TCollectionItem]]:
+    def _batch_collection(self, collection: Iterable[TItem]) -> list[list[TItem]]:
         """
         Split collection into equal batches.
 
@@ -52,16 +48,16 @@ class Multiprocessor:
         items_count = len(collection)
 
         # Calculate the base size of each batch
-        base_batch_size = items_count // self._batch_count
+        base_batch_size = items_count // self._available_cores
 
         # Calculate the size of the remainder batch
-        remainder_batch_size = items_count % self._batch_count
+        remainder_batch_size = items_count % self._available_cores
 
         start_index = 0
         batches_to_return = []
 
         # Iterate over the number of batches
-        for i in range(self._batch_count):
+        for i in range(self._available_cores):
             # Calculate the current batch size
             current_batch_size = base_batch_size + (
                 1 if i < remainder_batch_size else 0

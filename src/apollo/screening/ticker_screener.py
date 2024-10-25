@@ -17,7 +17,7 @@ from apollo.settings import (
     SCREENING_WINDOW_SIZE,
     START_DATE,
 )
-from apollo.utils.multiprocessor import Multiprocessor
+from apollo.utils.multiprocessing_capable import MultiprocessingCapable
 
 logger = getLogger(__name__)
 
@@ -32,7 +32,7 @@ TODO: modelling and writing the Position with ticker into the database.
 """
 
 
-class TickerScreener(Multiprocessor):
+class TickerScreener(MultiprocessingCapable):
     """
     Ticker Screener class.
 
@@ -68,7 +68,7 @@ class TickerScreener(Multiprocessor):
         )
 
         # Process each batch in parallel
-        with Pool(processes=self._batch_count) as pool:
+        with Pool(processes=self._available_cores) as pool:
             # Request the prices
             # and calculate volatility and noise
             # for each ticker in provided batches

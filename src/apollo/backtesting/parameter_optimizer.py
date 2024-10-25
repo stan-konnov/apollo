@@ -22,7 +22,7 @@ from apollo.settings import (
     TICKER,
 )
 from apollo.utils.configuration import Configuration
-from apollo.utils.multiprocessor import Multiprocessor
+from apollo.utils.multiprocessing_capable import MultiprocessingCapable
 from apollo.utils.types import (
     ParameterCombinations,
     ParameterKeysAndCombinations,
@@ -32,7 +32,7 @@ from apollo.utils.types import (
 logger = getLogger(__name__)
 
 
-class ParameterOptimizer(Multiprocessor):
+class ParameterOptimizer(MultiprocessingCapable):
     """
     Parameter Optimizer class.
 
@@ -98,7 +98,7 @@ class ParameterOptimizer(Multiprocessor):
         ]
 
         # Process each batch in parallel
-        with Pool(processes=self._batch_count) as pool:
+        with Pool(processes=self._available_cores) as pool:
             results = pool.starmap(self._process, batch_arguments)
 
             # Concatenate the results from each process
