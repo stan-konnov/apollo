@@ -151,7 +151,7 @@ class TickerScreener(MultiprocessingCapable):
 
                 # Calculate Dollar Volume
                 price_dataframe["dollar_volume"] = (
-                    price_dataframe["adj close"] * price_dataframe["adj volume"]
+                    price_dataframe["close"] * price_dataframe["volume"]
                 )
 
                 # For the purposes of screening we are
