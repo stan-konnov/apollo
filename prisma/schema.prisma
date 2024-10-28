@@ -86,11 +86,6 @@ model positions {
   // After position is closed, we know our PnL
   profit_and_loss           Float?
 
-  // Timestamps to track the lifecycle
-  signaled_at               DateTime?
-  entered_at                DateTime?
-  exited_at                 DateTime?
-
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
 }
