@@ -1,7 +1,9 @@
+from datetime import datetime
 from logging import getLogger
 from multiprocessing import Pool
 
 import pandas as pd
+from zoneinfo import ZoneInfo
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
@@ -13,6 +15,8 @@ from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 from apollo.settings import (
     END_DATE,
+    EXCHANGE,
+    EXCHANGE_TIME_ZONE_AND_HOURS,
     FREQUENCY,
     MAX_PERIOD,
     SCREENING_LIQUIDITY_THRESHOLD,
@@ -210,6 +214,28 @@ class TickerScreener(MultiprocessingCapable):
                 # We map to float from string since
                 # environment variables are expressed as strings
                 float(str(SCREENING_LIQUIDITY_THRESHOLD)),
+            )
+        ]
+
+        # Include only those tickers with no
+        # earnings date within the next window
+        configured_exchange_date = datetime.now(
+            tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+        ).date()
+
+        # NOTE: we allow tickers that
+        # do not yet have earnings announced
+        results_dataframe = results_dataframe.loc[
+            (
+                results_dataframe["earnings_date"].isna()
+                | (
+                    results_dataframe["earnings_date"]
+                    > configured_exchange_date
+                    + pd.Timedelta(
+                        int(str(SCREENING_WINDOW_SIZE)),
+                        unit="D",
+                    )
+                )
             )
         ]
 
