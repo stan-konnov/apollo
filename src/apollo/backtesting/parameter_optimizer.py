@@ -90,7 +90,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         )
 
         # Break down combinations into equal batches
-        batches = self._batch_inputs_collection(combinations)
+        batches = self._create_batches(combinations)
 
         # Create arguments to supply to each process
         batch_arguments = [

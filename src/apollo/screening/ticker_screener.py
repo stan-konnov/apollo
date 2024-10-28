@@ -28,6 +28,16 @@ TODO: 1. Comments.
       3. Exclude by Hurst - avoid brownian motion (no random walk).
       4. Modelling and writing the Position with ticker into the database.
       5. Look into avoiding selecting arbitrary window size and liquidity threshold.
+
+
+NOTE: We choose an arbitrary window size for both measures.
+
+Clearly, there has to be a better,
+data-driven way to determine the optimal window
+size for each measure, but due to the absence of a more
+robust solution we (for now) settle for the last (rolling) trading week.
+
+Please see SCREENING_WINDOW_SIZE in the settings.
 """
 
 
@@ -62,7 +72,7 @@ class TickerScreener(MultiprocessingCapable):
         )
 
         # Break down tickers into equal batches
-        batches = self._batch_inputs_collection(sp500_components_tickers)
+        batches = self._create_batches(sp500_components_tickers)
 
         # Process each batch in parallel
         with Pool(processes=self._available_cores) as pool:
@@ -92,15 +102,6 @@ class TickerScreener(MultiprocessingCapable):
 
         Request historical data for each ticker and calculate volatility
         expressed as Average True Range and noise as Kaufman Efficiency Ratio.
-
-        NOTE: We choose an arbitrary window size for both measures.
-
-        Clearly, there has to be a better,
-        data-driven way to determine the optimal window
-        size for each measure, but due to the absence of a more
-        robust solution we (for now) settle for the last (rolling) trading week.
-
-        Please see SCREENING_WINDOW_SIZE in the settings.
 
         :param tickers: List of tickers to screen.
         :returns: List of DataFrames with volatility and noise measures.

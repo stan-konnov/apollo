@@ -30,7 +30,7 @@ class MultiprocessingCapable:
 
         raise NotImplementedError("Method process_in_parallel is not implemented.")
 
-    def _batch_inputs_collection(self, inputs: Iterable[TItem]) -> list[list[TItem]]:
+    def _create_batches(self, inputs: Iterable[TItem]) -> list[list[TItem]]:
         """
         Split inputs collection into equal batches.
 
