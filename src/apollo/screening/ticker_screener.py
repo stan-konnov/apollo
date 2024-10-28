@@ -118,7 +118,7 @@ class TickerScreener(MultiprocessingCapable):
         price_data_provider = PriceDataProvider()
 
         # Initialize list to store the results
-        result_dataframes: list[pd.Series] = []
+        result_series: list[pd.Series] = []
 
         try:
             for ticker in tickers:
@@ -178,12 +178,12 @@ class TickerScreener(MultiprocessingCapable):
                 ]
 
                 # Append the result to the list
-                result_dataframes.append(relevant_result)
+                result_series.append(relevant_result)
 
         except EmptyApiResponseError:
             logger.warning("API returned empty response, skipping ticker.")
 
-        return result_dataframes
+        return result_series
 
     def _select_suitable_ticker(self, results_dataframe: pd.DataFrame) -> str:
         """
