@@ -84,8 +84,8 @@ class TickerScreener(MultiprocessingCapable):
         # Process each batch in parallel
         with Pool(processes=self._available_cores) as pool:
             # Request the prices
-            # and calculate volatility and noise
-            # for each ticker in provided batches
+            # and calculate measures
+            # for each ticker in the batch
             results = pool.map(self._calculate_measures, batches)
 
             # Flatten the computed results
