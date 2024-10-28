@@ -66,7 +66,7 @@ model positions {
   direction                 Int?
   limit_price               Float?
 
-  // After the order is placed (and filled)
+  // After the opening order is filled
   // we know our entry price and date, and size
   entry_price               Float?
   entry_date                DateTime?
@@ -78,12 +78,14 @@ model positions {
   stop_loss                 Float?
   take_profit               Float?
 
-  // After the closing order is placed (and filled)
+  // After the closing order is filled
   // we know our exit price and date
   exit_price                Float?
   exit_date                 DateTime?
 
-  // After position is closed, we know our PnL
+  // After position is closed,
+  // we know our return and PnL
+  return                    Float?
   profit_and_loss           Float?
 
   created_at                DateTime @default(now())
