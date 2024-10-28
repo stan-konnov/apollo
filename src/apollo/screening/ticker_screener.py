@@ -29,10 +29,9 @@ logger = getLogger(__name__)
 
 """
 TODO: 1. Comments.
-      2. Exclude by upcoming earnings/dividends (no surprises).
-      3. Exclude by Hurst - avoid brownian motion (no random walk).
-      4. Modelling and writing the Position with ticker into the database.
-      5. Look into avoiding selecting arbitrary window size and liquidity threshold.
+      2. Exclude by Hurst - avoid brownian motion (no random walk).
+      3. Modelling and writing the Position with ticker into the database.
+      4. Look into avoiding selecting arbitrary window size and liquidity threshold.
 
 
 NOTE: We choose an arbitrary window size for both measures.
