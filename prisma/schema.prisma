@@ -51,3 +51,46 @@ model backtesting_results {
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
 }
+
+model positions {
+  id                        String @id @unique @default(uuid())
+
+  // At the point of initialization
+  // we only know ticker and default status
+  ticker                    String
+  status                    String
+
+  // After backtesting optimization
+  // we know the strategy, direction, and limit price
+  strategy                  String?
+  direction                 Int?
+  limit_price               Float?
+
+  // After the order is placed (and filled)
+  // we know our entry price and date, and size
+  entry_price               Float?
+  entry_date                DateTime?
+  unit_size                 Float?
+  cash_size                 Float?
+
+  // After elapsing one observation period
+  // we know our stop loss and take profit
+  stop_loss                 Float?
+  take_profit               Float?
+
+  // After the closing order is placed (and filled)
+  // we know our exit price and date
+  exit_price                Float?
+  exit_date                 DateTime?
+
+  // After position is closed, we know our PnL
+  profit_and_loss           Float?
+
+  // Timestamps to track the lifecycle
+  signaled_at               DateTime?
+  entered_at                DateTime?
+  exited_at                 DateTime?
+
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+}
