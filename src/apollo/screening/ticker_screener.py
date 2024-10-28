@@ -62,12 +62,14 @@ class TickerScreener(MultiprocessingCapable):
         Construct Ticker Screener.
 
         Initialize API Connector.
+        Initialize Price Data Provider.
         Initialize S&P500 Components Scraper.
         """
 
         super().__init__()
 
         self._api_connector = YahooApiConnector()
+        self._price_data_provider = PriceDataProvider()
         self._sp500_components_scraper = SP500ComponentsScraper()
 
     def process_in_parallel(self) -> None:
@@ -86,7 +88,7 @@ class TickerScreener(MultiprocessingCapable):
             # Request the prices
             # and calculate measures
             # for each ticker in the batch
-            results = pool.map(self._calculate_measures, batches, chunksize=1)
+            results = pool.map(self._calculate_measures, batches)
 
             # Combine the computed results
             combined_results = pd.concat(results)
@@ -107,16 +109,13 @@ class TickerScreener(MultiprocessingCapable):
         :returns: List of DataFrames with volatility and noise measures.
         """
 
-        # Instantiate price data provider
-        price_data_provider = PriceDataProvider()
-
         # Initialize dataframe for results
         results_dataframe = pd.DataFrame()
 
         for ticker in tickers:
             try:
                 # Request price data for the current ticker
-                price_dataframe = price_data_provider.get_price_data(
+                price_dataframe = self._price_data_provider.get_price_data(
                     ticker=ticker,
                     frequency=str(FREQUENCY),
                     start_date=str(START_DATE),
@@ -174,7 +173,7 @@ class TickerScreener(MultiprocessingCapable):
                     ],
                 )
 
-                # Expand the dataframe with result
+                # Append the result to the dataframe
                 results_dataframe = pd.concat(
                     [results_dataframe, relevant_result],
                 )

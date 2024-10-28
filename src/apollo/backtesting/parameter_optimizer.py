@@ -207,13 +207,7 @@ class ParameterOptimizer(MultiprocessingCapable):
             this_run_results["parameters"] = str(combination_to_test)
 
             # Append the results of this run to the results dataframe
-            if results_dataframe.empty:
-                results_dataframe = this_run_results
-
-            else:
-                results_dataframe = pd.concat(
-                    [results_dataframe, this_run_results],
-                )
+            results_dataframe = pd.concat([results_dataframe, this_run_results])
 
         return results_dataframe
 
