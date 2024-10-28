@@ -110,8 +110,8 @@ class TickerScreener(MultiprocessingCapable):
         # Instantiate price data provider
         price_data_provider = PriceDataProvider()
 
-        # Initialize dataframe to store results
-        results_dataframe: pd.DataFrame = pd.DataFrame()
+        # Initialize dataframe for results
+        results_dataframe = pd.DataFrame()
 
         for ticker in tickers:
             try:
