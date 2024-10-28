@@ -7,6 +7,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
+from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
@@ -56,11 +57,13 @@ class TickerScreener(MultiprocessingCapable):
         """
         Construct Ticker Screener.
 
-        Initializes S&P500 Components Scraper.
+        Initialize API Connector.
+        Initialize S&P500 Components Scraper.
         """
 
         super().__init__()
 
+        self._api_connector = YahooApiConnector()
         self._sp500_components_scraper = SP500ComponentsScraper()
 
     def process_in_parallel(self) -> None:
@@ -124,18 +127,23 @@ class TickerScreener(MultiprocessingCapable):
                     max_period=bool(MAX_PERIOD),
                 )
 
+                # Get upcoming earnings date
+                price_dataframe["earnings_date"] = (
+                    self._api_connector.request_upcoming_earnings_date(
+                        ticker,
+                    )
+                )
+
                 # Precalculate previous close necessary for ATR calculation
                 price_dataframe["prev_close"] = price_dataframe["adj close"].shift(1)
 
-                # Instantiate Average True Range calculator
+                # Calculate Average True Range
                 atr_calculator = AverageTrueRangeCalculator(
                     dataframe=price_dataframe,
                     # We map to integer from string since
                     # environment variables are expressed as strings
                     window_size=int(str(SCREENING_WINDOW_SIZE)),
                 )
-
-                # Calculate Average True Range
                 atr_calculator.calculate_average_true_range()
 
                 # Calculate Kaufman Efficiency Ratio
@@ -145,8 +153,6 @@ class TickerScreener(MultiprocessingCapable):
                     # environment variables are expressed as strings
                     window_size=int(str(SCREENING_WINDOW_SIZE)),
                 )
-
-                # Calculate Kaufman Efficiency Ratio
                 ker_calculator.calculate_kaufman_efficiency_ratio()
 
                 # Calculate Dollar Volume
@@ -157,7 +163,14 @@ class TickerScreener(MultiprocessingCapable):
                 # For the purposes of screening we are
                 # only interested in the most recent values
                 relevant_result = price_dataframe.iloc[-1][
-                    ["ticker", "atr", "ker", "adj close", "dollar_volume"]
+                    [
+                        "ticker",
+                        "earnings_date",
+                        "atr",
+                        "ker",
+                        "adj close",
+                        "dollar_volume",
+                    ]
                 ]
 
                 # Append the result to the list
@@ -196,7 +209,7 @@ class TickerScreener(MultiprocessingCapable):
             > results_dataframe["dollar_volume"].quantile(
                 # We map to float from string since
                 # environment variables are expressed as strings
-                1 - float(str(SCREENING_LIQUIDITY_THRESHOLD)),
+                float(str(SCREENING_LIQUIDITY_THRESHOLD)),
             )
         ]
 

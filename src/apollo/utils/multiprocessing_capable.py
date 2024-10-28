@@ -32,7 +32,7 @@ class MultiprocessingCapable:
 
     def _create_batches(self, inputs: Iterable[TItem]) -> list[list[TItem]]:
         """
-        Split inputs collection into equal batches.
+        Break inputs collection into equal batches.
 
         :param inputs: Inputs collection to batch.
         :returns: List of batches with collection items.
