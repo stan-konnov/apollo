@@ -86,24 +86,17 @@ class TickerScreener(MultiprocessingCapable):
             # Request the prices
             # and calculate measures
             # for each ticker in the batch
-            results = pool.map(self._calculate_measures, batches)
+            results = pool.map(self._calculate_measures, batches, chunksize=1)
 
-            # Flatten the computed results
-            flattened_results = [
-                ticker_results
-                for batch_results in results
-                for ticker_results in batch_results
-            ]
-
-            # Combine results into single dataframe
-            results_dataframe = pd.DataFrame(flattened_results)
+            # Combine the computed results
+            combined_results = pd.concat(results)
 
             # Select the most suitable ticker
-            selected_ticker = self._select_suitable_ticker(results_dataframe)
+            selected_ticker = self._select_suitable_ticker(combined_results)
 
             logger.info(f"Selected ticker: {selected_ticker}")
 
-    def _calculate_measures(self, tickers: list[str]) -> list[pd.Series]:
+    def _calculate_measures(self, tickers: list[str]) -> pd.DataFrame:
         """
         Calculate volatility and noise for each ticker.
 
@@ -117,11 +110,11 @@ class TickerScreener(MultiprocessingCapable):
         # Instantiate price data provider
         price_data_provider = PriceDataProvider()
 
-        # Initialize list to store the results
-        result_series: list[pd.Series] = []
+        # Initialize dataframe to store results
+        results_dataframe: pd.DataFrame = pd.DataFrame()
 
-        try:
-            for ticker in tickers:
+        for ticker in tickers:
+            try:
                 # Request price data for the current ticker
                 price_dataframe = price_data_provider.get_price_data(
                     ticker=ticker,
@@ -166,24 +159,34 @@ class TickerScreener(MultiprocessingCapable):
 
                 # For the purposes of screening we are
                 # only interested in the most recent values
-                relevant_result = price_dataframe.iloc[-1][
+                relevant_result = pd.DataFrame(
                     [
-                        "ticker",
-                        "earnings_date",
-                        "atr",
-                        "ker",
-                        "adj close",
-                        "dollar_volume",
-                    ]
-                ]
+                        price_dataframe.iloc[-1][
+                            [
+                                "ticker",
+                                "earnings_date",
+                                "atr",
+                                "ker",
+                                "adj close",
+                                "dollar_volume",
+                            ]
+                        ],
+                    ],
+                )
 
-                # Append the result to the list
-                result_series.append(relevant_result)
+                # Expand the dataframe with result
+                results_dataframe = pd.concat(
+                    [results_dataframe, relevant_result],
+                )
 
-        except EmptyApiResponseError:
-            logger.warning("API returned empty response, skipping ticker.")
+            except EmptyApiResponseError:  # noqa: PERF203
+                logger.warning(
+                    f"API returned empty response for {ticker}, skipping ticker.",
+                )
 
-        return result_series
+                continue
+
+        return results_dataframe
 
     def _select_suitable_ticker(self, results_dataframe: pd.DataFrame) -> str:
         """
