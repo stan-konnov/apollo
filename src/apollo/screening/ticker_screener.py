@@ -10,6 +10,7 @@ from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
@@ -67,6 +68,7 @@ class TickerScreener(MultiprocessingCapable):
         super().__init__()
 
         self._api_connector = YahooApiConnector()
+        self._database_connector = PostgresConnector()
         self._price_data_provider = PriceDataProvider()
         self._sp500_components_scraper = SP500ComponentsScraper()
 
@@ -94,7 +96,12 @@ class TickerScreener(MultiprocessingCapable):
             # Select the most suitable ticker
             selected_ticker = self._select_suitable_ticker(combined_results)
 
-            logger.info(f"Selected ticker: {selected_ticker}")
+            # Initialize position in the database
+            self._database_connector.create_position_on_screening(selected_ticker)
+
+            logger.info(
+                f"Screening process complete. Selected ticker: {selected_ticker}",
+            )
 
     def _calculate_measures(self, tickers: list[str]) -> pd.DataFrame:
         """

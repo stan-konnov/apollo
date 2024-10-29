@@ -115,7 +115,7 @@ class PostgresConnector:
         # Check if we do not have position
         # in one of the following statuses:
         # screened, backtested, dispatched, open
-        existing_position = self._database_client.positions.find_first(
+        existing_active_position = self._database_client.positions.find_first(
             where={
                 "ticker": ticker,
                 "status": {
@@ -129,22 +129,22 @@ class PostgresConnector:
             },
         )
 
-        # Raise if we do
-        if existing_position:
+        # Raise if active position exists
+        if existing_active_position:
             raise ActivePositionAlreadyExistsError(
                 f"Active position already exists for the ticker {ticker}. "
-                f"Created at: {existing_position.created_at}. "
-                f"Status: {existing_position.status}.",
+                f"Created at: {existing_active_position.created_at}. "
+                f"Status: {existing_active_position.status}.",
             )
 
         # Otherwise, create database model and write
-        position_model = Position(
+        writable_position_model = Position(
             ticker=ticker,
             status=PositionStatus.SCREENED,
         ).model_dump()
 
         self._database_client.positions.create(
-            data=position_model,  # type: ignore  # noqa: PGH003
+            data=writable_position_model,  # type: ignore  # noqa: PGH003
         )
 
         self._database_client.disconnect()
