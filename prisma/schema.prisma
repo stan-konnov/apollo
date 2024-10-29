@@ -85,7 +85,7 @@ model positions {
 
   // After position is closed,
   // we know our return and PnL
-  return                    Float?
+  return_percent            Float?
   profit_and_loss           Float?
 
   created_at                DateTime @default(now())

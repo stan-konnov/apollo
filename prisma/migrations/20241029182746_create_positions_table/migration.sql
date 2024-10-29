@@ -14,7 +14,7 @@ CREATE TABLE "positions" (
     "take_profit" DOUBLE PRECISION,
     "exit_price" DOUBLE PRECISION,
     "exit_date" TIMESTAMP(3),
-    "return" DOUBLE PRECISION,
+    "return_percent" DOUBLE PRECISION,
     "profit_and_loss" DOUBLE PRECISION,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
