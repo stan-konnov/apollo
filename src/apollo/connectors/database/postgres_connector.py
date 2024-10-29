@@ -1,7 +1,6 @@
 import pandas as pd
 from prisma import Prisma
 
-from apollo.errors.position import ActivePositionAlreadyExistsError
 from apollo.models.backtesting_results import BacktestingResults
 from apollo.models.position import Position, PositionStatus
 
@@ -100,22 +99,23 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def check_if_active_position_exists(self) -> bool:
+    def check_if_active_position_exists(self) -> Position | None:
         """
         Check if active position exists.
 
-        Is used before the screening process to ensure
-        that no active position exists before kicking off the process.
+        Is used to validate the business invariant
+        that only one active position can exist at a time.
 
-        :param ticker: Ticker to check for active position.
-        :returns: True if active position exists, False otherwise.
+        NOTE: We consider a position to be active if it
+        falls under any of the following statuses:
+        screened, backtested, dispatched, open.
+
+        :returns: Active position if exists, otherwise None.
         """
 
         self._database_client.connect()
 
-        # Check if we have a position
-        # in one of the following statuses:
-        # screened, backtested, dispatched, open
+        # Check if we have any active position
         existing_active_position = self._database_client.positions.find_first(
             where={
                 "status": {
@@ -131,51 +131,33 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-        return bool(existing_active_position)
+        # And return a model if exists
+        return (
+            Position(
+                ticker=existing_active_position.ticker,
+                created_at=existing_active_position.created_at,
+                status=PositionStatus(existing_active_position.status),
+            )
+            if existing_active_position
+            else None
+        )
 
     def create_position_on_screening(self, ticker: str) -> None:
         """
         Create a position entity after screening.
-
-        NOTE: this clearly contains a repetition of the logic
-        above, yet, exists to double-validate the business invariant.
 
         :param ticker: Ticker to create a position for.
         """
 
         self._database_client.connect()
 
-        # Check if we have a position
-        # in one of the following statuses:
-        # screened, backtested, dispatched, open
-        existing_active_position = self._database_client.positions.find_first(
-            where={
-                "ticker": ticker,
-                "status": {
-                    "in": [
-                        PositionStatus.SCREENED.value,
-                        PositionStatus.BACKTESTED.value,
-                        PositionStatus.DISPATCHED.value,
-                        PositionStatus.OPEN.value,
-                    ],
-                },
-            },
-        )
-
-        # Raise if active position exists
-        if existing_active_position:
-            raise ActivePositionAlreadyExistsError(
-                f"Active position already exists for the ticker {ticker}. "
-                f"Created at: {existing_active_position.created_at}. "
-                f"Status: {existing_active_position.status}.",
-            )
-
-        # Otherwise, create database model and write
+        # Create a database model
         writable_position_model = Position(
             ticker=ticker,
             status=PositionStatus.SCREENED,
         ).model_dump()
 
+        # And write it to the disk
         self._database_client.positions.create(
             data=writable_position_model,  # type: ignore  # noqa: PGH003
         )
