@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -21,27 +22,30 @@ class PositionStatus(Enum):
 
 
 class Position(BaseModel):
-    """A data model to represent a position."""
+    """
+    A data model to represent a position.
 
-    id: str
+    Please see /prisma/schema.prisma for
+    detailed explanation of nullable fields.
+    """
 
     ticker: str
     status: PositionStatus
 
-    strategy: str
-    direction: int
-    limit_price: float
+    strategy: Optional[str] = None
+    direction: Optional[int] = None
+    limit_price: Optional[float] = None
 
-    entry_price: float
-    entry_date: datetime
-    unit_size: float
-    cash_size: float
+    entry_price: Optional[float] = None
+    entry_date: Optional[datetime] = None
+    unit_size: Optional[float] = None
+    cash_size: Optional[float] = None
 
-    stop_loss: float
-    take_profit: float
+    stop_loss: Optional[float] = None
+    take_profit: Optional[float] = None
 
-    exit_price: float
-    exit_date: datetime
+    exit_price: Optional[float] = None
+    exit_date: Optional[datetime] = None
 
-    return_percent: float
-    profit_and_loss: float
+    return_percent: Optional[float] = None
+    profit_and_loss: Optional[float] = None
