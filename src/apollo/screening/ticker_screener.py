@@ -30,7 +30,6 @@ logger = getLogger(__name__)
 
 """
 TODO: 1. Comments.
-      2. Look into avoiding selecting arbitrary window size and liquidity threshold.
 
 
 NOTE: We choose an arbitrary window size for both measures.
