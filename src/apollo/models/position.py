@@ -49,6 +49,3 @@ class Position(BaseModel):
 
     return_percent: Optional[float] = None
     profit_and_loss: Optional[float] = None
-
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None

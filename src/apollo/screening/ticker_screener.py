@@ -84,11 +84,9 @@ class TickerScreener(MultiprocessingCapable):
         # log the info message and return
         if existing_active_position:
             logger.info(
-                "Active position already exists. Skipping screening. "
-                f"Ticker: {existing_active_position.ticker}. "
-                f"Status: {existing_active_position.status.value}. "
-                f"Created at: {existing_active_position.created_at}.",
+                "Active position already exists. Skipping screening.",
             )
+
             return
 
         # Scrape S&P500 components tickers
