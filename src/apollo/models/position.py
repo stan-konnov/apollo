@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class PositionStatus(str, Enum):
-    """An enum to represent the status of a position."""
+    """An enumeration to represent the status of a position."""
 
     # Statuses relevant
     # to market execution
