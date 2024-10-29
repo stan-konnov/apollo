@@ -75,6 +75,8 @@ class TickerScreener(MultiprocessingCapable):
     def process_in_parallel(self) -> None:
         """Run the screening process in parallel."""
 
+        logger.info("Screening process started.")
+
         # Scrape S&P500 components tickers
         sp500_components_tickers = (
             self._sp500_components_scraper.scrape_sp500_components()
