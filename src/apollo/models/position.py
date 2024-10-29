@@ -11,7 +11,7 @@ class PositionStatus(Enum):
     # Statuses relevant
     # to signal generation
     SCREENED = "screened"
-    SUBMITTED = "submitted"
+    BACKTESTED = "backtested"
     DISPATCHED = "dispatched"
 
     # Statuses relevant
