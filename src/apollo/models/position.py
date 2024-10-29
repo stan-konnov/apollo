@@ -5,20 +5,20 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class PositionStatus(str, Enum):
+class PositionStatus(Enum):
     """An enumeration to represent the status of a position."""
-
-    # Statuses relevant
-    # to market execution
-    OPEN = "open"
-    CLOSED = "closed"
-    CANCELLED = "cancelled"
 
     # Statuses relevant
     # to signal generation
     SCREENED = "screened"
     BACKTESTED = "backtested"
     DISPATCHED = "dispatched"
+
+    # Statuses relevant
+    # to market execution
+    OPEN = "open"
+    CLOSED = "closed"
+    CANCELLED = "cancelled"
 
 
 class Position(BaseModel):
