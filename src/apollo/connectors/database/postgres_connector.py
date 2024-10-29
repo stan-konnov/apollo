@@ -112,14 +112,14 @@ class PostgresConnector:
 
         self._database_client.connect()
 
-        # Check if we do not have position
+        # Check if we have a position
         # in one of the following statuses:
         # screened, backtested, dispatched, open
         existing_active_position = self._database_client.positions.find_first(
             where={
                 "ticker": ticker,
                 "status": {
-                    "not_in": [
+                    "in": [
                         PositionStatus.SCREENED.value,
                         PositionStatus.BACKTESTED.value,
                         PositionStatus.DISPATCHED.value,
