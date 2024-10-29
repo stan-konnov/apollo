@@ -30,8 +30,7 @@ logger = getLogger(__name__)
 
 """
 TODO: 1. Comments.
-      2. Modelling and writing the Position with ticker into the database.
-      3. Look into avoiding selecting arbitrary window size and liquidity threshold.
+      2. Look into avoiding selecting arbitrary window size and liquidity threshold.
 
 
 NOTE: We choose an arbitrary window size for both measures.
@@ -61,6 +60,7 @@ class TickerScreener(MultiprocessingCapable):
         Construct Ticker Screener.
 
         Initialize API Connector.
+        Initialize Database Connector.
         Initialize Price Data Provider.
         Initialize S&P500 Components Scraper.
         """
