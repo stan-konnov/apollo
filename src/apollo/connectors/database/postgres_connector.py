@@ -116,10 +116,8 @@ class PostgresConnector:
 
         self._database_client.connect()
 
-        # Check if we have position
-        # in one of the following statuses:
-        # screened, backtested, dispatched, open
-        existing_position = self._database_client.positions.find_first(
+        # Check if we have active position
+        existing_active_position = self._database_client.positions.find_first(
             where={
                 "ticker": ticker,
                 "status": {
@@ -138,10 +136,10 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
-                ticker=existing_position.ticker,
-                status=PositionStatus(existing_position.status),
+                ticker=existing_active_position.ticker,
+                status=PositionStatus(existing_active_position.status),
             )
-            if existing_position
+            if existing_active_position
             else None
         )
 

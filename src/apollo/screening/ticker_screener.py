@@ -98,7 +98,7 @@ class TickerScreener(MultiprocessingCapable):
             selected_ticker = self._select_suitable_ticker(combined_results)
 
             logger.info(
-                f"Screening process complete. Selected ticker: {selected_ticker}",
+                f"Screening process complete. Selected ticker: {selected_ticker}.",
             )
 
             # Check if we have an active position for the selected ticker
