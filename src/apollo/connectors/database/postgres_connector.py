@@ -100,12 +100,45 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
+    def check_if_active_position_exists(self) -> bool:
+        """
+        Check if active position exists.
+
+        Is used before the screening process to ensure
+        that no active position exists before kicking off the process.
+
+        :param ticker: Ticker to check for active position.
+        :returns: True if active position exists, False otherwise.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have a position
+        # in one of the following statuses:
+        # screened, backtested, dispatched, open
+        existing_active_position = self._database_client.positions.find_first(
+            where={
+                "status": {
+                    "in": [
+                        PositionStatus.SCREENED.value,
+                        PositionStatus.BACKTESTED.value,
+                        PositionStatus.DISPATCHED.value,
+                        PositionStatus.OPEN.value,
+                    ],
+                },
+            },
+        )
+
+        self._database_client.disconnect()
+
+        return bool(existing_active_position)
+
     def create_position_on_screening(self, ticker: str) -> None:
         """
         Create a position entity after screening.
 
-        Validate business invariant of
-        maintaining a single position at a time.
+        NOTE: this clearly contains a repetition of the logic
+        above, yet, exists to double-validate the business invariant.
 
         :param ticker: Ticker to create a position for.
         """

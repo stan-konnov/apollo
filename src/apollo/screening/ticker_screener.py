@@ -75,6 +75,20 @@ class TickerScreener(MultiprocessingCapable):
     def process_in_parallel(self) -> None:
         """Run the screening process in parallel."""
 
+        # Check if there is an active position
+        existing_active_position = (
+            self._database_connector.check_if_active_position_exists()
+        )
+
+        # If active position exists,
+        # log the info message and return
+        if existing_active_position:
+            logger.info(
+                "Active position already exists. Skipping screening.",
+            )
+
+            return
+
         # Scrape S&P500 components tickers
         sp500_components_tickers = (
             self._sp500_components_scraper.scrape_sp500_components()
