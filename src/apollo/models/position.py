@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class PositionStatus(Enum):
+class PositionStatus(str, Enum):
     """An enumeration to represent the status of a position."""
 
     # Statuses relevant

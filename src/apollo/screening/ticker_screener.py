@@ -10,6 +10,7 @@ from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
+from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
@@ -29,8 +30,7 @@ logger = getLogger(__name__)
 
 """
 TODO: 1. Comments.
-      2. Modelling and writing the Position with ticker into the database.
-      3. Look into avoiding selecting arbitrary window size and liquidity threshold.
+      2. Look into avoiding selecting arbitrary window size and liquidity threshold.
 
 
 NOTE: We choose an arbitrary window size for both measures.
@@ -60,6 +60,7 @@ class TickerScreener(MultiprocessingCapable):
         Construct Ticker Screener.
 
         Initialize API Connector.
+        Initialize Database Connector.
         Initialize Price Data Provider.
         Initialize S&P500 Components Scraper.
         """
@@ -67,6 +68,7 @@ class TickerScreener(MultiprocessingCapable):
         super().__init__()
 
         self._api_connector = YahooApiConnector()
+        self._database_connector = PostgresConnector()
         self._price_data_provider = PriceDataProvider()
         self._sp500_components_scraper = SP500ComponentsScraper()
 
@@ -94,7 +96,29 @@ class TickerScreener(MultiprocessingCapable):
             # Select the most suitable ticker
             selected_ticker = self._select_suitable_ticker(combined_results)
 
-            logger.info(f"Selected ticker: {selected_ticker}")
+            logger.info(
+                f"Screening process complete. Selected ticker: {selected_ticker}",
+            )
+
+            # Check if we have an active position for the selected ticker
+            existing_active_position = (
+                self._database_connector.get_existing_active_position(
+                    selected_ticker,
+                )
+            )
+
+            # If we have an active position,
+            # log info message and skip the write
+            if existing_active_position:
+                logger.info(
+                    f"Active position for {selected_ticker} already exists. "
+                    f"Status: {existing_active_position.status.value}. "
+                    "Skipping position creation.",
+                )
+                return
+
+            # Otherwise, initialize position in the database
+            self._database_connector.create_position_on_screening(selected_ticker)
 
     def _calculate_measures(self, tickers: list[str]) -> pd.DataFrame:
         """
