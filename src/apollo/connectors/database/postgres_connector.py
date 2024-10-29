@@ -1,7 +1,9 @@
 import pandas as pd
 from prisma import Prisma
 
+from apollo.errors.position import ActivePositionAlreadyExistsError
 from apollo.models.backtesting_results import BacktestingResults
+from apollo.models.position import Position, PositionStatus
 
 
 class PostgresConnector:
@@ -95,5 +97,54 @@ class PostgresConnector:
                 },
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
+
+        self._database_client.disconnect()
+
+    def create_position_on_screening(self, ticker: str) -> None:
+        """
+        Create a position entity after screening.
+
+        Validate business invariant of
+        maintaining a single position at a time.
+
+        :param ticker: Ticker to create a position for.
+        """
+
+        self._database_client.connect()
+
+        # Check if we do not have position
+        # in one of the following statuses:
+        # screened, backtested, dispatched, open
+        existing_position = self._database_client.positions.find_first(
+            where={
+                "ticker": ticker,
+                "status": {
+                    "not_in": [
+                        PositionStatus.SCREENED.value,
+                        PositionStatus.BACKTESTED.value,
+                        PositionStatus.DISPATCHED.value,
+                        PositionStatus.OPEN.value,
+                    ],
+                },
+            },
+        )
+
+        # Raise if we do
+        if existing_position:
+            raise ActivePositionAlreadyExistsError(
+                f"Active position already exists for the ticker {ticker}. "
+                f"Created at: {existing_position.created_at}. "
+                f"Status: {existing_position.status}.",
+            )
+
+        # Otherwise, create database model and write
+        position_model = Position(
+            ticker=ticker,
+            status=PositionStatus.SCREENED,
+        ).model_dump()
+
+        self._database_client.positions.create(
+            data=position_model,  # type: ignore  # noqa: PGH003
+        )
 
         self._database_client.disconnect()
