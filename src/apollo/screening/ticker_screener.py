@@ -35,6 +35,22 @@ Our screening process revolves around three points:
 2. Absence of upcoming earnings within the screening window.
 3. Healthy measures of volatility and noise expressed as a combined score.
 
+These measures were chosen based on the following rationale:
+
+At all times we want to be able to enter and exit the
+position with minimal slippage and at the desired price.
+Additionally, we want to mitigate the risk of partial fills.
+
+We want to avoid any potential surprises
+that are associated with earnings announcements.
+
+We are aiming to avoid extremes: too high
+volatility/noise can lead to excessive risk,
+too low volatility/noise can lead to suboptimal returns.
+
+We ensure that the instrument we are trading
+exhibits healthy balance between volatility and noise.
+
 It is important to note, that due to the lack of any kind
 of numerical feedback after the process is complete,
 we are boxed into two arbitrary decisions:
@@ -230,15 +246,6 @@ class TickerScreener(MultiprocessingCapable):
         Construct an equal-weighted score based
         on volatility and noise measures and select
         the ticker that falls in the middle of the set.
-
-        We choose the ticker that is closest to the mean score
-        since we are looking for the balance between calculated measures.
-
-        Specifically, we are aiming to avoid extremes:
-        too high volatility/noise can lead to excessive risk
-        while too low volatility/noise can lead to suboptimal returns.
-
-        In such we settle on the ticker that exhibits healthy balance.
 
         :param results_dataframe: Dataframe with measures.
         :returns: Ticker symbol of the most suitable ticker.
