@@ -34,7 +34,7 @@ class Position(BaseModel):
 
     strategy: Optional[str] = None
     direction: Optional[int] = None
-    limit_price: Optional[float] = None
+    target_entry_price: Optional[float] = None
 
     entry_price: Optional[float] = None
     entry_date: Optional[datetime] = None

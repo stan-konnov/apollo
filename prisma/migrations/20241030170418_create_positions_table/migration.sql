@@ -5,7 +5,7 @@ CREATE TABLE "positions" (
     "status" TEXT NOT NULL,
     "strategy" TEXT,
     "direction" INTEGER,
-    "limit_price" DOUBLE PRECISION,
+    "target_entry_price" DOUBLE PRECISION,
     "entry_price" DOUBLE PRECISION,
     "entry_date" TIMESTAMP(3),
     "unit_size" DOUBLE PRECISION,

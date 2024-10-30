@@ -61,10 +61,10 @@ model positions {
   status                    String
 
   // After backtesting optimization
-  // we know the strategy, direction, and limit price
+  // we know the strategy, direction, and target entry price
   strategy                  String?
   direction                 Int?
-  limit_price               Float?
+  target_entry_price        Float?
 
   // After the opening order is filled
   // we know our entry price and date, and size
