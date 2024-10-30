@@ -91,9 +91,9 @@ class TickerScreener(MultiprocessingCapable):
 
         # Process each batch in parallel
         with Pool(processes=self._available_cores) as pool:
-            # Request the prices
-            # and calculate measures
-            # for each ticker in the batch
+            # Request prices and
+            # earnings date and calculate
+            # measure for each ticker in the batch
             results = pool.map(self._calculate_measures, batches)
 
             # Combine the computed results
@@ -136,7 +136,7 @@ class TickerScreener(MultiprocessingCapable):
         volatility as Average True Range, and noise as Kaufman Efficiency Ratio.
 
         :param tickers: List of tickers to screen.
-        :returns: List of DataFrames with calculated measures.
+        :returns: Dataframe with calculated measures.
         """
 
         # Initialize dataframe for results
