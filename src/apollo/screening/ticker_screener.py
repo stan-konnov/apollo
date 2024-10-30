@@ -29,17 +29,22 @@ from apollo.utils.multiprocessing_capable import MultiprocessingCapable
 logger = getLogger(__name__)
 
 """
-TODO: 1. Comments.
+Our screening process revolves around three points:
 
+1. Available liquidity at the time of screening.
+2. Absence of upcoming earnings within the screening window.
+3. Healthy measures of volatility and noise expressed as a combined score.
 
-NOTE: We choose an arbitrary window size for both measures.
+It is important to note, that due to the lack of any kind
+of numerical feedback after the process is complete,
+we are boxed into two arbitrary decisions:
 
-Clearly, there has to be a better,
-data-driven way to determine the optimal window
-size for each measure, but due to the absence of a more
-robust solution we (for now) settle for the last (rolling) trading week.
+* We choose the window size for both volatility and noise measures.
+* We choose the liquidity threshold after which we consider the ticker.
 
-Please see SCREENING_WINDOW_SIZE in the settings.
+Please see SCREENING_WINDOW_SIZE and SCREENING_LIQUIDITY_THRESHOLD in the settings.
+
+Additionally, at this point in time (2024-10-30), we are only trading S&P500 components.
 """
 
 
@@ -47,9 +52,9 @@ class TickerScreener(MultiprocessingCapable):
     """
     Ticker Screener class.
 
-    Responsible for screening various ticker symbols
-    based on the measures of volatility and noise with the
-    purpose of identifying the most suitable ticker to trade.
+    Responsible for screening various ticker symbols based
+    on the measures of liquidity, earnings, volatility and noise
+    with the purpose of identifying the most suitable ticker to trade.
 
     Is multiprocessing capable and runs in parallel.
     """
@@ -123,13 +128,15 @@ class TickerScreener(MultiprocessingCapable):
 
     def _calculate_measures(self, tickers: list[str]) -> pd.DataFrame:
         """
-        Calculate volatility and noise for each ticker.
+        Calculate screening measures for each ticker.
 
-        Request historical data for each ticker and calculate volatility
-        expressed as Average True Range and noise as Kaufman Efficiency Ratio.
+        Request upcoming earnings date for each ticker.
+
+        Request prices for each ticker and calculate liquidity as Dollar Volume,
+        volatility as Average True Range, and noise as Kaufman Efficiency Ratio.
 
         :param tickers: List of tickers to screen.
-        :returns: List of DataFrames with volatility and noise measures.
+        :returns: List of DataFrames with calculated measures.
         """
 
         # Initialize dataframe for results
@@ -153,6 +160,11 @@ class TickerScreener(MultiprocessingCapable):
                     )
                 )
 
+                # Calculate Dollar Volume
+                price_dataframe["dollar_volume"] = (
+                    price_dataframe["close"] * price_dataframe["volume"]
+                )
+
                 # Precalculate previous close necessary for ATR calculation
                 price_dataframe["prev_close"] = price_dataframe["adj close"].shift(1)
 
@@ -174,23 +186,18 @@ class TickerScreener(MultiprocessingCapable):
                 )
                 ker_calculator.calculate_kaufman_efficiency_ratio()
 
-                # Calculate Dollar Volume
-                price_dataframe["dollar_volume"] = (
-                    price_dataframe["close"] * price_dataframe["volume"]
-                )
-
                 # For the purposes of screening we are
                 # only interested in the most recent values
                 relevant_result = pd.DataFrame(
                     [
                         price_dataframe.iloc[-1][
                             [
-                                "ticker",
                                 "earnings_date",
+                                "dollar_volume",
+                                "adj close",
+                                "ticker",
                                 "atr",
                                 "ker",
-                                "adj close",
-                                "dollar_volume",
                             ]
                         ],
                     ],
@@ -213,6 +220,12 @@ class TickerScreener(MultiprocessingCapable):
     def _select_suitable_ticker(self, results_dataframe: pd.DataFrame) -> str:
         """
         Select the most suitable ticker.
+
+        Select tickers with Dollar Volume exceeding
+        configured quantile (2024-10-30, 0.9 = top 10%).
+
+        Select tickers with no earnings date within
+        the configured window size (2024-10-30, 5 days).
 
         Construct an equal-weighted score based
         on volatility and noise measures and select
