@@ -108,7 +108,7 @@ def test__request_price_data__with_start_and_end_date_requested(
 
 
 @pytest.mark.usefixtures("yahoo_ticker_object")
-def test__request_upcoming_earnings_date__for_returning_upcoming_earnings_date(
+def test__request_upcoming_earnings_date__for_returning_earnings_date_if_available(
     yahoo_ticker_object: Mock,
 ) -> None:
     """
@@ -128,3 +128,22 @@ def test__request_upcoming_earnings_date__for_returning_upcoming_earnings_date(
     earnings_date = api_connector.request_upcoming_earnings_date(str(TICKER))
 
     assert earnings_date == control_earnings_date
+
+
+@pytest.mark.usefixtures("yahoo_ticker_object")
+def test__request_upcoming_earnings_date__for_returning_none_if_earnings_is_unavailable(
+    yahoo_ticker_object: Mock,
+) -> None:
+    """
+    Test request_upcoming_earnings_date method for returning None.
+
+    API Connector must return None if upcoming earnings date is unavailable.
+    """
+
+    yahoo_ticker_object.calendar.__getitem__.return_value = []
+
+    api_connector = YahooApiConnector()
+
+    earnings_date = api_connector.request_upcoming_earnings_date(str(TICKER))
+
+    assert earnings_date is None

@@ -49,7 +49,7 @@ def yahoo_ticker_object() -> Generator[None, None, None]:
     """Simulate Yahoo Ticker object."""
 
     with patch("apollo.connectors.api.yahoo_api_connector.Ticker") as mocked_object:
-        # Make sure when Mock object is constructed
+        # Make sure when mocked object is constructed
         # it returns exactly this instance instead of a new one
         mocked_object.return_value = mocked_object
 
