@@ -21,7 +21,7 @@ def test__create_batches__for_correct_inputs_batching() -> None:
     """
     Test create_batches method for correct inputs batching.
 
-    create_batches() must return list of batched inputs.
+    create_batches() must return list of equally batched inputs.
     """
 
     multiprocessing_capable = MultiprocessingCapable()
