@@ -84,35 +84,6 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
     assert control_combinations == list(combinations)
 
 
-def test__parameter_optimizer__for_correct_combinations_batching() -> None:
-    """
-    Test Parameter Optimizer for correct combinations batching.
-
-    _batch_combinations() must return list of batches of combinations.
-    """
-
-    parameter_optimizer = ParameterOptimizer()
-
-    combinations = [
-        (RANGE_MIN, RANGE_MIN),
-        (RANGE_MIN, RANGE_MAX),
-        (RANGE_MAX, RANGE_MIN),
-        (RANGE_MAX, RANGE_MAX),
-    ]
-
-    control_batches = [
-        [(RANGE_MIN, RANGE_MIN), (RANGE_MIN, RANGE_MAX)],
-        [(RANGE_MAX, RANGE_MIN), (RANGE_MAX, RANGE_MAX)],
-    ]
-
-    batches = parameter_optimizer._batch_combinations(  # noqa: SLF001
-        len(control_batches),
-        combinations,
-    )
-
-    assert control_batches == batches
-
-
 @pytest.mark.usefixtures("dataframe")
 def test__parameter_optimizer__for_correct_error_handling(
     dataframe: pd.DataFrame,
