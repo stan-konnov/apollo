@@ -1,7 +1,9 @@
+from datetime import datetime
 from unittest.mock import Mock
 
 import pandas as pd
 import pytest
+from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyApiResponseError
@@ -103,3 +105,26 @@ def test__request_price_data__with_start_and_end_date_requested(
     )
 
     assert not price_dataframe.empty
+
+
+@pytest.mark.usefixtures("yahoo_ticker_object")
+def test__request_upcoming_earnings_date__for_returning_upcoming_earnings_date(
+    yahoo_ticker_object: Mock,
+) -> None:
+    """
+    Test request_upcoming_earnings_date method for returning upcoming earnings date.
+
+    API Connector must return upcoming earnings date if it is available.
+    """
+
+    control_earnings_date = datetime.now(tz=ZoneInfo("UTC")).date()
+
+    yahoo_ticker_object.calendar.__getitem__.return_value = [
+        control_earnings_date,
+    ]
+
+    api_connector = YahooApiConnector()
+
+    earnings_date = api_connector.request_upcoming_earnings_date(str(TICKER))
+
+    assert earnings_date == control_earnings_date

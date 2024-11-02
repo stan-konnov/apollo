@@ -42,3 +42,15 @@ def yahoo_api_call() -> Generator[None, None, None]:
 
     with patch("apollo.connectors.api.yahoo_api_connector.download") as mocked_call:
         yield mocked_call
+
+
+@pytest.fixture(name="yahoo_ticker_object")
+def yahoo_ticker_object() -> Generator[None, None, None]:
+    """Simulate Yahoo Ticker object."""
+
+    with patch("apollo.connectors.api.yahoo_api_connector.Ticker") as mocked_object:
+        # Make sure when Mock object is constructed
+        # it returns exactly this instance instead of a new one
+        mocked_object.return_value = mocked_object
+
+        yield mocked_object
