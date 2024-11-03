@@ -9,6 +9,7 @@ from pytz import timezone
 from apollo.backtesting.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.models.backtesting_results import BacktestingResults
+from apollo.models.position import Position, PositionStatus
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     DEFAULT_DATE_FORMAT,
@@ -388,3 +389,43 @@ def test__write_backtesting_results__for_updating_already_existing_entity(
 
     assert backtesting_results_from_db is not None
     assert backtesting_results_from_db.id == already_present_backtesting_results.id
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__get_existing_active_position__for_returning_existing_active_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test get_existing_active_position for returning existing active position.
+
+    PostgresConnector should return existing active position for a ticker.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_active_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    control_inactive_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.CLOSED,
+    )
+
+    prisma_client.positions.create(
+        data=control_active_position.model_dump(),  # type: ignore  # noqa: PGH003
+    )
+
+    prisma_client.positions.create(
+        data=control_inactive_position.model_dump(),  # type: ignore  # noqa: PGH003
+    )
+
+    position = postgres_connector.get_existing_active_position(ticker=str(TICKER))
+
+    assert position is not None
+    assert position.ticker == control_active_position.ticker
+    assert position.status == control_active_position.status.value
