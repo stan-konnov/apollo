@@ -409,9 +409,9 @@ def test__get_existing_active_position__for_returning_existing_active_position(
     position_status: PositionStatus,
 ) -> None:
     """
-    Test get_existing_active_position for returning existing active position.
+    Test get_existing_active_position for returning active position.
 
-    PostgresConnector should return existing active position for a ticker.
+    PostgresConnector should return active position for a ticker if it exists.
     """
 
     postgres_connector = PostgresConnector()
@@ -449,9 +449,9 @@ def test__get_existing_active_position__for_returning_none_if_no_active_position
     prisma_client: Prisma,
 ) -> None:
     """
-    Test get_existing_active_position for returning None if no active position exists.
+    Test get_existing_active_position for returning None.
 
-    PostgresConnector should return None if there is no active position for a ticker.
+    PostgresConnector should return None if no active position for a ticker exists.
     """
 
     postgres_connector = PostgresConnector()
