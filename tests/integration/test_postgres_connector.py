@@ -395,8 +395,18 @@ def test__write_backtesting_results__for_updating_already_existing_entity(
     "prisma_client",
     "flush_postgres_database",
 )
+@pytest.mark.parametrize(
+    "position_status",
+    [
+        PositionStatus.OPEN,
+        PositionStatus.SCREENED,
+        PositionStatus.BACKTESTED,
+        PositionStatus.DISPATCHED,
+    ],
+)
 def test__get_existing_active_position__for_returning_existing_active_position(
     prisma_client: Prisma,
+    position_status: PositionStatus,
 ) -> None:
     """
     Test get_existing_active_position for returning existing active position.
@@ -408,7 +418,7 @@ def test__get_existing_active_position__for_returning_existing_active_position(
 
     control_active_position = Position(
         ticker=str(TICKER),
-        status=PositionStatus.SCREENED,
+        status=position_status,
     )
 
     control_inactive_position = Position(
@@ -429,3 +439,32 @@ def test__get_existing_active_position__for_returning_existing_active_position(
     assert position is not None
     assert position.ticker == control_active_position.ticker
     assert position.status == control_active_position.status.value
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__get_existing_active_position__for_returning_none_if_no_active_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test get_existing_active_position for returning None if no active position exists.
+
+    PostgresConnector should return None if there is no active position for a ticker.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_inactive_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.CLOSED,
+    )
+
+    prisma_client.positions.create(
+        data=control_inactive_position.model_dump(),  # type: ignore  # noqa: PGH003
+    )
+
+    position = postgres_connector.get_existing_active_position(ticker=str(TICKER))
+
+    assert position is None
