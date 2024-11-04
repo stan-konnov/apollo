@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -350,3 +350,50 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
     )
 
     ticker_screener._database_connector.create_position_on_screening.assert_not_called()  # noqa: SLF001
+
+
+@pytest.mark.usefixtures("screened_tickers_dataframe")
+def test__process_in_parallel__for_correct_screening_process(
+    screened_tickers_dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test process_in_parallel method for correct screening process.
+
+    Method must call SP500 Components Scraper to scrape SP500 components.
+    Method must call calculate_measures method in parallel for each batch.
+    """
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    # Mock the results of the SP500 components scraping
+    tickers_to_screen = screened_tickers_dataframe["ticker"].to_numpy()
+    ticker_screener._sp500_components_scraper.scrape_sp500_components.return_value = (  # noqa: SLF001
+        tickers_to_screen
+    )
+
+    with patch("apollo.screening.ticker_screener.Pool") as mocked_pool:
+        # Lock the pool instance so we can mock the return value
+        mock_pool_instance = mocked_pool.return_value.__enter__.return_value
+
+        # Mock the return value of the map method
+        # as list of dataframes for each scraped ticker
+        mock_pool_instance.map.return_value = [
+            pd.DataFrame([row], columns=screened_tickers_dataframe.columns)
+            for _, row in screened_tickers_dataframe.iterrows()
+        ]
+
+        ticker_screener.process_in_parallel()
+
+        # Assert that we scraped the SP500 components
+        ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
+
+        # Assert that we called our calculation method in parallel
+        mock_pool_instance.map.assert_called_once_with(
+            ticker_screener._calculate_measures,  # noqa: SLF001
+            ticker_screener._create_batches(tickers_to_screen),  # noqa: SLF001
+        )
