@@ -1,8 +1,10 @@
+from datetime import datetime
 from unittest import mock
 from unittest.mock import Mock
 
 import pandas as pd
 import pytest
+from zoneinfo import ZoneInfo
 
 from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
@@ -10,7 +12,16 @@ from apollo.calculations.kaufman_efficiency_ratio import (
 )
 from apollo.errors.api import EmptyApiResponseError
 from apollo.screening.ticker_screener import TickerScreener
-from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE
+from apollo.settings import (
+    END_DATE,
+    EXCHANGE,
+    EXCHANGE_TIME_ZONE_AND_HOURS,
+    FREQUENCY,
+    MAX_PERIOD,
+    SCREENING_LIQUIDITY_THRESHOLD,
+    SCREENING_WINDOW_SIZE,
+    START_DATE,
+)
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
@@ -142,3 +153,88 @@ def test__calculate_measures__for_skipping_ticker_if_api_returned_empty_response
     assert (
         f"API returned empty response for {tickers[0]}, skipping ticker." in caplog.text
     )
+
+
+@pytest.mark.usefixtures("screened_tickers_dataframe")
+def test__select_suitable_ticker__for_correct_selection(
+    screened_tickers_dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test select_suitable_ticker method for correct selection.
+
+    Method should filter screened ticker based on liquidity threshold.
+    Method should filter screened ticker based on upcoming earnings date.
+    Method should filter screened ticker based on the combined ATR and KER score.
+    """
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    control_screened_ticker_dataframe = screened_tickers_dataframe.copy()
+
+    control_screened_ticker_dataframe = control_screened_ticker_dataframe.loc[
+        control_screened_ticker_dataframe["dollar_volume"]
+        > control_screened_ticker_dataframe["dollar_volume"].quantile(
+            float(str(SCREENING_LIQUIDITY_THRESHOLD)),
+        )
+    ]
+
+    configured_exchange_date = datetime.now(
+        tz=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ).date()
+
+    control_screened_ticker_dataframe = control_screened_ticker_dataframe.loc[
+        (
+            control_screened_ticker_dataframe["earnings_date"].isna()
+            | (
+                control_screened_ticker_dataframe["earnings_date"]
+                > configured_exchange_date
+                + pd.Timedelta(
+                    int(str(SCREENING_WINDOW_SIZE)),
+                    unit="D",
+                )
+            )
+        )
+    ]
+
+    control_screened_ticker_dataframe["atr"] = (
+        control_screened_ticker_dataframe["atr"]
+        / control_screened_ticker_dataframe["adj close"]
+    )
+
+    weight = 0.5
+
+    control_screened_ticker_dataframe["atr_ker_score"] = (
+        weight * control_screened_ticker_dataframe["atr"]
+        + weight * control_screened_ticker_dataframe["ker"]
+    )
+
+    control_screened_ticker_dataframe.sort_values(
+        by="atr_ker_score",
+        ascending=False,
+        inplace=True,
+    )
+
+    control_screened_ticker_dataframe.reset_index(inplace=True)
+
+    mean_score = control_screened_ticker_dataframe["atr_ker_score"].mean()
+
+    closest_row_index = int(
+        (control_screened_ticker_dataframe["atr_ker_score"] - mean_score)
+        .abs()
+        .idxmin(),
+    )
+
+    control_selected_ticker = control_screened_ticker_dataframe.iloc[closest_row_index][
+        "ticker"
+    ]
+
+    selected_ticker = ticker_screener._select_suitable_ticker(  # noqa: SLF001
+        screened_tickers_dataframe,
+    )
+
+    assert control_selected_ticker == selected_ticker

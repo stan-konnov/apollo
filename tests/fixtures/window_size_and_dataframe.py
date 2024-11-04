@@ -48,6 +48,11 @@ def get_screened_tickers_dataframe() -> pd.DataFrame:
         screened_tickers_test_dataframe.index,
     )
 
+    screened_tickers_test_dataframe.loc[
+        screened_tickers_test_dataframe["earnings_date"].notna(),
+        "earnings_date",
+    ] = pd.to_datetime(screened_tickers_test_dataframe["earnings_date"]).dt.date
+
     return screened_tickers_test_dataframe
 
 
