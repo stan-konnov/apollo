@@ -23,6 +23,6 @@ def get_sp500_components_page() -> str:
     """Return S&P 500 components page HTML."""
 
     with Path.open(
-        Path(f"{TEST_DIR}/sp500_components_page.html"),
+        Path(f"{TEST_DIR}/sp500-components-page.html"),
     ) as sp500_components_page_file:
         return sp500_components_page_file.read()
