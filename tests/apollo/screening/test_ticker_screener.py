@@ -4,14 +4,19 @@ from unittest.mock import Mock
 import pandas as pd
 import pytest
 
+from apollo.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.calculations.kaufman_efficiency_ratio import (
+    KaufmanEfficiencyRatioCalculator,
+)
 from apollo.screening.ticker_screener import TickerScreener
 from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE
+from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
 def test__calculate_measures__for_correctly_calculating_screening_measures(
     dataframe: pd.DataFrame,
-    window_size: int,  # noqa: ARG001
+    window_size: int,
 ) -> None:
     """
     Test calculate_measures method for correct screening measures calculation.
@@ -34,7 +39,27 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
     # Mimic the return value of Price Data Provider
     ticker_screener._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
 
-    control_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001
+    # Precalculate shared values
+    dataframe = precalculate_shared_values(dataframe)
+
+    # Calculate control measures
+    control_dataframe = dataframe.copy()
+    control_dataframe["dollar_volume"] = dataframe["close"] * dataframe["volume"]
+
+    atr_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
+    atr_calculator.calculate_average_true_range()
+
+    ker_calculator = KaufmanEfficiencyRatioCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
+    ker_calculator.calculate_kaufman_efficiency_ratio()
+
+    # Run tickers through the screening process
+    screened_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001
 
     # Check that we requested price data for each ticker
     ticker_screener._price_data_provider.get_price_data.assert_has_calls(  # noqa: SLF001
@@ -64,11 +89,23 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
         ],
     )
 
-    assert len(control_dataframe) == len(tickers)
+    assert len(screened_dataframe) == len(tickers)
 
-    assert "earnings_date" in control_dataframe.columns
-    assert "dollar_volume" in control_dataframe.columns
-    assert "adj close" in control_dataframe.columns
-    assert "ticker" in control_dataframe.columns
-    assert "atr" in control_dataframe.columns
-    assert "ker" in control_dataframe.columns
+    # Since we are using identical
+    # price inputs for both tickers
+    # we can compare the results directly
+    # without filtering by individual ticker
+    # NOTE: we also care only about last entry
+    assert (
+        control_dataframe["dollar_volume"].iloc[-1]
+        == screened_dataframe["dollar_volume"].iloc[-1]
+    )
+    assert control_dataframe["atr"].iloc[-1] == screened_dataframe["atr"].iloc[-1]
+    assert control_dataframe["ker"].iloc[-1] == screened_dataframe["ker"].iloc[-1]
+
+    assert "earnings_date" in screened_dataframe.columns
+    assert "dollar_volume" in screened_dataframe.columns
+    assert "adj close" in screened_dataframe.columns
+    assert "ticker" in screened_dataframe.columns
+    assert "atr" in screened_dataframe.columns
+    assert "ker" in screened_dataframe.columns
