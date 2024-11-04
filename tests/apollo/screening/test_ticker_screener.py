@@ -364,6 +364,7 @@ def test__process_in_parallel__for_correct_screening_process(
 
     TODO: Check calls against database connector to create positions.
     TODO: Implement the similar approach in parameter optimizer tests.
+    TODO: After, move the mocking of the pool to a fixture.
     """
 
     ticker_screener = TickerScreener()
