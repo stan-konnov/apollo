@@ -122,25 +122,8 @@ class TickerScreener(MultiprocessingCapable):
                 f"Screening process complete. Selected ticker: {selected_ticker}.",
             )
 
-            # Check if we have an active position for the selected ticker
-            existing_active_position = (
-                self._database_connector.get_existing_active_position(
-                    selected_ticker,
-                )
-            )
-
-            # If we have an active position,
-            # log info message and skip the write
-            if existing_active_position:
-                logger.info(
-                    f"Active position for {selected_ticker} already exists. "
-                    f"Status: {existing_active_position.status.value}. "
-                    "Skipping position creation.",
-                )
-                return
-
-            # Otherwise, initialize position in the database
-            self._database_connector.create_position_on_screening(selected_ticker)
+            # Initialize position in the database
+            self._initialize_position(selected_ticker)
 
     def _calculate_measures(self, tickers: list[str]) -> pd.DataFrame:
         """
@@ -323,3 +306,30 @@ class TickerScreener(MultiprocessingCapable):
 
         # And, finally, select the suitable ticker
         return results_dataframe.iloc[closest_row_index]["ticker"]
+
+    def _initialize_position(self, selected_ticker: str) -> None:
+        """
+        Initialize position in the database.
+
+        :param selected_ticker: Selected ticker to initialize position for.
+        """
+
+        # Check if we have an active position for the selected ticker
+        existing_active_position = (
+            self._database_connector.get_existing_active_position(
+                selected_ticker,
+            )
+        )
+
+        # If we have an active position,
+        # log info message and skip the write
+        if existing_active_position:
+            logger.info(
+                f"Active position for {selected_ticker} already exists. "
+                f"Status: {existing_active_position.status.value}. "
+                "Skipping position creation.",
+            )
+            return
+
+        # Otherwise, initialize position in the database
+        self._database_connector.create_position_on_screening(selected_ticker)
