@@ -238,3 +238,45 @@ def test__select_suitable_ticker__for_correct_selection(
     )
 
     assert control_selected_ticker == selected_ticker
+
+
+@pytest.mark.usefixtures("screened_tickers_dataframe")
+def test__select_suitable_ticker__for_avoiding_tickers_with_upcoming_earnings(
+    screened_tickers_dataframe: pd.DataFrame,
+) -> None:
+    """
+    Test select_suitable_ticker method for avoiding tickers with earnings.
+
+    Method should not return any of the tickers with upcoming earnings.
+    """
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    screened_tickers_dataframe.reset_index(inplace=True)
+
+    ticker_with_upcoming_earnings = screened_tickers_dataframe.iloc[0:5][
+        "ticker"
+    ].to_numpy()
+
+    # Set earnings date to tomorrow for first 5 tickers
+    screened_tickers_dataframe.loc[
+        screened_tickers_dataframe["ticker"].isin(ticker_with_upcoming_earnings),
+        "earnings_date",
+    ] = datetime.now(tz=ZoneInfo("UTC")).date() + pd.Timedelta(1, unit="D")
+
+    # Set earnings date to None for the rest of the tickers
+    screened_tickers_dataframe.loc[
+        ~screened_tickers_dataframe["ticker"].isin(ticker_with_upcoming_earnings),
+        "earnings_date",
+    ] = None
+
+    selected_ticker = ticker_screener._select_suitable_ticker(  # noqa: SLF001
+        screened_tickers_dataframe,
+    )
+
+    assert selected_ticker not in ticker_with_upcoming_earnings
