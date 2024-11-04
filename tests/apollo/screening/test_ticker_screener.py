@@ -18,7 +18,6 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
 
     Method should request earnings from API Connector.
     Method should request prices from Price Data Provider.
-    Method should calculate Dollar Volume, Average True Range, Kaufman Efficiency Ratio.
     Method should return dataframe where each row contains measures for each ticker.
     """
 
@@ -35,7 +34,7 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
     # Mimic the return value of Price Data Provider
     ticker_screener._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
 
-    ticker_screener._calculate_measures(tickers)  # noqa: SLF001
+    control_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001
 
     # Check that we requested price data for each ticker
     ticker_screener._price_data_provider.get_price_data.assert_has_calls(  # noqa: SLF001
@@ -64,3 +63,12 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
             mock.call(tickers[1]),
         ],
     )
+
+    assert len(control_dataframe) == len(tickers)
+
+    assert "earnings_date" in control_dataframe.columns
+    assert "dollar_volume" in control_dataframe.columns
+    assert "adj close" in control_dataframe.columns
+    assert "ticker" in control_dataframe.columns
+    assert "atr" in control_dataframe.columns
+    assert "ker" in control_dataframe.columns
