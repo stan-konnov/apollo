@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from unittest import mock
 from unittest.mock import Mock
@@ -11,6 +12,7 @@ from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.errors.api import EmptyApiResponseError
+from apollo.models.position import Position, PositionStatus
 from apollo.screening.ticker_screener import TickerScreener
 from apollo.settings import (
     END_DATE,
@@ -21,6 +23,7 @@ from apollo.settings import (
     SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
     START_DATE,
+    TICKER,
 )
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
@@ -280,3 +283,70 @@ def test__select_suitable_ticker__for_avoiding_tickers_with_upcoming_earnings(
     )
 
     assert selected_ticker not in ticker_with_upcoming_earnings
+
+
+def test__initialize_position__for_creating_position_if_no_active_position_exists() -> (
+    None
+):
+    """
+    Test initialize_position method for creating position if no position exists.
+
+    Method should call Database Connector to create position on screening.
+    """
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    ticker_screener._database_connector.get_existing_active_position.return_value = None  # noqa: SLF001
+
+    ticker_screener._initialize_position(str(TICKER))  # noqa: SLF001
+
+    ticker_screener._database_connector.create_position_on_screening.assert_called_once_with(  # noqa: SLF001
+        str(TICKER),
+    )
+
+
+def test__initialize_position__for_not_creating_position_if_position_exists(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """
+    Test initialize_position method for not creating position if position exists.
+
+    Method should log info message and return early.
+    Method should not call Database Connector to create position on screening.
+    """
+
+    caplog.set_level(logging.INFO)
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    existing_active_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    ticker_screener._database_connector.get_existing_active_position.return_value = (  # noqa: SLF001
+        existing_active_position
+    )
+
+    ticker_screener._initialize_position(str(TICKER))  # noqa: SLF001
+
+    assert (
+        str(
+            f"Active position for {TICKER} already exists. "
+            f"Status: {existing_active_position.status.value}. "
+            "Skipping position creation.",
+        )
+        in caplog.text
+    )
+
+    ticker_screener._database_connector.create_position_on_screening.assert_not_called()  # noqa: SLF001
