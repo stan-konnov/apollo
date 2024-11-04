@@ -37,6 +37,7 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
 
     ticker_screener._calculate_measures(tickers)  # noqa: SLF001
 
+    # Check that we requested price data for each ticker
     ticker_screener._price_data_provider.get_price_data.assert_has_calls(  # noqa: SLF001
         [
             mock.call(
@@ -54,13 +55,12 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
                 max_period=bool(MAX_PERIOD),
             ),
         ],
-        any_order=True,
     )
 
+    # Check that we requested earnings date for each ticker
     ticker_screener._api_connector.request_upcoming_earnings_date.assert_has_calls(  # noqa: SLF001
         [
             mock.call(tickers[0]),
             mock.call(tickers[1]),
         ],
-        any_order=True,
     )
