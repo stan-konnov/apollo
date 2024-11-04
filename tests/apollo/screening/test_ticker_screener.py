@@ -8,6 +8,7 @@ from apollo.calculations.average_true_range import AverageTrueRangeCalculator
 from apollo.calculations.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
+from apollo.errors.api import EmptyApiResponseError
 from apollo.screening.ticker_screener import TickerScreener
 from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE
 from tests.utils.precalculate_shared_values import precalculate_shared_values
@@ -109,3 +110,35 @@ def test__calculate_measures__for_correctly_calculating_screening_measures(
     assert "ticker" in screened_dataframe.columns
     assert "atr" in screened_dataframe.columns
     assert "ker" in screened_dataframe.columns
+
+
+def test__calculate_measures__for_skipping_ticker_if_api_returned_empty_response(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """
+    Test calculate_measures method for skipping if API returned empty response.
+
+    Resulting dataframe must not contain ticker with empty API response.
+    Ticker Screener must log a warning message.
+    """
+
+    tickers = ["AAPL"]
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    # Mimic the exception raised by Price Data Provider
+    ticker_screener._price_data_provider.get_price_data.side_effect = (  # noqa: SLF001
+        EmptyApiResponseError
+    )
+
+    screened_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001
+
+    assert len(screened_dataframe) == 0
+    assert (
+        f"API returned empty response for {tickers[0]}, skipping ticker." in caplog.text
+    )
