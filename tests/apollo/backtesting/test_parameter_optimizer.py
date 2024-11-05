@@ -329,7 +329,15 @@ def test__process_in_parallel__for_correct_optimization_process(
     dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
-    """Test process_in_parallel for correct optimization process."""
+    """
+    Test process_in_parallel for correct optimization process.
+
+    Method must call Price Data Provider to get price data.
+    Method must call Price Data Enhancer to enhance price data.
+    Method must construct parameter combinations and create batches.
+    Method must call process method in parallel for each combination batch.
+    Method must call output results with combined dataframes of backtesting processes.
+    """
 
     parameter_optimizer = ParameterOptimizer()
 
@@ -367,8 +375,6 @@ def test__process_in_parallel__for_correct_optimization_process(
     ) as output_results:
         # Mock the return value of the map method as
         # list of dataframes with backtesting results
-        # NOTE: we default to empty dataframes to not repeat
-        # the same backtesting process as in the previous test
         backtesting_results = [
             pd.DataFrame(
                 {
