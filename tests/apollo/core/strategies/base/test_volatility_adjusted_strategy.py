@@ -1,0 +1,36 @@
+import pandas as pd
+import pytest
+
+from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.strategies.base.volatility_adjusted_strategy import (
+    VolatilityAdjustedStrategy,
+)
+from tests.utils.precalculate_shared_values import precalculate_shared_values
+
+
+@pytest.mark.usefixtures("dataframe", "window_size")
+def test__volatility_adjusted_strategy__for_calculating_volatility(
+    dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test Volatility Adjusted Strategy for properly calculating volatility (ATR).
+
+    Dataframe should have "tr" and "atr" columns.
+    """
+
+    dataframe = precalculate_shared_values(dataframe)
+
+    control_dataframe = dataframe.copy()
+
+    at_calculator = AverageTrueRangeCalculator(
+        dataframe=control_dataframe,
+        window_size=window_size,
+    )
+    at_calculator.calculate_average_true_range()
+
+    VolatilityAdjustedStrategy(dataframe=dataframe, window_size=window_size)
+
+    assert "tr" in dataframe.columns
+    assert "atr" in dataframe.columns
+    pd.testing.assert_series_equal(control_dataframe["atr"], dataframe["atr"])
