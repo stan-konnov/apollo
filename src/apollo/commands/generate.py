@@ -12,13 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """
-    Run signal generation process.
-
-    NOTE: Due to the nature of Yahoo Finance API,
-    after the market closed, we need to wait roughly 60 minutes
-    for the prices to settle before we can run the screening process.
-    """
+    """Run signal generation process."""
 
     ensure_environment_is_configured()
 

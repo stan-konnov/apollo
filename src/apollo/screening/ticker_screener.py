@@ -284,6 +284,10 @@ class TickerScreener(MultiprocessingCapable):
             weight * results_dataframe["atr"] + weight * results_dataframe["ker"]
         )
 
+        # Limit the score to two decimal
+        # places to avoid floating point errors
+        results_dataframe["atr_ker_score"] = results_dataframe["atr_ker_score"].round(2)
+
         # Sort the results in descending order
         results_dataframe.sort_values(
             by="atr_ker_score",

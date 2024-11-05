@@ -39,7 +39,7 @@ class ParameterOptimizer(MultiprocessingCapable):
     Consumes configuration object with strategy parameters.
     Constructs ranges and combinations of parameters to optimize.
     Runs series of backtesting processes each for each set of parameters.
-    Writes backtesting results into the database.
+    Writes highest rated backtesting results and parameters into the database.
 
     Is multiprocessing capable and runs in parallel.
     """

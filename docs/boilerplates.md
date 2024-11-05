@@ -1,1 +1,0 @@
-https://github.com/ChristianLempa/boilerplates/blob/main/docker-compose/influxdb/docker-compose.yaml

@@ -217,6 +217,10 @@ def test__select_suitable_ticker__for_correct_selection(
         + weight * control_screened_ticker_dataframe["ker"]
     )
 
+    control_screened_ticker_dataframe["atr_ker_score"] = (
+        control_screened_ticker_dataframe["atr_ker_score"].round(2)
+    )
+
     control_screened_ticker_dataframe.sort_values(
         by="atr_ker_score",
         ascending=False,
