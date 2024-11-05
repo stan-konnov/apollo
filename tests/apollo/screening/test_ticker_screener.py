@@ -368,6 +368,8 @@ def test__process_in_parallel__for_correct_screening_process(
 
     Method must call SP500 Components Scraper to scrape SP500 components.
     Method must call calculate_measures method in parallel for each batch.
+    Method must call select_suitable_ticker method to select suitable ticker.
+    Method must call initialize_position method to initialize position in the database.
     """
 
     ticker_screener = TickerScreener()
