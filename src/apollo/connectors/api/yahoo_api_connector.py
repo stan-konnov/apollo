@@ -1,5 +1,7 @@
+from datetime import date
+
 import pandas as pd
-from yfinance import download
+from yfinance import Ticker, download
 
 from apollo.connectors.api.base_api_connector import BaseApiConnector
 from apollo.errors.api import EmptyApiResponseError
@@ -59,3 +61,16 @@ class YahooApiConnector(BaseApiConnector):
             )
 
         return price_data
+
+    def request_upcoming_earnings_date(self, ticker: str) -> date | None:
+        """Request upcoming earnings date for the provided ticker."""
+
+        # Instantiate ticker object
+        ticker_object = Ticker(ticker)
+
+        # Get the closest earnings date if available
+        return (
+            ticker_object.calendar["Earnings Date"][0]
+            if ticker_object.calendar["Earnings Date"]
+            else None
+        )

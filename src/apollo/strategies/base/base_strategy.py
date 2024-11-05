@@ -37,7 +37,7 @@ class BaseStrategy:
         Is required to be implemented by subclasses.
         """
 
-        raise NotImplementedError("Method model_trading_signals is not implemented")
+        raise NotImplementedError("Method model_trading_signals is not implemented.")
 
     def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
         """
