@@ -17,7 +17,7 @@ class PositionStatus(str, Enum):
     # Statuses relevant
     # to signal generation
     SCREENED = "screened"
-    BACKTESTED = "backtested"
+    OPTIMIZED = "optimized"
     DISPATCHED = "dispatched"
 
 
