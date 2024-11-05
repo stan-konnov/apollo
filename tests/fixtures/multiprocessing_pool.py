@@ -13,7 +13,7 @@ def multiprocessing_pool(request: pytest.FixtureRequest) -> Generator[None, None
 
     @pytest.mark.parametrize(
         "multiprocessing_pool",
-        ["path.to.patch.get"],
+        ["path.to.patch.Pool"],
         indirect=True
     )
     """
