@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from unittest import mock
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pandas as pd
 import pytest
@@ -353,8 +353,14 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
 
 
 @pytest.mark.usefixtures("screened_tickers_dataframe")
+@pytest.mark.parametrize(
+    "multiprocessing_pool",
+    ["apollo.screening.ticker_screener.Pool"],
+    indirect=True,
+)
 def test__process_in_parallel__for_correct_screening_process(
     screened_tickers_dataframe: pd.DataFrame,
+    multiprocessing_pool: Mock,
 ) -> None:
     """
     Test process_in_parallel method for correct screening process.
@@ -364,7 +370,6 @@ def test__process_in_parallel__for_correct_screening_process(
 
     TODO: Check calls against database connector to create positions.
     TODO: Implement the similar approach in parameter optimizer tests.
-    TODO: After, move the mocking of the pool to a fixture.
     """
 
     ticker_screener = TickerScreener()
@@ -380,24 +385,20 @@ def test__process_in_parallel__for_correct_screening_process(
         tickers_to_screen
     )
 
-    with patch("apollo.screening.ticker_screener.Pool") as mocked_pool:
-        # Lock the pool instance so we can mock the return value
-        mock_pool_instance = mocked_pool.return_value.__enter__.return_value
+    # Mock the return value of the map method
+    # as list of dataframes for each scraped ticker
+    multiprocessing_pool.map.return_value = [
+        pd.DataFrame([row], columns=screened_tickers_dataframe.columns)
+        for _, row in screened_tickers_dataframe.iterrows()
+    ]
 
-        # Mock the return value of the map method
-        # as list of dataframes for each scraped ticker
-        mock_pool_instance.map.return_value = [
-            pd.DataFrame([row], columns=screened_tickers_dataframe.columns)
-            for _, row in screened_tickers_dataframe.iterrows()
-        ]
+    ticker_screener.process_in_parallel()
 
-        ticker_screener.process_in_parallel()
+    # Assert that we scraped the SP500 components
+    ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
 
-        # Assert that we scraped the SP500 components
-        ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
-
-        # Assert that we called our calculation method in parallel
-        mock_pool_instance.map.assert_called_once_with(
-            ticker_screener._calculate_measures,  # noqa: SLF001
-            ticker_screener._create_batches(tickers_to_screen),  # noqa: SLF001
-        )
+    # Assert that we called our calculation method in parallel
+    multiprocessing_pool.map.assert_called_once_with(
+        ticker_screener._calculate_measures,  # noqa: SLF001
+        ticker_screener._create_batches(tickers_to_screen),  # noqa: SLF001
+    )
