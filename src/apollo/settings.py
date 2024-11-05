@@ -56,7 +56,7 @@ class PriceDataFrequency(Enum):
 
 class ParameterOptimizerMode(Enum):
     """
-    Parameter optimizer mode of operation.
+    Parameter Optimizer mode of operation.
 
     Denotes whether optimization process
     should run over single or multiple strategies.
