@@ -36,9 +36,9 @@ class ParameterOptimizer(MultiprocessingCapable):
     """
     Parameter Optimizer class.
 
-    Consumes configuration object with various parameters that go into the strategy.
+    Consumes configuration object with strategy parameters.
     Constructs ranges and combinations of parameters to optimize.
-    Runs series of backtesting processes each for each set of parameters to optimize.
+    Runs series of backtesting processes each for each set of parameters.
     Writes backtesting results into the database.
 
     Is multiprocessing capable and runs in parallel.
@@ -48,26 +48,24 @@ class ParameterOptimizer(MultiprocessingCapable):
         """
         Construct Parameter Optimizer.
 
-        Instantiate configuration that parses strategy parameters file.
-        Instantiate database connector that writes backtesting results into database.
+        Instantiate Configuration.
+        Instantiate Database Connector.
+        Instantiate Price Data Provider.
+        Instantiate Price Data Enhancer.
         """
 
         super().__init__()
 
         self._configuration = Configuration()
         self._database_connector = PostgresConnector()
+        self._price_data_provider = PriceDataProvider()
+        self._price_data_enhancer = PriceDataEnhancer()
 
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
-        # Instantiate price data provider
-        price_data_provider = PriceDataProvider()
-
-        # Instantiate price data enhancer
-        price_data_enhancer = PriceDataEnhancer()
-
         # Request or read the price data
-        price_dataframe = price_data_provider.get_price_data(
+        price_dataframe = self._price_data_provider.get_price_data(
             ticker=str(TICKER),
             frequency=str(FREQUENCY),
             start_date=str(START_DATE),
@@ -76,7 +74,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         )
 
         # Enhance the price data based on the configuration
-        price_dataframe = price_data_enhancer.enhance_price_data(
+        price_dataframe = self._price_data_enhancer.enhance_price_data(
             price_dataframe,
             self._configuration.parameter_set["additional_data_enhancers"],
         )
