@@ -108,7 +108,7 @@ class PostgresConnector:
 
         NOTE: We consider a position to be active if it
         falls under any of the following statuses:
-        screened, backtested, dispatched, open.
+        screened, optimized, dispatched, open.
 
         :param ticker: Ticker to check for active position.
         :returns: Active position if exists.
@@ -123,7 +123,7 @@ class PostgresConnector:
                 "status": {
                     "in": [
                         PositionStatus.SCREENED.value,
-                        PositionStatus.BACKTESTED.value,
+                        PositionStatus.OPTIMIZED.value,
                         PositionStatus.DISPATCHED.value,
                         PositionStatus.OPEN.value,
                     ],

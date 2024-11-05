@@ -400,7 +400,7 @@ def test__write_backtesting_results__for_updating_already_existing_entity(
     [
         PositionStatus.OPEN,
         PositionStatus.SCREENED,
-        PositionStatus.BACKTESTED,
+        PositionStatus.OPTIMIZED,
         PositionStatus.DISPATCHED,
     ],
 )
