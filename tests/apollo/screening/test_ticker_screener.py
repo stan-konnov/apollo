@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -25,6 +25,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
+from tests.fixtures.window_size_and_dataframe import SameDataframe
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 
@@ -367,9 +368,6 @@ def test__process_in_parallel__for_correct_screening_process(
 
     Method must call SP500 Components Scraper to scrape SP500 components.
     Method must call calculate_measures method in parallel for each batch.
-
-    TODO: Check calls against database connector to create positions.
-    TODO: Implement the similar approach in parameter optimizer tests.
     """
 
     ticker_screener = TickerScreener()
@@ -385,20 +383,47 @@ def test__process_in_parallel__for_correct_screening_process(
         tickers_to_screen
     )
 
-    # Mock the return value of the map method
-    # as list of dataframes for each scraped ticker
-    multiprocessing_pool.map.return_value = [
-        pd.DataFrame([row], columns=screened_tickers_dataframe.columns)
-        for _, row in screened_tickers_dataframe.iterrows()
-    ]
+    # Mock Ticker Screener private methods
+    # to assert they have been called after the process
+    with patch.object(
+        TickerScreener,
+        "_select_suitable_ticker",
+    ) as select_suitable_ticker, patch.object(
+        TickerScreener,
+        "_initialize_position",
+    ) as initialize_position:
+        # Mock the return value of the map method as
+        # list of dataframes, each for each scraped ticker
+        screened_results = [
+            pd.DataFrame([row], columns=screened_tickers_dataframe.columns)
+            for _, row in screened_tickers_dataframe.iterrows()
+        ]
+        multiprocessing_pool.map.return_value = screened_results
 
-    ticker_screener.process_in_parallel()
+        # Mock the return value of
+        # the select_suitable_ticker method
+        select_suitable_ticker.return_value = str(TICKER)
 
-    # Assert that we scraped the SP500 components
-    ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
+        # Run the screening process
+        ticker_screener.process_in_parallel()
 
-    # Assert that we called our calculation method in parallel
-    multiprocessing_pool.map.assert_called_once_with(
-        ticker_screener._calculate_measures,  # noqa: SLF001
-        ticker_screener._create_batches(tickers_to_screen),  # noqa: SLF001
-    )
+        # Assert that we scraped the SP500 components
+        ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
+
+        # Assert that we called our calculation method in parallel
+        multiprocessing_pool.map.assert_called_once_with(
+            ticker_screener._calculate_measures,  # noqa: SLF001
+            ticker_screener._create_batches(tickers_to_screen),  # noqa: SLF001
+        )
+
+        # Assert that we selected suitable ticker
+        # from the results of the screening process
+        select_suitable_ticker.assert_called_once_with(
+            # Please see tests/fixtures/window_size_and_dataframe.py
+            # for explanation on SameDataframe class
+            SameDataframe(pd.concat(screened_results)),
+        )
+
+        # Assert that we initialized
+        # position for the selected ticker
+        initialize_position.assert_called_once_with(str(TICKER))
