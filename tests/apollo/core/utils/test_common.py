@@ -28,7 +28,7 @@ from apollo.settings import (
     SUPPORTED_DATA_ENHANCERS,
     TICKER,
     VIX_TICKER,
-    YahooApiFrequencies,
+    PriceDataFrequency,
 )
 
 
@@ -142,7 +142,7 @@ def test__ensure_environment_is_configured__for_invalidating_frequency() -> None
 
     exception_message = str(
         "Invalid FREQUENCY environment variable: inf. "
-        f"Accepted values: {', '.join([f.value for f in YahooApiFrequencies])}",
+        f"Accepted values: {', '.join([f.value for f in PriceDataFrequency])}",
     )
 
     with pytest.raises(

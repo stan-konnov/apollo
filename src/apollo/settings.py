@@ -44,21 +44,26 @@ INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET")
 INFLUXDB_MEASUREMENT = getenv("INFLUXDB_MEASUREMENT")
 
 
-class YahooApiFrequencies(Enum):
-    """Frequency values accepted by Yahoo Finance API."""
+class PriceDataFrequency(Enum):
+    """
+    Frequency of the price data.
 
-    ONE_MINUTE = "1m"
-    TWO_MINUTES = "2m"
-    FIVE_MINUTES = "5m"
-    FIFTEEN_MINUTES = "15m"
-    THIRTY_MINUTES = "30m"
-    SIXTY_MINUTES = "60m"
-    NINETY_MINUTES = "90m"
+    Denotes currently supported time frames.
+    """
+
     ONE_DAY = "1d"
-    FIVE_DAYS = "5d"
-    ONE_WEEK = "1wk"
-    ONE_MONTH = "1mo"
-    THREE_MONTHS = "3mo"
+
+
+class ParameterOptimizerMode(Enum):
+    """
+    Parameter optimizer mode of operation.
+
+    Denotes whether optimization process
+    should run over single or multiple strategies.
+    """
+
+    SINGLE_STRATEGY = "single_strategy"
+    MULTIPLE_STRATEGIES = "multiple_strategies"
 
 
 EXCHANGE_TIME_ZONE_AND_HOURS = {
