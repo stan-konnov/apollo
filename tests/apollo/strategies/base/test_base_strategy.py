@@ -82,12 +82,12 @@ def test__base_strategy__with_invalid_parameters(
 
 
 @pytest.mark.usefixtures("window_size")
-def test__base_strategy__for_throwing_error_when_modelling_method_is_not_implemented(
+def test__base_strategy__for_raising_error_when_modelling_method_is_not_implemented(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test Base Strategy for throwing NotImplementedError error.
+    Test Base Strategy for raising NotImplementedError error.
 
     When model_trading_signals method is not implemented in subclass.
     """
@@ -97,7 +97,7 @@ def test__base_strategy__for_throwing_error_when_modelling_method_is_not_impleme
         window_size=window_size,
     )
 
-    exception_message = "Method model_trading_signals is not implemented"
+    exception_message = "Method model_trading_signals is not implemented."
 
     with pytest.raises(
         NotImplementedError,

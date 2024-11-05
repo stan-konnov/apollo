@@ -2,6 +2,7 @@ import pandas as pd
 from prisma import Prisma
 
 from apollo.models.backtesting_results import BacktestingResults
+from apollo.models.position import Position, PositionStatus
 
 
 class PostgresConnector:
@@ -95,5 +96,68 @@ class PostgresConnector:
                 },
                 data=writable_model_representation,  # type: ignore  # noqa: PGH003
             )
+
+        self._database_client.disconnect()
+
+    def get_existing_active_position(self, ticker: str) -> Position | None:
+        """
+        Get existing active position for a ticker.
+
+        Used to validate system invariant of having
+        single active position for a ticker at a time.
+
+        NOTE: We consider a position to be active if it
+        falls under any of the following statuses:
+        screened, backtested, dispatched, open.
+
+        :param ticker: Ticker to check for active position.
+        :returns: Active position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have active position
+        existing_active_position = self._database_client.positions.find_first(
+            where={
+                "ticker": ticker,
+                "status": {
+                    "in": [
+                        PositionStatus.SCREENED.value,
+                        PositionStatus.BACKTESTED.value,
+                        PositionStatus.DISPATCHED.value,
+                        PositionStatus.OPEN.value,
+                    ],
+                },
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                ticker=existing_active_position.ticker,
+                status=PositionStatus(existing_active_position.status),
+            )
+            if existing_active_position
+            else None
+        )
+
+    def create_position_on_screening(self, ticker: str) -> None:
+        """
+        Create a position entity after screening.
+
+        :param ticker: Ticker to create a position for.
+        """
+
+        self._database_client.connect()
+
+        # Create a model and write it to the database
+        self._database_client.positions.create(
+            data=Position(
+                ticker=ticker,
+                status=PositionStatus.SCREENED,
+            ).model_dump(),  # type: ignore  # noqa: PGH003
+        )
 
         self._database_client.disconnect()

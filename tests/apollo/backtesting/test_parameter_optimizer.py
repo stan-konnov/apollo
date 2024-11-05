@@ -1,5 +1,5 @@
 from typing import cast
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -19,8 +19,8 @@ from apollo.settings import (
     STRATEGY,
     TICKER,
 )
-from apollo.utils.types import ParameterSet
-from tests.fixtures.window_size_and_dataframe import SameSeries
+from apollo.utils.types import ParameterKeysAndCombinations, ParameterSet
+from tests.fixtures.window_size_and_dataframe import SameDataframe, SameSeries
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 RANGE_MIN = 1.0
@@ -82,35 +82,6 @@ def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
 
     assert keys == (list(parameters.keys()))
     assert control_combinations == list(combinations)
-
-
-def test__parameter_optimizer__for_correct_combinations_batching() -> None:
-    """
-    Test Parameter Optimizer for correct combinations batching.
-
-    _batch_combinations() must return list of batches of combinations.
-    """
-
-    parameter_optimizer = ParameterOptimizer()
-
-    combinations = [
-        (RANGE_MIN, RANGE_MIN),
-        (RANGE_MIN, RANGE_MAX),
-        (RANGE_MAX, RANGE_MIN),
-        (RANGE_MAX, RANGE_MAX),
-    ]
-
-    control_batches = [
-        [(RANGE_MIN, RANGE_MIN), (RANGE_MIN, RANGE_MAX)],
-        [(RANGE_MAX, RANGE_MIN), (RANGE_MAX, RANGE_MAX)],
-    ]
-
-    batches = parameter_optimizer._batch_combinations(  # noqa: SLF001
-        len(control_batches),
-        combinations,
-    )
-
-    assert control_batches == batches
 
 
 @pytest.mark.usefixtures("dataframe")
@@ -346,3 +317,133 @@ def test__parameter_optimizer__for_correct_result_output(
         backtesting_end_date=str(END_DATE),
         backtesting_start_date=str(START_DATE),
     )
+
+
+@pytest.mark.usefixtures("dataframe")
+@pytest.mark.parametrize(
+    "multiprocessing_pool",
+    ["apollo.backtesting.parameter_optimizer.Pool"],
+    indirect=True,
+)
+def test__process_in_parallel__for_correct_optimization_process(
+    dataframe: pd.DataFrame,
+    multiprocessing_pool: Mock,
+) -> None:
+    """
+    Test process_in_parallel for correct optimization process.
+
+    Method must call Price Data Provider to get price data.
+    Method must call Price Data Enhancer to enhance price data.
+    Method must construct parameter combinations and create batches.
+    Method must call process method in parallel for each combination batch.
+    Method must call output results with combined dataframes of backtesting processes.
+    """
+
+    parameter_optimizer = ParameterOptimizer()
+
+    parameter_optimizer._configuration = Mock()  # noqa: SLF001
+    parameter_optimizer._database_connector = Mock()  # noqa: SLF001
+    parameter_optimizer._price_data_provider = Mock()  # noqa: SLF001
+    parameter_optimizer._price_data_enhancer = Mock()  # noqa: SLF001
+
+    # Mock return values of Price Data Provider and Enhancer
+    parameter_optimizer._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
+    parameter_optimizer._price_data_enhancer.enhance_price_data.return_value = dataframe  # noqa: SLF001
+
+    # Mock configured parameter set
+    parameter_set = {
+        "sl_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "tp_volatility_multiplier": {
+            "range": [RANGE_MIN, RANGE_MAX],
+            "step": RANGE_STEP,
+        },
+        "additional_data_enhancers": ["VIX"],
+    }
+    parameter_optimizer._configuration.parameter_set = parameter_set  # noqa: SLF001
+
+    # Mock Parameter Optimizer private methods
+    # to assert they have been called after the process
+    with patch.object(
+        ParameterOptimizer,
+        "_construct_parameter_combinations",
+    ) as construct_parameter_combinations, patch.object(
+        ParameterOptimizer,
+        "_output_results",
+    ) as output_results:
+        # Mock the return value of the map method as
+        # list of dataframes with backtesting results
+        backtesting_results = [
+            pd.DataFrame(
+                {
+                    "Return [%]": [0.0],
+                    "Sharpe Ratio": [0.0],
+                    "# Trades": [0],
+                },
+            ),
+            pd.DataFrame(
+                {
+                    "Return [%]": [0.0],
+                    "Sharpe Ratio": [0.0],
+                    "# Trades": [0],
+                },
+            ),
+        ]
+        multiprocessing_pool.starmap.return_value = backtesting_results
+
+        # Mock the return value of _construct_parameter_combinations
+        keys, combinations = cast(
+            ParameterKeysAndCombinations,
+            (
+                ["sl_volatility_multiplier", "tp_volatility_multiplier"],
+                [
+                    (RANGE_MIN, RANGE_MIN),
+                    (RANGE_MIN, RANGE_MAX),
+                    (RANGE_MAX, RANGE_MIN),
+                    (RANGE_MAX, RANGE_MAX),
+                ],
+            ),
+        )
+        construct_parameter_combinations.return_value = (keys, combinations)
+
+        # Create batches and arguments for each process
+        batches = parameter_optimizer._create_batches(combinations)  # noqa: SLF001
+        batch_arguments = [(batch, dataframe, parameter_set, keys) for batch in batches]
+
+        parameter_optimizer.process_in_parallel()
+
+        # Assert that we requested the price data
+        parameter_optimizer._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
+            ticker=str(TICKER),
+            frequency=str(FREQUENCY),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
+        )
+
+        # Assert that we enhanced the price data
+        parameter_optimizer._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
+            dataframe,
+            parameter_set["additional_data_enhancers"],
+        )
+
+        # Assert that we constructed parameter combinations
+        construct_parameter_combinations.assert_called_once_with(
+            parameter_set,
+        )
+
+        # Assert that we called our processing method in parallel
+        multiprocessing_pool.starmap.assert_called_once_with(
+            parameter_optimizer._process,  # noqa: SLF001
+            batch_arguments,
+        )
+
+        # Assert that we called the output results
+        # with combined dataframes of backtesting processes
+        output_results.assert_called_once_with(
+            # Please see tests/fixtures/window_size_and_dataframe.py
+            # for explanation on SameDataframe class
+            SameDataframe(pd.concat(backtesting_results)),
+        )
