@@ -1,6 +1,6 @@
 import logging
 
-from apollo.core.backtesting.backtesting_runner import BacktestingRunner
+from apollo.core.backtesters.backtesting_runner import BacktestingRunner
 from apollo.core.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.core.providers.price_data_provider import PriceDataProvider
 from apollo.core.strategies.combinatory_elliot_waves import CombinatoryElliotWaves

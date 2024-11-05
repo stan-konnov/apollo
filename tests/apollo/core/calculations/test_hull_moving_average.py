@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.hull_moving_average import (
+from apollo.core.calculators.hull_moving_average import (
     HullMovingAverageCalculator,
 )
 

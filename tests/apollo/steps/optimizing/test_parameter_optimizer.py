@@ -4,9 +4,8 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 
-from apollo.core.backtesting.backtesting_runner import BacktestingRunner
-from apollo.core.backtesting.parameter_optimizer import ParameterOptimizer
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.backtesters.backtesting_runner import BacktestingRunner
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.core.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.utils.types import ParameterKeysAndCombinations, ParameterSet
 from apollo.settings import (
@@ -20,6 +19,7 @@ from apollo.settings import (
     STRATEGY,
     TICKER,
 )
+from apollo.steps.optimizing.parameter_optimizer import ParameterOptimizer
 from tests.fixtures.window_size_and_dataframe import SameDataframe, SameSeries
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
@@ -322,7 +322,7 @@ def test__output_results__for_correct_result_output(
 @pytest.mark.usefixtures("dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.core.backtesting.parameter_optimizer.Pool"],
+    ["apollo.steps.optimizing.parameter_optimizer.Pool"],
     indirect=True,
 )
 def test__optimize_parameters_in_parallel__for_correct_optimization_optimize_parameters(

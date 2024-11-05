@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from scipy.stats import linregress
 
-from apollo.core.calculations.linear_regression_channel import (
+from apollo.core.calculators.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
 

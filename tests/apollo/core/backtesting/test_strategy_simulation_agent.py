@@ -1,8 +1,8 @@
 import pytest
 from pandas import DataFrame
 
-from apollo.core.backtesting.strategy_simulation_agent import StrategySimulationAgent
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.backtesters.strategy_simulation_agent import StrategySimulationAgent
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 SL_VOL_MULT = 0.01

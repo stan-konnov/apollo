@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.engulfing_vix_pattern import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.core.strategies.engulfing_vix_mean_reversion import (

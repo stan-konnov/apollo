@@ -1,7 +1,7 @@
 from numpy import datetime64
 from pandas import to_datetime
 
-from apollo.core.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,

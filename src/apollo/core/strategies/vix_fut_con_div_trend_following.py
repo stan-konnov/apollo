@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.vix_futures_convergence_divergence import (
+from apollo.core.calculators.vix_futures_convergence_divergence import (
     VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.core.strategies.base.base_strategy import BaseStrategy

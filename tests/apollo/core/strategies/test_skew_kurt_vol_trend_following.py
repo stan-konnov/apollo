@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.distribution_moments import DistributionMomentsCalculator
-from apollo.core.calculations.engulfing_vix_pattern import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.distribution_moments import DistributionMomentsCalculator
+from apollo.core.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.core.strategies.skew_kurt_vol_trend_following import (

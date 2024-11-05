@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.engulfing_vix_pattern import (
+from apollo.core.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER

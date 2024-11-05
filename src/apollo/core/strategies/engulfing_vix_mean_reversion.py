@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.engulfing_vix_pattern import (
+from apollo.core.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.core.strategies.base.base_strategy import BaseStrategy

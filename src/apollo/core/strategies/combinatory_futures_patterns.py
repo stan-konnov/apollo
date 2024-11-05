@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.combinatory_futures_patterns import (
+from apollo.core.calculators.combinatory_futures_patterns import (
     CombinatoryFuturesPatternsCalculator,
 )
 from apollo.core.strategies.base.base_strategy import BaseStrategy

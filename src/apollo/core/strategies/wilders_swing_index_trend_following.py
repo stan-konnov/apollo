@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.wilders_swing_index import WildersSwingIndexCalculator
+from apollo.core.calculators.wilders_swing_index import WildersSwingIndexCalculator
 from apollo.core.strategies.base.base_strategy import BaseStrategy
 from apollo.core.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,

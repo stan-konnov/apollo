@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.distribution_moments import DistributionMomentsCalculator
+from apollo.core.calculators.distribution_moments import DistributionMomentsCalculator
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")

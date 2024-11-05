@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_directional_movement_index import (
+from apollo.core.calculators.average_directional_movement_index import (
     AverageDirectionalMovementIndexCalculator,
 )
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.core.calculations.average_directional_movement_index import (
+from apollo.core.calculators.average_directional_movement_index import (
     AverageDirectionalMovementIndexCalculator,
 )
 from apollo.core.strategies.base.base_strategy import BaseStrategy

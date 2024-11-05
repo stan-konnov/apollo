@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.swing_events import SwingEventsCalculator
+from apollo.core.calculators.swing_events import SwingEventsCalculator
 
 UP_SWING = 1.0
 DOWN_SWING = -1.0

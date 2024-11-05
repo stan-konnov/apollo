@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.swing_events import SwingEventsCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.swing_events import SwingEventsCalculator
 from apollo.core.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from tests.utils.precalculate_shared_values import precalculate_shared_values

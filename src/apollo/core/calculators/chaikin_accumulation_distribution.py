@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from apollo.core.calculations.base_calculator import BaseCalculator
+from apollo.core.calculators.base_calculator import BaseCalculator
 
 
 class ChaikinAccumulationDistributionCalculator(BaseCalculator):

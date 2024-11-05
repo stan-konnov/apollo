@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.elliot_waves import ElliotWavesCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.elliot_waves import ElliotWavesCalculator
 from apollo.core.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from tests.utils.precalculate_shared_values import precalculate_shared_values

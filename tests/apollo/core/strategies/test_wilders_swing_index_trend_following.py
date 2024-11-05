@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.wilders_swing_index import WildersSwingIndexCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.wilders_swing_index import WildersSwingIndexCalculator
 from apollo.core.strategies.wilders_swing_index_trend_following import (
     WildersSwingIndexTrendFollowing,
 )

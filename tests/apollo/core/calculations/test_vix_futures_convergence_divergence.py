@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.vix_futures_convergence_divergence import (
+from apollo.core.calculators.vix_futures_convergence_divergence import (
     VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER

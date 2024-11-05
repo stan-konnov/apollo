@@ -5,7 +5,7 @@ from pathlib import Path
 from backtesting import Backtest
 from pandas import DataFrame, Series
 
-from apollo.core.backtesting.strategy_simulation_agent import StrategySimulationAgent
+from apollo.core.backtesters.strategy_simulation_agent import StrategySimulationAgent
 from apollo.settings import PLOT_DIR, TRDS_DIR
 
 logger = logging.getLogger(__name__)

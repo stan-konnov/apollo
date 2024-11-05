@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from pandas import DataFrame
 
-from apollo.core.backtesting.backtesting_runner import BacktestingRunner
+from apollo.core.backtesters.backtesting_runner import BacktestingRunner
 from apollo.settings import BACKTESTING_CASH_SIZE, STRATEGY
 from tests.fixtures.files_and_directories import PLOT_DIR, TRDS_DIR
 
@@ -33,7 +33,7 @@ def test__backtesting_runner__for_uppercasing_columns(
 
 
 @pytest.mark.usefixtures("dataframe")
-@patch("apollo.core.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
+@patch("apollo.core.backtesters.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_running_the_process(
     dataframe: DataFrame,
 ) -> None:
@@ -62,7 +62,7 @@ def test__backtesting_runner__for_running_the_process(
 
 
 @pytest.mark.usefixtures("dataframe", "clean_data")
-@patch("apollo.core.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
+@patch("apollo.core.backtesters.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_creating_plots_directory(
     dataframe: DataFrame,
 ) -> None:
@@ -90,7 +90,7 @@ def test__backtesting_runner__for_creating_plots_directory(
 
 
 @pytest.mark.usefixtures("dataframe", "clean_data")
-@patch("apollo.core.backtesting.backtesting_runner.PLOT_DIR", PLOT_DIR)
+@patch("apollo.core.backtesters.backtesting_runner.PLOT_DIR", PLOT_DIR)
 def test__backtesting_runner__for_writing_result_plot(
     dataframe: DataFrame,
 ) -> None:
@@ -118,7 +118,7 @@ def test__backtesting_runner__for_writing_result_plot(
 
 
 @pytest.mark.usefixtures("dataframe", "clean_data")
-@patch("apollo.core.backtesting.backtesting_runner.TRDS_DIR", TRDS_DIR)
+@patch("apollo.core.backtesters.backtesting_runner.TRDS_DIR", TRDS_DIR)
 def test__backtesting_runner__for_creating_trades_directory(
     dataframe: DataFrame,
 ) -> None:
@@ -146,7 +146,7 @@ def test__backtesting_runner__for_creating_trades_directory(
 
 
 @pytest.mark.usefixtures("dataframe", "clean_data")
-@patch("apollo.core.backtesting.backtesting_runner.TRDS_DIR", TRDS_DIR)
+@patch("apollo.core.backtesters.backtesting_runner.TRDS_DIR", TRDS_DIR)
 def test__backtesting_runner__for_writing_result_trades(
     dataframe: DataFrame,
 ) -> None:

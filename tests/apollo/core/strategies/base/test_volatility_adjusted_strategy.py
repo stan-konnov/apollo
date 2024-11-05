@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.core.strategies.base.volatility_adjusted_strategy import (
     VolatilityAdjustedStrategy,
 )

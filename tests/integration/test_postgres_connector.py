@@ -6,7 +6,7 @@ import pytest
 from prisma import Prisma
 from pytz import timezone
 
-from apollo.core.backtesting.backtesting_runner import BacktestingRunner
+from apollo.core.backtesters.backtesting_runner import BacktestingRunner
 from apollo.core.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.models.backtesting_results import BacktestingResults
 from apollo.core.models.position import Position, PositionStatus

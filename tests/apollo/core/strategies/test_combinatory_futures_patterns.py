@@ -1,11 +1,11 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.combinatory_futures_patterns import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.combinatory_futures_patterns import (
     CombinatoryFuturesPatternsCalculator,
 )
-from apollo.core.calculations.engulfing_vix_pattern import EngulfingVIXPatternCalculator
+from apollo.core.calculators.engulfing_vix_pattern import EngulfingVIXPatternCalculator
 from apollo.core.strategies.combinatory_futures_patterns import (
     CombinatoryFuturesPatterns,
 )

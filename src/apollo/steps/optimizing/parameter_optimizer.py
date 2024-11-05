@@ -6,11 +6,11 @@ from sys import exit
 import pandas as pd
 from numpy import arange
 
-from apollo.core.backtesting.backtesting_runner import BacktestingRunner
-from apollo.core.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.core.backtesters.backtesting_runner import BacktestingRunner
 from apollo.core.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.core.providers.price_data_provider import PriceDataProvider
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.core.utils.configuration import Configuration
 from apollo.core.utils.multiprocessing_capable import MultiprocessingCapable
 from apollo.core.utils.types import (

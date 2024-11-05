@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 from numpy import datetime64
 
-from apollo.core.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.core.utils.common import (
     ensure_environment_is_configured,
     to_default_date_string,

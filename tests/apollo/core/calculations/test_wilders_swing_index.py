@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.wilders_swing_index import WildersSwingIndexCalculator
+from apollo.core.calculators.wilders_swing_index import WildersSwingIndexCalculator
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 LOW_SWING_POINT: float = -1.0

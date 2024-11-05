@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.combinatory_futures_patterns import (
+from apollo.core.calculators.combinatory_futures_patterns import (
     CombinatoryFuturesPatternsCalculator,
 )
 from apollo.settings import MISSING_DATA_PLACEHOLDER

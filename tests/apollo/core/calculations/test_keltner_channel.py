@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.hull_moving_average import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.hull_moving_average import (
     HullMovingAverageCalculator,
 )
-from apollo.core.calculations.keltner_channel import KeltnerChannelCalculator
+from apollo.core.calculators.keltner_channel import KeltnerChannelCalculator
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 VOLATILITY_MULTIPLIER = 0.5

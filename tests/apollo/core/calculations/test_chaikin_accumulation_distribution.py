@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.chaikin_accumulation_distribution import (
+from apollo.core.calculators.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
 

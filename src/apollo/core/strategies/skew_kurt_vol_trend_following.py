@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.distribution_moments import DistributionMomentsCalculator
+from apollo.core.calculators.distribution_moments import DistributionMomentsCalculator
 from apollo.core.strategies.base.base_strategy import BaseStrategy
 from apollo.core.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
 from apollo.core.strategies.base.volatility_adjusted_strategy import (

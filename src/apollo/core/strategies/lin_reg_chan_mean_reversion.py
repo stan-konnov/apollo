@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.linear_regression_channel import (
+from apollo.core.calculators.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
 from apollo.core.strategies.base.base_strategy import BaseStrategy

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 
-from apollo.core.calculations.base_calculator import BaseCalculator
+from apollo.core.calculators.base_calculator import BaseCalculator
 
 
 class LinearRegressionChannelCalculator(BaseCalculator):

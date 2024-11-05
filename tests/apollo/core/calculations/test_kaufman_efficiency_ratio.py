@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.kaufman_efficiency_ratio import (
+from apollo.core.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 

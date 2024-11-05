@@ -7,13 +7,12 @@ import pandas as pd
 import pytest
 from zoneinfo import ZoneInfo
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.kaufman_efficiency_ratio import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.core.errors.api import EmptyApiResponseError
 from apollo.core.models.position import Position, PositionStatus
-from apollo.core.screening.ticker_screener import TickerScreener
 from apollo.settings import (
     END_DATE,
     EXCHANGE,
@@ -25,6 +24,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
+from apollo.steps.screening.ticker_screener import TickerScreener
 from tests.fixtures.window_size_and_dataframe import SameDataframe
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
@@ -360,7 +360,7 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
 @pytest.mark.usefixtures("screened_tickers_dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.core.screening.ticker_screener.Pool"],
+    ["apollo.steps.screening.ticker_screener.Pool"],
     indirect=True,
 )
 def test__process_in_parallel__for_correct_screening_process(

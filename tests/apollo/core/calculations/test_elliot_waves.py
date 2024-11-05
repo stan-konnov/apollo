@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from apollo.core.calculations.elliot_waves import ElliotWavesCalculator
+from apollo.core.calculators.elliot_waves import ElliotWavesCalculator
 from tests.utils.precalculate_shared_values import precalculate_shared_values
 
 GOLDEN_RATIO: float = 1.618

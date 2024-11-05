@@ -5,8 +5,8 @@ from multiprocessing import Pool
 import pandas as pd
 from zoneinfo import ZoneInfo
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.core.calculations.kaufman_efficiency_ratio import (
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.core.connectors.api.yahoo_api_connector import YahooApiConnector

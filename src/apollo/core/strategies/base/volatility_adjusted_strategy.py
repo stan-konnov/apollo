@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.core.calculations.average_true_range import AverageTrueRangeCalculator
+from apollo.core.calculators.average_true_range import AverageTrueRangeCalculator
 
 
 class VolatilityAdjustedStrategy:
