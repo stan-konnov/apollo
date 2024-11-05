@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """Run optimization process."""
+    """Run optimization process for individual strategy."""
 
     ensure_environment_is_configured()
 
