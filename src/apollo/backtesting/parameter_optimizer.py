@@ -97,7 +97,8 @@ class ParameterOptimizer(MultiprocessingCapable):
 
         # Process each batch in parallel
         with Pool(processes=self._available_cores) as pool:
-            results = pool.starmap(self._process, batch_arguments)
+            # Backtest each batch of parameter combinations
+            results = pool.starmap(self._optimize_parameters, batch_arguments)
 
             # Concatenate the results from each process
             combined_results = pd.concat(results)
@@ -105,7 +106,7 @@ class ParameterOptimizer(MultiprocessingCapable):
             # Output the results to the database
             self._output_results(combined_results)
 
-    def _process(
+    def _optimize_parameters(
         self,
         combinations: ParameterCombinations,
         price_dataframe: pd.DataFrame,

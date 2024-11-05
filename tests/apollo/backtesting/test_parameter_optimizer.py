@@ -28,11 +28,11 @@ RANGE_MAX = 2.0
 RANGE_STEP = 1.0
 
 
-def test__parameter_optimizer__for_correct_combination_ranges() -> None:
+def test__get_combination_ranges__for_correct_combination_ranges() -> None:
     """
-    Test Parameter Optimizer for correct combination ranges.
+    Test get_combination_ranges method for correct combination ranges.
 
-    _get_combination_ranges() must return Series with correct combination ranges.
+    Method must return Series with correct combination ranges.
     """
 
     parameter_optimizer = ParameterOptimizer()
@@ -48,12 +48,13 @@ def test__parameter_optimizer__for_correct_combination_ranges() -> None:
     pd.testing.assert_series_equal(control_combination_ranges, combination_ranges)
 
 
-def test__parameter_optimizer__for_correct_parameter_combinations() -> None:
+def test__construct_parameter_combinations__for_correct_parameter_combinations() -> (
+    None
+):
     """
-    Test Parameter Optimizer for correct combination ranges.
+    Test construct_parameter_combinations method for correct combination ranges.
 
-    _construct_parameter_combinations() must
-    return tuple of parameter keys and product of ranges.
+    Method must return tuple of parameter keys and product of ranges.
     """
 
     parameter_optimizer = ParameterOptimizer()
@@ -124,7 +125,7 @@ def test__parameter_optimizer__for_correct_error_handling(
     )
 
     with pytest.raises(SystemExit) as exception:
-        parameter_optimizer._process(  # noqa: SLF001
+        parameter_optimizer._optimize_parameters(  # noqa: SLF001
             combinations=combinations,
             price_dataframe=dataframe,
             parameter_set=parameter_set,
@@ -136,14 +137,14 @@ def test__parameter_optimizer__for_correct_error_handling(
 
 
 @pytest.mark.usefixtures("enhanced_dataframe")
-def test__parameter_optimizer__for_correct_processing(
+def test__optimize_parameters__for_correctly_optimizing_parameters(
     enhanced_dataframe: pd.DataFrame,
 ) -> None:
     """
-    Test Parameter Optimizer for correct processing.
+    Test optimize_parameters method for correctly optimizing parameters.
 
-    Result must be dataframe.
-    Result must have "parameters" column.
+    Method must return Dataframe with backtested results.
+    Resulting Dataframe must contain "parameters" column.
     """
 
     parameter_optimizer = ParameterOptimizer()
@@ -179,7 +180,7 @@ def test__parameter_optimizer__for_correct_processing(
         cast(ParameterSet, parameters),
     )
 
-    backtested_dataframe = parameter_optimizer._process(  # noqa: SLF001
+    backtested_dataframe = parameter_optimizer._optimize_parameters(  # noqa: SLF001
         combinations=combinations,
         price_dataframe=enhanced_dataframe,
         parameter_set=cast(ParameterSet, parameters),
@@ -191,19 +192,18 @@ def test__parameter_optimizer__for_correct_processing(
 
 
 @pytest.mark.usefixtures("dataframe", "window_size")
-def test__parameter_optimizer__for_correct_result_output(
+def test__output_results__for_correct_result_output(
     dataframe: pd.DataFrame,
     window_size: int,
 ) -> None:
     """
-    Test Parameter Optimizer for correct result output.
+    Test output_results method for correct result output.
 
     Results dataframe must have clean indices.
     Results dataframe must omit unnecessary columns.
     Results dataframe must be sorted by "Return [%]", "Sharpe Ratio", "# Trades".
 
     Optimized parameters JSON must match the best results.
-
     Parameter Optimizer must call database connector with correct values.
     """
 
@@ -325,7 +325,7 @@ def test__parameter_optimizer__for_correct_result_output(
     ["apollo.backtesting.parameter_optimizer.Pool"],
     indirect=True,
 )
-def test__process_in_parallel__for_correct_optimization_process(
+def test__optimize_parameters_in_parallel__for_correct_optimization_optimize_parameters(
     dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
@@ -436,7 +436,7 @@ def test__process_in_parallel__for_correct_optimization_process(
 
         # Assert that we called our processing method in parallel
         multiprocessing_pool.starmap.assert_called_once_with(
-            parameter_optimizer._process,  # noqa: SLF001
+            parameter_optimizer._optimize_parameters,  # noqa: SLF001
             batch_arguments,
         )
 
