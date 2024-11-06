@@ -77,7 +77,9 @@ class ParameterOptimizer(MultiprocessingCapable):
         # it means this process is part of larger signal generation process
         if self._operation_mode == ParameterOptimizerMode.MULTIPLE_STRATEGIES:
             # Query the screened position to optimize
-            screened_position = self._database_connector.get_screened_position()
+            screened_position = (
+                self._database_connector.get_existing_screened_position()
+            )
 
             # Raise an exception if
             # there is no screened position
@@ -94,6 +96,16 @@ class ParameterOptimizer(MultiprocessingCapable):
                     ticker=screened_position.ticker,
                     strategy=strategy,
                 )
+
+            # Update the screened position to optimized
+            self._database_connector.update_position_on_optimization(
+                screened_position.id,
+            )
+
+            logger.info(
+                "Optimization process complete. "
+                f"Catalogue for {screened_position.ticker} is now optimized.",
+            )
 
         # Otherwise, we are optimizing
         # single strategy for development purposes

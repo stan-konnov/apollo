@@ -16,6 +16,13 @@ class BacktestingResults(BaseModel):
     Parses incoming backtesting series into a writable database model.
     """
 
+    # Due to the interplay between Pydantic and Prisma,
+    # we mark id field as required, but give it a default.
+    # This way, we can omit it when creating a new entity,
+    # but it will be required when updating an existing one.
+
+    id: str = ""
+
     ticker: str
     strategy: str
     frequency: str

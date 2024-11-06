@@ -76,7 +76,9 @@ class PostgresConnector:
         )
 
         # Map the model to a writable representation
-        writable_model_representation = backtesting_results_model.model_dump()
+        writable_model_representation = backtesting_results_model.model_dump(
+            exclude_defaults=True,
+        )
 
         # NOTE: prisma python client and pydantic models
         # are not yet fully compatible between each other
@@ -136,6 +138,7 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
+                id=existing_active_position.id,
                 ticker=existing_active_position.ticker,
                 status=PositionStatus(existing_active_position.status),
             )
@@ -157,14 +160,17 @@ class PostgresConnector:
             data=Position(
                 ticker=ticker,
                 status=PositionStatus.SCREENED,
-            ).model_dump(),  # type: ignore  # noqa: PGH003
+            ).model_dump(exclude_defaults=True),  # type: ignore  # noqa: PGH003
         )
 
         self._database_client.disconnect()
 
-    def get_screened_position(self) -> Position | None:
+    def get_existing_screened_position(self) -> Position | None:
         """
-        Get screened position.
+        Get existing screened position.
+
+        Used to identify the ticker queued
+        for optimization after the screening process.
 
         :returns: Screened position if exists.
         """
@@ -183,9 +189,31 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
+                id=screened_position.id,
                 ticker=screened_position.ticker,
                 status=PositionStatus(screened_position.status),
             )
             if screened_position
             else None
         )
+
+    def update_position_on_optimization(self, position_id: str) -> None:
+        """
+        Update a position entity after optimization.
+
+        :param position_id: Position id to update.
+        """
+
+        self._database_client.connect()
+
+        # Update the position status
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "status": PositionStatus.OPTIMIZED.value,
+            },
+        )
+
+        self._database_client.disconnect()
