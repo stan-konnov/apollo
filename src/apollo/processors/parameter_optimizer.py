@@ -45,6 +45,8 @@ class ParameterOptimizer(MultiprocessingCapable):
     Writes highest rated backtesting results and parameters into the database.
 
     Is multiprocessing capable and runs in parallel.
+
+    TODO: due to hardware constraints, limit historical data to -30 years.
     """
 
     def __init__(self, operation_mode: ParameterOptimizerMode) -> None:
