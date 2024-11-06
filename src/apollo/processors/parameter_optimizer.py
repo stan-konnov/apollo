@@ -46,6 +46,7 @@ class ParameterOptimizer(MultiprocessingCapable):
 
     Is multiprocessing capable and runs in parallel.
 
+    TODO: run the whole process on SPY to get time estimate.
     TODO: due to hardware constraints, limit historical data to -30 years.
     """
 
