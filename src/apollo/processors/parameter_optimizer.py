@@ -20,6 +20,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    ParameterOptimizerMode,
 )
 from apollo.utils.configuration import Configuration
 from apollo.utils.multiprocessing_capable import MultiprocessingCapable
@@ -44,7 +45,7 @@ class ParameterOptimizer(MultiprocessingCapable):
     Is multiprocessing capable and runs in parallel.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, operation_mode: ParameterOptimizerMode) -> None:
         """
         Construct Parameter Optimizer.
 
@@ -52,9 +53,13 @@ class ParameterOptimizer(MultiprocessingCapable):
         Instantiate Database Connector.
         Instantiate Price Data Provider.
         Instantiate Price Data Enhancer.
+
+        :param operation_mode: Mode of operation.
         """
 
         super().__init__()
+
+        self._operation_mode = operation_mode
 
         self._configuration = Configuration()
         self._database_connector = PostgresConnector()
