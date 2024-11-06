@@ -1,4 +1,5 @@
 from itertools import product
+from json import dumps
 from logging import getLogger
 from multiprocessing import Pool
 from sys import exit
@@ -9,6 +10,7 @@ from numpy import arange
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.errors.parameter_optimizing import ScreenedPositionDoesNotExistError
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -69,47 +71,75 @@ class ParameterOptimizer(MultiprocessingCapable):
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
-        # Request or read the price data
-        price_dataframe = self._price_data_provider.get_price_data(
-            ticker=str(TICKER),
-            frequency=str(FREQUENCY),
-            start_date=str(START_DATE),
-            end_date=str(END_DATE),
-            max_period=bool(MAX_PERIOD),
-        )
+        # If we are optimizing over the whole strategy catalogue,
+        # it means this process is part of larger signal generation process
+        if self._operation_mode == ParameterOptimizerMode.MULTIPLE_STRATEGIES:
+            # Query the screened position to optimize
+            screened_position = self._database_connector.get_screened_position()
 
-        # Enhance the price data based on the configuration
-        price_dataframe = self._price_data_enhancer.enhance_price_data(
-            price_dataframe,
-            self._configuration.parameter_set["additional_data_enhancers"],
-        )
+            # Raise an exception if
+            # there is no screened position
+            if not screened_position:
+                raise ScreenedPositionDoesNotExistError(
+                    "Screened position does not exist. "
+                    "Screening process must be run first.",
+                )
 
-        # Extract the parameter set from the configuration
-        parameter_set = self._configuration.parameter_set
+            # Iterate over each strategy in the catalogue
+            for strategy in STRATEGY_CATALOGUE_MAP:
+                # Get parameter set for the strategy
+                parameter_set = self._configuration.get_parameter_set(strategy)
 
-        # Build keys and combinations of parameters to optimize
-        keys, combinations = self._construct_parameter_combinations(
-            parameter_set,
-        )
+                period = (
+                    "Maximum available" if MAX_PERIOD else f"{START_DATE} - {END_DATE}"
+                )
+                logger.info(
+                    f"Running {strategy} for {screened_position.ticker}\n\n"
+                    f"Period: {period}\n\n"
+                    f"Frequency: {FREQUENCY}\n\n"
+                    "Parameters:\n\n"
+                    f"{dumps(parameter_set, indent=4)}",
+                )
 
-        # Break down combinations into equal batches
-        batches = self._create_batches(combinations)
+                # Request or read the price data
+                price_dataframe = self._price_data_provider.get_price_data(
+                    ticker=screened_position.ticker,
+                    frequency=str(FREQUENCY),
+                    start_date=str(START_DATE),
+                    end_date=str(END_DATE),
+                    max_period=bool(MAX_PERIOD),
+                )
 
-        # Create arguments to supply to each process
-        batch_arguments = [
-            (batch, price_dataframe, parameter_set, keys) for batch in batches
-        ]
+                # Enhance the price data based on the configuration
+                price_dataframe = self._price_data_enhancer.enhance_price_data(
+                    price_dataframe,
+                    parameter_set["additional_data_enhancers"],
+                )
 
-        # Process each batch in parallel
-        with Pool(processes=self._available_cores) as pool:
-            # Backtest each batch of parameter combinations
-            results = pool.starmap(self._optimize_parameters, batch_arguments)
+                # Build keys and combinations of parameters to optimize
+                keys, combinations = self._construct_parameter_combinations(
+                    parameter_set,
+                )
 
-            # Concatenate the results from each process
-            combined_results = pd.concat(results)
+                # Break down combinations into equal batches
+                batches = self._create_batches(combinations)
 
-            # Output the results to the database
-            self._output_results(combined_results)
+                # Create arguments to supply to each process
+                batch_arguments = [
+                    (batch, price_dataframe, parameter_set, keys, strategy)
+                    for batch in batches
+                ]
+
+                # Process each batch in parallel
+                with Pool(processes=self._available_cores) as pool:
+                    # Backtest each batch of parameter combinations
+                    results = pool.starmap(self._optimize_parameters, batch_arguments)
+
+                    # Concatenate the results from each process
+                    combined_results = pd.concat(results)
+
+                    # Output the results to the database
+                    self._output_results(combined_results)
 
     def _optimize_parameters(
         self,
@@ -117,6 +147,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         price_dataframe: pd.DataFrame,
         parameter_set: ParameterSet,
         keys: list[str],
+        strategy_name: str = str(STRATEGY),
     ) -> pd.DataFrame:
         """
         Run the optimization process.
@@ -125,6 +156,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         :param price_dataframe: Dataframe with price data.
         :param parameter_set: parameter specifications.
         :param keys: List of parameter keys.
+        :param strategy_name: Strategy name.
 
         :returns: DataFrame with backtesting results.
         """
@@ -135,7 +167,6 @@ class ParameterOptimizer(MultiprocessingCapable):
 
         # Instantiate the strategy class by typecasting
         # the strategy name from configuration to the corresponding class
-        strategy_name = str(STRATEGY)
         strategy_class = type(
             strategy_name,
             (STRATEGY_CATALOGUE_MAP[strategy_name],),

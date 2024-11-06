@@ -161,3 +161,31 @@ class PostgresConnector:
         )
 
         self._database_client.disconnect()
+
+    def get_screened_position(self) -> Position | None:
+        """
+        Get screened position.
+
+        :returns: Screened position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have a screened position
+        screened_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.SCREENED.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                ticker=screened_position.ticker,
+                status=PositionStatus(screened_position.status),
+            )
+            if screened_position
+            else None
+        )
