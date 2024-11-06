@@ -6,13 +6,10 @@ import pytest
 from prisma import Prisma
 from pytz import timezone
 
-from apollo.core.backtesters.backtesting_runner import BacktestingRunner
-from apollo.core.connectors.database.postgres_connector import PostgresConnector
-from apollo.core.models.backtesting_results import BacktestingResults
-from apollo.core.models.position import Position, PositionStatus
-from apollo.core.strategies.skew_kurt_vol_trend_following import (
-    SkewnessKurtosisVolatilityTrendFollowing,
-)
+from apollo.backtesters.backtesting_runner import BacktestingRunner
+from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.models.backtesting_results import BacktestingResults
+from apollo.models.position import Position, PositionStatus
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     DEFAULT_DATE_FORMAT,
@@ -21,6 +18,9 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+)
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
 )
 
 

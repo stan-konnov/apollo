@@ -41,7 +41,7 @@ def yahoo_api_call() -> Generator[None, None, None]:
     """Simulate call to Yahoo API."""
 
     with patch(
-        "apollo.core.connectors.api.yahoo_api_connector.download",
+        "apollo.connectors.api.yahoo_api_connector.download",
     ) as mocked_call:
         yield mocked_call
 
@@ -51,7 +51,7 @@ def yahoo_ticker_object() -> Generator[None, None, None]:
     """Simulate Yahoo Ticker object."""
 
     with patch(
-        "apollo.core.connectors.api.yahoo_api_connector.Ticker",
+        "apollo.connectors.api.yahoo_api_connector.Ticker",
     ) as mocked_object:
         # Make sure when mocked object is constructed
         # it returns exactly this instance instead of a new one

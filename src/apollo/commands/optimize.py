@@ -1,7 +1,7 @@
 import logging
 
-from apollo.core.utils.common import ensure_environment_is_configured
-from apollo.steps.optimizing.parameter_optimizer import ParameterOptimizer
+from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
     level=logging.INFO,

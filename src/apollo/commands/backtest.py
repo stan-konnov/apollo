@@ -1,10 +1,8 @@
 import logging
 
-from apollo.core.backtesters.backtesting_runner import BacktestingRunner
-from apollo.core.providers.price_data_enhancer import PriceDataEnhancer
-from apollo.core.providers.price_data_provider import PriceDataProvider
-from apollo.core.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
-from apollo.core.utils.common import ensure_environment_is_configured
+from apollo.backtesters.backtesting_runner import BacktestingRunner
+from apollo.providers.price_data_enhancer import PriceDataEnhancer
+from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
@@ -12,6 +10,8 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
+from apollo.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
+from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
     level=logging.INFO,

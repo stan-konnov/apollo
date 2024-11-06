@@ -1,7 +1,7 @@
 import logging
 
-from apollo.core.utils.common import ensure_environment_is_configured
-from apollo.steps.screening.ticker_screener import TickerScreener
+from apollo.processors.ticker_screener import TickerScreener
+from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
     level=logging.INFO,
