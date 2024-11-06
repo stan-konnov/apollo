@@ -71,6 +71,8 @@ class ParameterOptimizer(MultiprocessingCapable):
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
+        logger.info("Optimization process started.")
+
         # If we are optimizing over the whole strategy catalogue,
         # it means this process is part of larger signal generation process
         if self._operation_mode == ParameterOptimizerMode.MULTIPLE_STRATEGIES:
@@ -87,76 +89,97 @@ class ParameterOptimizer(MultiprocessingCapable):
 
             # Iterate over each strategy in the catalogue
             for strategy in STRATEGY_CATALOGUE_MAP:
-                # Get parameter set for the strategy
-                parameter_set = self._configuration.get_parameter_set(strategy)
-
-                period = (
-                    "Maximum available" if MAX_PERIOD else f"{START_DATE} - {END_DATE}"
-                )
-                logger.info(
-                    f"Running {strategy} for {screened_position.ticker}\n\n"
-                    f"Period: {period}\n\n"
-                    f"Frequency: {FREQUENCY}\n\n"
-                    "Parameters:\n\n"
-                    f"{dumps(parameter_set, indent=4)}",
-                )
-
-                # Request or read the price data
-                price_dataframe = self._price_data_provider.get_price_data(
+                # And optimize each
+                self._run_optimization_process(
                     ticker=screened_position.ticker,
-                    frequency=str(FREQUENCY),
-                    start_date=str(START_DATE),
-                    end_date=str(END_DATE),
-                    max_period=bool(MAX_PERIOD),
+                    strategy=strategy,
                 )
 
-                # Enhance the price data based on the configuration
-                price_dataframe = self._price_data_enhancer.enhance_price_data(
-                    price_dataframe,
-                    parameter_set["additional_data_enhancers"],
-                )
+        # Otherwise, we are optimizing
+        # single strategy for development purposes
+        # and we can run the process with default parameters
+        if self._operation_mode == ParameterOptimizerMode.SINGLE_STRATEGY:
+            self._run_optimization_process()
 
-                # Build keys and combinations of parameters to optimize
-                keys, combinations = self._construct_parameter_combinations(
-                    parameter_set,
-                )
+    def _run_optimization_process(
+        self,
+        ticker: str = str(TICKER),
+        strategy: str = str(STRATEGY),
+    ) -> None:
+        """
+        Run the optimization process for single or multiple strategies.
 
-                # Break down combinations into equal batches
-                batches = self._create_batches(combinations)
+        :param ticker: Ticker symbol.
+        :param strategy: Strategy name.
+        """
 
-                # Create arguments to supply to each process
-                batch_arguments = [
-                    (batch, price_dataframe, parameter_set, keys, strategy)
-                    for batch in batches
-                ]
+        # Get parameter set for the strategy
+        parameter_set = self._configuration.get_parameter_set(strategy)
 
-                # Process each batch in parallel
-                with Pool(processes=self._available_cores) as pool:
-                    # Backtest each batch of parameter combinations
-                    results = pool.starmap(self._optimize_parameters, batch_arguments)
+        period = "Maximum available" if MAX_PERIOD else f"{START_DATE} - {END_DATE}"
+        logger.info(
+            f"Running {strategy} for {ticker}\n\n"
+            f"Period: {period}\n\n"
+            f"Frequency: {FREQUENCY}\n\n"
+            "Parameters:\n\n"
+            f"{dumps(parameter_set, indent=4)}",
+        )
 
-                    # Concatenate the results from each process
-                    combined_results = pd.concat(results)
+        # Request or read the price data
+        price_dataframe = self._price_data_provider.get_price_data(
+            ticker=ticker,
+            frequency=str(FREQUENCY),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
+        )
 
-                    # Output the results to the database
-                    self._output_results(combined_results)
+        # Enhance the price data based on the configuration
+        price_dataframe = self._price_data_enhancer.enhance_price_data(
+            price_dataframe,
+            parameter_set["additional_data_enhancers"],
+        )
+
+        # Build keys and combinations of parameters to optimize
+        keys, combinations = self._construct_parameter_combinations(
+            parameter_set,
+        )
+
+        # Break down combinations into equal batches
+        batches = self._create_batches(combinations)
+
+        # Create arguments to supply to each process
+        batch_arguments = [
+            (strategy, batch, price_dataframe, parameter_set, keys) for batch in batches
+        ]
+
+        # Process each batch in parallel
+        with Pool(processes=self._available_cores) as pool:
+            # Backtest each batch of parameter combinations
+            results = pool.starmap(self._optimize_parameters, batch_arguments)
+
+            # Concatenate the results from each process
+            combined_results = pd.concat(results)
+
+            # Output the results to the database
+            self._output_results(combined_results)
 
     def _optimize_parameters(
         self,
+        strategy_name: str,
         combinations: ParameterCombinations,
         price_dataframe: pd.DataFrame,
         parameter_set: ParameterSet,
         keys: list[str],
-        strategy_name: str = str(STRATEGY),
     ) -> pd.DataFrame:
         """
         Run the optimization process.
 
+        :param strategy_name: Strategy name.
         :param combinations: Iterable of tuples with parameter combinations.
         :param price_dataframe: Dataframe with price data.
         :param parameter_set: parameter specifications.
         :param keys: List of parameter keys.
-        :param strategy_name: Strategy name.
 
         :returns: DataFrame with backtesting results.
         """
