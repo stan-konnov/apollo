@@ -10,7 +10,7 @@ from numpy import arange
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.errors.parameter_optimizing import ScreenedPositionDoesNotExistError
+from apollo.errors.system_invariants import ScreenedPositionDoesNotExistError
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -98,6 +98,7 @@ class ParameterOptimizer(MultiprocessingCapable):
                 )
 
             # Update the screened position to optimized
+            # NOTE: move to separate method and check if optimized position exists
             self._database_connector.update_position_on_optimization(
                 screened_position.id,
             )
@@ -174,7 +175,10 @@ class ParameterOptimizer(MultiprocessingCapable):
             combined_results = pd.concat(results)
 
             # Output the results to the database
-            self._output_results(combined_results)
+            self._output_results(
+                ticker=ticker,
+                results_dataframe=combined_results,
+            )
 
     def _optimize_parameters(
         self,
@@ -326,10 +330,11 @@ class ParameterOptimizer(MultiprocessingCapable):
             arange(range_min, range_max + range_step / 2, range_step),
         ).round(10)
 
-    def _output_results(self, results_dataframe: pd.DataFrame) -> None:
+    def _output_results(self, ticker: str, results_dataframe: pd.DataFrame) -> None:
         """
         Prepare and write the backtesting results to the database.
 
+        :param ticker: Ticker symbol.
         :param results_dataframe: DataFrame with backtesting results.
         """
 
@@ -353,7 +358,7 @@ class ParameterOptimizer(MultiprocessingCapable):
 
         # Write the results to the database
         self._database_connector.write_backtesting_results(
-            ticker=str(TICKER),
+            ticker=ticker,
             strategy=str(STRATEGY),
             frequency=str(FREQUENCY),
             max_period=bool(MAX_PERIOD),
