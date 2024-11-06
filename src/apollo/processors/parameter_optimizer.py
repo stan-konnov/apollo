@@ -1,14 +1,11 @@
-from datetime import datetime
 from itertools import product
 from json import dumps
 from logging import getLogger
 from multiprocessing import Pool
-from pathlib import Path
 from sys import exit
 
 import pandas as pd
 from numpy import arange
-from zoneinfo import ZoneInfo
 
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
@@ -74,9 +71,6 @@ class ParameterOptimizer(MultiprocessingCapable):
     def process_in_parallel(self) -> None:
         """Run the optimization process in parallel."""
 
-        output_file = "process_time_log.txt"
-        start_time = datetime.now(tz=ZoneInfo("UTC"))
-
         logger.info("Optimization process started.")
 
         # If we are optimizing over the whole strategy catalogue,
@@ -112,22 +106,6 @@ class ParameterOptimizer(MultiprocessingCapable):
                 "Optimization process complete. "
                 f"Catalogue for {screened_position.ticker} is now optimized.",
             )
-
-            end_time = datetime.now(tz=ZoneInfo("UTC"))
-
-            time_delta = end_time - start_time
-            hours, remainder = divmod(time_delta.seconds, 3600)
-            minutes = remainder // 60
-
-            output = (
-                f"Process Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                f"Process End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                f"Time Delta: {hours} hours and {minutes} minutes\n"
-            )
-
-            # Write to file
-            with Path.open(Path(output_file), "w") as file:
-                file.write(output)
 
         # Otherwise, we are optimizing
         # single strategy for development purposes
