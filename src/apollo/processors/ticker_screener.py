@@ -167,6 +167,13 @@ class TickerScreener(MultiprocessingCapable):
                     max_period=bool(MAX_PERIOD),
                 )
 
+                # Due to hardware constraints,
+                # we limit incoming prices to last 30 years
+                price_dataframe = price_dataframe[
+                    price_dataframe.index
+                    >= pd.Timestamp.now() - pd.DateOffset(years=30)
+                ]
+
                 # Get upcoming earnings date
                 price_dataframe["earnings_date"] = (
                     self._api_connector.request_upcoming_earnings_date(

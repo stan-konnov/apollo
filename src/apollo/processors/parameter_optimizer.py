@@ -121,7 +121,6 @@ class ParameterOptimizer(MultiprocessingCapable):
                 )
 
             # Update the screened position to optimized
-            # NOTE: move to separate method and check if optimized position exists
             self._database_connector.update_position_on_optimization(
                 screened_position.id,
             )
@@ -200,6 +199,7 @@ class ParameterOptimizer(MultiprocessingCapable):
             # Output the results to the database
             self._output_results(
                 ticker=ticker,
+                strategy=strategy,
                 results_dataframe=combined_results,
             )
 
@@ -353,11 +353,17 @@ class ParameterOptimizer(MultiprocessingCapable):
             arange(range_min, range_max + range_step / 2, range_step),
         ).round(10)
 
-    def _output_results(self, ticker: str, results_dataframe: pd.DataFrame) -> None:
+    def _output_results(
+        self,
+        ticker: str,
+        strategy: str,
+        results_dataframe: pd.DataFrame,
+    ) -> None:
         """
         Prepare and write the backtesting results to the database.
 
         :param ticker: Ticker symbol.
+        :param strategy: Strategy name.
         :param results_dataframe: DataFrame with backtesting results.
         """
 
@@ -382,7 +388,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         # Write the results to the database
         self._database_connector.write_backtesting_results(
             ticker=ticker,
-            strategy=str(STRATEGY),
+            strategy=strategy,
             frequency=str(FREQUENCY),
             max_period=bool(MAX_PERIOD),
             parameters=optimized_parameters,
