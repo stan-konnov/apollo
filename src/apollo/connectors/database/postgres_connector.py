@@ -197,6 +197,41 @@ class PostgresConnector:
             else None
         )
 
+    def get_existing_optimized_position(self) -> Position | None:
+        """
+        Get existing optimized position.
+
+        Used to validate system invariant
+        of having single optimized position at a time.
+
+        Used to identify the ticker queued
+        for dispatch after the optimization process.
+
+        :returns: Optimized position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have an optimized position
+        optimized_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.OPTIMIZED.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                id=optimized_position.id,
+                ticker=optimized_position.ticker,
+                status=PositionStatus(optimized_position.status),
+            )
+            if optimized_position
+            else None
+        )
+
     def update_position_on_optimization(self, position_id: str) -> None:
         """
         Update a position entity after optimization.

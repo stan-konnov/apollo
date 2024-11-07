@@ -1,2 +1,2 @@
-class ScreenedPositionDoesNotExistError(Exception):
-    """Raised when the screened position queried during optimization does not exist."""
+class OptimizedPositionAlreadyExistsError(Exception):
+    """Raised when trying to create an optimized position that already exists."""

@@ -10,7 +10,7 @@ from numpy import arange
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.errors.system_invariants import ScreenedPositionDoesNotExistError
+from apollo.errors.system_invariants import OptimizedPositionAlreadyExistsError
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -84,12 +84,32 @@ class ParameterOptimizer(MultiprocessingCapable):
                 self._database_connector.get_existing_screened_position()
             )
 
-            # Raise an exception if
-            # there is no screened position
+            # Skip the optimization process
+            # if the position does not exist
+            #
+            # This covers low-probability edge case
+            # when the screening process produced the
+            # same ticker and no position was initialized
             if not screened_position:
-                raise ScreenedPositionDoesNotExistError(
+                logger.info(
                     "Screened position does not exist. "
-                    "Screening process must be run first.",
+                    "Skipping optimization process and proceeding further.",
+                )
+
+                return
+
+            # Query the existing optimized position
+            existing_optimized_position = (
+                self._database_connector.get_existing_optimized_position()
+            )
+
+            # Raise an error if the
+            # optimized position already exists
+            if existing_optimized_position:
+                raise OptimizedPositionAlreadyExistsError(
+                    "Optimized position for ",
+                    f"{existing_optimized_position.ticker} already exists. "
+                    "System invariant violated, previous position not dispatched.",
                 )
 
             # Iterate over each strategy in the catalogue
