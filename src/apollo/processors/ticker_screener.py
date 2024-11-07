@@ -12,6 +12,7 @@ from apollo.calculators.kaufman_efficiency_ratio import (
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 from apollo.settings import (
@@ -94,6 +95,20 @@ class TickerScreener(MultiprocessingCapable):
 
     def process_in_parallel(self) -> None:
         """Run the screening process in parallel."""
+
+        # Query the existing screened position
+        existing_screened_position = (
+            self._database_connector.get_existing_screened_position()
+        )
+
+        # Raise an error if the
+        # screened position already exists
+        if existing_screened_position:
+            raise ScreenedPositionAlreadyExistsError(
+                "Screened position for ",
+                f"{existing_screened_position.ticker} already exists. "
+                "System invariant violated, previous position not dispatched.",
+            )
 
         logger.info("Screening process started.")
 

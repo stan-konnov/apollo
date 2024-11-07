@@ -146,28 +146,12 @@ class PostgresConnector:
             else None
         )
 
-    def create_position_on_screening(self, ticker: str) -> None:
-        """
-        Create a position entity after screening.
-
-        :param ticker: Ticker to create a position for.
-        """
-
-        self._database_client.connect()
-
-        # Create a model and write it to the database
-        self._database_client.positions.create(
-            data=Position(
-                ticker=ticker,
-                status=PositionStatus.SCREENED,
-            ).model_dump(exclude_defaults=True),  # type: ignore  # noqa: PGH003
-        )
-
-        self._database_client.disconnect()
-
     def get_existing_screened_position(self) -> Position | None:
         """
         Get existing screened position.
+
+        Used to validate system invariant of having
+        single screened position for a ticker at a time.
 
         Used to identify the ticker queued
         for optimization after the screening process.
@@ -196,6 +180,25 @@ class PostgresConnector:
             if screened_position
             else None
         )
+
+    def create_position_on_screening(self, ticker: str) -> None:
+        """
+        Create a position entity after screening.
+
+        :param ticker: Ticker to create a position for.
+        """
+
+        self._database_client.connect()
+
+        # Create a model and write it to the database
+        self._database_client.positions.create(
+            data=Position(
+                ticker=ticker,
+                status=PositionStatus.SCREENED,
+            ).model_dump(exclude_defaults=True),  # type: ignore  # noqa: PGH003
+        )
+
+        self._database_client.disconnect()
 
     def get_existing_optimized_position(self) -> Position | None:
         """

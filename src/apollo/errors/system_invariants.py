@@ -1,2 +1,6 @@
+class ScreenedPositionAlreadyExistsError(Exception):
+    """Raised before the screening process if screened position exists."""
+
+
 class OptimizedPositionAlreadyExistsError(Exception):
-    """Raised when trying to create an optimized position that already exists."""
+    """Raised before the optimization process if optimized position exists."""
