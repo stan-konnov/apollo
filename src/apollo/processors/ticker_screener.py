@@ -105,7 +105,7 @@ class TickerScreener(MultiprocessingCapable):
         # screened position already exists
         if existing_screened_position:
             raise ScreenedPositionAlreadyExistsError(
-                "Screened position for ",
+                "Screened position for "
                 f"{existing_screened_position.ticker} already exists. "
                 "System invariant violated, previous position not dispatched.",
             )
