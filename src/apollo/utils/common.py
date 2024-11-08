@@ -1,9 +1,14 @@
+from datetime import datetime
+from pathlib import Path
+
 from numpy import datetime64
 from pandas import to_datetime
+from zoneinfo import ZoneInfo
 
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
+    DEFAULT_TIME_FORMAT,
     END_DATE,
     EXCHANGE,
     EXCHANGE_TIME_ZONE_AND_HOURS,
@@ -98,4 +103,36 @@ def ensure_environment_is_configured() -> None:
         raise ValueError(
             f"Invalid FREQUENCY environment variable: {FREQUENCY}. "
             f"Accepted values: {', '.join([f.value for f in PriceDataFrequency])}",
+        )
+
+
+def capture_process_runtime(start_time: datetime) -> None:
+    """
+    Capture the runtime of a process.
+
+    Write the timestamps and timedelta to a file.
+
+    :param start_time: The start time of the process.
+    """
+
+    # Define the file name
+    file_name = "process_time_log.txt"
+
+    # Get the end time of the process
+    end_time = datetime.now(tz=ZoneInfo("UTC"))
+
+    # Calculate the time delta
+    time_delta = end_time - start_time
+
+    # Calculate the hours and minutes
+    hours, remainder = divmod(time_delta.seconds, 3600)
+    minutes = remainder // 60
+
+    time_format = f"{DEFAULT_DATE_FORMAT} {DEFAULT_TIME_FORMAT}"
+
+    with Path.open(Path(file_name), "w") as file:
+        file.write(
+            f"Process Start Time: {start_time.strftime(time_format)}\n"
+            f"Process End Time: {end_time.strftime(time_format)}\n"
+            f"Time Delta: {hours} hours and {minutes} minutes\n",
         )
