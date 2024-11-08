@@ -33,6 +33,7 @@ PARM_DIR = Path(f"{ROOT_DIR}/parameters")
 PLOT_DIR = Path(f"{ROOT_DIR}/backtesting_plots")
 TRDS_DIR = Path(f"{ROOT_DIR}/backtesting_trades")
 
+PROCESS_TIME_LOG_FILE = "process_time.log"
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"
 

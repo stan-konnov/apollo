@@ -19,6 +19,7 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
     POSTGRES_URL,
+    PROCESS_TIME_LOG_FILE,
     SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
     SP500_COMPONENTS_URL,
@@ -110,13 +111,11 @@ def capture_process_runtime(start_time: datetime) -> None:
     """
     Capture the runtime of a process.
 
-    Write the timestamps and timedelta to a file.
+    Write the start time, end time,
+    and duration of the process to a file.
 
     :param start_time: The start time of the process.
     """
-
-    # Define the file name
-    file_name = "process_time_log.txt"
 
     # Get the end time of the process
     end_time = datetime.now(tz=ZoneInfo("UTC"))
@@ -124,7 +123,7 @@ def capture_process_runtime(start_time: datetime) -> None:
     # Calculate the time delta
     time_delta = end_time - start_time
 
-    # Calculate the hours and minutes
+    # Calculate hours and minutes
     hours, remainder = divmod(time_delta.seconds, 3600)
     minutes = remainder // 60
 
@@ -132,9 +131,9 @@ def capture_process_runtime(start_time: datetime) -> None:
     time_format = f"{DEFAULT_DATE_FORMAT} {DEFAULT_TIME_FORMAT}"
 
     # And write outputs to the file
-    with Path.open(Path(file_name), "w") as file:
+    with Path.open(Path(PROCESS_TIME_LOG_FILE), "w") as file:
         file.write(
-            f"Process Start Time: {start_time.strftime(time_format)}\n"
-            f"Process End Time: {end_time.strftime(time_format)}\n"
-            f"Time Delta: {hours} hours and {minutes} minutes\n",
+            f"Process Start: {start_time.strftime(time_format)}\n"
+            f"Process End: {end_time.strftime(time_format)}\n"
+            f"Duration: {hours} hours and {minutes} minutes\n",
         )
