@@ -1,14 +1,9 @@
-from datetime import datetime
-from pathlib import Path
-
 from numpy import datetime64
 from pandas import to_datetime
-from zoneinfo import ZoneInfo
 
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
-    DEFAULT_TIME_FORMAT,
     END_DATE,
     EXCHANGE,
     EXCHANGE_TIME_ZONE_AND_HOURS,
@@ -19,7 +14,6 @@ from apollo.settings import (
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
     POSTGRES_URL,
-    PROCESS_TIME_LOG_FILE,
     SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
     SP500_COMPONENTS_URL,
@@ -104,36 +98,4 @@ def ensure_environment_is_configured() -> None:
         raise ValueError(
             f"Invalid FREQUENCY environment variable: {FREQUENCY}. "
             f"Accepted values: {', '.join([f.value for f in PriceDataFrequency])}",
-        )
-
-
-def capture_process_runtime(start_time: datetime) -> None:
-    """
-    Capture the runtime of a process.
-
-    Write the start time, end time,
-    and duration of the process to a file.
-
-    :param start_time: The start time of the process.
-    """
-
-    # Get the end time of the process
-    end_time = datetime.now(tz=ZoneInfo("UTC"))
-
-    # Calculate the time delta
-    time_delta = end_time - start_time
-
-    # Calculate hours and minutes
-    hours, remainder = divmod(time_delta.seconds, 3600)
-    minutes = remainder // 60
-
-    # Construct the time format
-    time_format = f"{DEFAULT_DATE_FORMAT} {DEFAULT_TIME_FORMAT}"
-
-    # And write outputs to the file
-    with Path.open(Path(PROCESS_TIME_LOG_FILE), "w") as file:
-        file.write(
-            f"Process Start: {start_time.strftime(time_format)}\n"
-            f"Process End: {end_time.strftime(time_format)}\n"
-            f"Duration: {hours} hours and {minutes} minutes\n",
         )

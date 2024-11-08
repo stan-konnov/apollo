@@ -5,8 +5,6 @@
 **/backtesting_plots
 **/backtesting_trades
 
-process_time.log
-
 **/.coverage*
 !.coveragerc
 
