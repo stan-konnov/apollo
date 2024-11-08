@@ -128,8 +128,10 @@ def capture_process_runtime(start_time: datetime) -> None:
     hours, remainder = divmod(time_delta.seconds, 3600)
     minutes = remainder // 60
 
+    # Construct the time format
     time_format = f"{DEFAULT_DATE_FORMAT} {DEFAULT_TIME_FORMAT}"
 
+    # And write outputs to the file
     with Path.open(Path(file_name), "w") as file:
         file.write(
             f"Process Start Time: {start_time.strftime(time_format)}\n"
