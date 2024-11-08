@@ -62,6 +62,8 @@ we are boxed into two arbitrary decisions:
 Please see SCREENING_WINDOW_SIZE and SCREENING_LIQUIDITY_THRESHOLD in the settings.
 
 Additionally, at this point in time (2024-10-30), we are only trading S&P500 components.
+
+Due to hardware constraints, we also limit incoming prices to last 30 years.
 """
 
 
@@ -167,8 +169,7 @@ class TickerScreener(MultiprocessingCapable):
                     max_period=bool(MAX_PERIOD),
                 )
 
-                # Due to hardware constraints,
-                # we limit incoming prices to last 30 years
+                # Limit incoming prices to last 30 years
                 price_dataframe = price_dataframe[
                     price_dataframe.index
                     >= pd.Timestamp.now() - pd.DateOffset(years=30)
