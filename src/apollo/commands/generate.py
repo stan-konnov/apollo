@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     """Run signal generation process."""
 
-    start_time = datetime.now(tz=ZoneInfo("UTC"))
-
     ensure_environment_is_configured()
+
+    start_time = datetime.now(tz=ZoneInfo("UTC"))
 
     ticker_screener = TickerScreener()
     ticker_screener.process_in_parallel()
