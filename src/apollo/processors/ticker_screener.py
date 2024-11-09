@@ -167,7 +167,7 @@ class TickerScreener(MultiprocessingCapable):
                     max_period=bool(MAX_PERIOD),
                 )
 
-                # NOTE: this has to move to optimization, lol!
+                # NOTE: this has to move to optimization!
                 # Limit incoming prices to last 30 years
                 price_dataframe = price_dataframe[
                     price_dataframe.index
