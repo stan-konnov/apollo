@@ -167,7 +167,6 @@ class ParameterOptimizer(MultiprocessingCapable):
         )
 
         # Due to hardware constraints,
-        # during optimizing the whole catalogue
         # we limit the price data to last 30 years
         price_dataframe = price_dataframe[
             price_dataframe.index >= pd.Timestamp.now() - pd.DateOffset(years=30)
