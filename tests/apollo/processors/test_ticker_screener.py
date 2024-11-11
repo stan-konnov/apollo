@@ -12,6 +12,7 @@ from apollo.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
 from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
 from apollo.processors.ticker_screener import TickerScreener
 from apollo.settings import (
@@ -438,3 +439,40 @@ def test__process_in_parallel__for_correct_screening_process(
         # Assert that we initialized
         # position for the selected ticker
         initialize_position.assert_called_once_with(str(TICKER))
+
+
+def test__process_in_parallel__for_raising_error_if_screened_position_exists() -> None:
+    """
+    Test process_in_parallel method for raising error if screened position exists.
+
+    Method must raise an error if screened position already exists.
+    """
+
+    ticker_screener = TickerScreener()
+
+    ticker_screener._api_connector = Mock()  # noqa: SLF001
+    ticker_screener._database_connector = Mock()  # noqa: SLF001
+    ticker_screener._price_data_provider = Mock()  # noqa: SLF001
+    ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
+
+    # Mock the return value of the database connector
+    ticker_screener._database_connector.get_existing_screened_position.return_value = (  # noqa: SLF001
+        Position(
+            ticker=str(TICKER),
+            status=PositionStatus.SCREENED,
+        )
+    )
+
+    exception_message = (
+        "Screened position for "
+        f"{TICKER} already exists. "
+        "System invariant violated, previous position not dispatched."
+    )
+
+    with pytest.raises(
+        ScreenedPositionAlreadyExistsError,
+        match=exception_message,
+    ) as exception:
+        ticker_screener.process_in_parallel()
+
+    assert str(exception.value) == exception_message
