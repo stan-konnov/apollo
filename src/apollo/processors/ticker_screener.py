@@ -124,7 +124,7 @@ class TickerScreener(MultiprocessingCapable):
         with Pool(processes=self._available_cores) as pool:
             # Request prices and
             # earnings date and calculate
-            # measure for each ticker in the batch
+            # measures for each ticker in the batch
             results = pool.map(self._calculate_measures, batches)
 
             # Combine the computed results
