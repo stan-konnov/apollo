@@ -18,6 +18,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    ParameterOptimizerMode,
 )
 from apollo.utils.types import ParameterKeysAndCombinations, ParameterSet
 from tests.fixtures.window_size_and_dataframe import SameDataframe, SameSeries
@@ -35,7 +36,9 @@ def test__get_combination_ranges__for_correct_combination_ranges() -> None:
     Method must return Series with correct combination ranges.
     """
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
 
     control_combination_ranges = pd.Series([RANGE_MIN, RANGE_MAX])
 
@@ -57,7 +60,9 @@ def test__construct_parameter_combinations__for_correct_parameter_combinations()
     Method must return tuple of parameter keys and product of ranges.
     """
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
 
     parameters = {
         "sl_volatility_multiplier": {
@@ -96,7 +101,9 @@ def test__parameter_optimizer__for_correct_error_handling(
     Parameter Optimizer must catch error from strategy, log and exit with code 1.
     """
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
 
     parameter_set = cast(
         ParameterSet,
@@ -126,6 +133,7 @@ def test__parameter_optimizer__for_correct_error_handling(
 
     with pytest.raises(SystemExit) as exception:
         parameter_optimizer._optimize_parameters(  # noqa: SLF001
+            strategy_name=str(STRATEGY),
             combinations=combinations,
             price_dataframe=dataframe,
             parameter_set=parameter_set,
@@ -147,7 +155,9 @@ def test__optimize_parameters__for_correctly_optimizing_parameters(
     Resulting Dataframe must contain "parameters" column.
     """
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
 
     parameters = {
         "window_size": {
@@ -181,6 +191,7 @@ def test__optimize_parameters__for_correctly_optimizing_parameters(
     )
 
     backtested_dataframe = parameter_optimizer._optimize_parameters(  # noqa: SLF001
+        strategy_name=str(STRATEGY),
         combinations=combinations,
         price_dataframe=enhanced_dataframe,
         parameter_set=cast(ParameterSet, parameters),
@@ -217,8 +228,10 @@ def test__output_results__for_correct_result_output(
     dataframe.dropna(inplace=True)
 
     # Initialize ParameterOptimizer with strategy directory
-    # NOTE: this is a flaky test that will be removed with moving away from files
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
+
     parameter_optimizer._database_connector = Mock(PostgresConnector)  # noqa: SLF001
 
     # Insert signal column
@@ -303,7 +316,11 @@ def test__output_results__for_correct_result_output(
     control_backtesting_results = control_dataframe.iloc[0]
 
     # Now, run the _output_results method
-    parameter_optimizer._output_results(optimized_results)  # noqa: SLF001
+    parameter_optimizer._output_results(  # noqa: SLF001
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        results_dataframe=optimized_results,
+    )
 
     parameter_optimizer._database_connector.write_backtesting_results.assert_called_once_with(  # noqa: SLF001
         ticker=str(TICKER),
@@ -325,7 +342,7 @@ def test__output_results__for_correct_result_output(
     ["apollo.processors.parameter_optimizer.Pool"],
     indirect=True,
 )
-def test__optimize_parameters_in_parallel__for_correct_optimization_optimize_parameters(
+def test__optimize_parameters_in_parallel__for_correct_optimization(
     dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
@@ -339,7 +356,9 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_optimize_par
     Method must call output results with combined dataframes of backtesting processes.
     """
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
 
     parameter_optimizer._configuration = Mock()  # noqa: SLF001
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
