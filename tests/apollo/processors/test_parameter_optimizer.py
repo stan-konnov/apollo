@@ -1,3 +1,4 @@
+import logging
 from typing import cast
 from unittest.mock import Mock, patch
 
@@ -506,3 +507,35 @@ def test__optimize_parameters_in_parallel__for_raising_error_if_position_exists(
         parameter_optimizer.process_in_parallel()
 
     assert str(exception.value) == exception_message
+
+
+def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_position(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """
+    Test process_in_parallel for skipping process if no screened position.
+
+    Method must log if no screened position is found.
+    Method must not call perform any database write operations.
+    """
+
+    caplog.set_level(logging.INFO)
+
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.MULTIPLE_STRATEGIES,
+    )
+
+    parameter_optimizer._database_connector = Mock()  # noqa: SLF001
+    parameter_optimizer._database_connector.get_existing_screened_position.return_value = None  # noqa: E501, SLF001
+
+    parameter_optimizer.process_in_parallel()
+
+    assert (
+        str(
+            "Screened position does not exist. "
+            "Skipping optimization process and proceeding further.",
+        )
+        in caplog.text
+    )
+
+    parameter_optimizer._database_connector.update_position_on_optimization.assert_not_called()  # noqa: SLF001
