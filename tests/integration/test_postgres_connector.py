@@ -501,3 +501,36 @@ def test__create_position_on_screening__for_creating_position(
     assert position is not None
     assert position.ticker == str(TICKER)
     assert position.status == PositionStatus.SCREENED.value
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__get_existing_get_existing_screened_position__for_returning_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test get_existing_screened_position for returning screened position.
+
+    PostgresConnector should return screened position if it exists.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_screened_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    prisma_client.positions.create(
+        data=control_screened_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
+    )
+
+    position = postgres_connector.get_existing_screened_position()
+
+    assert position is not None
+    assert position.ticker == control_screened_position.ticker
+    assert position.status == control_screened_position.status.value
