@@ -627,3 +627,18 @@ def test__get_existing_optimized_position__for__returning_position(
     assert position is not None
     assert position.ticker == control_optimized_position.ticker
     assert position.status == control_optimized_position.status.value
+
+
+@pytest.mark.usefixtures("flush_postgres_database")
+def test__get_existing_optimized_position__for__returning_none() -> None:
+    """
+    Test get_existing_optimized_position for returning None.
+
+    PostgresConnector should return None if no optimized position exists.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    position = postgres_connector.get_existing_optimized_position()
+
+    assert position is None
