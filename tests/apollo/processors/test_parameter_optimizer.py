@@ -550,7 +550,12 @@ def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_p
     },
 )
 def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
-    """Test process_in_parallel for multiple strategies."""
+    """
+    Test process_in_parallel for multiple strategies.
+
+    Method must call process method in parallel for each strategy.
+    Method must call update_position_on_optimization after all strategies are processed.
+    """
 
     parameter_optimizer = ParameterOptimizer(
         ParameterOptimizerMode.MULTIPLE_STRATEGIES,
