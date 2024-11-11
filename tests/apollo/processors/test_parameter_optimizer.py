@@ -592,3 +592,28 @@ def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
         parameter_optimizer._database_connector.update_position_on_optimization.assert_called_once_with(  # noqa: SLF001
             "test",
         )
+
+
+def test__optimize_parameters_in_parallel__for_single_strategies() -> None:
+    """
+    Test process_in_parallel for single strategies.
+
+    Method must call process method in parallel with default parameters.
+    Method must not call update_position_on_optimization after strategy is processed.
+    """
+
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
+
+    parameter_optimizer._database_connector = Mock()  # noqa: SLF001
+
+    with patch.object(
+        ParameterOptimizer,
+        "_run_optimization_process",
+    ) as _run_optimization_process:
+        parameter_optimizer.process_in_parallel()
+
+        _run_optimization_process.assert_called_once_with()
+
+        parameter_optimizer._database_connector.update_position_on_optimization.assert_not_called()  # noqa: SLF001
