@@ -104,7 +104,7 @@ class ParameterOptimizer(MultiprocessingCapable):
             # optimized position already exists
             if existing_optimized_position:
                 raise OptimizedPositionAlreadyExistsError(
-                    "Optimized position for ",
+                    "Optimized position for "
                     f"{existing_optimized_position.ticker} already exists. "
                     "System invariant violated, previous position not dispatched.",
                 )

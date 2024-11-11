@@ -7,6 +7,8 @@ import pytest
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.errors.system_invariants import OptimizedPositionAlreadyExistsError
+from apollo.models.position import Position, PositionStatus
 from apollo.processors.parameter_optimizer import ParameterOptimizer
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
@@ -470,3 +472,37 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
             # for explanation on SameDataframe class
             results_dataframe=SameDataframe(pd.concat(backtesting_results)),
         )
+
+
+def test__optimize_parameters_in_parallel__for_raising_error_if_position_exists() -> (
+    None
+):
+    """
+    Test process_in_parallel for raising error if position exists.
+
+    Method must raise error if existing optimized position is found.
+    """
+
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.MULTIPLE_STRATEGIES,
+    )
+
+    parameter_optimizer._database_connector = Mock()  # noqa: SLF001
+    parameter_optimizer._database_connector.get_existing_optimized_position.return_value = Position(  # noqa: E501, SLF001
+        ticker=str(TICKER),
+        status=PositionStatus.OPTIMIZED,
+    )
+
+    exception_message = (
+        "Optimized position for "
+        f"{TICKER} already exists. "
+        "System invariant violated, previous position not dispatched."
+    )
+
+    with pytest.raises(
+        OptimizedPositionAlreadyExistsError,
+        match=exception_message,
+    ) as exception:
+        parameter_optimizer.process_in_parallel()
+
+    assert str(exception.value) == exception_message
