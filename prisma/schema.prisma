@@ -90,9 +90,4 @@ model positions {
 
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
-
-  // At any point in time,
-  // a single position for a ticker
-  // should be in one specific status
-  @@unique([id, ticker, status])
 }
