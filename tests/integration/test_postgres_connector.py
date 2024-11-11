@@ -534,3 +534,18 @@ def test__get_existing_get_existing_screened_position__for_returning_position(
     assert position is not None
     assert position.ticker == control_screened_position.ticker
     assert position.status == control_screened_position.status.value
+
+
+@pytest.mark.usefixtures("flush_postgres_database")
+def test__get_existing_get_existing_screened_position__for_returning_none() -> None:
+    """
+    Test get_existing_screened_position for returning None.
+
+    PostgresConnector should return None if no screened position exists.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    position = postgres_connector.get_existing_screened_position()
+
+    assert position is None
