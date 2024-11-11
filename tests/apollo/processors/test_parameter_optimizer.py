@@ -381,7 +381,7 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
         },
         "additional_data_enhancers": ["VIX"],
     }
-    parameter_optimizer._configuration.parameter_set = parameter_set  # noqa: SLF001
+    parameter_optimizer._configuration.get_parameter_set.return_value = parameter_set  # noqa: SLF001
 
     # Mock Parameter Optimizer private methods
     # to assert they have been called after the process
@@ -429,7 +429,9 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
 
         # Create batches and arguments for each process
         batches = parameter_optimizer._create_batches(combinations)  # noqa: SLF001
-        batch_arguments = [(batch, dataframe, parameter_set, keys) for batch in batches]
+        batch_arguments = [
+            (str(STRATEGY), batch, dataframe, parameter_set, keys) for batch in batches
+        ]
 
         parameter_optimizer.process_in_parallel()
 
@@ -462,7 +464,9 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
         # Assert that we called the output results
         # with combined dataframes of backtesting processes
         output_results.assert_called_once_with(
+            ticker=str(TICKER),
+            strategy=str(STRATEGY),
             # Please see tests/fixtures/window_size_and_dataframe.py
             # for explanation on SameDataframe class
-            SameDataframe(pd.concat(backtesting_results)),
+            results_dataframe=SameDataframe(pd.concat(backtesting_results)),
         )
