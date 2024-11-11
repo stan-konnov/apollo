@@ -342,7 +342,7 @@ def test__output_results__for_correct_result_output(
     ["apollo.processors.parameter_optimizer.Pool"],
     indirect=True,
 )
-def test__optimize_parameters_in_parallel__for_correct_optimization(
+def test__optimize_parameters_in_parallel__for_correct_optimization_process(
     dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
