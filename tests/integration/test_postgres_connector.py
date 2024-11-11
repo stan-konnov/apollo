@@ -549,3 +549,48 @@ def test__get_existing_get_existing_screened_position__for_returning_none() -> N
     position = postgres_connector.get_existing_screened_position()
 
     assert position is None
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__update_position_on_optimization__for_updating_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test update_position_on_optimization for updating position.
+
+    PostgresConnector should update position status to optimized.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    prisma_client.positions.create(
+        data=Position(
+            ticker=str(TICKER),
+            status=PositionStatus.SCREENED,
+        ).model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
+    )
+
+    control_position = postgres_connector.get_existing_screened_position()
+
+    postgres_connector.update_position_on_optimization(
+        position_id=control_position.id,  # type: ignore  # noqa: PGH003
+    )
+
+    updated_position = prisma_client.positions.find_first(
+        where={
+            "id": control_position.id,  # type: ignore  # noqa: PGH003
+        },
+    )
+
+    assert updated_position is not None
+    assert updated_position.status == PositionStatus.OPTIMIZED.value
