@@ -1,5 +1,6 @@
 import logging
 from typing import cast
+from unittest import mock
 from unittest.mock import Mock, patch
 
 import pandas as pd
@@ -539,3 +540,50 @@ def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_p
     )
 
     parameter_optimizer._database_connector.update_position_on_optimization.assert_not_called()  # noqa: SLF001
+
+
+@patch(
+    "apollo.processors.parameter_optimizer.STRATEGY_CATALOGUE_MAP",
+    {
+        "Strategy1": "Strategy1",
+        "Strategy2": "Strategy2",
+    },
+)
+def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
+    """Test process_in_parallel for multiple strategies."""
+
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.MULTIPLE_STRATEGIES,
+    )
+
+    parameter_optimizer._database_connector = Mock()  # noqa: SLF001
+    parameter_optimizer._database_connector.get_existing_screened_position.return_value = Position(  # noqa: E501, SLF001
+        id="test",
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    parameter_optimizer._database_connector.get_existing_optimized_position.return_value = None  # noqa: E501, SLF001
+
+    with patch.object(
+        ParameterOptimizer,
+        "_run_optimization_process",
+    ) as _run_optimization_process:
+        parameter_optimizer.process_in_parallel()
+
+        _run_optimization_process.assert_has_calls(
+            [
+                mock.call(
+                    ticker=str(TICKER),
+                    strategy="Strategy1",
+                ),
+                mock.call(
+                    ticker=str(TICKER),
+                    strategy="Strategy2",
+                ),
+            ],
+        )
+
+        parameter_optimizer._database_connector.update_position_on_optimization.assert_called_once_with(  # noqa: SLF001
+            "test",
+        )
