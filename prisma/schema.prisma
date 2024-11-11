@@ -92,7 +92,7 @@ model positions {
   updated_at                DateTime @updatedAt
 
   // At any point in time,
-  // a position for a given ticker
+  // a single position for a ticker
   // should be in one specific status
-  @@unique([ticker, status])
+  @@unique([id, ticker, status])
 }

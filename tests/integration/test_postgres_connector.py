@@ -427,11 +427,15 @@ def test__get_existing_active_position__for_returning_existing_active_position(
     )
 
     prisma_client.positions.create(
-        data=control_active_position.model_dump(),  # type: ignore  # noqa: PGH003
+        data=control_active_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
     )
 
     prisma_client.positions.create(
-        data=control_inactive_position.model_dump(),  # type: ignore  # noqa: PGH003
+        data=control_inactive_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
     )
 
     position = postgres_connector.get_existing_active_position(ticker=str(TICKER))
