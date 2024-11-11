@@ -384,7 +384,9 @@ def test__process_in_parallel__for_correct_screening_process(
     ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
 
     # Mock the return value of the database connector
-    ticker_screener._database_connector.get_existing_active_position.return_value = None  # noqa: SLF001
+    ticker_screener._database_connector.get_existing_screened_position.return_value = (  # noqa: SLF001
+        None
+    )
 
     # Mock the results of the SP500 components scraping
     tickers_to_screen = screened_tickers_dataframe["ticker"].to_numpy()
