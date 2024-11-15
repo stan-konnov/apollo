@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.linear_regression_channel import (
+from apollo.calculators.linear_regression_channel import (
     LinearRegressionChannelCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

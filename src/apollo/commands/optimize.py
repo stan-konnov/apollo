@@ -1,6 +1,7 @@
 import logging
 
-from apollo.backtesting.parameter_optimizer import ParameterOptimizer
+from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.settings import ParameterOptimizerMode
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -12,11 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """Run optimization process."""
+    """Run optimization process for individual strategy."""
 
     ensure_environment_is_configured()
 
-    parameter_optimizer = ParameterOptimizer()
+    parameter_optimizer = ParameterOptimizer(
+        ParameterOptimizerMode.SINGLE_STRATEGY,
+    )
     parameter_optimizer.process_in_parallel()
 
 

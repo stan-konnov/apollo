@@ -40,7 +40,9 @@ def api_response_dataframe() -> pd.DataFrame:
 def yahoo_api_call() -> Generator[None, None, None]:
     """Simulate call to Yahoo API."""
 
-    with patch("apollo.connectors.api.yahoo_api_connector.download") as mocked_call:
+    with patch(
+        "apollo.connectors.api.yahoo_api_connector.download",
+    ) as mocked_call:
         yield mocked_call
 
 
@@ -48,7 +50,9 @@ def yahoo_api_call() -> Generator[None, None, None]:
 def yahoo_ticker_object() -> Generator[None, None, None]:
     """Simulate Yahoo Ticker object."""
 
-    with patch("apollo.connectors.api.yahoo_api_connector.Ticker") as mocked_object:
+    with patch(
+        "apollo.connectors.api.yahoo_api_connector.Ticker",
+    ) as mocked_object:
         # Make sure when mocked object is constructed
         # it returns exactly this instance instead of a new one
         mocked_object.return_value = mocked_object

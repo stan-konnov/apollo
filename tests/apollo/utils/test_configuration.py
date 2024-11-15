@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 @patch("apollo.utils.configuration.PARM_DIR", TEST_DIR)
-@patch("apollo.utils.configuration.STRATEGY", "NonExistingStrategy")
 def test__configuration__with_non_existing_parameter_set_file(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -29,8 +28,10 @@ def test__configuration__with_non_existing_parameter_set_file(
 
     caplog.set_level(logging.ERROR)
 
+    configuration = Configuration()
+
     with pytest.raises(SystemExit) as exception:
-        Configuration()
+        configuration.get_parameter_set("NonExistingStrategy")
 
     assert (
         str(
@@ -44,7 +45,6 @@ def test__configuration__with_non_existing_parameter_set_file(
 
 
 @patch("apollo.utils.configuration.PARM_DIR", TEST_DIR)
-@patch("apollo.utils.configuration.STRATEGY", STRATEGY)
 def test__configuration__with_existing_parameter_set_file() -> None:
     """
     Test Configuration construction with existing parameter set file.
@@ -54,10 +54,12 @@ def test__configuration__with_existing_parameter_set_file() -> None:
 
     configuration = Configuration()
 
-    parameter_set: ParameterSet
+    control_parameter_set: ParameterSet
 
     with Path.open(Path(f"{TEST_DIR}/{STRATEGY}.json")) as file:
-        parameter_set = load(file)
+        control_parameter_set = load(file)
 
-    assert configuration.parameter_set == parameter_set
-    assert type(configuration.parameter_set) is type(parameter_set)
+    parameter_set = configuration.get_parameter_set()
+
+    assert parameter_set == control_parameter_set
+    assert type(parameter_set) is type(control_parameter_set)

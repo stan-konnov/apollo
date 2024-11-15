@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.vix_futures_convergence_divergence import (
+from apollo.calculators.vix_futures_convergence_divergence import (
     VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

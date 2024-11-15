@@ -1,11 +1,11 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.average_directional_movement_index import (
+from apollo.calculators.average_directional_movement_index import (
     AverageDirectionalMovementIndexCalculator,
 )
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.engulfing_vix_pattern import EngulfingVIXPatternCalculator
+from apollo.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.calculators.engulfing_vix_pattern import EngulfingVIXPatternCalculator
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.avg_dir_mov_index_mean_reversion import (
     AverageDirectionalMovementIndexMeanReversion,

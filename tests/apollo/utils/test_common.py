@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 from numpy import datetime64
 
-from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     END_DATE,
     EXCHANGE,
@@ -24,9 +24,12 @@ from apollo.settings import (
     SUPPORTED_DATA_ENHANCERS,
     TICKER,
     VIX_TICKER,
-    YahooApiFrequencies,
+    PriceDataFrequency,
 )
-from apollo.utils.common import ensure_environment_is_configured, to_default_date_string
+from apollo.utils.common import (
+    ensure_environment_is_configured,
+    to_default_date_string,
+)
 
 
 def test__to_default_date_string__with_proper_inputs() -> None:
@@ -139,7 +142,7 @@ def test__ensure_environment_is_configured__for_invalidating_frequency() -> None
 
     exception_message = str(
         "Invalid FREQUENCY environment variable: inf. "
-        f"Accepted values: {', '.join([f.value for f in YahooApiFrequencies])}",
+        f"Accepted values: {', '.join([f.value for f in PriceDataFrequency])}",
     )
 
     with pytest.raises(

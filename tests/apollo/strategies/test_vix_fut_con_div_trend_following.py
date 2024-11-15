@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.vix_futures_convergence_divergence import (
+from apollo.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.calculators.vix_futures_convergence_divergence import (
     VIXFuturesConvergenceDivergenceCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL

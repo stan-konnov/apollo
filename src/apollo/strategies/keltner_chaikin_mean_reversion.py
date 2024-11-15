@@ -1,12 +1,12 @@
 from pandas import DataFrame
 
-from apollo.calculations.chaikin_accumulation_distribution import (
+from apollo.calculators.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
-from apollo.calculations.hull_moving_average import (
+from apollo.calculators.hull_moving_average import (
     HullMovingAverageCalculator,
 )
-from apollo.calculations.keltner_channel import KeltnerChannelCalculator
+from apollo.calculators.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.base.base_strategy import BaseStrategy
 from apollo.strategies.base.vix_enhanced_strategy import VIXEnhancedStrategy
