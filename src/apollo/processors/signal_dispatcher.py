@@ -61,8 +61,10 @@ class SignalDispatcher:
             )
         )
 
+        # Raise an error if neither
+        # open nor optimized position exists
         if not existing_open_position and not existing_optimized_position:
             raise NeitherOpenNorOptimizedPositionExistsError(
                 "Neither open nor optimized position exists. "
-                "System invariant violated, position was not opened or cancelled.",
+                "System invariant violated, position was not opened or optimized.",
             )
