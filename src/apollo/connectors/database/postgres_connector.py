@@ -146,41 +146,6 @@ class PostgresConnector:
             else None
         )
 
-    def get_existing_screened_position(self) -> Position | None:
-        """
-        Get existing screened position.
-
-        Used to validate system invariant of having
-        single screened position for a ticker at a time.
-
-        Used to identify the ticker queued
-        for optimization after the screening process.
-
-        :returns: Screened position if exists.
-        """
-
-        self._database_client.connect()
-
-        # Check if we have a screened position
-        screened_position = self._database_client.positions.find_first(
-            where={
-                "status": PositionStatus.SCREENED.value,
-            },
-        )
-
-        self._database_client.disconnect()
-
-        # And return the position if exists
-        return (
-            Position(
-                id=screened_position.id,
-                ticker=screened_position.ticker,
-                status=PositionStatus(screened_position.status),
-            )
-            if screened_position
-            else None
-        )
-
     def create_position_on_screening(self, ticker: str) -> None:
         """
         Create a position entity after screening.
@@ -199,41 +164,6 @@ class PostgresConnector:
         )
 
         self._database_client.disconnect()
-
-    def get_existing_optimized_position(self) -> Position | None:
-        """
-        Get existing optimized position.
-
-        Used to validate system invariant
-        of having single optimized position at a time.
-
-        Used to identify the ticker queued
-        for dispatch after the optimization process.
-
-        :returns: Optimized position if exists.
-        """
-
-        self._database_client.connect()
-
-        # Check if we have an optimized position
-        optimized_position = self._database_client.positions.find_first(
-            where={
-                "status": PositionStatus.OPTIMIZED.value,
-            },
-        )
-
-        self._database_client.disconnect()
-
-        # And return the position if exists
-        return (
-            Position(
-                id=optimized_position.id,
-                ticker=optimized_position.ticker,
-                status=PositionStatus(optimized_position.status),
-            )
-            if optimized_position
-            else None
-        )
 
     def update_position_on_optimization(self, position_id: str) -> None:
         """
@@ -256,19 +186,23 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def get_existing_open_position(self) -> Position | None:
+    def get_existing_position_by_status(
+        self,
+        position_status: PositionStatus,
+    ) -> Position | None:
         """
-        Get existing open position.
+        Get existing position by status.
 
-        :returns: Open position if exists.
+        :param position_status: Position status to query.
+        :returns: Position if exists.
         """
 
         self._database_client.connect()
 
-        # Check if we have an open position
-        open_position = self._database_client.positions.find_first(
+        # Check if we have a position by status
+        position = self._database_client.positions.find_first(
             where={
-                "status": PositionStatus.OPEN.value,
+                "status": position_status.value,
             },
         )
 
@@ -277,39 +211,10 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
-                id=open_position.id,
-                ticker=open_position.ticker,
-                status=PositionStatus(open_position.status),
+                id=position.id,
+                ticker=position.ticker,
+                status=PositionStatus(position.status),
             )
-            if open_position
-            else None
-        )
-
-    def get_existing_dispatched_position(self) -> Position | None:
-        """
-        Get existing dispatched position.
-
-        :returns: Dispatched position if exists.
-        """
-
-        self._database_client.connect()
-
-        # Check if we have a dispatched position
-        dispatched_position = self._database_client.positions.find_first(
-            where={
-                "status": PositionStatus.DISPATCHED.value,
-            },
-        )
-
-        self._database_client.disconnect()
-
-        # And return the position if exists
-        return (
-            Position(
-                id=dispatched_position.id,
-                ticker=dispatched_position.ticker,
-                status=PositionStatus(dispatched_position.status),
-            )
-            if dispatched_position
+            if position
             else None
         )

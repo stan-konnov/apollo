@@ -1,4 +1,5 @@
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.models.position import PositionStatus
 from apollo.providers.price_data_provider import PriceDataProvider
 
 
@@ -24,10 +25,14 @@ class SignalDispatcher:
 
         # Query optimized position
         _existing_optimized_position = (
-            self._database_connector.get_existing_optimized_position()
+            self._database_connector.get_existing_position_by_status(
+                PositionStatus.OPTIMIZED,
+            )
         )
 
         # Query existing dispatched position
         _existing_dispatched_position = (
-            self._database_connector.get_existing_dispatched_position()
+            self._database_connector.get_existing_position_by_status(
+                PositionStatus.DISPATCHED,
+            )
         )
