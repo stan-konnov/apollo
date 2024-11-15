@@ -255,3 +255,32 @@ class PostgresConnector:
         )
 
         self._database_client.disconnect()
+
+    def get_existing_open_position(self) -> Position | None:
+        """
+        Get existing open position.
+
+        :returns: Open position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have an open position
+        open_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.OPEN.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                id=open_position.id,
+                ticker=open_position.ticker,
+                status=PositionStatus(open_position.status),
+            )
+            if open_position
+            else None
+        )
