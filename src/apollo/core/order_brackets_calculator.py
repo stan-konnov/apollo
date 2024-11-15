@@ -1,6 +1,6 @@
-class OrderBracketsGenerator:
+class OrderBracketsCalculator:
     """
-    Order Brackets Generator class.
+    Order Brackets Calculator class.
 
     Exists to calculate Limit Entry Price, Stop Loss, and
     Take Profit levels during backtesting and signal dispatching.
