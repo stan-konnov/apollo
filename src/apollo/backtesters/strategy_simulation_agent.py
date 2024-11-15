@@ -2,6 +2,7 @@ from typing import ClassVar
 
 from backtesting import Strategy
 
+from apollo.core.order_brackets_generator import OrderBracketsGenerator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
@@ -152,9 +153,11 @@ class StrategySimulationAgent(Strategy):
 
         # Calculate trailing stop loss and take profit
         long_sl, long_tp, short_sl, short_tp = (
-            self._calculate_trailing_stop_loss_and_take_profit(
+            OrderBracketsGenerator.calculate_trailing_stop_loss_and_take_profit(
                 close_price=close,
                 average_true_range=average_true_range,
+                sl_volatility_multiplier=self.sl_volatility_multiplier,
+                tp_volatility_multiplier=self.tp_volatility_multiplier,
             )
         )
 
@@ -171,9 +174,12 @@ class StrategySimulationAgent(Strategy):
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
             # Calculate limit entry price for long and short signals
-            long_limit, short_limit = self._calculate_limit_entry_price(
-                close,
-                average_true_range,
+            long_limit, short_limit = (
+                OrderBracketsGenerator.calculate_limit_entry_price(
+                    close,
+                    average_true_range,
+                    tp_volatility_multiplier=self.tp_volatility_multiplier,
+                )
             )
 
             if long_signal:
