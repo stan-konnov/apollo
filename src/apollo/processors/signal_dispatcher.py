@@ -9,6 +9,9 @@ class SignalDispatcher:
         """
         Construct Signal Dispatcher.
 
+        TODO: handle existing open positions first.
+        TODO: simplify database connector to and write position by status.
+
         Initialize Database Connector.
         Initialize Price Data Provider.
         """
@@ -19,8 +22,12 @@ class SignalDispatcher:
     def dispatch_signals(self) -> None:
         """Generate and dispatch signals."""
 
-        # First and foremost, we have to
-        # check if we already have an open position
-        _existing_open_position = self._database_connector.get_existing_open_position()
+        # Query optimized position
+        _existing_optimized_position = (
+            self._database_connector.get_existing_optimized_position()
+        )
 
-        # If we do, generate TP and SL brackets
+        # Query existing dispatched position
+        _existing_dispatched_position = (
+            self._database_connector.get_existing_dispatched_position()
+        )

@@ -284,3 +284,32 @@ class PostgresConnector:
             if open_position
             else None
         )
+
+    def get_existing_dispatched_position(self) -> Position | None:
+        """
+        Get existing dispatched position.
+
+        :returns: Dispatched position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have a dispatched position
+        dispatched_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.DISPATCHED.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                id=dispatched_position.id,
+                ticker=dispatched_position.ticker,
+                status=PositionStatus(dispatched_position.status),
+            )
+            if dispatched_position
+            else None
+        )
