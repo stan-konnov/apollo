@@ -123,8 +123,9 @@ class ParameterOptimizer(MultiprocessingCapable):
                 )
 
             # Update the screened position to optimized
-            self._database_connector.update_position_on_optimization(
+            self._database_connector.update_existing_position_by_status(
                 screened_position.id,
+                PositionStatus.OPTIMIZED,
             )
 
             logger.info(

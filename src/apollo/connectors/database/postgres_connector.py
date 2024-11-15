@@ -165,27 +165,6 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def update_position_on_optimization(self, position_id: str) -> None:
-        """
-        Update a position entity after optimization.
-
-        :param position_id: Position id to update.
-        """
-
-        self._database_client.connect()
-
-        # Update the position status
-        self._database_client.positions.update(
-            where={
-                "id": position_id,
-            },
-            data={
-                "status": PositionStatus.OPTIMIZED.value,
-            },
-        )
-
-        self._database_client.disconnect()
-
     def get_existing_position_by_status(
         self,
         position_status: PositionStatus,
@@ -218,3 +197,29 @@ class PostgresConnector:
             if position
             else None
         )
+
+    def update_existing_position_by_status(
+        self,
+        position_id: str,
+        position_status: PositionStatus,
+    ) -> None:
+        """
+        Update existing position by status.
+
+        :param position_id: Position id to update.
+        :param position_status: Position status to update.
+        """
+
+        self._database_client.connect()
+
+        # Update the position status
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "status": position_status.value,
+            },
+        )
+
+        self._database_client.disconnect()
