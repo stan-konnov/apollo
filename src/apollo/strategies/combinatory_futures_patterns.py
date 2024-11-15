@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from apollo.calculations.combinatory_futures_patterns import (
+from apollo.calculators.combinatory_futures_patterns import (
     CombinatoryFuturesPatternsCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

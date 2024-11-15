@@ -1,6 +1,8 @@
 import logging
 
-from apollo.backtesting.backtesting_runner import BacktestingRunner
+import pandas as pd
+
+from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -10,7 +12,7 @@ from apollo.settings import (
     START_DATE,
     TICKER,
 )
-from apollo.strategies.combinatory_elliot_waves import CombinatoryElliotWaves
+from apollo.strategies.swing_events_mean_reversion import SwingEventsMeanReversion
 from apollo.utils.common import ensure_environment_is_configured
 
 logging.basicConfig(
@@ -37,26 +39,29 @@ def main() -> None:
         max_period=bool(MAX_PERIOD),
     )
 
+    dataframe = dataframe[
+        dataframe.index >= pd.Timestamp.now() - pd.DateOffset(years=30)
+    ]
+
     dataframe = price_data_enhancer.enhance_price_data(
         price_dataframe=dataframe,
         additional_data_enhancers=["VIX", "SP500 Futures"],
     )
 
-    strategy = CombinatoryElliotWaves(
+    strategy = SwingEventsMeanReversion(
         dataframe=dataframe,
-        window_size=5,
-        fast_oscillator_period=5.0,
-        slow_oscillator_period=25.0,
+        window_size=15,
+        swing_filter=0.01,
     )
 
     strategy.model_trading_signals()
 
     backtesting_runner = BacktestingRunner(
         dataframe=dataframe,
-        strategy_name="CombinatoryElliotWaves",
+        strategy_name="SwingEventsMeanReversion",
         lot_size_cash=1000,
         sl_volatility_multiplier=0.1,
-        tp_volatility_multiplier=0.4,
+        tp_volatility_multiplier=0.5,
         write_result_plot=True,
         write_result_trades=True,
     )

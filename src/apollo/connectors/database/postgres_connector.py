@@ -76,7 +76,9 @@ class PostgresConnector:
         )
 
         # Map the model to a writable representation
-        writable_model_representation = backtesting_results_model.model_dump()
+        writable_model_representation = backtesting_results_model.model_dump(
+            exclude_defaults=True,
+        )
 
         # NOTE: prisma python client and pydantic models
         # are not yet fully compatible between each other
@@ -108,7 +110,7 @@ class PostgresConnector:
 
         NOTE: We consider a position to be active if it
         falls under any of the following statuses:
-        screened, backtested, dispatched, open.
+        screened, optimized, dispatched, open.
 
         :param ticker: Ticker to check for active position.
         :returns: Active position if exists.
@@ -123,7 +125,7 @@ class PostgresConnector:
                 "status": {
                     "in": [
                         PositionStatus.SCREENED.value,
-                        PositionStatus.BACKTESTED.value,
+                        PositionStatus.OPTIMIZED.value,
                         PositionStatus.DISPATCHED.value,
                         PositionStatus.OPEN.value,
                     ],
@@ -136,10 +138,46 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
+                id=existing_active_position.id,
                 ticker=existing_active_position.ticker,
                 status=PositionStatus(existing_active_position.status),
             )
             if existing_active_position
+            else None
+        )
+
+    def get_existing_screened_position(self) -> Position | None:
+        """
+        Get existing screened position.
+
+        Used to validate system invariant of having
+        single screened position for a ticker at a time.
+
+        Used to identify the ticker queued
+        for optimization after the screening process.
+
+        :returns: Screened position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have a screened position
+        screened_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.SCREENED.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                id=screened_position.id,
+                ticker=screened_position.ticker,
+                status=PositionStatus(screened_position.status),
+            )
+            if screened_position
             else None
         )
 
@@ -157,7 +195,63 @@ class PostgresConnector:
             data=Position(
                 ticker=ticker,
                 status=PositionStatus.SCREENED,
-            ).model_dump(),  # type: ignore  # noqa: PGH003
+            ).model_dump(exclude_defaults=True),  # type: ignore  # noqa: PGH003
+        )
+
+        self._database_client.disconnect()
+
+    def get_existing_optimized_position(self) -> Position | None:
+        """
+        Get existing optimized position.
+
+        Used to validate system invariant
+        of having single optimized position at a time.
+
+        Used to identify the ticker queued
+        for dispatch after the optimization process.
+
+        :returns: Optimized position if exists.
+        """
+
+        self._database_client.connect()
+
+        # Check if we have an optimized position
+        optimized_position = self._database_client.positions.find_first(
+            where={
+                "status": PositionStatus.OPTIMIZED.value,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the position if exists
+        return (
+            Position(
+                id=optimized_position.id,
+                ticker=optimized_position.ticker,
+                status=PositionStatus(optimized_position.status),
+            )
+            if optimized_position
+            else None
+        )
+
+    def update_position_on_optimization(self, position_id: str) -> None:
+        """
+        Update a position entity after optimization.
+
+        :param position_id: Position id to update.
+        """
+
+        self._database_client.connect()
+
+        # Update the position status
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "status": PositionStatus.OPTIMIZED.value,
+            },
         )
 
         self._database_client.disconnect()

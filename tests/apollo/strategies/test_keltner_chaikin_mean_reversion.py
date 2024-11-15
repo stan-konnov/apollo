@@ -1,15 +1,15 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.chaikin_accumulation_distribution import (
+from apollo.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.calculators.chaikin_accumulation_distribution import (
     ChaikinAccumulationDistributionCalculator,
 )
-from apollo.calculations.engulfing_vix_pattern import (
+from apollo.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
-from apollo.calculations.hull_moving_average import HullMovingAverageCalculator
-from apollo.calculations.keltner_channel import KeltnerChannelCalculator
+from apollo.calculators.hull_moving_average import HullMovingAverageCalculator
+from apollo.calculators.keltner_channel import KeltnerChannelCalculator
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
 from apollo.strategies.keltner_chaikin_mean_reversion import (
     KeltnerChaikinMeanReversion,

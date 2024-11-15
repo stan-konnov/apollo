@@ -1,6 +1,6 @@
 import pandas as pd
 
-from apollo.calculations.average_directional_movement_index import (
+from apollo.calculators.average_directional_movement_index import (
     AverageDirectionalMovementIndexCalculator,
 )
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL

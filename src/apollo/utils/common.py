@@ -1,7 +1,7 @@
 from numpy import datetime64
 from pandas import to_datetime
 
-from apollo.backtesting.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
@@ -23,7 +23,7 @@ from apollo.settings import (
     SUPPORTED_DATA_ENHANCERS,
     TICKER,
     VIX_TICKER,
-    YahooApiFrequencies,
+    PriceDataFrequency,
 )
 
 
@@ -93,9 +93,9 @@ def ensure_environment_is_configured() -> None:
             f"Accepted values: {', '.join(EXCHANGE_TIME_ZONE_AND_HOURS)}",
         )
 
-    # Check if the frequency is a valid Yahoo Finance API frequency
-    if FREQUENCY not in YahooApiFrequencies:
+    # Check if the frequency is a valid price data frequency
+    if FREQUENCY not in PriceDataFrequency:
         raise ValueError(
             f"Invalid FREQUENCY environment variable: {FREQUENCY}. "
-            f"Accepted values: {', '.join([f.value for f in YahooApiFrequencies])}",
+            f"Accepted values: {', '.join([f.value for f in PriceDataFrequency])}",
         )

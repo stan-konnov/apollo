@@ -55,13 +55,13 @@ model backtesting_results {
 model positions {
   id                        String @id @unique @default(uuid())
 
-  // At the point of initialization
-  // we only know ticker and default status
+  // At the point of screening,
+  // we know ticker and default status
   ticker                    String
   status                    String
 
-  // After backtesting optimization
-  // we know the strategy, direction, and target entry price
+  // At the point of dispatching,
+  // we know strategy, direction, and target
   strategy                  String?
   direction                 Int?
   target_entry_price        Float?

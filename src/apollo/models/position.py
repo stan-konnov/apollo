@@ -17,7 +17,7 @@ class PositionStatus(str, Enum):
     # Statuses relevant
     # to signal generation
     SCREENED = "screened"
-    BACKTESTED = "backtested"
+    OPTIMIZED = "optimized"
     DISPATCHED = "dispatched"
 
 
@@ -28,6 +28,13 @@ class Position(BaseModel):
     Please see /prisma/schema.prisma for
     detailed explanation of nullable fields.
     """
+
+    # Due to the interplay between Pydantic and Prisma,
+    # we mark id field as required, but give it a default.
+    # This way, we can omit it when creating a new entity,
+    # but it will be required when updating an existing one.
+
+    id: str = ""
 
     ticker: str
     status: PositionStatus

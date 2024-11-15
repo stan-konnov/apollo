@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-from apollo.calculations.average_true_range import AverageTrueRangeCalculator
-from apollo.calculations.distribution_moments import DistributionMomentsCalculator
-from apollo.calculations.engulfing_vix_pattern import (
+from apollo.calculators.average_true_range import AverageTrueRangeCalculator
+from apollo.calculators.distribution_moments import DistributionMomentsCalculator
+from apollo.calculators.engulfing_vix_pattern import (
     EngulfingVIXPatternCalculator,
 )
 from apollo.settings import LONG_SIGNAL, NO_SIGNAL, SHORT_SIGNAL
