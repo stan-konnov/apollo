@@ -14,9 +14,6 @@ class SignalDispatcher:
         """
         Construct Signal Dispatcher.
 
-        TODO: handle existing open positions first.
-        TODO: handle system invariants of managing filled, unfilled orders.
-
         Initialize Database Connector.
         Initialize Price Data Provider.
         """
