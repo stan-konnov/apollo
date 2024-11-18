@@ -1,3 +1,5 @@
+import pandas as pd
+
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
@@ -103,7 +105,12 @@ class SignalDispatcher:
             max_period=bool(MAX_PERIOD),
         )
 
-        # Limit to last 30 years
+        # Since optimization process
+        # is based on last 30 years of data,
+        # here we also filter the queried dataset
+        price_dataframe = price_dataframe[
+            price_dataframe.index >= pd.Timestamp.now() - pd.DateOffset(years=30)
+        ]
 
         # Query optimized parameters
         # for the position ticker
@@ -115,6 +122,12 @@ class SignalDispatcher:
         # we now run the backtesting process
         # over each strategy until we hit a signal
         for optimized_parameter_set in optimized_parameters:
+            # Get strategy name
+            strategy_name = optimized_parameter_set.strategy
+
+            # Get optimized parameters
+            optimized_parameters = optimized_parameter_set.parameters
+
             # Copy price dataframe to avoid
             # altering the data with each iteration
             clean_price_dataframe = price_dataframe.copy()
@@ -122,7 +135,7 @@ class SignalDispatcher:
             # Get file-defined parameter set
             # that contains additional specifications
             parameter_set = self._configuration.get_parameter_set(
-                optimized_parameter_set.strategy,
+                strategy_name,
             )
 
             # Enhance the price data based on the configuration
@@ -140,8 +153,8 @@ class SignalDispatcher:
             # Instantiate the strategy class by typecasting
             # the strategy name from configuration to the corresponding class
             strategy_class = type(
-                optimized_parameter_set.strategy,
-                (STRATEGY_CATALOGUE_MAP[optimized_parameter_set.strategy],),
+                strategy_name,
+                (STRATEGY_CATALOGUE_MAP[strategy_name],),
                 {},
             )
 
@@ -149,7 +162,7 @@ class SignalDispatcher:
             # with the optimized parameters
             strategy_instance = strategy_class(
                 dataframe=clean_price_dataframe,
-                window_size=int(optimized_parameter_set.parameters["window_size"]),
+                window_size=int(optimized_parameters["window_size"]),
                 **strategy_specific_parameters,
             )
 
@@ -159,12 +172,12 @@ class SignalDispatcher:
             # Instantiate the backtesting runner and run the backtesting process
             backtesting_runner = BacktestingRunner(
                 dataframe=clean_price_dataframe,
-                strategy_name=optimized_parameter_set.strategy,
+                strategy_name=strategy_name,
                 lot_size_cash=BACKTESTING_CASH_SIZE,
-                sl_volatility_multiplier=optimized_parameter_set.parameters[
+                sl_volatility_multiplier=optimized_parameters[
                     "sl_volatility_multiplier"
                 ],
-                tp_volatility_multiplier=optimized_parameter_set.parameters[
+                tp_volatility_multiplier=optimized_parameters[
                     "tp_volatility_multiplier"
                 ],
             )
