@@ -227,7 +227,7 @@ class PostgresConnector:
 
     def get_optimized_parameters(self, ticker: str) -> list[StrategyParameters]:
         """
-        Get optimized strategy parameters for a ticker.
+        Get optimized strategy parameters for a ticker sorted by sharpe ratio.
 
         :param ticker: Ticker to get optimized parameters for.
         :returns: List of optimized strategy parameters.
@@ -239,6 +239,9 @@ class PostgresConnector:
         backtesting_results = self._database_client.backtesting_results.find_many(
             where={
                 "ticker": ticker,
+            },
+            order={
+                "sharpe_ratio": "desc",
             },
         )
 
