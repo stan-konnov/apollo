@@ -3,6 +3,7 @@ from prisma import Prisma
 
 from apollo.models.backtesting_results import BacktestingResults
 from apollo.models.position import Position, PositionStatus
+from apollo.models.strategy_parameters import StrategyParameters
 
 
 class PostgresConnector:
@@ -223,3 +224,33 @@ class PostgresConnector:
         )
 
         self._database_client.disconnect()
+
+    def get_optimized_parameters(self, ticker: str) -> list[StrategyParameters]:
+        """
+        Get optimized strategy parameters for a ticker.
+
+        :param ticker: Ticker to get optimized parameters for.
+        :returns: List of optimized strategy parameters.
+        """
+
+        self._database_client.connect()
+
+        # Query backtesting results for a given ticker
+        backtesting_results = self._database_client.backtesting_results.find_many(
+            where={
+                "ticker": ticker,
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the parameters
+        return [
+            StrategyParameters(
+                strategy=backtesting_result.strategy,
+                # NOTE: Prisma is packing the JSON
+                # into a dict for us under the hood
+                parameters=backtesting_result.parameters,  # type: ignore  # noqa: PGH003
+            )
+            for backtesting_result in backtesting_results
+        ]

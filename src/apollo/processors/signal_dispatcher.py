@@ -3,8 +3,9 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.position import PositionStatus
+from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_provider import PriceDataProvider
+from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE
 
 
 class SignalDispatcher:
@@ -65,3 +66,33 @@ class SignalDispatcher:
                 "Neither open nor optimized position exists. "
                 "System invariant violated, position was not opened or optimized.",
             )
+
+        # At this point, we should manage
+        # either open or optimized position
+        if existing_optimized_position:
+            self._generate_signal_and_brackets(existing_optimized_position)
+
+    def _generate_signal_and_brackets(
+        self,
+        position: Position,
+    ) -> None:
+        """
+        Generate signal and limit entry price, stop loss, and take profit.
+
+        :param position: Position object.
+        """
+
+        # Get price data for the position ticker
+        _price_dataframe = self._price_data_provider.get_price_data(
+            position.ticker,
+            frequency=str(FREQUENCY),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
+        )
+
+        # Query optimized parameters
+        # for the position ticker
+        _optimized_parameters = self._database_connector.get_optimized_parameters(
+            position.ticker,
+        )
