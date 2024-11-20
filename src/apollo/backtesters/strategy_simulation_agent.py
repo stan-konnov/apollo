@@ -176,8 +176,8 @@ class StrategySimulationAgent(Strategy):
             # Calculate limit entry price for long and short signals
             long_limit, short_limit = (
                 OrderBracketsCalculator.calculate_limit_entry_price(
-                    close,
-                    average_true_range,
+                    close_price=close,
+                    average_true_range=average_true_range,
                     tp_volatility_multiplier=self.tp_volatility_multiplier,
                 )
             )

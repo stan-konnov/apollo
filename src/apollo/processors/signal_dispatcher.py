@@ -1,7 +1,7 @@
 import pandas as pd
 
-from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
@@ -11,10 +11,10 @@ from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
-    BACKTESTING_CASH_SIZE,
     END_DATE,
     FREQUENCY,
     MAX_PERIOD,
+    NO_SIGNAL,
     START_DATE,
 )
 from apollo.utils.configuration import Configuration
@@ -112,8 +112,8 @@ class SignalDispatcher:
             price_dataframe.index >= pd.Timestamp.now() - pd.DateOffset(years=30)
         ]
 
-        # Query optimized parameters
-        # for the position ticker
+        # Query sharpe-sorted optimized
+        # parameters for the position ticker
         optimized_parameters = self._database_connector.get_optimized_parameters(
             position.ticker,
         )
@@ -169,19 +169,44 @@ class SignalDispatcher:
             # Model the trading signals
             strategy_instance.model_trading_signals()
 
-            # Instantiate the backtesting runner and run the backtesting process
-            backtesting_runner = BacktestingRunner(
-                dataframe=clean_price_dataframe,
-                strategy_name=strategy_name,
-                lot_size_cash=BACKTESTING_CASH_SIZE,
-                sl_volatility_multiplier=optimized_parameters[
-                    "sl_volatility_multiplier"
-                ],
-                tp_volatility_multiplier=optimized_parameters[
-                    "tp_volatility_multiplier"
-                ],
-            )
+            # If we got the signal, produce direction and brackets
+            if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
+                # Get direction
+                direction = clean_price_dataframe.iloc[-1]["signal"]
 
-            stats = backtesting_runner.run()
+                # Get close price
+                close_price = clean_price_dataframe.iloc[-1]["close"]
 
-            print(stats)  # noqa: T201
+                # Get average true range
+                average_true_range = clean_price_dataframe.iloc[-1]["atr"]
+
+                # Calculate trailing stop loss and take profit
+                long_sl, long_tp, short_sl, short_tp = (
+                    OrderBracketsCalculator.calculate_trailing_stop_loss_and_take_profit(
+                        close_price=close_price,
+                        average_true_range=average_true_range,
+                        sl_volatility_multiplier=optimized_parameters[
+                            "sl_volatility_multiplier"
+                        ],
+                        tp_volatility_multiplier=optimized_parameters[
+                            "tp_volatility_multiplier"
+                        ],
+                    )
+                )
+
+                # Calculate limit entry price for long and short signals
+                long_limit, short_limit = (
+                    OrderBracketsCalculator.calculate_limit_entry_price(
+                        close_price=close_price,
+                        average_true_range=average_true_range,
+                        tp_volatility_multiplier=optimized_parameters[
+                            "tp_volatility_multiplier"
+                        ],
+                    )
+                )
+
+                # And construct dispatchable model
+                print(strategy_name)  # noqa: T201
+                print(direction)  # noqa: T201
+
+                break
