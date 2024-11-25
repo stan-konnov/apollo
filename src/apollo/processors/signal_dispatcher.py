@@ -7,14 +7,12 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
-    LONG_SIGNAL,
     MAX_PERIOD,
     NO_SIGNAL,
     START_DATE,
@@ -91,7 +89,7 @@ class SignalDispatcher:
     def _generate_signal_and_brackets(
         self,
         position: Position,
-    ) -> PositionSignal | None:
+    ) -> None:
         """
         Generate signal and limit entry price, stop loss, and take profit.
 
@@ -207,27 +205,8 @@ class SignalDispatcher:
                     )
                 )
 
-                # Construct position signal model
-                position_signal = PositionSignal(
-                    position_id=position.id,
-                    ticker=position.ticker,
-                    direction=direction,
-                )
+                # And construct dispatchable model
+                print(strategy_name)  # noqa: T201
+                print(direction)  # noqa: T201
 
-                # And populate the brackets
-                # based on direction of the signal
-                if direction == LONG_SIGNAL:
-                    position_signal.stop_loss = long_sl
-                    position_signal.take_profit = long_tp
-                    position_signal.target_entry_price = long_limit
-
-                else:
-                    position_signal.stop_loss = short_sl
-                    position_signal.take_profit = short_tp
-                    position_signal.target_entry_price = short_limit
-
-                return position_signal
-
-        # Return None if no
-        # signal was generated
-        return None
+                break
