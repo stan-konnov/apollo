@@ -109,6 +109,18 @@ class SignalDispatcher:
         :param position: Position object.
         """
 
+        # Initialize position signal
+        position_signal = PositionSignal(
+            position_id=position.id,
+            ticker=position.ticker,
+            direction=NO_SIGNAL,
+        )
+
+        # If we are handling an open position,
+        # set the direction to the position's direction
+        if position.status == PositionStatus.OPEN:
+            position_signal.direction = position.direction
+
         # Get price data for the position ticker
         price_dataframe = self._price_data_provider.get_price_data(
             position.ticker,
@@ -218,15 +230,7 @@ class SignalDispatcher:
                     )
                 )
 
-                # Initialize position signal
-                position_signal = PositionSignal(
-                    position_status=position.status,
-                    position_id=position.id,
-                    ticker=position.ticker,
-                    direction=direction,
-                )
-
-                # And set brackets based on the direction
+                # Set brackets based on the direction
                 if direction == LONG_SIGNAL:
                     position_signal.stop_loss = long_sl
                     position_signal.take_profit = long_tp
