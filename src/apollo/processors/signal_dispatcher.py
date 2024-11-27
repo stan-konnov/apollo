@@ -244,5 +244,13 @@ class SignalDispatcher:
                 position_signal.take_profit = short_tp
                 position_signal.target_entry_price = short_limit
 
-        # Finally, return identified signal or None
+            # Break the loop if it is open position
+            # or if we got the signal for optimized
+            if position.status == PositionStatus.OPEN or (
+                position.status == PositionStatus.OPTIMIZED
+                and position_signal.direction != NO_SIGNAL
+            ):
+                break
+
+        # Return identified signal or None
         return position_signal if position_signal.direction != NO_SIGNAL else None
