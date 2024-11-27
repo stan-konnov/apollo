@@ -7,14 +7,17 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
+from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
+    LONG_SIGNAL,
     MAX_PERIOD,
     NO_SIGNAL,
+    SHORT_SIGNAL,
     START_DATE,
 )
 from apollo.utils.configuration import Configuration
@@ -81,15 +84,25 @@ class SignalDispatcher:
                 "System invariant violated, position was not opened or optimized.",
             )
 
+        # Initialize dispatchable signal
+        dispatchable_signal = DispatchableSignal()
+
         # At this point, we should manage
         # either open or optimized position
+        if existing_open_position:
+            dispatchable_signal.open_position = self._generate_signal_and_brackets(
+                existing_open_position,
+            )
+
         if existing_optimized_position:
-            self._generate_signal_and_brackets(existing_optimized_position)
+            dispatchable_signal.optimized_position = self._generate_signal_and_brackets(
+                existing_optimized_position,
+            )
 
     def _generate_signal_and_brackets(
         self,
         position: Position,
-    ) -> None:
+    ) -> PositionSignal | None:
         """
         Generate signal and limit entry price, stop loss, and take profit.
 
@@ -205,8 +218,28 @@ class SignalDispatcher:
                     )
                 )
 
-                # And construct dispatchable model
-                print(strategy_name)  # noqa: T201
-                print(direction)  # noqa: T201
+                # Initialize position signal
+                position_signal = PositionSignal(
+                    position_status=position.status,
+                    position_id=position.id,
+                    ticker=position.ticker,
+                    direction=direction,
+                )
 
-                break
+                # And set brackets based on the direction
+                if direction == LONG_SIGNAL:
+                    position_signal.stop_loss = long_sl
+                    position_signal.take_profit = long_tp
+                    position_signal.target_entry_price = long_limit
+
+                elif direction == SHORT_SIGNAL:
+                    position_signal.stop_loss = short_sl
+                    position_signal.take_profit = short_tp
+                    position_signal.target_entry_price = short_limit
+
+                # Return the signal
+                return position_signal
+
+        # Or return None
+        # if no signal was found
+        return None
