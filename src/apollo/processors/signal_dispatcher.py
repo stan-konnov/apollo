@@ -102,7 +102,7 @@ class SignalDispatcher:
     def _generate_signal_and_brackets(
         self,
         position: Position,
-    ) -> PositionSignal:
+    ) -> PositionSignal | None:
         """
         Generate signal and limit entry price, stop loss, and take profit.
 
@@ -243,5 +243,5 @@ class SignalDispatcher:
                 position_signal.take_profit = short_tp
                 position_signal.target_entry_price = short_limit
 
-        # Return the signal
-        return position_signal
+        # Finally, return identified signal or None
+        return position_signal if position_signal.direction != NO_SIGNAL else None
