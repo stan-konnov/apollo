@@ -104,7 +104,7 @@ class SignalDispatcher:
         position: Position,
     ) -> PositionSignal | None:
         """
-        Generate signal and limit entry price, stop loss, and take profit.
+        Generate signal, limit entry price, stop loss, and take profit.
 
         :param position: Position object.
         """
