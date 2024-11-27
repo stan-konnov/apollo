@@ -116,11 +116,6 @@ class SignalDispatcher:
             direction=NO_SIGNAL,
         )
 
-        # If we are handling an open position,
-        # set the direction to the position's direction
-        if position.status == PositionStatus.OPEN:
-            position_signal.direction = position.direction
-
         # Get price data for the position ticker
         price_dataframe = self._price_data_provider.get_price_data(
             position.ticker,
