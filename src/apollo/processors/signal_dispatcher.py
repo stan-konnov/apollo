@@ -139,7 +139,7 @@ class SignalDispatcher:
         )
 
         # Given that we have parameters,
-        # we now run the backtesting process
+        # we now run the signal modeling
         # over each strategy until we hit a signal
         for optimized_parameter_set in optimized_parameters:
             # Get strategy name
