@@ -191,6 +191,7 @@ class SignalDispatcher:
 
             # Set direction to no signal
             # or use the existing direction
+            # in case we are handling open position
             direction = (
                 NO_SIGNAL
                 if position.status == PositionStatus.OPTIMIZED
