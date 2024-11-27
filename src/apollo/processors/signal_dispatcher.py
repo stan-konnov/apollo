@@ -102,7 +102,7 @@ class SignalDispatcher:
     def _generate_signal_and_brackets(
         self,
         position: Position,
-    ) -> PositionSignal | None:
+    ) -> PositionSignal:
         """
         Generate signal and limit entry price, stop loss, and take profit.
 
@@ -189,56 +189,59 @@ class SignalDispatcher:
             # Model the trading signals
             strategy_instance.model_trading_signals()
 
-            # If we got the signal, produce direction and brackets
+            # Set direction to no signal
+            # or use the existing direction
+            direction = (
+                NO_SIGNAL
+                if position.status == PositionStatus.OPTIMIZED
+                else position.direction
+            )
+
+            # If we got the signal, (re)set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
-                # Get direction
-                direction = clean_price_dataframe.iloc[-1]["signal"]
+                position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
 
-                # Get close price
-                close_price = clean_price_dataframe.iloc[-1]["close"]
+            # Get close price
+            close_price = clean_price_dataframe.iloc[-1]["close"]
 
-                # Get average true range
-                average_true_range = clean_price_dataframe.iloc[-1]["atr"]
+            # Get average true range
+            average_true_range = clean_price_dataframe.iloc[-1]["atr"]
 
-                # Calculate trailing stop loss and take profit
-                long_sl, long_tp, short_sl, short_tp = (
-                    OrderBracketsCalculator.calculate_trailing_stop_loss_and_take_profit(
-                        close_price=close_price,
-                        average_true_range=average_true_range,
-                        sl_volatility_multiplier=optimized_parameters[
-                            "sl_volatility_multiplier"
-                        ],
-                        tp_volatility_multiplier=optimized_parameters[
-                            "tp_volatility_multiplier"
-                        ],
-                    )
+            # Calculate trailing stop loss and take profit
+            long_sl, long_tp, short_sl, short_tp = (
+                OrderBracketsCalculator.calculate_trailing_stop_loss_and_take_profit(
+                    close_price=close_price,
+                    average_true_range=average_true_range,
+                    sl_volatility_multiplier=optimized_parameters[
+                        "sl_volatility_multiplier"
+                    ],
+                    tp_volatility_multiplier=optimized_parameters[
+                        "tp_volatility_multiplier"
+                    ],
                 )
+            )
 
-                # Calculate limit entry price for long and short signals
-                long_limit, short_limit = (
-                    OrderBracketsCalculator.calculate_limit_entry_price(
-                        close_price=close_price,
-                        average_true_range=average_true_range,
-                        tp_volatility_multiplier=optimized_parameters[
-                            "tp_volatility_multiplier"
-                        ],
-                    )
+            # Calculate limit entry price for long and short signals
+            long_limit, short_limit = (
+                OrderBracketsCalculator.calculate_limit_entry_price(
+                    close_price=close_price,
+                    average_true_range=average_true_range,
+                    tp_volatility_multiplier=optimized_parameters[
+                        "tp_volatility_multiplier"
+                    ],
                 )
+            )
 
-                # Set brackets based on the direction
-                if direction == LONG_SIGNAL:
-                    position_signal.stop_loss = long_sl
-                    position_signal.take_profit = long_tp
-                    position_signal.target_entry_price = long_limit
+            # Set brackets based on the direction
+            if direction == LONG_SIGNAL:
+                position_signal.stop_loss = long_sl
+                position_signal.take_profit = long_tp
+                position_signal.target_entry_price = long_limit
 
-                elif direction == SHORT_SIGNAL:
-                    position_signal.stop_loss = short_sl
-                    position_signal.take_profit = short_tp
-                    position_signal.target_entry_price = short_limit
+            elif direction == SHORT_SIGNAL:
+                position_signal.stop_loss = short_sl
+                position_signal.take_profit = short_tp
+                position_signal.target_entry_price = short_limit
 
-                # Return the signal
-                return position_signal
-
-        # Or return None
-        # if no signal was found
-        return None
+        # Return the signal
+        return position_signal
