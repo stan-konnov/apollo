@@ -108,6 +108,17 @@ class SignalDispatcher:
                 position_status=PositionStatus.DISPATCHED,
             )
 
+            # We additionally update the
+            # position with dispatching details
+            self._database_connector.update_position_upon_dispatching(
+                position_id=existing_optimized_position.id,
+                strategy=dispatchable_signal.optimized_position.strategy,
+                direction=dispatchable_signal.optimized_position.direction,
+                stop_loss=dispatchable_signal.optimized_position.stop_loss,
+                take_profit=dispatchable_signal.optimized_position.take_profit,
+                target_entry_price=dispatchable_signal.optimized_position.target_entry_price,
+            )
+
     def _generate_signal_and_brackets(
         self,
         position: Position,
@@ -123,6 +134,10 @@ class SignalDispatcher:
             position_id=position.id,
             ticker=position.ticker,
             direction=NO_SIGNAL,
+            strategy="",
+            stop_loss=0.0,
+            take_profit=0.0,
+            target_entry_price=0.0,
         )
 
         # Get price data for the position ticker
@@ -207,8 +222,10 @@ class SignalDispatcher:
                 else position.direction
             )
 
-            # If we got the signal, (re)set the direction
+            # If we got the signal, set
+            # strategy and (re)set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
+                position_signal.strategy = strategy_name
                 position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
 
             # Get close price

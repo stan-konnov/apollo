@@ -9,10 +9,11 @@ class PositionSignal(BaseModel):
     ticker: str
     position_id: str
 
-    direction: Optional[int] = None
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
-    target_entry_price: Optional[float] = None
+    strategy: str
+    direction: int
+    stop_loss: float
+    take_profit: float
+    target_entry_price: float
 
 
 class DispatchableSignal(BaseModel):
