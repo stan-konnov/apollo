@@ -225,6 +225,44 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
+    def update_position_upon_dispatching(
+        self,
+        position_id: str,
+        strategy: str,
+        direction: int,
+        stop_loss: float,
+        take_profit: float,
+        target_entry_price: float,
+    ) -> None:
+        """
+        Update position upon dispatching.
+
+        :param position_id: Position id to update.
+        :param strategy: Strategy name.
+        :param direction: Signal direction.
+        :param stop_loss: Stop loss price.
+        :param take_profit: Take profit price.
+        :param target_entry_price: Target entry price.
+        """
+
+        self._database_client.connect()
+
+        # Update the position with dispatching details
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "strategy": strategy,
+                "direction": direction,
+                "stop_loss": stop_loss,
+                "take_profit": take_profit,
+                "target_entry_price": target_entry_price,
+            },
+        )
+
+        self._database_client.disconnect()
+
     def get_optimized_parameters(self, ticker: str) -> list[StrategyParameters]:
         """
         Get optimized strategy parameters for a ticker sorted by sharpe ratio.
