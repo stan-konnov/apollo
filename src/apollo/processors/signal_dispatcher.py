@@ -30,8 +30,10 @@ class SignalDispatcher:
         """
         Construct Signal Dispatcher.
 
+        Initialize Configuration.
         Initialize Database Connector.
         Initialize Price Data Provider.
+        Initialize Price Data Enhancer.
         """
 
         self._configuration = Configuration()
