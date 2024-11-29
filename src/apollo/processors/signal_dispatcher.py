@@ -215,15 +215,6 @@ class SignalDispatcher:
             # Model the trading signals
             strategy_instance.model_trading_signals()
 
-            # Set direction to no signal
-            # or use the existing direction
-            # in case we are handling open position
-            direction = (
-                NO_SIGNAL
-                if position.status == PositionStatus.OPTIMIZED
-                else position.direction
-            )
-
             # If we got the signal, set
             # strategy and (re)set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
@@ -262,12 +253,12 @@ class SignalDispatcher:
             )
 
             # Set brackets based on the direction
-            if direction == LONG_SIGNAL:
+            if position_signal.direction == LONG_SIGNAL:
                 position_signal.stop_loss = long_sl
                 position_signal.take_profit = long_tp
                 position_signal.target_entry_price = long_limit
 
-            elif direction == SHORT_SIGNAL:
+            elif position_signal.direction == SHORT_SIGNAL:
                 position_signal.stop_loss = short_sl
                 position_signal.take_profit = short_tp
                 position_signal.target_entry_price = short_limit
