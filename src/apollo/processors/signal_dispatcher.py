@@ -216,7 +216,7 @@ class SignalDispatcher:
             strategy_instance.model_trading_signals()
 
             # If we got the signal, set
-            # strategy and (re)set the direction
+            # strategy and set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
                 position_signal.strategy = strategy_name
                 position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
