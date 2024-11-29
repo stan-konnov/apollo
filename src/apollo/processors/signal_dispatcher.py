@@ -99,6 +99,18 @@ class SignalDispatcher:
                 existing_optimized_position,
             )
 
+        # Now, if we have only optimized position, and we
+        # identified the signal, we mark it as dispatched
+        if (
+            not existing_open_position
+            and existing_optimized_position
+            and dispatchable_signal.optimized_position
+        ):
+            self._database_connector.update_existing_position_by_status(
+                position_id=existing_optimized_position.id,
+                position_status=PositionStatus.DISPATCHED,
+            )
+
     def _generate_signal_and_brackets(
         self,
         position: Position,
