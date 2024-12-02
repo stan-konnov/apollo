@@ -131,7 +131,8 @@ class SignalDispatcher:
         :param position: Position object.
         """
 
-        # Initialize position signal
+        # Initialize position
+        # signal with values to populate
         position_signal = PositionSignal(
             position_id=position.id,
             ticker=position.ticker,
