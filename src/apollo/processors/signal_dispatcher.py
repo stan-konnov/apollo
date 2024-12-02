@@ -129,6 +129,7 @@ class SignalDispatcher:
         Generate signal, limit entry price, stop loss, and take profit.
 
         :param position: Position object.
+        :returns: Position Signal object or None.
         """
 
         # Initialize position
