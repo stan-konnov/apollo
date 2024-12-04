@@ -15,6 +15,7 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
     FREQUENCY,
+    LONG_SIGNAL,
     START_DATE,
     STRATEGY,
     TICKER,
@@ -594,9 +595,62 @@ def test__update_existing_position_by_status__for_updating_position(
 
     position = prisma_client.positions.find_first(
         where={
-            "ticker": control_position.ticker,
+            "id": control_position.id,
         },
     )
 
     assert position is not None
     assert position.status == position_status.value
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__update_position_upon_dispatching__for_updating_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test update_position_upon_dispatching for updating position.
+
+    PostgresConnector should update position upon dispatching.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    control_position = prisma_client.positions.create(
+        data=control_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
+    )
+
+    stop_loss = 90.0
+    take_profit = 110.0
+    target_entry_price = 100.0
+
+    postgres_connector.update_position_upon_dispatching(
+        position_id=control_position.id,
+        strategy=str(STRATEGY),
+        direction=LONG_SIGNAL,
+        stop_loss=stop_loss,
+        take_profit=take_profit,
+        target_entry_price=target_entry_price,
+    )
+
+    position = prisma_client.positions.find_first(
+        where={
+            "id": control_position.id,
+        },
+    )
+
+    assert position is not None
+    assert position.strategy == str(STRATEGY)
+    assert position.direction == LONG_SIGNAL
+    assert position.stop_loss == stop_loss
+    assert position.take_profit == take_profit
+    assert position.target_entry_price == target_entry_price
