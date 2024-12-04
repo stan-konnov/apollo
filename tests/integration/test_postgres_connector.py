@@ -507,138 +507,42 @@ def test__create_position_on_screening__for_creating_position(
     "prisma_client",
     "flush_postgres_database",
 )
-def test__get_existing_get_existing_screened_position__for_returning_position(
-    prisma_client: Prisma,
-) -> None:
-    """
-    Test get_existing_screened_position for returning screened position.
-
-    PostgresConnector should return screened position if it exists.
-    """
-
-    postgres_connector = PostgresConnector()
-
-    control_screened_position = Position(
-        ticker=str(TICKER),
-        status=PositionStatus.SCREENED,
-    )
-
-    prisma_client.positions.create(
-        data=control_screened_position.model_dump(
-            exclude_defaults=True,
-        ),  # type: ignore  # noqa: PGH003
-    )
-
-    position = postgres_connector.get_existing_screened_position()
-
-    assert position is not None
-    assert position.ticker == control_screened_position.ticker
-    assert position.status == control_screened_position.status.value
-
-
-@pytest.mark.usefixtures("flush_postgres_database")
-def test__get_existing_get_existing_screened_position__for_returning_none() -> None:
-    """
-    Test get_existing_screened_position for returning None.
-
-    PostgresConnector should return None if no screened position exists.
-    """
-
-    postgres_connector = PostgresConnector()
-
-    position = postgres_connector.get_existing_screened_position()
-
-    assert position is None
-
-
-@pytest.mark.usefixtures(
-    "prisma_client",
-    "flush_postgres_database",
+@pytest.mark.parametrize(
+    "position_status",
+    [
+        PositionStatus.OPEN,
+        PositionStatus.SCREENED,
+        PositionStatus.OPTIMIZED,
+        PositionStatus.DISPATCHED,
+    ],
 )
-def test__update_position_on_optimization__for_updating_position(
+def test__get_existing_position_by_status__for_returning_position_by_status(
     prisma_client: Prisma,
+    position_status: PositionStatus,
 ) -> None:
     """
-    Test update_position_on_optimization for updating position.
+    Test get_existing_position_by_status for returning position by status.
 
-    PostgresConnector should update position status to optimized.
+    PostgresConnector should return position by status if it exists.
     """
 
     postgres_connector = PostgresConnector()
 
     control_position = Position(
         ticker=str(TICKER),
-        status=PositionStatus.SCREENED,
+        status=position_status,
     )
 
     prisma_client.positions.create(
-        data=Position(
-            ticker=str(TICKER),
-            status=PositionStatus.SCREENED,
-        ).model_dump(
+        data=control_position.model_dump(
             exclude_defaults=True,
         ),  # type: ignore  # noqa: PGH003
     )
 
-    control_position = postgres_connector.get_existing_screened_position()
-
-    postgres_connector.update_position_on_optimization(
-        position_id=control_position.id,  # type: ignore  # noqa: PGH003
+    position = postgres_connector.get_existing_position_by_status(
+        position_status=position_status,
     )
-
-    updated_position = prisma_client.positions.find_first(
-        where={
-            "id": control_position.id,  # type: ignore  # noqa: PGH003
-        },
-    )
-
-    assert updated_position is not None
-    assert updated_position.status == PositionStatus.OPTIMIZED.value
-
-
-@pytest.mark.usefixtures(
-    "prisma_client",
-    "flush_postgres_database",
-)
-def test__get_existing_optimized_position__for__returning_position(
-    prisma_client: Prisma,
-) -> None:
-    """
-    Test get_existing_optimized_position for returning optimized position.
-
-    PostgresConnector should return optimized position if it exists.
-    """
-
-    postgres_connector = PostgresConnector()
-
-    control_optimized_position = Position(
-        ticker=str(TICKER),
-        status=PositionStatus.OPTIMIZED,
-    )
-
-    prisma_client.positions.create(
-        data=control_optimized_position.model_dump(
-            exclude_defaults=True,
-        ),  # type: ignore  # noqa: PGH003
-    )
-
-    position = postgres_connector.get_existing_optimized_position()
 
     assert position is not None
-    assert position.ticker == control_optimized_position.ticker
-    assert position.status == control_optimized_position.status.value
-
-
-@pytest.mark.usefixtures("flush_postgres_database")
-def test__get_existing_optimized_position__for__returning_none() -> None:
-    """
-    Test get_existing_optimized_position for returning None.
-
-    PostgresConnector should return None if no optimized position exists.
-    """
-
-    postgres_connector = PostgresConnector()
-
-    position = postgres_connector.get_existing_optimized_position()
-
-    assert position is None
+    assert position.ticker == control_position.ticker
+    assert position.status == control_position.status.value
