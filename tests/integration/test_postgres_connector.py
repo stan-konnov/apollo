@@ -511,8 +511,10 @@ def test__create_position_on_screening__for_creating_position(
     "position_status",
     [
         PositionStatus.OPEN,
+        PositionStatus.CLOSED,
         PositionStatus.SCREENED,
         PositionStatus.OPTIMIZED,
+        PositionStatus.CANCELLED,
         PositionStatus.DISPATCHED,
     ],
 )
