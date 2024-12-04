@@ -254,7 +254,9 @@ class PostgresConnector:
             },
             data={
                 "strategy": strategy,
-                "direction": direction,
+                # NOTE: we map to python int since Prisma
+                # does not yet understand numpy int types
+                "direction": int(direction),
                 "stop_loss": stop_loss,
                 "take_profit": take_profit,
                 "target_entry_price": target_entry_price,
