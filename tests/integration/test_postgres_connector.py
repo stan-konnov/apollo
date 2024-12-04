@@ -548,3 +548,55 @@ def test__get_existing_position_by_status__for_returning_position_by_status(
     assert position is not None
     assert position.ticker == control_position.ticker
     assert position.status == control_position.status.value
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+@pytest.mark.parametrize(
+    "position_status",
+    [
+        PositionStatus.OPEN,
+        PositionStatus.CLOSED,
+        PositionStatus.OPTIMIZED,
+        PositionStatus.CANCELLED,
+        PositionStatus.DISPATCHED,
+    ],
+)
+def test__update_existing_position_by_status__for_updating_position(
+    prisma_client: Prisma,
+    position_status: PositionStatus,
+) -> None:
+    """
+    Test update_existing_position_by_status for updating position.
+
+    PostgresConnector should update position by status.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.SCREENED,
+    )
+
+    control_position = prisma_client.positions.create(
+        data=control_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
+    )
+
+    postgres_connector.update_existing_position_by_status(
+        position_id=control_position.id,
+        position_status=position_status,
+    )
+
+    position = prisma_client.positions.find_first(
+        where={
+            "ticker": control_position.ticker,
+        },
+    )
+
+    assert position is not None
+    assert position.status == position_status.value
