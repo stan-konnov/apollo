@@ -604,7 +604,7 @@ def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
             ],
         )
 
-        parameter_optimizer._database_connector.update_existing_position_by_status.assert_called_once(  # noqa: SLF001
+        parameter_optimizer._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
             "test",
             PositionStatus.OPTIMIZED,
         )
