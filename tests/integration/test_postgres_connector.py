@@ -723,4 +723,5 @@ def test__get_optimized_parameters__for_returning_optimized_parameters(
     )[0]
 
     assert optimized_parameters is not None
+    assert optimized_parameters.strategy == str(STRATEGY)
     assert optimized_parameters.parameters == loads(parameters)
