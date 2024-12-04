@@ -654,3 +654,73 @@ def test__update_position_upon_dispatching__for_updating_position(
     assert position.stop_loss == stop_loss
     assert position.take_profit == take_profit
     assert position.target_entry_price == target_entry_price
+
+
+@pytest.mark.usefixtures(
+    "flush_postgres_database",
+    "enhanced_dataframe",
+    "window_size",
+)
+def test__get_optimized_parameters__for_returning_optimized_parameters(
+    enhanced_dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
+    """
+    Test get_optimized_parameters for returning optimized parameters.
+
+    PostgresConnector should return optimized parameters for a ticker if they exist.
+    """
+
+    dataframe = enhanced_dataframe.copy()
+
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+        dataframe=dataframe,
+        window_size=window_size,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=0.5,
+    )
+
+    strategy.model_trading_signals()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
+    )
+
+    stats = backtesting_runner.run()
+
+    backtesting_results = pd.DataFrame(stats).transpose()
+    backtesting_results = backtesting_results.iloc[0]
+
+    parameters = dumps(
+        {
+            "window_size": window_size,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+            "sl_volatility_multiplier": 0.1,
+            "tp_volatility_multiplier": 0.3,
+        },
+    )
+
+    postgres_connector = PostgresConnector()
+
+    postgres_connector.write_backtesting_results(
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=True,
+        parameters=parameters,
+        backtesting_results=backtesting_results,
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
+    )
+
+    optimized_parameters = postgres_connector.get_optimized_parameters(
+        ticker=str(TICKER),
+    )[0]
+
+    assert optimized_parameters is not None
+    assert optimized_parameters.parameters == loads(parameters)
