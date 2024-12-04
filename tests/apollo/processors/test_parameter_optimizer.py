@@ -490,7 +490,7 @@ def test__optimize_parameters_in_parallel__for_raising_error_if_position_exists(
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_optimized_position.return_value = Position(  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: E501, SLF001
         ticker=str(TICKER),
         status=PositionStatus.OPTIMIZED,
     )
@@ -527,7 +527,7 @@ def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_p
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_screened_position.return_value = None  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
 
     parameter_optimizer.process_in_parallel()
 
@@ -562,13 +562,13 @@ def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_screened_position.return_value = Position(  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: E501, SLF001
         id="test",
         ticker=str(TICKER),
         status=PositionStatus.SCREENED,
     )
 
-    parameter_optimizer._database_connector.get_existing_optimized_position.return_value = None  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
 
     with patch.object(
         ParameterOptimizer,
