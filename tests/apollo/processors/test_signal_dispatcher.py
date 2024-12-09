@@ -30,7 +30,6 @@ def test__dispatch_signals__for_raising_error_if_dispatched_position_exists() ->
         "System invariant violated, position was not opened or cancelled."
     )
 
-    # Dispatch the signal
     with pytest.raises(
         DispatchedPositionAlreadyExistsError,
         match=exception_message,
