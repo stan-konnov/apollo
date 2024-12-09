@@ -1,3 +1,4 @@
+from unittest import mock
 from unittest.mock import Mock
 
 import pytest
@@ -88,3 +89,39 @@ def test__dispatch_signals__for_raising_error_if_open_and_optimized_positions_do
         signal_dispatcher.dispatch_signals()
 
     assert str(exception.value) == exception_message
+
+
+def test__dispatch_signals__for_calling_signal_generation_method() -> None:
+    """Test dispatch_signals for calling signal generation method."""
+
+    signal_dispatcher = SignalDispatcher()
+
+    signal_dispatcher._configuration = Mock()  # noqa: SLF001
+    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+
+    signal_dispatcher._database_connector.get_existing_position_by_status.side_effect = mock_get_existing_position_by_status  # noqa: E501, SLF001
+
+    signal_dispatcher._generate_signal_and_brackets = Mock()  # noqa: SLF001
+
+    signal_dispatcher.dispatch_signals()
+
+    signal_dispatcher._generate_signal_and_brackets.assert_has_calls(  # noqa: SLF001
+        [
+            mock.call(
+                Position(
+                    id="test",
+                    ticker=str(TICKER),
+                    status=PositionStatus.OPEN,
+                ),
+            ),
+            mock.call(
+                Position(
+                    id="test",
+                    ticker=str(TICKER),
+                    status=PositionStatus.OPTIMIZED,
+                ),
+            ),
+        ],
+    )
