@@ -8,6 +8,26 @@ from apollo.processors.signal_dispatcher import SignalDispatcher
 from apollo.settings import TICKER
 
 
+def mock_get_existing_position_by_status(
+    position_status: PositionStatus,
+) -> Position | None:
+    """
+    Conditional mock for get_existing_position_by_status.
+
+    :param position_status: Position status to mock.
+    :returns: Position if status is OPEN or OPTIMIZED, None otherwise.
+    """
+
+    if position_status in [PositionStatus.OPEN, PositionStatus.OPTIMIZED]:
+        return Position(
+            id="test",
+            ticker=str(TICKER),
+            status=position_status,
+        )
+
+    return None
+
+
 def test__dispatch_signals__for_raising_error_if_dispatched_position_exists() -> None:
     """Test dispatch_signals for raising error if dispatched position already exists."""
 
