@@ -1,6 +1,7 @@
 from unittest import mock
 from unittest.mock import Mock
 
+import pandas as pd
 import pytest
 
 from apollo.errors.system_invariants import (
@@ -10,7 +11,15 @@ from apollo.errors.system_invariants import (
 from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.processors.signal_dispatcher import SignalDispatcher
-from apollo.settings import LONG_SIGNAL, STRATEGY, TICKER
+from apollo.settings import (
+    END_DATE,
+    FREQUENCY,
+    LONG_SIGNAL,
+    MAX_PERIOD,
+    START_DATE,
+    STRATEGY,
+    TICKER,
+)
 
 
 def mock_get_existing_position_by_status(
@@ -174,4 +183,37 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
         stop_loss=stop_loss,
         take_profit=take_profit,
         target_entry_price=target_entry_price,
+    )
+
+
+@pytest.mark.usefixtures("dataframe")
+def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Test generate_signal_and_brackets for correct signal of optimized position."""
+
+    signal_dispatcher = SignalDispatcher()
+
+    signal_dispatcher._configuration = Mock()  # noqa: SLF001
+    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+
+    signal_dispatcher._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
+    signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = dataframe  # noqa: SLF001
+
+    optimized_position = Position(
+        id="test",
+        ticker=str(TICKER),
+        status=PositionStatus.OPTIMIZED,
+    )
+
+    signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
+
+    signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
+        optimized_position.ticker,
+        frequency=str(FREQUENCY),
+        start_date=str(START_DATE),
+        end_date=str(END_DATE),
+        max_period=bool(MAX_PERIOD),
     )
