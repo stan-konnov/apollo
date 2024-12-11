@@ -10,6 +10,7 @@ from apollo.errors.system_invariants import (
 )
 from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
+from apollo.models.strategy_parameters import StrategyParameters
 from apollo.processors.signal_dispatcher import SignalDispatcher
 from apollo.settings import (
     END_DATE,
@@ -20,6 +21,7 @@ from apollo.settings import (
     STRATEGY,
     TICKER,
 )
+from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE
 
 
 def mock_get_existing_position_by_status(
@@ -163,7 +165,7 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
         direction=LONG_SIGNAL,
         strategy=str(STRATEGY),
         stop_loss=stop_loss,
-        take_profit=100.1,
+        take_profit=take_profit,
         target_entry_price=target_entry_price,
     )
 
@@ -206,6 +208,17 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         id="test",
         ticker=str(TICKER),
         status=PositionStatus.OPTIMIZED,
+    )
+
+    signal_dispatcher._database_connector.return_value = StrategyParameters(  # noqa: SLF001
+        strategy=str(STRATEGY),
+        parameters={
+            "window_size": WINDOW_SIZE,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+            "sl_volatility_multiplier": 0.1,
+            "tp_volatility_multiplier": 0.3,
+        },
     )
 
     signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
