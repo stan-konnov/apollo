@@ -210,16 +210,18 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         status=PositionStatus.OPTIMIZED,
     )
 
-    signal_dispatcher._database_connector.return_value = StrategyParameters(  # noqa: SLF001
-        strategy=str(STRATEGY),
-        parameters={
-            "window_size": WINDOW_SIZE,
-            "kurtosis_threshold": 0.0,
-            "volatility_multiplier": 0.5,
-            "sl_volatility_multiplier": 0.1,
-            "tp_volatility_multiplier": 0.3,
-        },
-    )
+    signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
+        StrategyParameters(
+            strategy=str(STRATEGY),
+            parameters={
+                "window_size": WINDOW_SIZE,
+                "kurtosis_threshold": 0.0,
+                "volatility_multiplier": 0.5,
+                "sl_volatility_multiplier": 0.1,
+                "tp_volatility_multiplier": 0.3,
+            },
+        ),
+    ]
 
     signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
 
