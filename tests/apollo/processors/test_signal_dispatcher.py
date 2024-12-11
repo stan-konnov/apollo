@@ -7,9 +7,10 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
+from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.processors.signal_dispatcher import SignalDispatcher
-from apollo.settings import TICKER
+from apollo.settings import LONG_SIGNAL, STRATEGY, TICKER
 
 
 def mock_get_existing_position_by_status(
@@ -124,4 +125,53 @@ def test__dispatch_signals__for_calling_signal_generation_method() -> None:
                 ),
             ),
         ],
+    )
+
+
+def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> None:
+    """Test dispatch_signals for updating optimized position to dispatched."""
+
+    signal_dispatcher = SignalDispatcher()
+
+    signal_dispatcher._configuration = Mock()  # noqa: SLF001
+    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
+    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+
+    # Ensure optimized position exists
+    signal_dispatcher._database_connector.get_existing_position_by_status.side_effect = mock_get_existing_position_by_status  # noqa: E501, SLF001
+
+    signal_dispatcher._generate_signal_and_brackets = Mock()  # noqa: SLF001
+
+    stop_loss = 99.9
+    take_profit = 100.1
+    target_entry_price = 100.0
+
+    # Ensure we generate a signal for optimized position
+    signal_dispatcher._generate_signal_and_brackets.return_value = PositionSignal(  # noqa: SLF001
+        position_id="test",
+        ticker=str(TICKER),
+        direction=LONG_SIGNAL,
+        strategy=str(STRATEGY),
+        stop_loss=stop_loss,
+        take_profit=100.1,
+        target_entry_price=target_entry_price,
+    )
+
+    signal_dispatcher.dispatch_signals()
+
+    # Ensure optimized position is updated to dispatched
+    signal_dispatcher._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
+        position_id="test",
+        position_status=PositionStatus.DISPATCHED,
+    )
+
+    # Ensure optimized position is updated with correct values
+    signal_dispatcher._database_connector.update_position_upon_dispatching.assert_called_once_with(  # noqa: SLF001
+        position_id="test",
+        strategy=str(STRATEGY),
+        direction=LONG_SIGNAL,
+        stop_loss=stop_loss,
+        take_profit=take_profit,
+        target_entry_price=target_entry_price,
     )
