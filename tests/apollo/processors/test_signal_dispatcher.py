@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -20,6 +20,9 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+)
+from apollo.strategies.skew_kurt_vol_trend_following import (
+    SkewnessKurtosisVolatilityTrendFollowing,
 )
 from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE, SameDataframe
 
@@ -188,6 +191,12 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
     )
 
 
+@patch(
+    "apollo.processors.signal_dispatcher.STRATEGY_CATALOGUE_MAP",
+    {
+        str(STRATEGY): SkewnessKurtosisVolatilityTrendFollowing,
+    },
+)
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
 def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position(
     dataframe: pd.DataFrame,
@@ -278,4 +287,9 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         # for explanation on SameDataframe class
         SameDataframe(dataframe),
         ["VIX"],
+    )
+
+    # Ensure configuration is retrieved
+    signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
+        str(STRATEGY),
     )
