@@ -286,7 +286,9 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         # To not over-complicate things
         # we know that selected strategy
         # will generate long signal for last entry
-        signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
+        generated_signal = signal_dispatcher._generate_signal_and_brackets(  # noqa: SLF001
+            optimized_position,
+        )
 
         # Ensure price data is requested
         signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
@@ -328,4 +330,15 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             close_price=enhanced_dataframe.iloc[-1]["close"],
             average_true_range=enhanced_dataframe.iloc[-1]["atr"],
             tp_volatility_multiplier=tp_volatility_multiplier,
+        )
+
+        # Assert generated signal
+        assert generated_signal == PositionSignal(
+            position_id="test",
+            ticker=str(TICKER),
+            direction=LONG_SIGNAL,
+            strategy=str(STRATEGY),
+            stop_loss=long_sl,
+            take_profit=long_tp,
+            target_entry_price=long_limit,
         )
