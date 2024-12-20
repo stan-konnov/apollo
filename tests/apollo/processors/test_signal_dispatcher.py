@@ -188,9 +188,10 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
     )
 
 
-@pytest.mark.usefixtures("dataframe")
+@pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
 def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position(
     dataframe: pd.DataFrame,
+    enhanced_dataframe: pd.DataFrame,
 ) -> None:
     """Test generate_signal_and_brackets for correct signal of optimized position."""
 
@@ -202,13 +203,45 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
     signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
 
     signal_dispatcher._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = dataframe  # noqa: SLF001
+    signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = (  # noqa: SLF001
+        enhanced_dataframe
+    )
 
     optimized_position = Position(
         id="test",
         ticker=str(TICKER),
         status=PositionStatus.OPTIMIZED,
     )
+
+    signal_dispatcher._configuration.get_parameter_set.return_value = {  # noqa: SLF001
+        "window_size": {
+            "step": 5,
+            "range": [5, 20],
+        },
+        "sl_volatility_multiplier": {
+            "step": 0.1,
+            "range": [0.1, 1.0],
+        },
+        "tp_volatility_multiplier": {
+            "step": 0.1,
+            "range": [0.1, 1.0],
+        },
+        "kurtosis_threshold": {
+            "step": 0.5,
+            "range": [0.0, 3.0],
+        },
+        "volatility_multiplier": {
+            "step": 0.5,
+            "range": [0.5, 1.0],
+        },
+        "additional_data_enhancers": [
+            "VIX",
+        ],
+        "strategy_specific_parameters": [
+            "kurtosis_threshold",
+            "volatility_multiplier",
+        ],
+    }
 
     signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
         StrategyParameters(
