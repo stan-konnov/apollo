@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 
-from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
@@ -197,11 +196,6 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
     """Test generate_signal_and_brackets for correct signal of optimized position."""
 
     with patch(
-        "apollo.processors.signal_dispatcher.STRATEGY_CATALOGUE_MAP",
-        {
-            str(STRATEGY): STRATEGY_CATALOGUE_MAP[str(STRATEGY)],
-        },
-    ) as mocked_catalogue_map, patch(
         "apollo.processors.signal_dispatcher.OrderBracketsCalculator",
         Mock(),
     ) as mocked_order_brackets_calculator:
@@ -269,12 +263,6 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             ),
         ]
 
-        dataframe_with_signals = enhanced_dataframe.copy()
-        dataframe_with_signals["signal"] = LONG_SIGNAL
-
-        strategy = mocked_catalogue_map[str(STRATEGY)]
-        strategy.model_trading_signals = Mock(return_value=dataframe_with_signals)
-
         long_sl = 99
         long_tp = 101
         short_sl = 101
@@ -295,6 +283,9 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             short_limit,
         )
 
+        # To not over-complicate things
+        # we know that selected strategy
+        # will generate long signal for last entry
         signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
 
         # Ensure price data is requested
@@ -324,7 +315,7 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             str(STRATEGY),
         )
 
-        # Ensure brackets are calculated
+        # Ensure stop loss and take profit are calculated
         mocked_order_brackets_calculator.calculate_trailing_stop_loss_and_take_profit.assert_called_once_with(
             close_price=enhanced_dataframe.iloc[-1]["close"],
             average_true_range=enhanced_dataframe.iloc[-1]["atr"],
@@ -332,6 +323,7 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             tp_volatility_multiplier=tp_volatility_multiplier,
         )
 
+        # Ensure limit entry price is calculated
         mocked_order_brackets_calculator.calculate_limit_entry_price.assert_called_once_with(
             close_price=enhanced_dataframe.iloc[-1]["close"],
             average_true_range=enhanced_dataframe.iloc[-1]["atr"],
