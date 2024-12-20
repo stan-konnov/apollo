@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 
+from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
@@ -20,9 +21,6 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
-)
-from apollo.strategies.skew_kurt_vol_trend_following import (
-    SkewnessKurtosisVolatilityTrendFollowing,
 )
 from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE, SameDataframe
 
@@ -194,7 +192,7 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
 @patch(
     "apollo.processors.signal_dispatcher.STRATEGY_CATALOGUE_MAP",
     {
-        str(STRATEGY): SkewnessKurtosisVolatilityTrendFollowing,
+        str(STRATEGY): STRATEGY_CATALOGUE_MAP[str(STRATEGY)],
     },
 )
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
@@ -293,3 +291,7 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
     signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
         str(STRATEGY),
     )
+
+    # To not to over-complicate things
+    # we know, that this strategy will
+    # generate a long signal for the last entry
