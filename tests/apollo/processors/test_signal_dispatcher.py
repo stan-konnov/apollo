@@ -253,6 +253,9 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
             ],
         }
 
+        sl_volatility_multiplier = 0.1
+        tp_volatility_multiplier = 0.3
+
         signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
             StrategyParameters(
                 strategy=str(STRATEGY),
@@ -260,8 +263,8 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
                     "window_size": WINDOW_SIZE,
                     "kurtosis_threshold": 0.0,
                     "volatility_multiplier": 0.5,
-                    "sl_volatility_multiplier": 0.1,
-                    "tp_volatility_multiplier": 0.3,
+                    "sl_volatility_multiplier": sl_volatility_multiplier,
+                    "tp_volatility_multiplier": tp_volatility_multiplier,
                 },
             ),
         ]
@@ -319,4 +322,18 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         # Ensure configuration is retrieved
         signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
             str(STRATEGY),
+        )
+
+        # Ensure brackets are calculated
+        mocked_order_brackets_calculator.calculate_trailing_stop_loss_and_take_profit.assert_called_once_with(
+            close_price=enhanced_dataframe.iloc[-1]["close"],
+            average_true_range=enhanced_dataframe.iloc[-1]["atr"],
+            sl_volatility_multiplier=sl_volatility_multiplier,
+            tp_volatility_multiplier=tp_volatility_multiplier,
+        )
+
+        mocked_order_brackets_calculator.calculate_limit_entry_price.assert_called_once_with(
+            close_price=enhanced_dataframe.iloc[-1]["close"],
+            average_true_range=enhanced_dataframe.iloc[-1]["atr"],
+            tp_volatility_multiplier=tp_volatility_multiplier,
         )
