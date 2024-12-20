@@ -199,7 +199,7 @@ class SignalDispatcher:
             }
 
             # Instantiate the strategy class by typecasting
-            # the strategy name from configuration to the corresponding class
+            # the strategy name from optimized set to the correct class
             strategy_class = type(
                 strategy_name,
                 (STRATEGY_CATALOGUE_MAP[strategy_name],),
