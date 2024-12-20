@@ -189,7 +189,7 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
-def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position(
+def test__generate_signal_and_brackets__for_correct_signal_generation(
     dataframe: pd.DataFrame,
     enhanced_dataframe: pd.DataFrame,
 ) -> None:
