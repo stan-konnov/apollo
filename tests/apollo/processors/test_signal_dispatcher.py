@@ -21,7 +21,7 @@ from apollo.settings import (
     STRATEGY,
     TICKER,
 )
-from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE
+from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE, SameDataframe
 
 
 def mock_get_existing_position_by_status(
@@ -264,4 +264,11 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         start_date=str(START_DATE),
         end_date=str(END_DATE),
         max_period=bool(MAX_PERIOD),
+    )
+
+    signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
+        # Please see tests/fixtures/window_size_and_dataframe.py
+        # for explanation on SameDataframe class
+        SameDataframe(dataframe),
+        ["VIX"],
     )
