@@ -258,6 +258,7 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
 
     signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
 
+    # Ensure price data is requested
     signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
         optimized_position.ticker,
         frequency=str(FREQUENCY),
@@ -266,6 +267,7 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         max_period=bool(MAX_PERIOD),
     )
 
+    # Ensure price data is enhanced
     signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
         # Please see tests/fixtures/window_size_and_dataframe.py
         # for explanation on SameDataframe class
