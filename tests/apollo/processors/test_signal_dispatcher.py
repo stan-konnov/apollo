@@ -267,6 +267,11 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
         max_period=bool(MAX_PERIOD),
     )
 
+    # Ensure optimized parameters are retrieved
+    signal_dispatcher._database_connector.get_optimized_parameters.assert_called_once_with(  # noqa: SLF001
+        optimized_position.ticker,
+    )
+
     # Ensure price data is enhanced
     signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
         # Please see tests/fixtures/window_size_and_dataframe.py
