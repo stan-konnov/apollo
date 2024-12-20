@@ -189,12 +189,6 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
     )
 
 
-@patch(
-    "apollo.processors.signal_dispatcher.STRATEGY_CATALOGUE_MAP",
-    {
-        str(STRATEGY): STRATEGY_CATALOGUE_MAP[str(STRATEGY)],
-    },
-)
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
 def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position(
     dataframe: pd.DataFrame,
@@ -202,96 +196,127 @@ def test__generate_signal_and_brackets__for_correct_signal_of_optimized_position
 ) -> None:
     """Test generate_signal_and_brackets for correct signal of optimized position."""
 
-    signal_dispatcher = SignalDispatcher()
-
-    signal_dispatcher._configuration = Mock()  # noqa: SLF001
-    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
-
-    signal_dispatcher._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = (  # noqa: SLF001
-        enhanced_dataframe
-    )
-
-    optimized_position = Position(
-        id="test",
-        ticker=str(TICKER),
-        status=PositionStatus.OPTIMIZED,
-    )
-
-    signal_dispatcher._configuration.get_parameter_set.return_value = {  # noqa: SLF001
-        "window_size": {
-            "step": 5,
-            "range": [5, 20],
+    with patch(
+        "apollo.processors.signal_dispatcher.STRATEGY_CATALOGUE_MAP",
+        {
+            str(STRATEGY): STRATEGY_CATALOGUE_MAP[str(STRATEGY)],
         },
-        "sl_volatility_multiplier": {
-            "step": 0.1,
-            "range": [0.1, 1.0],
-        },
-        "tp_volatility_multiplier": {
-            "step": 0.1,
-            "range": [0.1, 1.0],
-        },
-        "kurtosis_threshold": {
-            "step": 0.5,
-            "range": [0.0, 3.0],
-        },
-        "volatility_multiplier": {
-            "step": 0.5,
-            "range": [0.5, 1.0],
-        },
-        "additional_data_enhancers": [
-            "VIX",
-        ],
-        "strategy_specific_parameters": [
-            "kurtosis_threshold",
-            "volatility_multiplier",
-        ],
-    }
+    ) as mocked_catalogue_map, patch(
+        "apollo.processors.signal_dispatcher.OrderBracketsCalculator",
+        Mock(),
+    ) as mocked_order_brackets_calculator:
+        signal_dispatcher = SignalDispatcher()
 
-    signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
-        StrategyParameters(
-            strategy=str(STRATEGY),
-            parameters={
-                "window_size": WINDOW_SIZE,
-                "kurtosis_threshold": 0.0,
-                "volatility_multiplier": 0.5,
-                "sl_volatility_multiplier": 0.1,
-                "tp_volatility_multiplier": 0.3,
+        signal_dispatcher._configuration = Mock()  # noqa: SLF001
+        signal_dispatcher._database_connector = Mock()  # noqa: SLF001
+        signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
+        signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+
+        signal_dispatcher._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
+        signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = (  # noqa: SLF001
+            enhanced_dataframe
+        )
+
+        optimized_position = Position(
+            id="test",
+            ticker=str(TICKER),
+            status=PositionStatus.OPTIMIZED,
+        )
+
+        signal_dispatcher._configuration.get_parameter_set.return_value = {  # noqa: SLF001
+            "window_size": {
+                "step": 5,
+                "range": [5, 20],
             },
-        ),
-    ]
+            "sl_volatility_multiplier": {
+                "step": 0.1,
+                "range": [0.1, 1.0],
+            },
+            "tp_volatility_multiplier": {
+                "step": 0.1,
+                "range": [0.1, 1.0],
+            },
+            "kurtosis_threshold": {
+                "step": 0.5,
+                "range": [0.0, 3.0],
+            },
+            "volatility_multiplier": {
+                "step": 0.5,
+                "range": [0.5, 1.0],
+            },
+            "additional_data_enhancers": [
+                "VIX",
+            ],
+            "strategy_specific_parameters": [
+                "kurtosis_threshold",
+                "volatility_multiplier",
+            ],
+        }
 
-    signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
+        signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
+            StrategyParameters(
+                strategy=str(STRATEGY),
+                parameters={
+                    "window_size": WINDOW_SIZE,
+                    "kurtosis_threshold": 0.0,
+                    "volatility_multiplier": 0.5,
+                    "sl_volatility_multiplier": 0.1,
+                    "tp_volatility_multiplier": 0.3,
+                },
+            ),
+        ]
 
-    # Ensure price data is requested
-    signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
-        optimized_position.ticker,
-        frequency=str(FREQUENCY),
-        start_date=str(START_DATE),
-        end_date=str(END_DATE),
-        max_period=bool(MAX_PERIOD),
-    )
+        dataframe_with_signals = enhanced_dataframe.copy()
+        dataframe_with_signals["signal"] = LONG_SIGNAL
 
-    # Ensure optimized parameters are retrieved
-    signal_dispatcher._database_connector.get_optimized_parameters.assert_called_once_with(  # noqa: SLF001
-        optimized_position.ticker,
-    )
+        strategy = mocked_catalogue_map[str(STRATEGY)]
+        strategy.model_trading_signals = Mock(return_value=dataframe_with_signals)
 
-    # Ensure price data is enhanced
-    signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
-        # Please see tests/fixtures/window_size_and_dataframe.py
-        # for explanation on SameDataframe class
-        SameDataframe(dataframe),
-        ["VIX"],
-    )
+        long_sl = 99
+        long_tp = 101
+        short_sl = 101
+        short_tp = 99
 
-    # Ensure configuration is retrieved
-    signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
-        str(STRATEGY),
-    )
+        long_limit = 100
+        short_limit = 100
 
-    # To not to over-complicate things
-    # we know, that this strategy will
-    # generate a long signal for the last entry
+        mocked_order_brackets_calculator.calculate_trailing_stop_loss_and_take_profit.return_value = (  # noqa: E501
+            long_sl,
+            long_tp,
+            short_sl,
+            short_tp,
+        )
+
+        mocked_order_brackets_calculator.calculate_limit_entry_price.return_value = (
+            long_limit,
+            short_limit,
+        )
+
+        signal_dispatcher._generate_signal_and_brackets(optimized_position)  # noqa: SLF001
+
+        # Ensure price data is requested
+        signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
+            optimized_position.ticker,
+            frequency=str(FREQUENCY),
+            start_date=str(START_DATE),
+            end_date=str(END_DATE),
+            max_period=bool(MAX_PERIOD),
+        )
+
+        # Ensure optimized parameters are retrieved
+        signal_dispatcher._database_connector.get_optimized_parameters.assert_called_once_with(  # noqa: SLF001
+            optimized_position.ticker,
+        )
+
+        # Ensure price data is enhanced
+        signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
+            # Please see tests/fixtures/window_size_and_dataframe.py
+            # for explanation on SameDataframe class
+            SameDataframe(dataframe),
+            ["VIX"],
+        )
+
+        # Ensure configuration is retrieved
+        signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
+            str(STRATEGY),
+        )
