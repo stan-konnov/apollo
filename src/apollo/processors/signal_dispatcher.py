@@ -1,3 +1,5 @@
+from logging import getLogger
+
 import pandas as pd
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
@@ -21,6 +23,8 @@ from apollo.settings import (
     START_DATE,
 )
 from apollo.utils.configuration import Configuration
+
+logger = getLogger(__name__)
 
 
 class SignalDispatcher:
@@ -86,6 +90,8 @@ class SignalDispatcher:
                 "System invariant violated, position was not opened or optimized.",
             )
 
+        logger.info("Dispatching process started.")
+
         # Initialize dispatchable signal
         dispatchable_signal = DispatchableSignal()
 
@@ -119,6 +125,20 @@ class SignalDispatcher:
                 stop_loss=dispatchable_signal.optimized_position.stop_loss,
                 take_profit=dispatchable_signal.optimized_position.take_profit,
                 target_entry_price=dispatchable_signal.optimized_position.target_entry_price,
+            )
+
+        logger.info("Dispatching process completed.")
+
+        if dispatchable_signal.open_position:
+            logger.info(
+                "Open position signal: \n\n"
+                f"{dispatchable_signal.open_position.model_dump_json(indent=4)}",
+            )
+
+        if dispatchable_signal.optimized_position:
+            logger.info(
+                "Optimized position signal: \n\n"
+                f"{dispatchable_signal.optimized_position.model_dump_json(indent=4)}",
             )
 
     def _generate_signal_and_brackets(
