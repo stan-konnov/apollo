@@ -28,7 +28,15 @@ logger = getLogger(__name__)
 
 
 class SignalDispatcher:
-    """Signal Dispatcher class."""
+    """
+    Signal Dispatcher class.
+
+    Produces and dispatches signals
+    for open and optimized positions.
+
+    Communicates with the execution module
+    to supply the signals for further market execution.
+    """
 
     def __init__(self) -> None:
         """
