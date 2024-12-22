@@ -385,7 +385,7 @@ def test__process_in_parallel__for_correct_screening_process(
     ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
 
     # Mock the return value of the database connector
-    ticker_screener._database_connector.get_existing_screened_position.return_value = (  # noqa: SLF001
+    ticker_screener._database_connector.get_existing_position_by_status.return_value = (  # noqa: SLF001
         None
     )
 
@@ -456,7 +456,7 @@ def test__process_in_parallel__for_raising_error_if_screened_position_exists() -
     ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
 
     # Mock the return value of the database connector
-    ticker_screener._database_connector.get_existing_screened_position.return_value = (  # noqa: SLF001
+    ticker_screener._database_connector.get_existing_position_by_status.return_value = (  # noqa: SLF001
         Position(
             ticker=str(TICKER),
             status=PositionStatus.SCREENED,

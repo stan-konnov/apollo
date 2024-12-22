@@ -13,6 +13,7 @@ from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.api import EmptyApiResponseError
 from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
+from apollo.models.position import PositionStatus
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.scrapers.sp500_components_scraper import SP500ComponentsScraper
 from apollo.settings import (
@@ -98,7 +99,9 @@ class TickerScreener(MultiprocessingCapable):
 
         # Query the existing screened position
         existing_screened_position = (
-            self._database_connector.get_existing_screened_position()
+            self._database_connector.get_existing_position_by_status(
+                PositionStatus.SCREENED,
+            )
         )
 
         # Raise an error if the

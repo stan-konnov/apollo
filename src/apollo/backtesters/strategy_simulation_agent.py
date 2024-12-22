@@ -2,6 +2,7 @@ from typing import ClassVar
 
 from backtesting import Strategy
 
+from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.settings import LONG_SIGNAL, SHORT_SIGNAL
 
 """
@@ -152,9 +153,11 @@ class StrategySimulationAgent(Strategy):
 
         # Calculate trailing stop loss and take profit
         long_sl, long_tp, short_sl, short_tp = (
-            self._calculate_trailing_stop_loss_and_take_profit(
+            OrderBracketsCalculator.calculate_trailing_stop_loss_and_take_profit(
                 close_price=close,
                 average_true_range=average_true_range,
+                sl_volatility_multiplier=self.sl_volatility_multiplier,
+                tp_volatility_multiplier=self.tp_volatility_multiplier,
             )
         )
 
@@ -171,9 +174,12 @@ class StrategySimulationAgent(Strategy):
             short_signal = self.data["signal"][-1] == SHORT_SIGNAL
 
             # Calculate limit entry price for long and short signals
-            long_limit, short_limit = self._calculate_limit_entry_price(
-                close,
-                average_true_range,
+            long_limit, short_limit = (
+                OrderBracketsCalculator.calculate_limit_entry_price(
+                    close_price=close,
+                    average_true_range=average_true_range,
+                    tp_volatility_multiplier=self.tp_volatility_multiplier,
+                )
             )
 
             if long_signal:
@@ -203,48 +209,3 @@ class StrategySimulationAgent(Strategy):
             else:
                 trade.sl = short_sl
                 trade.tp = short_tp
-
-    def _calculate_trailing_stop_loss_and_take_profit(
-        self,
-        close_price: float,
-        average_true_range: float,
-    ) -> tuple[float, float, float, float]:
-        """
-        Calculate trailing stop loss and take profit.
-
-        Using close, Average True Range, and volatility multipliers.
-
-        Kaufman, Trading Systems and Methods, 2020, 6th ed.
-
-        :param position_type: Position type.
-        :param average_true_range: Average True Range.
-        :returns: Trailing stop loss and take profit levels.
-        """
-
-        long_sl = close_price - average_true_range * self.sl_volatility_multiplier
-        long_tp = close_price + average_true_range * self.tp_volatility_multiplier
-
-        short_sl = close_price + average_true_range * self.sl_volatility_multiplier
-        short_tp = close_price - average_true_range * self.tp_volatility_multiplier
-
-        return long_sl, long_tp, short_sl, short_tp
-
-    def _calculate_limit_entry_price(
-        self,
-        close_price: float,
-        average_true_range: float,
-    ) -> tuple[float, float]:
-        """
-        Calculate limit entry price for long and short signals.
-
-        We treat our limit entry as a point between close and take profit.
-
-        :param close_price: Close price.
-        :param average_true_range: Average True Range.
-        :returns: Limit entry price for long and short signals.
-        """
-
-        l_limit = close_price + average_true_range * self.tp_volatility_multiplier / 2
-        s_limit = close_price - average_true_range * self.tp_volatility_multiplier / 2
-
-        return l_limit, s_limit

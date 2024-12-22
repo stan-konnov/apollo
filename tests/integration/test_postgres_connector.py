@@ -15,6 +15,7 @@ from apollo.settings import (
     DEFAULT_DATE_FORMAT,
     END_DATE,
     FREQUENCY,
+    LONG_SIGNAL,
     START_DATE,
     STRATEGY,
     TICKER,
@@ -507,61 +508,71 @@ def test__create_position_on_screening__for_creating_position(
     "prisma_client",
     "flush_postgres_database",
 )
-def test__get_existing_get_existing_screened_position__for_returning_position(
+@pytest.mark.parametrize(
+    "position_status",
+    [
+        PositionStatus.OPEN,
+        PositionStatus.CLOSED,
+        PositionStatus.SCREENED,
+        PositionStatus.OPTIMIZED,
+        PositionStatus.CANCELLED,
+        PositionStatus.DISPATCHED,
+    ],
+)
+def test__get_existing_position_by_status__for_returning_position_by_status(
     prisma_client: Prisma,
+    position_status: PositionStatus,
 ) -> None:
     """
-    Test get_existing_screened_position for returning screened position.
+    Test get_existing_position_by_status for returning position by status.
 
-    PostgresConnector should return screened position if it exists.
+    PostgresConnector should return position by status if it exists.
     """
 
     postgres_connector = PostgresConnector()
 
-    control_screened_position = Position(
+    control_position = Position(
         ticker=str(TICKER),
-        status=PositionStatus.SCREENED,
+        status=position_status,
     )
 
     prisma_client.positions.create(
-        data=control_screened_position.model_dump(
+        data=control_position.model_dump(
             exclude_defaults=True,
         ),  # type: ignore  # noqa: PGH003
     )
 
-    position = postgres_connector.get_existing_screened_position()
+    position = postgres_connector.get_existing_position_by_status(
+        position_status=position_status,
+    )
 
     assert position is not None
-    assert position.ticker == control_screened_position.ticker
-    assert position.status == control_screened_position.status.value
-
-
-@pytest.mark.usefixtures("flush_postgres_database")
-def test__get_existing_get_existing_screened_position__for_returning_none() -> None:
-    """
-    Test get_existing_screened_position for returning None.
-
-    PostgresConnector should return None if no screened position exists.
-    """
-
-    postgres_connector = PostgresConnector()
-
-    position = postgres_connector.get_existing_screened_position()
-
-    assert position is None
+    assert position.ticker == control_position.ticker
+    assert position.status == control_position.status.value
 
 
 @pytest.mark.usefixtures(
     "prisma_client",
     "flush_postgres_database",
 )
-def test__update_position_on_optimization__for_updating_position(
+@pytest.mark.parametrize(
+    "position_status",
+    [
+        PositionStatus.OPEN,
+        PositionStatus.CLOSED,
+        PositionStatus.OPTIMIZED,
+        PositionStatus.CANCELLED,
+        PositionStatus.DISPATCHED,
+    ],
+)
+def test__update_existing_position_by_status__for_updating_position(
     prisma_client: Prisma,
+    position_status: PositionStatus,
 ) -> None:
     """
-    Test update_position_on_optimization for updating position.
+    Test update_existing_position_by_status for updating position.
 
-    PostgresConnector should update position status to optimized.
+    PostgresConnector should update position by status.
     """
 
     postgres_connector = PostgresConnector()
@@ -571,74 +582,146 @@ def test__update_position_on_optimization__for_updating_position(
         status=PositionStatus.SCREENED,
     )
 
-    prisma_client.positions.create(
-        data=Position(
-            ticker=str(TICKER),
-            status=PositionStatus.SCREENED,
-        ).model_dump(
+    control_position = prisma_client.positions.create(
+        data=control_position.model_dump(
             exclude_defaults=True,
         ),  # type: ignore  # noqa: PGH003
     )
 
-    control_position = postgres_connector.get_existing_screened_position()
-
-    postgres_connector.update_position_on_optimization(
-        position_id=control_position.id,  # type: ignore  # noqa: PGH003
+    postgres_connector.update_existing_position_by_status(
+        position_id=control_position.id,
+        position_status=position_status,
     )
 
-    updated_position = prisma_client.positions.find_first(
+    position = prisma_client.positions.find_first(
         where={
-            "id": control_position.id,  # type: ignore  # noqa: PGH003
+            "id": control_position.id,
         },
     )
 
-    assert updated_position is not None
-    assert updated_position.status == PositionStatus.OPTIMIZED.value
+    assert position is not None
+    assert position.status == position_status.value
 
 
 @pytest.mark.usefixtures(
     "prisma_client",
     "flush_postgres_database",
 )
-def test__get_existing_optimized_position__for__returning_position(
+def test__update_position_upon_dispatching__for_updating_position(
     prisma_client: Prisma,
 ) -> None:
     """
-    Test get_existing_optimized_position for returning optimized position.
+    Test update_position_upon_dispatching for updating position.
 
-    PostgresConnector should return optimized position if it exists.
+    PostgresConnector should update position upon dispatching.
     """
 
     postgres_connector = PostgresConnector()
 
-    control_optimized_position = Position(
+    control_position = Position(
         ticker=str(TICKER),
-        status=PositionStatus.OPTIMIZED,
+        status=PositionStatus.SCREENED,
     )
 
-    prisma_client.positions.create(
-        data=control_optimized_position.model_dump(
+    control_position = prisma_client.positions.create(
+        data=control_position.model_dump(
             exclude_defaults=True,
         ),  # type: ignore  # noqa: PGH003
     )
 
-    position = postgres_connector.get_existing_optimized_position()
+    stop_loss = 90.0
+    take_profit = 110.0
+    target_entry_price = 100.0
+
+    postgres_connector.update_position_upon_dispatching(
+        position_id=control_position.id,
+        strategy=str(STRATEGY),
+        direction=LONG_SIGNAL,
+        stop_loss=stop_loss,
+        take_profit=take_profit,
+        target_entry_price=target_entry_price,
+    )
+
+    position = prisma_client.positions.find_first(
+        where={
+            "id": control_position.id,
+        },
+    )
 
     assert position is not None
-    assert position.ticker == control_optimized_position.ticker
-    assert position.status == control_optimized_position.status.value
+    assert position.strategy == str(STRATEGY)
+    assert position.direction == LONG_SIGNAL
+    assert position.stop_loss == stop_loss
+    assert position.take_profit == take_profit
+    assert position.target_entry_price == target_entry_price
 
 
-@pytest.mark.usefixtures("flush_postgres_database")
-def test__get_existing_optimized_position__for__returning_none() -> None:
+@pytest.mark.usefixtures(
+    "flush_postgres_database",
+    "enhanced_dataframe",
+    "window_size",
+)
+def test__get_optimized_parameters__for_returning_optimized_parameters(
+    enhanced_dataframe: pd.DataFrame,
+    window_size: int,
+) -> None:
     """
-    Test get_existing_optimized_position for returning None.
+    Test get_optimized_parameters for returning optimized parameters.
 
-    PostgresConnector should return None if no optimized position exists.
+    PostgresConnector should return optimized parameters for a ticker if they exist.
     """
+
+    dataframe = enhanced_dataframe.copy()
+
+    strategy = SkewnessKurtosisVolatilityTrendFollowing(
+        dataframe=dataframe,
+        window_size=window_size,
+        kurtosis_threshold=0.0,
+        volatility_multiplier=0.5,
+    )
+
+    strategy.model_trading_signals()
+
+    backtesting_runner = BacktestingRunner(
+        dataframe=dataframe,
+        strategy_name=str(STRATEGY),
+        lot_size_cash=BACKTESTING_CASH_SIZE,
+        sl_volatility_multiplier=0.1,
+        tp_volatility_multiplier=0.3,
+    )
+
+    stats = backtesting_runner.run()
+
+    backtesting_results = pd.DataFrame(stats).transpose()
+    backtesting_results = backtesting_results.iloc[0]
+
+    parameters = dumps(
+        {
+            "window_size": window_size,
+            "kurtosis_threshold": 0.0,
+            "volatility_multiplier": 0.5,
+            "sl_volatility_multiplier": 0.1,
+            "tp_volatility_multiplier": 0.3,
+        },
+    )
 
     postgres_connector = PostgresConnector()
 
-    position = postgres_connector.get_existing_optimized_position()
+    postgres_connector.write_backtesting_results(
+        ticker=str(TICKER),
+        strategy=str(STRATEGY),
+        frequency=str(FREQUENCY),
+        max_period=True,
+        parameters=parameters,
+        backtesting_results=backtesting_results,
+        backtesting_end_date=str(START_DATE),
+        backtesting_start_date=str(END_DATE),
+    )
 
-    assert position is None
+    optimized_parameters = postgres_connector.get_optimized_parameters(
+        ticker=str(TICKER),
+    )[0]
+
+    assert optimized_parameters is not None
+    assert optimized_parameters.strategy == str(STRATEGY)
+    assert optimized_parameters.parameters == loads(parameters)
