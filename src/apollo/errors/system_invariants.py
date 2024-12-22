@@ -4,3 +4,11 @@ class ScreenedPositionAlreadyExistsError(Exception):
 
 class OptimizedPositionAlreadyExistsError(Exception):
     """Raised before the optimization process if optimized position exists."""
+
+
+class DispatchedPositionAlreadyExistsError(Exception):
+    """Raised before the dispatching process if dispatched position exists."""
+
+
+class NeitherOpenNorOptimizedPositionExistsError(Exception):
+    """Raised if neither open nor optimized position exists during dispatching."""

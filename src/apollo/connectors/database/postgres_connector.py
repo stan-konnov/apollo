@@ -3,6 +3,7 @@ from prisma import Prisma
 
 from apollo.models.backtesting_results import BacktestingResults
 from apollo.models.position import Position, PositionStatus
+from apollo.models.strategy_parameters import StrategyParameters
 
 
 class PostgresConnector:
@@ -146,41 +147,6 @@ class PostgresConnector:
             else None
         )
 
-    def get_existing_screened_position(self) -> Position | None:
-        """
-        Get existing screened position.
-
-        Used to validate system invariant of having
-        single screened position for a ticker at a time.
-
-        Used to identify the ticker queued
-        for optimization after the screening process.
-
-        :returns: Screened position if exists.
-        """
-
-        self._database_client.connect()
-
-        # Check if we have a screened position
-        screened_position = self._database_client.positions.find_first(
-            where={
-                "status": PositionStatus.SCREENED.value,
-            },
-        )
-
-        self._database_client.disconnect()
-
-        # And return the position if exists
-        return (
-            Position(
-                id=screened_position.id,
-                ticker=screened_position.ticker,
-                status=PositionStatus(screened_position.status),
-            )
-            if screened_position
-            else None
-        )
-
     def create_position_on_screening(self, ticker: str) -> None:
         """
         Create a position entity after screening.
@@ -200,25 +166,23 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def get_existing_optimized_position(self) -> Position | None:
+    def get_existing_position_by_status(
+        self,
+        position_status: PositionStatus,
+    ) -> Position | None:
         """
-        Get existing optimized position.
+        Get existing position by status.
 
-        Used to validate system invariant
-        of having single optimized position at a time.
-
-        Used to identify the ticker queued
-        for dispatch after the optimization process.
-
-        :returns: Optimized position if exists.
+        :param position_status: Position status to query.
+        :returns: Position if exists.
         """
 
         self._database_client.connect()
 
-        # Check if we have an optimized position
-        optimized_position = self._database_client.positions.find_first(
+        # Check if we have a position by status
+        position = self._database_client.positions.find_first(
             where={
-                "status": PositionStatus.OPTIMIZED.value,
+                "status": position_status.value,
             },
         )
 
@@ -227,19 +191,24 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
-                id=optimized_position.id,
-                ticker=optimized_position.ticker,
-                status=PositionStatus(optimized_position.status),
+                id=position.id,
+                ticker=position.ticker,
+                status=PositionStatus(position.status),
             )
-            if optimized_position
+            if position
             else None
         )
 
-    def update_position_on_optimization(self, position_id: str) -> None:
+    def update_existing_position_by_status(
+        self,
+        position_id: str,
+        position_status: PositionStatus,
+    ) -> None:
         """
-        Update a position entity after optimization.
+        Update existing position by status.
 
         :param position_id: Position id to update.
+        :param position_status: Position status to update.
         """
 
         self._database_client.connect()
@@ -250,8 +219,81 @@ class PostgresConnector:
                 "id": position_id,
             },
             data={
-                "status": PositionStatus.OPTIMIZED.value,
+                "status": position_status.value,
             },
         )
 
         self._database_client.disconnect()
+
+    def update_position_upon_dispatching(
+        self,
+        position_id: str,
+        strategy: str,
+        direction: int,
+        stop_loss: float,
+        take_profit: float,
+        target_entry_price: float,
+    ) -> None:
+        """
+        Update position upon dispatching.
+
+        :param position_id: Position id to update.
+        :param strategy: Strategy name.
+        :param direction: Signal direction.
+        :param stop_loss: Stop loss price.
+        :param take_profit: Take profit price.
+        :param target_entry_price: Target entry price.
+        """
+
+        self._database_client.connect()
+
+        # Update the position with dispatching details
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "strategy": strategy,
+                # NOTE: we map to python int since Prisma
+                # does not yet understand numpy int types
+                "direction": int(direction),
+                "stop_loss": stop_loss,
+                "take_profit": take_profit,
+                "target_entry_price": target_entry_price,
+            },
+        )
+
+        self._database_client.disconnect()
+
+    def get_optimized_parameters(self, ticker: str) -> list[StrategyParameters]:
+        """
+        Get optimized strategy parameters for a ticker sorted by sharpe ratio.
+
+        :param ticker: Ticker to get optimized parameters for.
+        :returns: List of optimized strategy parameters.
+        """
+
+        self._database_client.connect()
+
+        # Query backtesting results for a given ticker
+        backtesting_results = self._database_client.backtesting_results.find_many(
+            where={
+                "ticker": ticker,
+            },
+            order={
+                "sharpe_ratio": "desc",
+            },
+        )
+
+        self._database_client.disconnect()
+
+        # And return the parameters
+        return [
+            StrategyParameters(
+                strategy=backtesting_result.strategy,
+                # NOTE: Prisma is packing the JSON
+                # into a dict for us under the hood
+                parameters=backtesting_result.parameters,  # type: ignore  # noqa: PGH003
+            )
+            for backtesting_result in backtesting_results
+        ]

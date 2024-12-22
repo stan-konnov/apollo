@@ -11,6 +11,7 @@ from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.errors.system_invariants import OptimizedPositionAlreadyExistsError
+from apollo.models.position import PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -78,7 +79,9 @@ class ParameterOptimizer(MultiprocessingCapable):
         if self._operation_mode == ParameterOptimizerMode.MULTIPLE_STRATEGIES:
             # Query the screened position to optimize
             screened_position = (
-                self._database_connector.get_existing_screened_position()
+                self._database_connector.get_existing_position_by_status(
+                    PositionStatus.SCREENED,
+                )
             )
 
             # Skip the optimization process
@@ -97,7 +100,9 @@ class ParameterOptimizer(MultiprocessingCapable):
 
             # Query the existing optimized position
             existing_optimized_position = (
-                self._database_connector.get_existing_optimized_position()
+                self._database_connector.get_existing_position_by_status(
+                    PositionStatus.OPTIMIZED,
+                )
             )
 
             # Raise an error if the
@@ -118,8 +123,9 @@ class ParameterOptimizer(MultiprocessingCapable):
                 )
 
             # Update the screened position to optimized
-            self._database_connector.update_position_on_optimization(
+            self._database_connector.update_existing_position_by_status(
                 screened_position.id,
+                PositionStatus.OPTIMIZED,
             )
 
             logger.info(

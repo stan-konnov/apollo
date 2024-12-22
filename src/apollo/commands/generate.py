@@ -1,6 +1,7 @@
 import logging
 
 from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.processors.signal_dispatcher import SignalDispatcher
 from apollo.processors.ticker_screener import TickerScreener
 from apollo.settings import (
     ParameterOptimizerMode,
@@ -29,6 +30,9 @@ def main() -> None:
         ParameterOptimizerMode.MULTIPLE_STRATEGIES,
     )
     parameter_optimizer.process_in_parallel()
+
+    signal_dispatcher = SignalDispatcher()
+    signal_dispatcher.dispatch_signals()
 
 
 if __name__ == "__main__":

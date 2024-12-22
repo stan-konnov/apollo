@@ -50,7 +50,7 @@ def main() -> None:
 
     strategy = SwingEventsMeanReversion(
         dataframe=dataframe,
-        window_size=15,
+        window_size=5,
         swing_filter=0.01,
     )
 
