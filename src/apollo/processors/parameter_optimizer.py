@@ -52,10 +52,10 @@ class ParameterOptimizer(MultiprocessingCapable):
         """
         Construct Parameter Optimizer.
 
-        Instantiate Configuration.
-        Instantiate Database Connector.
-        Instantiate Price Data Provider.
-        Instantiate Price Data Enhancer.
+        Initialize Configuration.
+        Initialize Database Connector.
+        Initialize Price Data Provider.
+        Initialize Price Data Enhancer.
 
         :param operation_mode: Mode of operation.
         """
