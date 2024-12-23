@@ -1,3 +1,8 @@
+from datetime import datetime
+
+import pandas_market_calendars as mcal
+from zoneinfo import ZoneInfo
+
 from apollo.processors.parameter_optimizer import ParameterOptimizer
 from apollo.processors.signal_dispatcher import SignalDispatcher
 from apollo.processors.ticker_screener import TickerScreener
@@ -34,11 +39,20 @@ class SignalGenerator:
         Run the signal generation process.
         """
 
-        # Screen tickers
-        self._ticker_screener.process_in_parallel()
+        # Get NYSE market holidays calendar
+        _market_holidays = mcal.get_calendar("NYSE").holidays().holidays  # type: ignore  # noqa: PGH003
 
-        # Optimize parameters for each strategy
-        self._parameter_optimizer.process_in_parallel()
+        # It's a non-interruptable process
+        # we do not require exit condition
+        while True:
+            # Get current point in time
+            _current_time = datetime.now(tz=ZoneInfo("UTC"))
 
-        # Dispatch signals
-        self._signal_dispatcher.dispatch_signals()
+            # Screen tickers
+            self._ticker_screener.process_in_parallel()
+
+            # Optimize parameters for each strategy
+            self._parameter_optimizer.process_in_parallel()
+
+            # Dispatch signals
+            self._signal_dispatcher.dispatch_signals()
