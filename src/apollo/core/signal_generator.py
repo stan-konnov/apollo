@@ -26,3 +26,19 @@ class SignalGenerator:
         self._parameter_optimizer = ParameterOptimizer(
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
+
+    def generate_signals(self) -> None:
+        """
+        Generate signals.
+
+        Run the signal generation process.
+        """
+
+        # Screen tickers
+        self._ticker_screener.process_in_parallel()
+
+        # Optimize parameters for each strategy
+        self._parameter_optimizer.process_in_parallel()
+
+        # Dispatch signals
+        self._signal_dispatcher.dispatch_signals()
