@@ -106,3 +106,10 @@ class SignalGenerator:
 
                 # Flip controls
                 self._ran_today = True
+
+            # Flip back after market open
+            if (
+                self._ran_today
+                and current_datetime_in_exchange.time() >= open_time_in_exchange
+            ):
+                self._ran_today = False
