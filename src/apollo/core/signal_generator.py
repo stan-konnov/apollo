@@ -38,7 +38,9 @@ class SignalGenerator:
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
 
-        self._running = True
+        # Flag to control the process
+        # amongst surrounding time checks
+        self._ran_today = False
 
     def generate_signals(self) -> None:
         """
@@ -47,7 +49,7 @@ class SignalGenerator:
         Run the signal generation process.
         """
 
-        while self._running:
+        while True:
             # Get current point in time
             # in the configured exchange
             current_datetime_in_exchange = datetime.now(
@@ -83,12 +85,12 @@ class SignalGenerator:
                 if holiday.year == current_datetime_in_exchange.year
             ]
 
-            # If the process is not running,
+            # If the process can run,
             # and today is not a market holiday,
             # and current point in time is after the
             # close and before the market open, kick off the process
             if (
-                not self._running
+                not self._ran_today
                 and current_datetime_in_exchange.date() not in market_holidays
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
                 and current_datetime_in_exchange.time() < open_time_in_exchange
@@ -103,4 +105,4 @@ class SignalGenerator:
                 self._signal_dispatcher.dispatch_signals()
 
                 # Flip controls
-                self._running = False
+                self._ran_today = True
