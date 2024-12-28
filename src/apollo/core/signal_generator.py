@@ -8,6 +8,7 @@ from apollo.processors.parameter_optimizer import ParameterOptimizer
 from apollo.processors.signal_dispatcher import SignalDispatcher
 from apollo.processors.ticker_screener import TickerScreener
 from apollo.settings import (
+    DEFAULT_TIME_FORMAT,
     EXCHANGE,
     EXCHANGE_TIME_ZONE_AND_HOURS,
     ParameterOptimizerMode,
@@ -37,6 +38,8 @@ class SignalGenerator:
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
 
+        self._running = False
+
     def generate_signals(self) -> None:
         """
         Generate signals.
@@ -49,11 +52,25 @@ class SignalGenerator:
         while True:
             # Get current point in time
             # in the configured exchange
-            current_time = datetime.now(
+            current_datetime_in_exchange = datetime.now(
                 tz=ZoneInfo(
                     EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
                 ),
             )
+
+            # Get close point in time
+            # in the configured exchange
+            close_time_in_exchange = datetime.strptime(
+                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["close"],
+                DEFAULT_TIME_FORMAT,
+            ).time()
+
+            # Get open point in time
+            # in the configured exchange
+            open_time_in_exchange = datetime.strptime(
+                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["open"],
+                DEFAULT_TIME_FORMAT,
+            ).time()
 
             # Get NYSE market holidays calendar
             market_holidays = mcal.get_calendar("NYSE").holidays().holidays  # type: ignore  # noqa: PGH003
@@ -61,18 +78,29 @@ class SignalGenerator:
             # Transform to regular python datetime objects
             market_holidays = [to_datetime(str(holiday)) for holiday in market_holidays]
 
-            # And limit only to the current year
+            # And limit to dates of the current year
             market_holidays = [
-                holiday
+                holiday.date()
                 for holiday in market_holidays
-                if holiday.year == current_time.year
+                if holiday.year == current_datetime_in_exchange.year
             ]
 
-            # Screen tickers
-            self._ticker_screener.process_in_parallel()
+            # If today is not a market holiday,
+            # and current point in time is after the
+            # close and before the market open, kick off the process
+            if (
+                current_datetime_in_exchange.date() not in market_holidays
+                and current_datetime_in_exchange.time() >= close_time_in_exchange
+                and current_datetime_in_exchange.time() < open_time_in_exchange
+            ):
+                # Flip controls
+                self._running = True
 
-            # Optimize parameters for each strategy
-            self._parameter_optimizer.process_in_parallel()
+                # Screen tickers
+                self._ticker_screener.process_in_parallel()
 
-            # Dispatch signals
-            self._signal_dispatcher.dispatch_signals()
+                # Optimize parameters for each strategy
+                self._parameter_optimizer.process_in_parallel()
+
+                # Dispatch signals
+                self._signal_dispatcher.dispatch_signals()
