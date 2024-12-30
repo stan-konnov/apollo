@@ -87,7 +87,7 @@ class SignalGenerator:
             ]
 
             logger.info(
-                f"EXCHANGE: {EXCHANGE}"
+                f"Exchange: {EXCHANGE}"
                 "\n\n"
                 "Current time: "
                 f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
@@ -110,8 +110,8 @@ class SignalGenerator:
 
                 # Optimize parameters for each strategy
                 self._parameter_optimizer.process_in_parallel()
-
                 # Dispatch signals
+
                 self._signal_dispatcher.dispatch_signals()
 
                 # Flip controls
