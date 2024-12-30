@@ -1,4 +1,5 @@
 from datetime import datetime
+from logging import getLogger
 
 import pandas_market_calendars as mcal
 from pandas import to_datetime
@@ -13,6 +14,8 @@ from apollo.settings import (
     EXCHANGE_TIME_ZONE_AND_HOURS,
     ParameterOptimizerMode,
 )
+
+logger = getLogger(__name__)
 
 
 class SignalGenerator:
@@ -83,6 +86,17 @@ class SignalGenerator:
                 if holiday.year == current_datetime_in_exchange.year
             ]
 
+            logger.info(
+                f"EXCHANGE: {EXCHANGE}"
+                "\n\n"
+                "Current time: "
+                f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
+                "\n\n"
+                f"Open time: {open_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
+                "\n\n"
+                f"Close time: {close_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}",
+            )
+
             # If today is not a market holiday,
             # and current point in time is after the
             # close and before the market open, kick off the process
@@ -91,6 +105,8 @@ class SignalGenerator:
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
                 and current_datetime_in_exchange.time() < open_time_in_exchange
             ):
+                logger.info("Signal generation process started.")
+
                 # Screen tickers
                 self._ticker_screener.process_in_parallel()
 
@@ -102,6 +118,8 @@ class SignalGenerator:
 
                 # Flip controls
                 self._running = False
+
+                logger.info("Signal generation process completed.")
 
             # Flip back after market open on business days
             if (
