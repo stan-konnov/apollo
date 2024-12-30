@@ -110,8 +110,8 @@ class SignalGenerator:
 
                 # Optimize parameters for each strategy
                 self._parameter_optimizer.process_in_parallel()
-                # Dispatch signals
 
+                # Dispatch signals
                 self._signal_dispatcher.dispatch_signals()
 
                 # Flip controls
