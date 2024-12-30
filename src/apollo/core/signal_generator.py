@@ -97,13 +97,11 @@ class SignalGenerator:
                 f"Close time: {close_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}",
             )
 
-            # If today is not a market holiday,
-            # and current point in time is after the
-            # close and before the market open, kick off the process
+            # If today is not a market holiday, and current
+            # point in time is after the close, kick off the process
             if (
                 current_datetime_in_exchange.date() not in market_holidays
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
-                and current_datetime_in_exchange.time() < open_time_in_exchange
             ):
                 logger.info("Signal generation process started.")
 

@@ -35,7 +35,9 @@ def test__generate_signals__for_correctly_kicking_off_the_process() -> None:
     signal_generator._parameter_optimizer = Mock()  # noqa: SLF001
 
     try:
-        signal.alarm(3)  # Set a timeout of 2 seconds
+        # Timeout after one
+        # second, to allow one iteration
+        signal.alarm(1)
         signal_generator.generate_signals()
     except ForcedInterruptError:
         signal.alarm(0)
