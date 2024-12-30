@@ -121,9 +121,7 @@ class SignalGenerator:
 
                 logger.info("Signal generation process completed.")
 
-            # Flip back after market open on business days
-            if (
-                current_datetime_in_exchange.date() not in market_holidays
-                and current_datetime_in_exchange.time() >= open_time_in_exchange
-            ):
+            # Flip back after market open
+            # NOTE: including non-business days (e.g., Sunday)
+            if current_datetime_in_exchange.time() >= open_time_in_exchange:
                 self._running = True
