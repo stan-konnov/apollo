@@ -103,9 +103,9 @@ class SignalGenerator:
                 # Flip controls
                 self._running = False
 
-            # Flip back after market open
+            # Flip back after market open on business days
             if (
-                self._ran_today
+                current_datetime_in_exchange.date() not in market_holidays
                 and current_datetime_in_exchange.time() >= open_time_in_exchange
             ):
-                self._ran_today = True
+                self._running = True
