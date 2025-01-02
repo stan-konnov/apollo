@@ -18,8 +18,8 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    signal_generator = SignalGenerationRunner()
-    signal_generator.run_signal_generation()
+    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner.run_signal_generation()
 
 
 if __name__ == "__main__":
