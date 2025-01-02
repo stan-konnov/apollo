@@ -1,6 +1,6 @@
 import logging
 
-from apollo.core.signal_generator import SignalGenerator
+from apollo.core.signal_generation_runner import SignalGenerationRunner
 from apollo.utils.common import (
     ensure_environment_is_configured,
 )
@@ -18,8 +18,8 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    signal_generator = SignalGenerator()
-    signal_generator.generate_signals()
+    signal_generator = SignalGenerationRunner()
+    signal_generator.run_signal_generation()
 
 
 if __name__ == "__main__":

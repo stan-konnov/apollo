@@ -19,9 +19,9 @@ from apollo.settings import (
 logger = getLogger(__name__)
 
 
-class SignalGenerator:
+class SignalGenerationRunner:
     """
-    Signal Generator class.
+    Signal Generation Runner class.
 
     A meta class that encapsulates the signal generation logic.
     Orchestrates screening, optimization, and dispatching of signals.
@@ -29,7 +29,7 @@ class SignalGenerator:
 
     def __init__(self) -> None:
         """
-        Construct Signal Generator.
+        Construct Signal Generation Runner.
 
         Initialize Ticker Screener.
         Initialize Signal Dispatcher.
@@ -44,12 +44,8 @@ class SignalGenerator:
 
         self._running = True
 
-    def generate_signals(self) -> None:
-        """
-        Generate signals.
-
-        Run the signal generation process.
-        """
+    def run_signal_generation(self) -> None:
+        """Run signal generation process."""
 
         while self._running:
             # Get current point in time
