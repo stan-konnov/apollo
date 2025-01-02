@@ -40,7 +40,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process() -> None:
     """
     Test Signal Generation Runner for correctly skipping the process.
 
-    Signal Generation Runner must correctly skip kick off the process.
+    Signal Generation Runner must correctly skip the process.
     """
 
     signal_generation_runner = SignalGenerationRunner()
@@ -67,7 +67,32 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_weekend()
     """
     Test Signal Generation Runner for correctly skipping the process.
 
-    Signal Generation Runner must correctly skip kick off the process.
+    Signal Generation Runner must correctly skip the process.
+    """
+
+    signal_generation_runner = SignalGenerationRunner()
+
+    signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
+    signal_generation_runner._signal_dispatcher = Mock()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer = Mock()  # noqa: SLF001
+
+    with contextlib.suppress(timeout_decorator.TimeoutError):
+        signal_generation_runner.run_signal_generation()
+
+    signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._signal_dispatcher.dispatch_signals.assert_not_called()  # noqa: SLF001
+
+
+# Assume today date is Wednesday, 2025-01-01
+# Assume current time is after 16:00 ET >= 20:00 UTC
+@timeout_decorator.timeout(3)
+@freeze_time("2025-01-01, 21:00:00")
+def test__run_signal_generation__for_correctly_skipping_the_process_on_mh() -> None:
+    """
+    Test Signal Generation Runner for correctly skipping the process.
+
+    Signal Generation Runner must correctly skip the process.
     """
 
     signal_generation_runner = SignalGenerationRunner()
