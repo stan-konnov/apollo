@@ -2,6 +2,7 @@ from datetime import datetime
 from logging import getLogger
 
 import pandas_market_calendars as mcal
+from numpy import is_busday
 from pandas import to_datetime
 from zoneinfo import ZoneInfo
 
@@ -86,9 +87,13 @@ class SignalGenerator:
                 if holiday.year == current_datetime_in_exchange.year
             ]
 
+            # Check if today is a business day in configured exchange
+            is_business_day = bool(is_busday(current_datetime_in_exchange.date()))
+
             logger.info(
                 f"Exchange: {EXCHANGE}"
                 "\n\n"
+                f"Is business day: {is_business_day}"
                 "Current time: "
                 f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
                 "\n\n"
@@ -98,10 +103,12 @@ class SignalGenerator:
             )
 
             # If process can run,
+            # and today is a business day,
             # and today is not a market holiday, and current
             # point in time is after the close, kick off the process
             if (
                 self._running
+                and is_business_day
                 and current_datetime_in_exchange.date() not in market_holidays
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
             ):
@@ -121,7 +128,10 @@ class SignalGenerator:
 
                 logger.info("Signal generation process completed.")
 
-            # Flip back after market open
-            # NOTE: including non-business days (e.g., Sunday)
-            if current_datetime_in_exchange.time() >= open_time_in_exchange:
+            # Flip back after market
+            # open on a business day
+            if (
+                is_business_day
+                and current_datetime_in_exchange.time() >= open_time_in_exchange
+            ):
                 self._running = True
