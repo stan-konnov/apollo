@@ -94,6 +94,7 @@ class SignalGenerator:
                 f"Exchange: {EXCHANGE}"
                 "\n\n"
                 f"Is business day: {is_business_day}"
+                "\n\n"
                 "Current time: "
                 f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
                 "\n\n"
