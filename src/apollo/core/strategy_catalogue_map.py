@@ -3,8 +3,8 @@ Strategy Catalogue Map.
 
 Dictionary that maps strategy names to related classes.
 
-Used during parameter optimization to instantiate
-the correct strategy class based on the configured name.
+Used during parameter optimization and signal dispatching
+to instantiate the correct strategy class based on the configured name.
 
 Acts as a central registry for all available strategies.
 """
