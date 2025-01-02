@@ -86,10 +86,15 @@ class SignalGenerationRunner:
             # Check if today is a business day in configured exchange
             is_business_day = bool(is_busday(current_datetime_in_exchange.date()))
 
+            # Check if today is market holiday in configured exchange
+            is_market_holiday = current_datetime_in_exchange.date() in market_holidays
+
             logger.info(
                 f"Exchange: {EXCHANGE}"
                 "\n\n"
                 f"Is business day: {is_business_day}"
+                "\n\n"
+                f"Is market holiday: {is_market_holiday}"
                 "\n\n"
                 "Current time: "
                 f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
@@ -106,7 +111,7 @@ class SignalGenerationRunner:
             if (
                 self._running
                 and is_business_day
-                and current_datetime_in_exchange.date() not in market_holidays
+                and not is_market_holiday
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
             ):
                 logger.info("Signal generation process started.")
@@ -126,9 +131,10 @@ class SignalGenerationRunner:
                 logger.info("Signal generation process completed.")
 
             # Flip back after market
-            # open on a business day
+            # open on a business, non-holiday day
             if (
                 is_business_day
+                and not is_market_holiday
                 and current_datetime_in_exchange.time() >= open_time_in_exchange
             ):
                 self._running = True
