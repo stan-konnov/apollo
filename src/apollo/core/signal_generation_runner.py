@@ -47,7 +47,7 @@ class SignalGenerationRunner:
     def run_signal_generation(self) -> None:
         """Run signal generation process."""
 
-        while self._running:
+        while True:
             # Get current point in time
             # in the configured exchange
             current_datetime_in_exchange = datetime.now(
@@ -130,11 +130,12 @@ class SignalGenerationRunner:
 
                 logger.info("Signal generation process completed.")
 
-            # Flip back after market
-            # open on a business, non-holiday day
+            # Flip back after market open,
+            # but before close, on a business, non-holiday day
             if (
                 is_business_day
                 and not is_market_holiday
                 and current_datetime_in_exchange.time() >= open_time_in_exchange
+                and current_datetime_in_exchange.time() < close_time_in_exchange
             ):
                 self._running = True
