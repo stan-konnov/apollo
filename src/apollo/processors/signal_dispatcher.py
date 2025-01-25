@@ -1,10 +1,12 @@
 from logging import getLogger
 
 import pandas as pd
+from requests import post
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.errors.dispatching import MercuryTimeoutError
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
@@ -18,6 +20,7 @@ from apollo.settings import (
     FREQUENCY,
     LONG_SIGNAL,
     MAX_PERIOD,
+    MERCURY_URL,
     NO_SIGNAL,
     SHORT_SIGNAL,
     START_DATE,
@@ -133,19 +136,27 @@ class SignalDispatcher:
                     target_entry_price=signal.dispatched_position.target_entry_price,
                 )
 
+        # Finally, dispatch the signal to Mercury
+        if signal.open_position or signal.dispatched_position:
+            signal_to_dispatch = signal.model_dump_json(indent=4)
+
+            try:
+                post(
+                    url=f"{MERCURY_URL}/signals/consume",
+                    json=signal_to_dispatch,
+                    timeout=5,
+                )
+
+                logger.info(
+                    f"Dispatched signal: \n\n{signal_to_dispatch}",
+                )
+
+            except TimeoutError as error:
+                raise MercuryTimeoutError(
+                    "Signal dispatching request to Mercury timed out.",
+                ) from error
+
         logger.info("Dispatching process completed.")
-
-        if signal.open_position:
-            logger.info(
-                "Open position signal: \n\n"
-                f"{signal.open_position.model_dump_json(indent=4)}",
-            )
-
-        if signal.dispatched_position:
-            logger.info(
-                "Dispatched position signal: \n\n"
-                f"{signal.dispatched_position.model_dump_json(indent=4)}",
-            )
 
     def _generate_signal_and_brackets(
         self,
