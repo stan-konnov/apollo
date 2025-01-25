@@ -9,7 +9,7 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
+from apollo.models.dispatchable_signal import PositionSignal, Signal
 from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
@@ -100,53 +100,51 @@ class SignalDispatcher:
 
         logger.info("Dispatching process started.")
 
-        # Initialize dispatchable signal
-        dispatchable_signal = DispatchableSignal()
+        signal = Signal()
 
         # At this point, we should manage
         # either open or optimized position
         if existing_open_position:
-            dispatchable_signal.open_position = self._generate_signal_and_brackets(
+            signal.open_position = self._generate_signal_and_brackets(
                 existing_open_position,
             )
 
         if existing_optimized_position:
-            dispatchable_signal.optimized_position = self._generate_signal_and_brackets(
+            signal.dispatched_position = self._generate_signal_and_brackets(
                 existing_optimized_position,
             )
 
-        # Now, if we have optimized position, and we
-        # identified the signal, we mark it as dispatched
-        # NOTE: whatever happens after, is up to execution module
-        if existing_optimized_position and dispatchable_signal.optimized_position:
-            self._database_connector.update_existing_position_by_status(
-                position_id=existing_optimized_position.id,
-                position_status=PositionStatus.DISPATCHED,
-            )
+            # If we have optimized position, and we
+            # identified the signal, mark it as dispatched
+            if signal.dispatched_position:
+                self._database_connector.update_existing_position_by_status(
+                    position_id=existing_optimized_position.id,
+                    position_status=PositionStatus.DISPATCHED,
+                )
 
-            # We additionally update the
-            # position with dispatching details
-            self._database_connector.update_position_upon_dispatching(
-                position_id=existing_optimized_position.id,
-                strategy=dispatchable_signal.optimized_position.strategy,
-                direction=dispatchable_signal.optimized_position.direction,
-                stop_loss=dispatchable_signal.optimized_position.stop_loss,
-                take_profit=dispatchable_signal.optimized_position.take_profit,
-                target_entry_price=dispatchable_signal.optimized_position.target_entry_price,
-            )
+                # Additionally update the
+                # position with dispatching details
+                self._database_connector.update_position_upon_dispatching(
+                    position_id=existing_optimized_position.id,
+                    strategy=signal.dispatched_position.strategy,
+                    direction=signal.dispatched_position.direction,
+                    stop_loss=signal.dispatched_position.stop_loss,
+                    take_profit=signal.dispatched_position.take_profit,
+                    target_entry_price=signal.dispatched_position.target_entry_price,
+                )
 
         logger.info("Dispatching process completed.")
 
-        if dispatchable_signal.open_position:
+        if signal.open_position:
             logger.info(
                 "Open position signal: \n\n"
-                f"{dispatchable_signal.open_position.model_dump_json(indent=4)}",
+                f"{signal.open_position.model_dump_json(indent=4)}",
             )
 
-        if dispatchable_signal.optimized_position:
+        if signal.dispatched_position:
             logger.info(
-                "Optimized position signal: \n\n"
-                f"{dispatchable_signal.optimized_position.model_dump_json(indent=4)}",
+                "Dispatched position signal: \n\n"
+                f"{signal.dispatched_position.model_dump_json(indent=4)}",
             )
 
     def _generate_signal_and_brackets(

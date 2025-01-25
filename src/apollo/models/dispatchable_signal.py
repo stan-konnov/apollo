@@ -16,8 +16,8 @@ class PositionSignal(BaseModel):
     target_entry_price: float
 
 
-class DispatchableSignal(BaseModel):
+class Signal(BaseModel):
     """A model to represent a signal for dispatching."""
 
     open_position: Optional[PositionSignal] = None
-    optimized_position: Optional[PositionSignal] = None
+    dispatched_position: Optional[PositionSignal] = None
