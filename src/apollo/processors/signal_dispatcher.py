@@ -138,7 +138,7 @@ class SignalDispatcher:
 
         # Finally, dispatch the signal to Mercury
         if signal.open_position or signal.dispatched_position:
-            signal_to_dispatch = signal.model_dump_json(indent=4)
+            signal_to_dispatch = signal.model_dump(mode="json")
 
             try:
                 post(
@@ -146,23 +146,6 @@ class SignalDispatcher:
                     json=signal_to_dispatch,
                     timeout=5,
                 )
-
-                """
-                {
-                    "open_position": null,
-                    "dispatched_position": {
-                        "ticker": "GOOG",
-                        "position_id": "78d7cd10-5d68-4f1b-9ae1-041774f0da22",
-                        "strategy": "SwingEventsMeanReversion",
-                        "direction": 1,
-                        "stop_loss": 187.66272471276378,
-                        "take_profit": 190.34908589015578,
-                        "target_entry_price": 189.27454141919898
-                    }
-                }
-
-                Results in 422 Unprocessable Entity!
-                """
 
                 logger.info(
                     f"Dispatched signal: \n\n{signal_to_dispatch}",
