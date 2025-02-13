@@ -138,6 +138,10 @@ class SignalDispatcher:
 
         # Finally, dispatch the signal to Mercury
         if signal.open_position or signal.dispatched_position:
+            """
+            pydantic_core._pydantic_core.PydanticSerializationError:
+            Unable to serialize unknown type: <class 'numpy.int64'>
+            """
             signal_to_dispatch = signal.model_dump(mode="json")
 
             try:
