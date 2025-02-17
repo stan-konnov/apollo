@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import ClassVar, Optional
 
+import numpy as np
 from pydantic import BaseModel
 
 
@@ -14,6 +15,14 @@ class PositionSignal(BaseModel):
     stop_loss: float
     take_profit: float
     target_entry_price: float
+
+    class Config:
+        """Configuration for converting numpy types to natives."""
+
+        json_encoders: ClassVar = {
+            np.float64: float,
+            np.int64: int,
+        }
 
 
 class Signal(BaseModel):
