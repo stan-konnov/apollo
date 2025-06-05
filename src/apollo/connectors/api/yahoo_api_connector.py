@@ -44,6 +44,8 @@ class YahooApiConnector(BaseApiConnector):
                 tickers=ticker,
                 interval=frequency,
                 period="max",
+                # NOTE: we do not auto-adjust prices
+                # since we make use of both adjusted and unadjusted prices
                 auto_adjust=False,
             )
         # Otherwise, request prices with bounds
@@ -53,6 +55,8 @@ class YahooApiConnector(BaseApiConnector):
                 interval=frequency,
                 start=start_date,
                 end=end_date,
+                # NOTE: we do not auto-adjust prices
+                # since we make use of both adjusted and unadjusted prices
                 auto_adjust=False,
             )
 
