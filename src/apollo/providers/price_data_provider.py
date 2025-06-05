@@ -169,8 +169,20 @@ class PriceDataProvider:
         :returns: Dataframe prepared for consistency and storage.
         """
 
+        # Unwind multi-index into flat columns
+        # joined by underscore and cast to lowercase
         dataframe.reset_index(inplace=True)
-        dataframe.columns = dataframe.columns.str.lower()
+        dataframe.columns = [
+            "_".join(map(str, column)).lower() for column in dataframe.columns
+        ]
+
+        # Cleanup created columns from
+        # everything after the first underscore
+        dataframe.columns = [
+            column.split("_")[0] if "_" in column else column
+            for column in dataframe.columns
+        ]
+
         dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", ticker)
 
