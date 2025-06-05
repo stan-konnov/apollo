@@ -18,6 +18,12 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
+    """
+    Issues with API Connector:
+
+    API returns empty response for every ticker.
+    """
+
     signal_generation_runner = SignalGenerationRunner()
     signal_generation_runner.run_signal_generation()
 
