@@ -42,7 +42,7 @@ class PositionSignal(BaseModel):
         return float(value)
 
 
-class Signal(BaseModel):
+class DispatchableSignal(BaseModel):
     """A model to represent a signal for dispatching."""
 
     open_position: Optional[PositionSignal] = None

@@ -11,7 +11,7 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import PositionSignal, Signal
+from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
@@ -103,7 +103,7 @@ class SignalDispatcher:
 
         logger.info("Dispatching process started.")
 
-        signal = Signal()
+        signal = DispatchableSignal()
 
         # At this point, we should manage
         # either open or optimized position
