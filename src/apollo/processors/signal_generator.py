@@ -101,7 +101,7 @@ class SignalGenerator:
                 "System invariant violated, position was not opened or optimized.",
             )
 
-        logger.info("Dispatching process started.")
+        logger.info("Generation process started.")
 
         signal = DispatchableSignal()
 
@@ -156,7 +156,7 @@ class SignalGenerator:
                     "Signal dispatching request to Mercury timed out.",
                 ) from error
 
-        logger.info("Dispatching process completed.")
+        logger.info("Generation process completed.")
 
     def _generate_signal_and_brackets(
         self,
