@@ -1,18 +1,14 @@
 from logging import getLogger
 
 from apollo.events.emitter import emitter
+from apollo.models.dispatchable_signal import DispatchableSignal
 from apollo.settings import Events
 
 logger = getLogger(__name__)
 
 
-@emitter.on(Events.POSITION_DISPATCHED.value)
-def handle_position_dispatched_event() -> None:
-    """
-    Handle position dispatched event.
+@emitter.on(Events.SIGNAL_GENERATED.value)
+def handle_signal_generated_event(signal: DispatchableSignal) -> None:
+    """Handle open position recalculated event."""
 
-    Serves as a communication link between the
-    signal generation process and the Order Manager.
-    """
-
-    logger.info("Handling position dispatched event.")
+    logger.info(signal)

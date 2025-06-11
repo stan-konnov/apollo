@@ -81,4 +81,4 @@ EXCHANGE_TIME_ZONE_AND_HOURS = {
 class Events(str, Enum):
     """Enum for events used throughout the module."""
 
-    POSITION_DISPATCHED = "position_dispatched"
+    SIGNAL_GENERATED = "signal_generated"
