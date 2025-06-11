@@ -136,7 +136,7 @@ class SignalGenerationRunner:
                 # Optimize parameters for each strategy
                 self._parameter_optimizer.process_in_parallel()
 
-                # Generate and dispatch signals
+                # Generate and signals
                 self._signal_generator.generate_signals()
 
                 # Flip controls
