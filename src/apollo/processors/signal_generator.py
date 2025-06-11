@@ -1,12 +1,10 @@
 from logging import getLogger
 
 import pandas as pd
-from requests import post
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.errors.dispatching import MercuryTimeoutError
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
@@ -20,12 +18,13 @@ from apollo.settings import (
     FREQUENCY,
     LONG_SIGNAL,
     MAX_PERIOD,
-    MERCURY_URL,
     NO_SIGNAL,
     SHORT_SIGNAL,
     START_DATE,
 )
 from apollo.utils.configuration import Configuration
+from mercury.events.emitter import emitter
+from mercury.settings import Events
 
 logger = getLogger(__name__)
 
@@ -138,23 +137,9 @@ class SignalGenerator:
 
         # Finally, dispatch the signal to Mercury
         if signal.open_position or signal.dispatched_position:
-            signal_to_dispatch = signal.model_dump(mode="json")
+            _signal_to_dispatch = signal.model_dump(mode="json")
 
-            try:
-                post(
-                    url=f"{MERCURY_URL}/signals/consume",
-                    json=signal_to_dispatch,
-                    timeout=5,
-                )
-
-                logger.info(
-                    f"Dispatched signal: \n\n{signal_to_dispatch}",
-                )
-
-            except TimeoutError as error:
-                raise MercuryTimeoutError(
-                    "Signal dispatching request to Mercury timed out.",
-                ) from error
+            emitter.emit(Events.POSITION_OPTIMIZED)
 
         logger.info("Generation process completed.")
 
