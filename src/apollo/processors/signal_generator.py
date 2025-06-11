@@ -107,12 +107,12 @@ class SignalGenerator:
         # At this point, manage
         # open or optimized position
         if existing_open_position:
-            # Generate signal and brackets
+            # Generate signal
             open_position_signal = self._generate_signal(
                 existing_open_position,
             )
 
-            # Flip the flag if we have a signal
+            # Flip the flag if we got one
             if open_position_signal:
                 signal.open_position = True
 
@@ -126,11 +126,12 @@ class SignalGenerator:
                 )
 
         if existing_optimized_position:
+            # Generate signal
             dispatched_position_signal = self._generate_signal(
                 existing_optimized_position,
             )
 
-            # Flip the flag if we have a signal
+            # Flip the flag if we got one
             if dispatched_position_signal:
                 signal.dispatched_position = True
 
