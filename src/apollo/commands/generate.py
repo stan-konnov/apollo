@@ -1,6 +1,9 @@
 import logging
 
-from apollo.core.signal_generation_runner import SignalGenerationRunner
+# NOTE: we require this unused import
+# to be able to register Mercury event handlers
+import mercury.events.handlers  # noqa: F401
+from apollo.processors.signal_generator import SignalGenerator
 from apollo.utils.common import (
     ensure_environment_is_configured,
 )
@@ -18,8 +21,10 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    signal_generation_runner = SignalGenerationRunner()
-    signal_generation_runner.run_signal_generation()
+    # signal_generation_runner = SignalGenerationRunner()  # noqa: ERA001
+    # signal_generation_runner.run_signal_generation()  # noqa: ERA001
+    signal_generator = SignalGenerator()
+    signal_generator.generate_and_dispatch_signals()
 
 
 if __name__ == "__main__":

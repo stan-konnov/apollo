@@ -1,8 +1,12 @@
+from logging import getLogger
+
 from mercury.events.emitter import emitter
 from mercury.settings import Events
 
+logger = getLogger(__name__)
 
-@emitter.on(Events.POSITION_OPTIMIZED)
+
+@emitter.on(Events.POSITION_OPTIMIZED.value)
 def handle_position_optimized_event() -> None:
     """
     Handle position optimized event.
@@ -11,4 +15,4 @@ def handle_position_optimized_event() -> None:
     signal generation process and the Order Manager.
     """
 
-    print("Position optimized event received. Processing...")  # noqa: T201
+    logger.info("Handling position optimized event.")

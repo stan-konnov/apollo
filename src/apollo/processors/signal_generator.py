@@ -139,9 +139,7 @@ class SignalGenerator:
         if signal.open_position or signal.dispatched_position:
             _signal_to_dispatch = signal.model_dump(mode="json")
 
-            emitter.emit(Events.POSITION_OPTIMIZED)
-
-        logger.info("Generation process completed.")
+            emitter.emit(Events.POSITION_OPTIMIZED.value)
 
     def _generate_signal_and_brackets(
         self,
