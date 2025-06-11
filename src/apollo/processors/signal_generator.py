@@ -55,7 +55,7 @@ class SignalGenerator:
         self._price_data_provider = PriceDataProvider()
         self._price_data_enhancer = PriceDataEnhancer()
 
-    def generate_and_dispatch_signals(self) -> None:
+    def generate_signals(self) -> None:
         """
         Generate and dispatch signals.
 

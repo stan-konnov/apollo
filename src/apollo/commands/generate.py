@@ -24,7 +24,7 @@ def main() -> None:
     # signal_generation_runner = SignalGenerationRunner()  # noqa: ERA001
     # signal_generation_runner.run_signal_generation()  # noqa: ERA001
     signal_generator = SignalGenerator()
-    signal_generator.generate_and_dispatch_signals()
+    signal_generator.generate_signals()
 
 
 if __name__ == "__main__":
