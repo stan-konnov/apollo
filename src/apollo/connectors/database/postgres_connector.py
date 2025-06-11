@@ -228,7 +228,6 @@ class PostgresConnector:
     def update_position_upon_dispatching(
         self,
         position_id: str,
-        strategy: str,
         direction: int,
         stop_loss: float,
         take_profit: float,
@@ -238,7 +237,6 @@ class PostgresConnector:
         Update position upon dispatching.
 
         :param position_id: Position id to update.
-        :param strategy: Strategy name.
         :param direction: Signal direction.
         :param stop_loss: Stop loss price.
         :param take_profit: Take profit price.
@@ -253,7 +251,6 @@ class PostgresConnector:
                 "id": position_id,
             },
             data={
-                "strategy": strategy,
                 # NOTE: we map to python int since Prisma
                 # does not yet understand numpy int types
                 "direction": int(direction),

@@ -128,7 +128,6 @@ class SignalGenerator:
                 # position with dispatching details
                 self._database_connector.update_position_upon_dispatching(
                     position_id=existing_optimized_position.id,
-                    strategy=signal.dispatched_position.strategy,
                     direction=signal.dispatched_position.direction,
                     stop_loss=signal.dispatched_position.stop_loss,
                     take_profit=signal.dispatched_position.take_profit,
@@ -153,10 +152,7 @@ class SignalGenerator:
         # Initialize position
         # signal with values to populate
         position_signal = PositionSignal(
-            position_id=position.id,
-            ticker=position.ticker,
             direction=NO_SIGNAL,
-            strategy="",
             stop_loss=0.0,
             take_profit=0.0,
             target_entry_price=0.0,
@@ -235,10 +231,8 @@ class SignalGenerator:
             # Model the trading signals
             strategy_instance.model_trading_signals()
 
-            # If we got the signal, set
-            # strategy and set the direction
+            # If we got the signal, set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
-                position_signal.strategy = strategy_name
                 position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
 
             # Get close price

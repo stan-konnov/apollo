@@ -6,10 +6,6 @@ from pydantic import BaseModel
 class PositionSignal(BaseModel):
     """A model to represent a signal for open or optimized position."""
 
-    ticker: str
-    position_id: str
-
-    strategy: str
     direction: int
     stop_loss: float
     take_profit: float
