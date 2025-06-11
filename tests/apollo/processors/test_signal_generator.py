@@ -11,7 +11,7 @@ from apollo.errors.system_invariants import (
 from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.models.strategy_parameters import StrategyParameters
-from apollo.processors.signal_dispatcher import SignalDispatcher
+from apollo.processors.signal_generator import SignalGenerator
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
@@ -44,17 +44,19 @@ def mock_get_existing_position_by_status(
     return None
 
 
-def test__dispatch_signals__for_raising_error_if_dispatched_position_exists() -> None:
-    """Test dispatch_signals for raising error if dispatched position already exists."""
+def test__generate_and_dispatch_signals__for_raising_error_if_dispatched_position_exists() -> (  # noqa: E501
+    None
+):
+    """Test generate_and_dispatch_signals for raising error if dispatched position already exists."""  # noqa: E501
 
-    signal_dispatcher = SignalDispatcher()
+    signal_generator = SignalGenerator()
 
-    signal_dispatcher._configuration = Mock()  # noqa: SLF001
-    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-    signal_dispatcher._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: SLF001, E501
+    signal_generator._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: SLF001, E501
         id="test",
         ticker=str(TICKER),
         status=PositionStatus.DISPATCHED,
@@ -70,24 +72,24 @@ def test__dispatch_signals__for_raising_error_if_dispatched_position_exists() ->
         DispatchedPositionAlreadyExistsError,
         match=exception_message,
     ) as exception:
-        signal_dispatcher.dispatch_signals()
+        signal_generator.generate_and_dispatch_signals()
 
     assert str(exception.value) == exception_message
 
 
-def test__dispatch_signals__for_raising_error_if_open_and_optimized_positions_do_not_exist() -> (  # noqa: E501
+def test__generate_and_dispatch_signals__for_raising_error_if_open_and_optimized_positions_do_not_exist() -> (  # noqa: E501
     None
 ):
-    """Test dispatch_signals for raising error if open and optimized positions do not exist."""  # noqa: E501
+    """Test generate_and_dispatch_signals for raising error if open and optimized positions do not exist."""  # noqa: E501
 
-    signal_dispatcher = SignalDispatcher()
+    signal_generator = SignalGenerator()
 
-    signal_dispatcher._configuration = Mock()  # noqa: SLF001
-    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-    signal_dispatcher._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
+    signal_generator._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
 
     exception_message = (
         "Neither open nor optimized position exists. "
@@ -98,34 +100,36 @@ def test__dispatch_signals__for_raising_error_if_open_and_optimized_positions_do
         NeitherOpenNorOptimizedPositionExistsError,
         match=exception_message,
     ) as exception:
-        signal_dispatcher.dispatch_signals()
+        signal_generator.generate_and_dispatch_signals()
 
     assert str(exception.value) == exception_message
 
 
 @pytest.mark.parametrize(
     "requests_post_call",
-    ["apollo.processors.signal_dispatcher.post"],
+    ["apollo.processors.signal_generator.post"],
     indirect=True,
 )
 @pytest.mark.usefixtures("requests_post_call")
-def test__dispatch_signals__for_calling_signal_generation_method() -> None:
-    """Test dispatch_signals for calling signal generation method."""
+def test__generate_and_dispatch_signals__for_calling_signal_generation_method() -> None:
+    """Test generate_and_dispatch_signals for calling signal generation method."""
 
-    signal_dispatcher = SignalDispatcher()
+    signal_generator = SignalGenerator()
 
-    signal_dispatcher._configuration = Mock()  # noqa: SLF001
-    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-    signal_dispatcher._database_connector.get_existing_position_by_status.side_effect = mock_get_existing_position_by_status  # noqa: E501, SLF001
+    signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_existing_position_by_status
+    )
 
-    signal_dispatcher._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
 
-    signal_dispatcher.dispatch_signals()
+    signal_generator.generate_and_dispatch_signals()
 
-    signal_dispatcher._generate_signal_and_brackets.assert_has_calls(  # noqa: SLF001
+    signal_generator._generate_signal_and_brackets.assert_has_calls(  # noqa: SLF001
         [
             mock.call(
                 Position(
@@ -147,31 +151,35 @@ def test__dispatch_signals__for_calling_signal_generation_method() -> None:
 
 @pytest.mark.parametrize(
     "requests_post_call",
-    ["apollo.processors.signal_dispatcher.post"],
+    ["apollo.processors.signal_generator.post"],
     indirect=True,
 )
 @pytest.mark.usefixtures("requests_post_call")
-def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> None:
-    """Test dispatch_signals for updating optimized position to dispatched."""
+def test__generate_and_dispatch_signals__for_updating_optimized_position_to_dispatched() -> (  # noqa: E501
+    None
+):
+    """Test generate_and_dispatch_signals for updating optimized position to dispatched."""  # noqa: E501
 
-    signal_dispatcher = SignalDispatcher()
+    signal_generator = SignalGenerator()
 
-    signal_dispatcher._configuration = Mock()  # noqa: SLF001
-    signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-    signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
     # Ensure optimized position exists
-    signal_dispatcher._database_connector.get_existing_position_by_status.side_effect = mock_get_existing_position_by_status  # noqa: E501, SLF001
+    signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_existing_position_by_status
+    )
 
-    signal_dispatcher._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
 
     stop_loss = 99.9
     take_profit = 100.1
     target_entry_price = 100.0
 
     # Ensure we generate a signal for optimized position
-    signal_dispatcher._generate_signal_and_brackets.return_value = PositionSignal(  # noqa: SLF001
+    signal_generator._generate_signal_and_brackets.return_value = PositionSignal(  # noqa: SLF001
         position_id="test",
         ticker=str(TICKER),
         direction=LONG_SIGNAL,
@@ -181,16 +189,16 @@ def test__dispatch_signals__for_updating_optimized_position_to_dispatched() -> N
         target_entry_price=target_entry_price,
     )
 
-    signal_dispatcher.dispatch_signals()
+    signal_generator.generate_and_dispatch_signals()
 
     # Ensure optimized position is updated to dispatched
-    signal_dispatcher._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
+    signal_generator._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
         position_id="test",
         position_status=PositionStatus.DISPATCHED,
     )
 
     # Ensure optimized position is updated with correct values
-    signal_dispatcher._database_connector.update_position_upon_dispatching.assert_called_once_with(  # noqa: SLF001
+    signal_generator._database_connector.update_position_upon_dispatching.assert_called_once_with(  # noqa: SLF001
         position_id="test",
         strategy=str(STRATEGY),
         direction=LONG_SIGNAL,
@@ -208,18 +216,18 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
     """Test generate_signal_and_brackets for correct signal of optimized position."""
 
     with patch(
-        "apollo.processors.signal_dispatcher.OrderBracketsCalculator",
+        "apollo.processors.signal_generator.OrderBracketsCalculator",
         Mock(),
     ) as mocked_order_brackets_calculator:
-        signal_dispatcher = SignalDispatcher()
+        signal_generator = SignalGenerator()
 
-        signal_dispatcher._configuration = Mock()  # noqa: SLF001
-        signal_dispatcher._database_connector = Mock()  # noqa: SLF001
-        signal_dispatcher._price_data_provider = Mock()  # noqa: SLF001
-        signal_dispatcher._price_data_enhancer = Mock()  # noqa: SLF001
+        signal_generator._configuration = Mock()  # noqa: SLF001
+        signal_generator._database_connector = Mock()  # noqa: SLF001
+        signal_generator._price_data_provider = Mock()  # noqa: SLF001
+        signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-        signal_dispatcher._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
-        signal_dispatcher._price_data_enhancer.enhance_price_data.return_value = (  # noqa: SLF001
+        signal_generator._price_data_provider.get_price_data.return_value = dataframe  # noqa: SLF001
+        signal_generator._price_data_enhancer.enhance_price_data.return_value = (  # noqa: SLF001
             enhanced_dataframe
         )
 
@@ -229,7 +237,7 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
             status=PositionStatus.OPTIMIZED,
         )
 
-        signal_dispatcher._configuration.get_parameter_set.return_value = {  # noqa: SLF001
+        signal_generator._configuration.get_parameter_set.return_value = {  # noqa: SLF001
             "window_size": {
                 "step": 5,
                 "range": [5, 20],
@@ -262,7 +270,7 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         sl_volatility_multiplier = 0.1
         tp_volatility_multiplier = 0.3
 
-        signal_dispatcher._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
+        signal_generator._database_connector.get_optimized_parameters.return_value = [  # noqa: SLF001
             StrategyParameters(
                 strategy=str(STRATEGY),
                 parameters={
@@ -298,12 +306,12 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         # To not over-complicate things
         # we know that selected strategy
         # will generate long signal for last entry
-        generated_signal = signal_dispatcher._generate_signal_and_brackets(  # noqa: SLF001
+        generated_signal = signal_generator._generate_signal_and_brackets(  # noqa: SLF001
             optimized_position,
         )
 
         # Ensure price data is requested
-        signal_dispatcher._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
+        signal_generator._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
             optimized_position.ticker,
             frequency=str(FREQUENCY),
             start_date=str(START_DATE),
@@ -312,12 +320,12 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         )
 
         # Ensure optimized parameters are retrieved
-        signal_dispatcher._database_connector.get_optimized_parameters.assert_called_once_with(  # noqa: SLF001
+        signal_generator._database_connector.get_optimized_parameters.assert_called_once_with(  # noqa: SLF001
             optimized_position.ticker,
         )
 
         # Ensure price data is enhanced
-        signal_dispatcher._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
+        signal_generator._price_data_enhancer.enhance_price_data.assert_called_once_with(  # noqa: SLF001
             # Please see tests/fixtures/window_size_and_dataframe.py
             # for explanation on SameDataframe class
             SameDataframe(dataframe),
@@ -325,7 +333,7 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         )
 
         # Ensure configuration is retrieved
-        signal_dispatcher._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
+        signal_generator._configuration.get_parameter_set.assert_called_once_with(  # noqa: SLF001
             str(STRATEGY),
         )
 

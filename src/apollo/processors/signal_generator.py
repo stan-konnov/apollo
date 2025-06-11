@@ -30,9 +30,9 @@ from apollo.utils.configuration import Configuration
 logger = getLogger(__name__)
 
 
-class SignalDispatcher:
+class SignalGenerator:
     """
-    Signal Dispatcher class.
+    Signal Generator class.
 
     Produces and dispatches signals
     for open and optimized positions.
@@ -43,7 +43,7 @@ class SignalDispatcher:
 
     def __init__(self) -> None:
         """
-        Construct Signal Dispatcher.
+        Construct Signal Generator.
 
         Initialize Configuration.
         Initialize Database Connector.
@@ -56,7 +56,7 @@ class SignalDispatcher:
         self._price_data_provider = PriceDataProvider()
         self._price_data_enhancer = PriceDataEnhancer()
 
-    def dispatch_signals(self) -> None:
+    def generate_and_dispatch_signals(self) -> None:
         """
         Generate and dispatch signals.
 

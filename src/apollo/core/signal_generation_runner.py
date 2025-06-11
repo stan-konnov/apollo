@@ -7,7 +7,7 @@ from pandas import to_datetime
 from zoneinfo import ZoneInfo
 
 from apollo.processors.parameter_optimizer import ParameterOptimizer
-from apollo.processors.signal_dispatcher import SignalDispatcher
+from apollo.processors.signal_generator import SignalGenerator
 from apollo.processors.ticker_screener import TickerScreener
 from apollo.settings import (
     DEFAULT_TIME_FORMAT,
@@ -32,12 +32,12 @@ class SignalGenerationRunner:
         Construct Signal Generation Runner.
 
         Initialize Ticker Screener.
-        Initialize Signal Dispatcher.
+        Initialize Signal Generator.
         Initialize Parameter Optimizer.
         """
 
         self._ticker_screener = TickerScreener()
-        self._signal_dispatcher = SignalDispatcher()
+        self._signal_generator = SignalGenerator()
         self._parameter_optimizer = ParameterOptimizer(
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
@@ -136,8 +136,8 @@ class SignalGenerationRunner:
                 # Optimize parameters for each strategy
                 self._parameter_optimizer.process_in_parallel()
 
-                # Dispatch signals
-                self._signal_dispatcher.dispatch_signals()
+                # Generate and dispatch signals
+                self._signal_generator.generate_and_dispatch_signals()
 
                 # Flip controls
                 self._running = False
