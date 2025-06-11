@@ -104,41 +104,56 @@ class SignalGenerator:
 
         signal = DispatchableSignal()
 
-        # At this point, we should manage
-        # either open or optimized position
+        # At this point, manage
+        # open or optimized position
         if existing_open_position:
-            signal.open_position = self._generate_signal_and_brackets(
+            # Generate signal and brackets
+            open_position_signal = self._generate_signal(
                 existing_open_position,
             )
 
+            # Flip the flag if we have a signal
+            if open_position_signal:
+                signal.open_position = True
+
+                # Update the position with trading details
+                self._database_connector.update_position_on_signal_generation(
+                    position_id=existing_open_position.id,
+                    direction=open_position_signal.direction,
+                    stop_loss=open_position_signal.stop_loss,
+                    take_profit=open_position_signal.take_profit,
+                    target_entry_price=open_position_signal.target_entry_price,
+                )
+
         if existing_optimized_position:
-            signal.dispatched_position = self._generate_signal_and_brackets(
+            dispatched_position_signal = self._generate_signal(
                 existing_optimized_position,
             )
 
-            # If we have optimized position, and we
-            # identified the signal, mark it as dispatched
-            if signal.dispatched_position:
+            # Flip the flag if we have a signal
+            if dispatched_position_signal:
+                signal.dispatched_position = True
+
+                # Update the positions to dispatched status
                 self._database_connector.update_existing_position_by_status(
                     position_id=existing_optimized_position.id,
                     position_status=PositionStatus.DISPATCHED,
                 )
 
-                # Additionally update the
-                # position with dispatching details
-                self._database_connector.update_position_upon_dispatching(
+                # Update the position with trading details
+                self._database_connector.update_position_on_signal_generation(
                     position_id=existing_optimized_position.id,
-                    direction=signal.dispatched_position.direction,
-                    stop_loss=signal.dispatched_position.stop_loss,
-                    take_profit=signal.dispatched_position.take_profit,
-                    target_entry_price=signal.dispatched_position.target_entry_price,
+                    direction=dispatched_position_signal.direction,
+                    stop_loss=dispatched_position_signal.stop_loss,
+                    take_profit=dispatched_position_signal.take_profit,
+                    target_entry_price=dispatched_position_signal.target_entry_price,
                 )
 
         # Finally, dispatch the signal for execution
         if signal.open_position or signal.dispatched_position:
-            emitter.emit(Events.SIGNAL_GENERATED.value, signal.model_dump(mode="json"))
+            emitter.emit(Events.SIGNAL_GENERATED.value, signal)
 
-    def _generate_signal_and_brackets(
+    def _generate_signal(
         self,
         position: Position,
     ) -> PositionSignal | None:

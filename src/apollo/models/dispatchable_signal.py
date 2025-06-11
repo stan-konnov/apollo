@@ -1,10 +1,12 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
 class PositionSignal(BaseModel):
-    """A model to represent a signal for open or optimized position."""
+    """
+    A model to represent a signal for the position.
+
+    Is used internally during signal generation process.
+    """
 
     direction: int
     stop_loss: float
@@ -13,7 +15,12 @@ class PositionSignal(BaseModel):
 
 
 class DispatchableSignal(BaseModel):
-    """A model to represent a signal for dispatching."""
+    """
+    A model to represent a dispatchable signal.
 
-    open_position: Optional[PositionSignal] = None
-    dispatched_position: Optional[PositionSignal] = None
+    Is used intra-system to communicate to the execution logic
+    which position should be opened, updated, or closed on the market.
+    """
+
+    open_position: bool = False
+    dispatched_position: bool = False

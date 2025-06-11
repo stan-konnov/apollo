@@ -225,7 +225,7 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def update_position_upon_dispatching(
+    def update_position_on_signal_generation(
         self,
         position_id: str,
         direction: int,
@@ -234,7 +234,7 @@ class PostgresConnector:
         target_entry_price: float,
     ) -> None:
         """
-        Update position upon dispatching.
+        Update position on signal generation.
 
         :param position_id: Position id to update.
         :param direction: Signal direction.
