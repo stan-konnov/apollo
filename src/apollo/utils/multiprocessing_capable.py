@@ -21,15 +21,6 @@ class MultiprocessingCapable:
         # Get number of available cores
         self._available_cores = cpu_count()
 
-    def process_in_parallel(self) -> None:
-        """
-        Process the task in parallel.
-
-        Is required to be implemented by child classes.
-        """
-
-        raise NotImplementedError("Method process_in_parallel is not implemented.")
-
     def _create_batches(self, inputs: Iterable[TItem]) -> list[list[TItem]]:
         """
         Break inputs collection into equal batches.
