@@ -9,6 +9,7 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
+from apollo.events.emitter import emitter
 from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
 from apollo.models.position import Position, PositionStatus
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
@@ -21,10 +22,9 @@ from apollo.settings import (
     NO_SIGNAL,
     SHORT_SIGNAL,
     START_DATE,
+    Events,
 )
 from apollo.utils.configuration import Configuration
-from mercury.events.emitter import emitter
-from mercury.settings import Events
 
 logger = getLogger(__name__)
 
@@ -57,7 +57,7 @@ class SignalGenerator:
 
     def generate_signals(self) -> None:
         """
-        Generate and dispatch signals.
+        Generate signals, update positions, and notify execution module.
 
         Handle system invariants related to dispatching step.
         """
@@ -135,11 +135,9 @@ class SignalGenerator:
                     target_entry_price=signal.dispatched_position.target_entry_price,
                 )
 
-        # Finally, dispatch the signal to Mercury
+        # Finally, dispatch the signal for execution
         if signal.open_position or signal.dispatched_position:
-            _signal_to_dispatch = signal.model_dump(mode="json")
-
-            emitter.emit(Events.POSITION_OPTIMIZED.value)
+            emitter.emit(Events.POSITION_DISPATCHED.value)
 
     def _generate_signal_and_brackets(
         self,
