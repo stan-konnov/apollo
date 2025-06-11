@@ -7,7 +7,7 @@ from pandas import to_datetime
 from zoneinfo import ZoneInfo
 
 from apollo.processors.parameter_optimizer import ParameterOptimizer
-from apollo.processors.signal_dispatcher import SignalDispatcher
+from apollo.processors.signal_generator import SignalGenerator
 from apollo.processors.ticker_screener import TickerScreener
 from apollo.settings import (
     DEFAULT_TIME_FORMAT,
@@ -32,12 +32,12 @@ class SignalGenerationRunner:
         Construct Signal Generation Runner.
 
         Initialize Ticker Screener.
-        Initialize Signal Dispatcher.
+        Initialize Signal Generator.
         Initialize Parameter Optimizer.
         """
 
         self._ticker_screener = TickerScreener()
-        self._signal_dispatcher = SignalDispatcher()
+        self._signal_generator = SignalGenerator()
         self._parameter_optimizer = ParameterOptimizer(
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
@@ -47,6 +47,8 @@ class SignalGenerationRunner:
     def run_signal_generation(self) -> None:
         """Run signal generation process."""
 
+        last_logged_hour = None
+
         while True:
             # Get current point in time
             # in the configured exchange
@@ -54,6 +56,15 @@ class SignalGenerationRunner:
                 tz=ZoneInfo(
                     EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
                 ),
+            )
+
+            # Current date in the exchange time zone
+            current_date = current_datetime_in_exchange.date()
+            # Current hour in the exchange time zone
+            current_hour = current_datetime_in_exchange.replace(
+                minute=0,
+                second=0,
+                microsecond=0,
             )
 
             # Get close point in time
@@ -84,25 +95,28 @@ class SignalGenerationRunner:
             ]
 
             # Check if today is a business day in configured exchange
-            is_business_day = bool(is_busday(current_datetime_in_exchange.date()))
+            is_business_day = bool(is_busday(current_date))
 
             # Check if today is market holiday in configured exchange
-            is_market_holiday = current_datetime_in_exchange.date() in market_holidays
+            is_market_holiday = current_date in market_holidays
 
-            logger.info(
-                f"Exchange: {EXCHANGE}"
-                "\n\n"
-                f"Is business day: {is_business_day}"
-                "\n\n"
-                f"Is market holiday: {is_market_holiday}"
-                "\n\n"
-                "Current time: "
-                f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
-                "\n\n"
-                f"Open time: {open_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
-                "\n\n"
-                f"Close time: {close_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}",
-            )
+            if last_logged_hour != current_hour:
+                last_logged_hour = current_hour
+
+                logger.info(
+                    f"Exchange: {EXCHANGE}"
+                    "\n\n"
+                    f"Is business day: {is_business_day}"
+                    "\n\n"
+                    f"Is market holiday: {is_market_holiday}"
+                    "\n\n"
+                    "Current time: "
+                    f"{current_datetime_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
+                    "\n\n"
+                    f"Open time: {open_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}"
+                    "\n\n"
+                    f"Close time: {close_time_in_exchange.strftime(DEFAULT_TIME_FORMAT)}",  # noqa: E501
+                )
 
             # If process can run,
             # and today is a business day,
@@ -122,8 +136,8 @@ class SignalGenerationRunner:
                 # Optimize parameters for each strategy
                 self._parameter_optimizer.process_in_parallel()
 
-                # Dispatch signals
-                self._signal_dispatcher.dispatch_signals()
+                # Generate and dispatch signals
+                self._signal_generator.generate_and_dispatch_signals()
 
                 # Flip controls
                 self._running = False

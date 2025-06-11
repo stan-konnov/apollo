@@ -36,6 +36,7 @@ TRDS_DIR = Path(f"{ROOT_DIR}/backtesting_trades")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"
 
+MERCURY_URL = getenv("MERCURY_URL")
 POSTGRES_URL = getenv("POSTGRES_URL")
 INFLUXDB_URL = getenv("INFLUXDB_URL")
 INFLUXDB_ORG = getenv("INFLUXDB_ORG")

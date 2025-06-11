@@ -5,33 +5,37 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from apollo.settings import (
-    DEFAULT_DATE_FORMAT,
-    END_DATE,
-    START_DATE,
-)
+from apollo.settings import DEFAULT_DATE_FORMAT, END_DATE, START_DATE, TICKER
 
 
 @pytest.fixture(name="api_response_dataframe", autouse=True)
 def api_response_dataframe() -> pd.DataFrame:
     """Simulate API response dataframe."""
 
+    api_data = {
+        ("Low", TICKER): [95.0, 96.0],
+        ("High", TICKER): [105.0, 106.0],
+        ("Open", TICKER): [100.0, 101.0],
+        ("Volume", TICKER): [1000, 2000],
+        ("Close", TICKER): [99.0, 100.0],
+        ("Adj Close", TICKER): [98.0, 99.0],
+    }
+
     api_response_dataframe = pd.DataFrame(
-        {
-            "Date": [
-                datetime.strptime(str(START_DATE), DEFAULT_DATE_FORMAT),
-                datetime.strptime(str(END_DATE), DEFAULT_DATE_FORMAT),
-            ],
-            "Open": [100.0, 101.0],
-            "High": [105.0, 106.0],
-            "Low": [95.0, 96.0],
-            "Close": [99.0, 100.0],
-            "Adj Close": [98.0, 99.0],
-            "Volume": [1000, 2000],
-        },
+        api_data,
+        columns=pd.MultiIndex.from_tuples(
+            list(api_data.keys()),
+            names=["Price", "Ticker"],
+        ),
     )
 
-    api_response_dataframe.set_index("Date", inplace=True)
+    api_response_dataframe.index = pd.to_datetime(
+        [
+            datetime.strptime(str(START_DATE), DEFAULT_DATE_FORMAT),
+            datetime.strptime(str(END_DATE), DEFAULT_DATE_FORMAT),
+        ],
+    )
+    api_response_dataframe.index.name = "Date"
 
     return api_response_dataframe
 

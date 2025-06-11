@@ -35,7 +35,7 @@ class YahooApiConnector(BaseApiConnector):
         :raises EmptyApiResponseError: If API response is empty.
         """
 
-        price_data: pd.DataFrame
+        price_data: pd.DataFrame | None
 
         # If max period is requested
         # request prices without start and end date
@@ -44,6 +44,9 @@ class YahooApiConnector(BaseApiConnector):
                 tickers=ticker,
                 interval=frequency,
                 period="max",
+                # NOTE: we do not auto-adjust prices
+                # since we make use of both adjusted and unadjusted prices
+                auto_adjust=False,
             )
         # Otherwise, request prices with bounds
         else:
@@ -52,10 +55,11 @@ class YahooApiConnector(BaseApiConnector):
                 interval=frequency,
                 start=start_date,
                 end=end_date,
+                auto_adjust=False,
             )
 
         # Make sure we have data to work with
-        if price_data.empty:
+        if price_data is None or price_data.empty:
             raise EmptyApiResponseError(
                 "API response returned empty dataframe.",
             )
