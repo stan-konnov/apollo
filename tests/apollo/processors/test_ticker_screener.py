@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
+from freezegun import freeze_time
 from zoneinfo import ZoneInfo
 
 from apollo.calculators.average_true_range import AverageTrueRangeCalculator
@@ -160,6 +161,7 @@ def test__calculate_measures__for_skipping_ticker_if_api_returned_empty_response
     )
 
 
+@freeze_time("2024-12-30 22:00:00")
 @pytest.mark.usefixtures("screened_tickers_dataframe")
 def test__select_suitable_ticker__for_correct_selection(
     screened_tickers_dataframe: pd.DataFrame,

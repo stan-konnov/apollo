@@ -157,7 +157,7 @@ class PriceDataProvider:
         """
         Prepare price data for consistency and storage.
 
-        Reset indices, cast all columns to lowercase.
+        Reset (multi) indices, cast all columns to lowercase.
         Reindex the dataframe back by date column.
         Add ticker column at first position.
 
@@ -170,7 +170,20 @@ class PriceDataProvider:
         """
 
         dataframe.reset_index(inplace=True)
-        dataframe.columns = dataframe.columns.str.lower()
+
+        # Unwind multi-index into flat columns
+        # joined by underscore and cast to lowercase
+        dataframe.columns = [
+            "_".join(map(str, column)).lower() for column in dataframe.columns
+        ]
+
+        # Cleanup created columns from
+        # everything after the first underscore
+        dataframe.columns = [
+            column.split("_")[0] if "_" in column else column
+            for column in dataframe.columns
+        ]
+
         dataframe.set_index("date", inplace=True)
         dataframe.insert(0, "ticker", ticker)
 

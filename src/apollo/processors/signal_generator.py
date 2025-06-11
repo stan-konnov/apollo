@@ -1,10 +1,12 @@
 from logging import getLogger
 
 import pandas as pd
+from requests import post
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
+from apollo.errors.dispatching import MercuryTimeoutError
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
@@ -18,6 +20,7 @@ from apollo.settings import (
     FREQUENCY,
     LONG_SIGNAL,
     MAX_PERIOD,
+    MERCURY_URL,
     NO_SIGNAL,
     SHORT_SIGNAL,
     START_DATE,
@@ -27,9 +30,9 @@ from apollo.utils.configuration import Configuration
 logger = getLogger(__name__)
 
 
-class SignalDispatcher:
+class SignalGenerator:
     """
-    Signal Dispatcher class.
+    Signal Generator class.
 
     Produces and dispatches signals
     for open and optimized positions.
@@ -40,7 +43,7 @@ class SignalDispatcher:
 
     def __init__(self) -> None:
         """
-        Construct Signal Dispatcher.
+        Construct Signal Generator.
 
         Initialize Configuration.
         Initialize Database Connector.
@@ -53,7 +56,7 @@ class SignalDispatcher:
         self._price_data_provider = PriceDataProvider()
         self._price_data_enhancer = PriceDataEnhancer()
 
-    def dispatch_signals(self) -> None:
+    def generate_and_dispatch_signals(self) -> None:
         """
         Generate and dispatch signals.
 
@@ -100,54 +103,60 @@ class SignalDispatcher:
 
         logger.info("Dispatching process started.")
 
-        # Initialize dispatchable signal
-        dispatchable_signal = DispatchableSignal()
+        signal = DispatchableSignal()
 
         # At this point, we should manage
         # either open or optimized position
         if existing_open_position:
-            dispatchable_signal.open_position = self._generate_signal_and_brackets(
+            signal.open_position = self._generate_signal_and_brackets(
                 existing_open_position,
             )
 
         if existing_optimized_position:
-            dispatchable_signal.optimized_position = self._generate_signal_and_brackets(
+            signal.dispatched_position = self._generate_signal_and_brackets(
                 existing_optimized_position,
             )
 
-        # Now, if we have optimized position, and we
-        # identified the signal, we mark it as dispatched
-        # NOTE: whatever happens after, is up to execution module
-        if existing_optimized_position and dispatchable_signal.optimized_position:
-            self._database_connector.update_existing_position_by_status(
-                position_id=existing_optimized_position.id,
-                position_status=PositionStatus.DISPATCHED,
-            )
+            # If we have optimized position, and we
+            # identified the signal, mark it as dispatched
+            if signal.dispatched_position:
+                self._database_connector.update_existing_position_by_status(
+                    position_id=existing_optimized_position.id,
+                    position_status=PositionStatus.DISPATCHED,
+                )
 
-            # We additionally update the
-            # position with dispatching details
-            self._database_connector.update_position_upon_dispatching(
-                position_id=existing_optimized_position.id,
-                strategy=dispatchable_signal.optimized_position.strategy,
-                direction=dispatchable_signal.optimized_position.direction,
-                stop_loss=dispatchable_signal.optimized_position.stop_loss,
-                take_profit=dispatchable_signal.optimized_position.take_profit,
-                target_entry_price=dispatchable_signal.optimized_position.target_entry_price,
-            )
+                # Additionally update the
+                # position with dispatching details
+                self._database_connector.update_position_upon_dispatching(
+                    position_id=existing_optimized_position.id,
+                    strategy=signal.dispatched_position.strategy,
+                    direction=signal.dispatched_position.direction,
+                    stop_loss=signal.dispatched_position.stop_loss,
+                    take_profit=signal.dispatched_position.take_profit,
+                    target_entry_price=signal.dispatched_position.target_entry_price,
+                )
+
+        # Finally, dispatch the signal to Mercury
+        if signal.open_position or signal.dispatched_position:
+            signal_to_dispatch = signal.model_dump(mode="json")
+
+            try:
+                post(
+                    url=f"{MERCURY_URL}/signals/consume",
+                    json=signal_to_dispatch,
+                    timeout=5,
+                )
+
+                logger.info(
+                    f"Dispatched signal: \n\n{signal_to_dispatch}",
+                )
+
+            except TimeoutError as error:
+                raise MercuryTimeoutError(
+                    "Signal dispatching request to Mercury timed out.",
+                ) from error
 
         logger.info("Dispatching process completed.")
-
-        if dispatchable_signal.open_position:
-            logger.info(
-                "Open position signal: \n\n"
-                f"{dispatchable_signal.open_position.model_dump_json(indent=4)}",
-            )
-
-        if dispatchable_signal.optimized_position:
-            logger.info(
-                "Optimized position signal: \n\n"
-                f"{dispatchable_signal.optimized_position.model_dump_json(indent=4)}",
-            )
 
     def _generate_signal_and_brackets(
         self,

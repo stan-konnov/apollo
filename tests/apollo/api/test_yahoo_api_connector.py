@@ -68,6 +68,7 @@ def test__request_price_data__with_max_period_requested(
         tickers=str(TICKER),
         interval=str(FREQUENCY),
         period="max",
+        auto_adjust=False,
     )
 
     assert not price_dataframe.empty
@@ -102,6 +103,7 @@ def test__request_price_data__with_start_and_end_date_requested(
         interval=str(FREQUENCY),
         start=str(START_DATE),
         end=str(END_DATE),
+        auto_adjust=False,
     )
 
     assert not price_dataframe.empty

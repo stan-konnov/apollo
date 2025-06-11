@@ -21,7 +21,7 @@ def test__run_signal_generation__for_correctly_kicking_off_the_process() -> None
     signal_generation_runner = SignalGenerationRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher = Mock()  # noqa: SLF001
+    signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer = Mock()  # noqa: SLF001
 
     with contextlib.suppress(timeout_decorator.TimeoutError):
@@ -29,7 +29,7 @@ def test__run_signal_generation__for_correctly_kicking_off_the_process() -> None
 
     signal_generation_runner._ticker_screener.process_in_parallel.assert_any_call()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer.process_in_parallel.assert_any_call()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher.dispatch_signals.assert_any_call()  # noqa: SLF001
+    signal_generation_runner._signal_generator.generate_and_dispatch_signals.assert_any_call()  # noqa: SLF001
 
 
 # Assume today date is Thursday, 2025-01-02
@@ -46,7 +46,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process() -> None:
     signal_generation_runner = SignalGenerationRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher = Mock()  # noqa: SLF001
+    signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer = Mock()  # noqa: SLF001
 
     with contextlib.suppress(timeout_decorator.TimeoutError):
@@ -54,7 +54,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process() -> None:
 
     signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher.dispatch_signals.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._signal_generator.generate_and_dispatch_signals.assert_not_called()  # noqa: SLF001
 
 
 # Assume today date is Saturday, 2025-01-04
@@ -73,7 +73,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_weekend()
     signal_generation_runner = SignalGenerationRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher = Mock()  # noqa: SLF001
+    signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer = Mock()  # noqa: SLF001
 
     with contextlib.suppress(timeout_decorator.TimeoutError):
@@ -81,7 +81,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_weekend()
 
     signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher.dispatch_signals.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._signal_generator.generate_and_dispatch_signals.assert_not_called()  # noqa: SLF001
 
 
 # Assume today date is Wednesday, 2025-01-01
@@ -98,7 +98,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_mh() -> N
     signal_generation_runner = SignalGenerationRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher = Mock()  # noqa: SLF001
+    signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer = Mock()  # noqa: SLF001
 
     with contextlib.suppress(timeout_decorator.TimeoutError):
@@ -106,4 +106,4 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_mh() -> N
 
     signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
     signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._signal_dispatcher.dispatch_signals.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._signal_generator.generate_and_dispatch_signals.assert_not_called()  # noqa: SLF001

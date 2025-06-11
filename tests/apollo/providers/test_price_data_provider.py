@@ -55,9 +55,16 @@ def test__get_price_data__with_valid_parameters_and_no_data_present(
     expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
-    expected_dataframe_to_write.columns = (
-        expected_dataframe_to_write.columns.str.lower()
-    )
+
+    expected_dataframe_to_write.columns = [
+        "_".join(map(str, column)).lower()
+        for column in expected_dataframe_to_write.columns
+    ]
+    expected_dataframe_to_write.columns = [
+        column.split("_")[0] if "_" in column else column
+        for column in expected_dataframe_to_write.columns
+    ]
+
     expected_dataframe_to_write.set_index("date", inplace=True)
     expected_dataframe_to_write.insert(0, "ticker", TICKER)
 
@@ -184,9 +191,16 @@ def test__get_price_data__with_valid_parameters_and_data_present_to_refresh(
     expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
-    expected_dataframe_to_write.columns = (
-        expected_dataframe_to_write.columns.str.lower()
-    )
+
+    expected_dataframe_to_write.columns = [
+        "_".join(map(str, column)).lower()
+        for column in expected_dataframe_to_write.columns
+    ]
+    expected_dataframe_to_write.columns = [
+        column.split("_")[0] if "_" in column else column
+        for column in expected_dataframe_to_write.columns
+    ]
+
     expected_dataframe_to_write.set_index("date", inplace=True)
     expected_dataframe_to_write.insert(0, "ticker", TICKER)
 
@@ -270,9 +284,16 @@ def test__get_price_data__with_valid_parameters_and_intraday_data(
     expected_dataframe_to_write = api_response_dataframe.copy()
 
     expected_dataframe_to_write.reset_index(inplace=True)
-    expected_dataframe_to_write.columns = (
-        expected_dataframe_to_write.columns.str.lower()
-    )
+
+    expected_dataframe_to_write.columns = [
+        "_".join(map(str, column)).lower()
+        for column in expected_dataframe_to_write.columns
+    ]
+    expected_dataframe_to_write.columns = [
+        column.split("_")[0] if "_" in column else column
+        for column in expected_dataframe_to_write.columns
+    ]
+
     expected_dataframe_to_write.set_index("date", inplace=True)
     expected_dataframe_to_write.insert(0, "ticker", TICKER)
 
