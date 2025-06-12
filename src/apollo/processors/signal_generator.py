@@ -33,11 +33,10 @@ class SignalGenerator:
     """
     Signal Generator class.
 
-    Produces and dispatches signals
-    for open and optimized positions.
+    Produces signals for open and optimized positions.
 
-    Communicates with the execution module
-    to supply the signals for further market execution.
+    Dispatches intra-system events to notify
+    the execution module about generated signals.
     """
 
     def __init__(self) -> None:
@@ -169,14 +168,13 @@ class SignalGenerator:
         position: Position,
     ) -> tuple[int, float, float, float] | None:
         """
-        Generate signal, limit entry price, stop loss, and take profit.
+        Generate direction, limit entry price, stop loss, and take profit.
 
         :param position: Position object.
-        :returns: Position Signal object or None.
+        :returns: Tuple containing signal values or None.
         """
 
-        # Initialize parameters
-        # to update position with
+        # Initialize signal values
         direction: int = NO_SIGNAL
         stop_loss: float = 0.0
         take_profit: float = 0.0
