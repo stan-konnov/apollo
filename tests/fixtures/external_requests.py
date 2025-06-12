@@ -20,21 +20,3 @@ def requests_get_call(request: pytest.FixtureRequest) -> Generator[Mock, None, N
 
     with patch(request.param) as mock_requests_get:
         yield mock_requests_get
-
-
-@pytest.fixture(name="requests_post_call")
-def requests_post_call(request: pytest.FixtureRequest) -> Generator[Mock, None, None]:
-    """
-    Simulate call to requests.post by patching dynamic path.
-
-    Usage example:
-
-    @pytest.mark.parametrize(
-        "requests_post_call",
-        ["path.to.patch.post"],
-        indirect=True
-    )
-    """
-
-    with patch(request.param) as mock_requests_get:
-        yield mock_requests_get

@@ -102,12 +102,6 @@ def test__generate_signals__for_raising_error_if_open_and_optimized_positions_do
     assert str(exception.value) == exception_message
 
 
-@pytest.mark.parametrize(
-    "requests_post_call",
-    ["apollo.processors.signal_generator.post"],
-    indirect=True,
-)
-@pytest.mark.usefixtures("requests_post_call")
 def test__generate_signals__for_calling_signal_generation_method() -> None:
     """Test generate_signals for calling signal generation method."""
 
@@ -146,12 +140,6 @@ def test__generate_signals__for_calling_signal_generation_method() -> None:
     )
 
 
-@pytest.mark.parametrize(
-    "requests_post_call",
-    ["apollo.processors.signal_generator.post"],
-    indirect=True,
-)
-@pytest.mark.usefixtures("requests_post_call")
 def test__generate_signals__for_updating_optimized_position_to_dispatched() -> None:
     """Test generate_signals for updating optimized position to dispatched."""
 

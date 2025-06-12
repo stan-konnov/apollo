@@ -366,12 +366,12 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
     ["apollo.processors.ticker_screener.Pool"],
     indirect=True,
 )
-def test__process_in_parallel__for_correct_screening_process(
+def test__screen_tickers__for_correct_screening_process(
     screened_tickers_dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
     """
-    Test process_in_parallel method for correct screening process.
+    Test screen_tickers method for correct screening process.
 
     Method must call SP500 Components Scraper to scrape SP500 components.
     Method must call calculate_measures method in parallel for each batch.
@@ -419,7 +419,7 @@ def test__process_in_parallel__for_correct_screening_process(
         select_suitable_ticker.return_value = str(TICKER)
 
         # Run the screening process
-        ticker_screener.process_in_parallel()
+        ticker_screener.screen_tickers()
 
         # Assert that we scraped the SP500 components
         ticker_screener._sp500_components_scraper.scrape_sp500_components.assert_called_once()  # noqa: SLF001
@@ -443,9 +443,9 @@ def test__process_in_parallel__for_correct_screening_process(
         initialize_position.assert_called_once_with(str(TICKER))
 
 
-def test__process_in_parallel__for_raising_error_if_screened_position_exists() -> None:
+def test__screen_tickers__for_raising_error_if_screened_position_exists() -> None:
     """
-    Test process_in_parallel method for raising error if screened position exists.
+    Test screen_tickers method for raising error if screened position exists.
 
     Method must raise an error if screened position already exists.
     """
@@ -475,6 +475,6 @@ def test__process_in_parallel__for_raising_error_if_screened_position_exists() -
         ScreenedPositionAlreadyExistsError,
         match=exception_message,
     ) as exception:
-        ticker_screener.process_in_parallel()
+        ticker_screener.screen_tickers()
 
     assert str(exception.value) == exception_message
