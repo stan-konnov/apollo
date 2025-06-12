@@ -175,7 +175,11 @@ class SignalGenerator:
         """
 
         # Initialize signal values
-        direction: int = NO_SIGNAL
+        #
+        # NOTE: use the existing direction
+        # for open position, or default to
+        # NO_SIGNAL for optimized position
+        direction: int = position.direction or NO_SIGNAL
         stop_loss: float = 0.0
         take_profit: float = 0.0
         target_entry_price: float = 0.0
