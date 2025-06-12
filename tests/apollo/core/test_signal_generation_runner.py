@@ -27,8 +27,8 @@ def test__run_signal_generation__for_correctly_kicking_off_the_process() -> None
     with contextlib.suppress(timeout_decorator.TimeoutError):
         signal_generation_runner.run_signal_generation()
 
-    signal_generation_runner._ticker_screener.process_in_parallel.assert_any_call()  # noqa: SLF001
-    signal_generation_runner._parameter_optimizer.process_in_parallel.assert_any_call()  # noqa: SLF001
+    signal_generation_runner._ticker_screener.screen_tickers.assert_any_call()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer.optimize_parameters.assert_any_call()  # noqa: SLF001
     signal_generation_runner._signal_generator.generate_signals.assert_any_call()  # noqa: SLF001
 
 
@@ -52,8 +52,8 @@ def test__run_signal_generation__for_correctly_skipping_the_process() -> None:
     with contextlib.suppress(timeout_decorator.TimeoutError):
         signal_generation_runner.run_signal_generation()
 
-    signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._ticker_screener.screen_tickers.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer.optimize_parameters.assert_not_called()  # noqa: SLF001
     signal_generation_runner._signal_generator.generate_signals.assert_not_called()  # noqa: SLF001
 
 
@@ -79,8 +79,8 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_weekend()
     with contextlib.suppress(timeout_decorator.TimeoutError):
         signal_generation_runner.run_signal_generation()
 
-    signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._ticker_screener.screen_tickers.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer.optimize_parameters.assert_not_called()  # noqa: SLF001
     signal_generation_runner._signal_generator.generate_signals.assert_not_called()  # noqa: SLF001
 
 
@@ -104,6 +104,6 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_mh() -> N
     with contextlib.suppress(timeout_decorator.TimeoutError):
         signal_generation_runner.run_signal_generation()
 
-    signal_generation_runner._ticker_screener.process_in_parallel.assert_not_called()  # noqa: SLF001
-    signal_generation_runner._parameter_optimizer.process_in_parallel.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._ticker_screener.screen_tickers.assert_not_called()  # noqa: SLF001
+    signal_generation_runner._parameter_optimizer.optimize_parameters.assert_not_called()  # noqa: SLF001
     signal_generation_runner._signal_generator.generate_signals.assert_not_called()  # noqa: SLF001
