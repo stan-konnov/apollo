@@ -117,6 +117,12 @@ def test__generate_signals__for_calling_signal_generation_method() -> None:
     )
 
     signal_generator._generate_signal = Mock()  # noqa: SLF001
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        100.0,
+        101.0,
+        99.0,
+    )
 
     signal_generator.generate_signals()
 
@@ -150,7 +156,7 @@ def test__generate_signals__for_updating_optimized_position_to_dispatched() -> N
     signal_generator._price_data_provider = Mock()  # noqa: SLF001
     signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-    # Ensure optimized position exists
+    # Ensure open and optimized position exist
     signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
         mock_get_existing_position_by_status
     )
@@ -177,23 +183,33 @@ def test__generate_signals__for_updating_optimized_position_to_dispatched() -> N
         position_status=PositionStatus.DISPATCHED,
     )
 
-    # Ensure optimized position is updated with correct values
-    signal_generator._database_connector.update_position_upon_dispatching.assert_called_once_with(  # noqa: SLF001
-        position_id="test",
-        strategy=str(STRATEGY),
-        direction=LONG_SIGNAL,
-        stop_loss=stop_loss,
-        take_profit=take_profit,
-        target_entry_price=target_entry_price,
+    # Ensure open and dispatched positions are updated with correct values
+    signal_generator._database_connector.update_position_on_signal_generation.assert_has_calls(  # noqa: SLF001
+        [
+            mock.call(
+                position_id="test",
+                direction=LONG_SIGNAL,
+                stop_loss=stop_loss,
+                take_profit=take_profit,
+                target_entry_price=target_entry_price,
+            ),
+            mock.call(
+                position_id="test",
+                direction=LONG_SIGNAL,
+                stop_loss=stop_loss,
+                take_profit=take_profit,
+                target_entry_price=target_entry_price,
+            ),
+        ],
     )
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
-def test__generate_signal_and_brackets__for_correct_signal_generation(
+def test__generate_signals__for_correct_signal_generation(
     dataframe: pd.DataFrame,
     enhanced_dataframe: pd.DataFrame,
 ) -> None:
-    """Test generate_signal_and_brackets for correct signal of optimized position."""
+    """Test generate_signals for correct signal of optimized position."""
 
     with patch(
         "apollo.processors.signal_generator.OrderBracketsCalculator",
