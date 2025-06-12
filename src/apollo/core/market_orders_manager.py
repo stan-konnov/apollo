@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import TYPE_CHECKING, Any
 
 from alpaca.trading.client import TradingClient
@@ -6,6 +7,8 @@ from apollo.settings import ALPACA_API_KEY, ALPACA_SECRET_KEY
 
 if TYPE_CHECKING:
     from alpaca.trading.models import TradeAccount
+
+logger = getLogger(__name__)
 
 
 class MarketOrdersManager:
@@ -35,3 +38,6 @@ class MarketOrdersManager:
 
         :param dispatched_position: Dispatched position to handle.
         """
+
+        logger.info("Handling dispatched position.")
+        logger.info(f"Account information: {self._account}")

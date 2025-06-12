@@ -12,8 +12,6 @@ logger = getLogger(__name__)
 def handle_signal_generated_event(signal: SignalNotification) -> None:
     """Handle open position recalculated event."""
 
-    logger.info(signal)
-
     market_orders_manager = MarketOrdersManager()
 
     if signal.dispatched_position:
