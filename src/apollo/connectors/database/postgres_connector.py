@@ -191,13 +191,8 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
-                id=position.id,
-                ticker=position.ticker,
-                # NOTE: we pre-query the direction
-                # yet, it's only necessary in some cases
-                # Perhaps, something to optimize in the future
-                direction=position.direction,
                 status=PositionStatus(position.status),
+                **position.model_dump(exclude={"status"}),
             )
             if position
             else None
