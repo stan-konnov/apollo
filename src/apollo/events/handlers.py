@@ -1,7 +1,7 @@
 from logging import getLogger
 
+from apollo.core.market_orders_manager import MarketOrdersManager
 from apollo.events.emitter import emitter
-from apollo.managers.order_manager import OrderManager
 from apollo.models.signal_notification import SignalNotification
 from apollo.settings import Events
 
@@ -14,7 +14,7 @@ def handle_signal_generated_event(signal: SignalNotification) -> None:
 
     logger.info(signal)
 
-    order_manager = OrderManager()
+    market_orders_manager = MarketOrdersManager()
 
     if signal.dispatched_position:
-        order_manager.handle_dispatched_position()
+        market_orders_manager.handle_dispatched_position()

@@ -8,15 +8,15 @@ if TYPE_CHECKING:
     from alpaca.trading.models import TradeAccount
 
 
-class OrderManager:
+class MarketOrdersManager:
     """
-    Order Manager class.
+    Market Orders Manager class.
 
     Exists as abstraction over Alpaca API, time and market calendar aware.
     """
 
     def __init__(self) -> None:
-        """Construct Order Manager."""
+        """Construct Market Orders Manager."""
 
         # Initialize trading client
         self._trading_client = TradingClient(
