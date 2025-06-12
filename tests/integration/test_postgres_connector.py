@@ -607,11 +607,11 @@ def test__update_existing_position_by_status__for_updating_position(
     "prisma_client",
     "flush_postgres_database",
 )
-def test__update_position_upon_dispatching__for_updating_position(
+def test__update_position_on_signal_generation__for_updating_position(
     prisma_client: Prisma,
 ) -> None:
     """
-    Test update_position_upon_dispatching for updating position.
+    Test update_position_on_signal_generation for updating position.
 
     PostgresConnector should update position upon dispatching.
     """
@@ -633,9 +633,8 @@ def test__update_position_upon_dispatching__for_updating_position(
     take_profit = 110.0
     target_entry_price = 100.0
 
-    postgres_connector.update_position_upon_dispatching(
+    postgres_connector.update_position_on_signal_generation(
         position_id=control_position.id,
-        strategy=str(STRATEGY),
         direction=LONG_SIGNAL,
         stop_loss=stop_loss,
         take_profit=take_profit,
@@ -649,7 +648,6 @@ def test__update_position_upon_dispatching__for_updating_position(
     )
 
     assert position is not None
-    assert position.strategy == str(STRATEGY)
     assert position.direction == LONG_SIGNAL
     assert position.stop_loss == stop_loss
     assert position.take_profit == take_profit
