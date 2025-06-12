@@ -193,6 +193,10 @@ class PostgresConnector:
             Position(
                 id=position.id,
                 ticker=position.ticker,
+                # NOTE: we pre-query the direction
+                # yet, it's only necessary in some cases
+                # Perhaps, something to optimize in the future
+                direction=position.direction,
                 status=PositionStatus(position.status),
             )
             if position
