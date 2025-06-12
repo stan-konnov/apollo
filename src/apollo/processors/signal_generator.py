@@ -10,8 +10,8 @@ from apollo.errors.system_invariants import (
     NeitherOpenNorOptimizedPositionExistsError,
 )
 from apollo.events.emitter import emitter
-from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
 from apollo.models.position import Position, PositionStatus
+from apollo.models.signal_notification import SignalNotification
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -102,7 +102,7 @@ class SignalGenerator:
 
         logger.info("Generation process started.")
 
-        signal = DispatchableSignal()
+        signal_notification = SignalNotification()
 
         # At this point, manage
         # open or optimized position
@@ -114,15 +114,20 @@ class SignalGenerator:
 
             # Flip the flag if we got one
             if open_position_signal:
-                signal.open_position = True
+                signal_notification.open_position = True
 
-                # Update the position with trading details
+                # Unpack the signal values
+                direction, stop_loss, take_profit, target_entry_price = (
+                    open_position_signal
+                )
+
+                # Update the position with signal details
                 self._database_connector.update_position_on_signal_generation(
                     position_id=existing_open_position.id,
-                    direction=open_position_signal.direction,
-                    stop_loss=open_position_signal.stop_loss,
-                    take_profit=open_position_signal.take_profit,
-                    target_entry_price=open_position_signal.target_entry_price,
+                    direction=direction,
+                    stop_loss=stop_loss,
+                    take_profit=take_profit,
+                    target_entry_price=target_entry_price,
                 )
 
         if existing_optimized_position:
@@ -133,7 +138,12 @@ class SignalGenerator:
 
             # Flip the flag if we got one
             if dispatched_position_signal:
-                signal.dispatched_position = True
+                signal_notification.dispatched_position = True
+
+                # Unpack the signal values
+                direction, stop_loss, take_profit, target_entry_price = (
+                    dispatched_position_signal
+                )
 
                 # Update the positions to dispatched status
                 self._database_connector.update_existing_position_by_status(
@@ -141,23 +151,23 @@ class SignalGenerator:
                     position_status=PositionStatus.DISPATCHED,
                 )
 
-                # Update the position with trading details
+                # Update the position with signal details
                 self._database_connector.update_position_on_signal_generation(
                     position_id=existing_optimized_position.id,
-                    direction=dispatched_position_signal.direction,
-                    stop_loss=dispatched_position_signal.stop_loss,
-                    take_profit=dispatched_position_signal.take_profit,
-                    target_entry_price=dispatched_position_signal.target_entry_price,
+                    direction=direction,
+                    stop_loss=stop_loss,
+                    take_profit=take_profit,
+                    target_entry_price=target_entry_price,
                 )
 
         # Finally, dispatch the signal for execution
-        if signal.open_position or signal.dispatched_position:
-            emitter.emit(Events.SIGNAL_GENERATED.value, signal)
+        if signal_notification.open_position or signal_notification.dispatched_position:
+            emitter.emit(Events.SIGNAL_GENERATED.value, signal_notification)
 
     def _generate_signal(
         self,
         position: Position,
-    ) -> PositionSignal | None:
+    ) -> tuple[int, float, float, float] | None:
         """
         Generate signal, limit entry price, stop loss, and take profit.
 
@@ -165,14 +175,12 @@ class SignalGenerator:
         :returns: Position Signal object or None.
         """
 
-        # Initialize position
-        # signal with values to populate
-        position_signal = PositionSignal(
-            direction=NO_SIGNAL,
-            stop_loss=0.0,
-            take_profit=0.0,
-            target_entry_price=0.0,
-        )
+        # Initialize parameters
+        # to update position with
+        direction: int = NO_SIGNAL
+        stop_loss: float = 0.0
+        take_profit: float = 0.0
+        target_entry_price: float = 0.0
 
         # Get price data for the position ticker
         price_dataframe = self._price_data_provider.get_price_data(
@@ -249,7 +257,7 @@ class SignalGenerator:
 
             # If we got the signal, set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
-                position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
+                direction = clean_price_dataframe.iloc[-1]["signal"]
 
             # Get close price
             close_price = clean_price_dataframe.iloc[-1]["close"]
@@ -283,23 +291,26 @@ class SignalGenerator:
             )
 
             # Set brackets based on the direction
-            if position_signal.direction == LONG_SIGNAL:
-                position_signal.stop_loss = long_sl
-                position_signal.take_profit = long_tp
-                position_signal.target_entry_price = long_limit
+            if direction == LONG_SIGNAL:
+                stop_loss = long_sl
+                take_profit = long_tp
+                target_entry_price = long_limit
 
-            elif position_signal.direction == SHORT_SIGNAL:
-                position_signal.stop_loss = short_sl
-                position_signal.take_profit = short_tp
-                position_signal.target_entry_price = short_limit
+            elif direction == SHORT_SIGNAL:
+                stop_loss = short_sl
+                take_profit = short_tp
+                target_entry_price = short_limit
 
             # Break the loop if it is open position
             # or if we got the signal for optimized
             if position.status == PositionStatus.OPEN or (
-                position.status == PositionStatus.OPTIMIZED
-                and position_signal.direction != NO_SIGNAL
+                position.status == PositionStatus.OPTIMIZED and direction != NO_SIGNAL
             ):
                 break
 
         # Return identified signal or None
-        return position_signal if position_signal.direction != NO_SIGNAL else None
+        return (
+            (direction, stop_loss, take_profit, target_entry_price)
+            if direction != NO_SIGNAL
+            else None
+        )

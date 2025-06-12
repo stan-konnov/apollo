@@ -8,8 +8,8 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
+from apollo.models.signal_notification import PositionSignal
 from apollo.models.strategy_parameters import StrategyParameters
 from apollo.processors.signal_generator import SignalGenerator
 from apollo.settings import (
