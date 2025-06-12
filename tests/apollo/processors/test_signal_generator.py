@@ -9,7 +9,6 @@ from apollo.errors.system_invariants import (
     NeitherOpenNorOptimizedPositionExistsError,
 )
 from apollo.models.position import Position, PositionStatus
-from apollo.models.signal_notification import PositionSignal
 from apollo.models.strategy_parameters import StrategyParameters
 from apollo.processors.signal_generator import SignalGenerator
 from apollo.settings import (
@@ -123,11 +122,11 @@ def test__generate_signals__for_calling_signal_generation_method() -> None:
         mock_get_existing_position_by_status
     )
 
-    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
 
     signal_generator.generate_signals()
 
-    signal_generator._generate_signal_and_brackets.assert_has_calls(  # noqa: SLF001
+    signal_generator._generate_signal.assert_has_calls(  # noqa: SLF001
         [
             mock.call(
                 Position(
@@ -168,21 +167,18 @@ def test__generate_signals__for_updating_optimized_position_to_dispatched() -> N
         mock_get_existing_position_by_status
     )
 
-    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
 
     stop_loss = 99.9
     take_profit = 100.1
     target_entry_price = 100.0
 
     # Ensure we generate a signal for optimized position
-    signal_generator._generate_signal_and_brackets.return_value = PositionSignal(  # noqa: SLF001
-        position_id="test",
-        ticker=str(TICKER),
-        direction=LONG_SIGNAL,
-        strategy=str(STRATEGY),
-        stop_loss=stop_loss,
-        take_profit=take_profit,
-        target_entry_price=target_entry_price,
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        stop_loss,
+        take_profit,
+        target_entry_price,
     )
 
     signal_generator.generate_signals()
@@ -302,7 +298,7 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         # To not over-complicate things
         # we know that selected strategy
         # will generate long signal for last entry
-        generated_signal = signal_generator._generate_signal_and_brackets(  # noqa: SLF001
+        generated_signal = signal_generator._generate_signal(  # noqa: SLF001
             optimized_position,
         )
 
@@ -349,12 +345,9 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         )
 
         # Assert generated signal
-        assert generated_signal == PositionSignal(
-            position_id="test",
-            ticker=str(TICKER),
-            direction=LONG_SIGNAL,
-            strategy=str(STRATEGY),
-            stop_loss=long_sl,
-            take_profit=long_tp,
-            target_entry_price=long_limit,
+        assert generated_signal == (
+            LONG_SIGNAL,
+            long_sl,
+            long_tp,
+            long_limit,
         )

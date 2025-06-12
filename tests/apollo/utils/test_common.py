@@ -5,6 +5,8 @@ from numpy import datetime64
 
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
+    ALPACA_API_KEY,
+    ALPACA_SECRET_KEY,
     END_DATE,
     EXCHANGE,
     EXCHANGE_TIME_ZONE_AND_HOURS,
@@ -14,7 +16,6 @@ from apollo.settings import (
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
-    MERCURY_URL,
     POSTGRES_URL,
     SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
@@ -63,8 +64,9 @@ def test__ensure_environment_is_configured__for_correctly_checking_env_variables
         "END_DATE": END_DATE,
         "FREQUENCY": FREQUENCY,
         "VIX_TICKER": VIX_TICKER,
-        "MERCURY_URL": MERCURY_URL,
         "POSTGRES_URL": POSTGRES_URL,
+        "ALPACA_API_KEY": ALPACA_API_KEY,
+        "ALPACA_SECRET_KEY": ALPACA_SECRET_KEY,
         "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_ORG": INFLUXDB_ORG,
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,
