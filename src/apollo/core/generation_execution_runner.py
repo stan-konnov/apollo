@@ -68,5 +68,6 @@ class GenerationExecutionRunner(MarketTimeAware):
                 self._status_logged = True
 
                 logger.info(
-                    "Cannot generate at the moment. Waiting for the market to close.",
+                    "Cannot generate at the moment. "
+                    "Market is still open, or it is a weekend, or it is a holiday.",
                 )
