@@ -128,8 +128,6 @@ class SignalGenerationRunner:
                 and not is_market_holiday
                 and current_datetime_in_exchange.time() >= close_time_in_exchange
             ):
-                logger.info("Signal generation process started.")
-
                 # Screen tickers
                 self._ticker_screener.screen_tickers()
 
@@ -141,8 +139,6 @@ class SignalGenerationRunner:
 
                 # Flip controls
                 self._running = False
-
-                logger.info("Signal generation process completed.")
 
             # Flip back after market open,
             # but before close, on a business, non-holiday day
