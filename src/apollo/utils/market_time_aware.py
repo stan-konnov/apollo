@@ -19,6 +19,8 @@ class MarketTimeAware:
     def __init__(self) -> None:
         """Construct Market Time Aware.."""
 
+        # Declare a boolean to
+        # control logs in child classes
         self._status_logged = False
 
     def _determine_if_generate_or_execute(self) -> tuple[bool, bool]:
