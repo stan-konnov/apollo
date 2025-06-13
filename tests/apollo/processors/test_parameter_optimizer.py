@@ -346,12 +346,12 @@ def test__output_results__for_correct_result_output(
     ["apollo.processors.parameter_optimizer.Pool"],
     indirect=True,
 )
-def test__optimize_parameters_in_parallel__for_correct_optimization_process(
+def test__optimize_parameters__for_correct_optimization_process(
     dataframe: pd.DataFrame,
     multiprocessing_pool: Mock,
 ) -> None:
     """
-    Test process_in_parallel for correct optimization process.
+    Test optimize_parameters for correct optimization process.
 
     Method must call Price Data Provider to get price data.
     Method must call Price Data Enhancer to enhance price data.
@@ -437,7 +437,7 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
             (str(STRATEGY), batch, dataframe, parameter_set, keys) for batch in batches
         ]
 
-        parameter_optimizer.process_in_parallel()
+        parameter_optimizer.optimize_parameters()
 
         # Assert that we requested the price data
         parameter_optimizer._price_data_provider.get_price_data.assert_called_once_with(  # noqa: SLF001
@@ -476,11 +476,9 @@ def test__optimize_parameters_in_parallel__for_correct_optimization_process(
         )
 
 
-def test__optimize_parameters_in_parallel__for_raising_error_if_position_exists() -> (
-    None
-):
+def test__optimize_parameters__for_raising_error_if_position_exists() -> None:
     """
-    Test process_in_parallel for raising error if position exists.
+    Test optimize_parameters for raising error if position exists.
 
     Method must raise error if existing optimized position is found.
     """
@@ -505,16 +503,16 @@ def test__optimize_parameters_in_parallel__for_raising_error_if_position_exists(
         OptimizedPositionAlreadyExistsError,
         match=exception_message,
     ) as exception:
-        parameter_optimizer.process_in_parallel()
+        parameter_optimizer.optimize_parameters()
 
     assert str(exception.value) == exception_message
 
 
-def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_position(
+def test__optimize_parameters__for_skipping_process_if_no_screened_position(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
-    Test process_in_parallel for skipping process if no screened position.
+    Test optimize_parameters for skipping process if no screened position.
 
     Method must log if no screened position is found.
     Method must not call perform any database write operations.
@@ -529,7 +527,7 @@ def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_p
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
     parameter_optimizer._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
 
-    parameter_optimizer.process_in_parallel()
+    parameter_optimizer.optimize_parameters()
 
     assert (
         str(
@@ -549,9 +547,9 @@ def test__optimize_parameters_in_parallel__for_skipping_process_if_no_screened_p
         "Strategy2": "Strategy2",
     },
 )
-def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
+def test__optimize_parameters__for_multiple_strategies() -> None:
     """
-    Test process_in_parallel for multiple strategies.
+    Test optimize_parameters for multiple strategies.
 
     Method must call process method in parallel for each strategy.
     Method must call update_position_on_optimization after all strategies are processed.
@@ -589,7 +587,7 @@ def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
         ParameterOptimizer,
         "_run_optimization_process",
     ) as _run_optimization_process:
-        parameter_optimizer.process_in_parallel()
+        parameter_optimizer.optimize_parameters()
 
         _run_optimization_process.assert_has_calls(
             [
@@ -610,9 +608,9 @@ def test__optimize_parameters_in_parallel__for_multiple_strategies() -> None:
         )
 
 
-def test__optimize_parameters_in_parallel__for_single_strategies() -> None:
+def test__optimize_parameters__for_single_strategies() -> None:
     """
-    Test process_in_parallel for single strategies.
+    Test optimize_parameters for single strategies.
 
     Method must call process method in parallel with default parameters.
     Method must not call update_position_on_optimization after strategy is processed.
@@ -628,7 +626,7 @@ def test__optimize_parameters_in_parallel__for_single_strategies() -> None:
         ParameterOptimizer,
         "_run_optimization_process",
     ) as _run_optimization_process:
-        parameter_optimizer.process_in_parallel()
+        parameter_optimizer.optimize_parameters()
 
         _run_optimization_process.assert_called_once_with()
 

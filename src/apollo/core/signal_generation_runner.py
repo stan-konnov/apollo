@@ -131,13 +131,13 @@ class SignalGenerationRunner:
                 logger.info("Signal generation process started.")
 
                 # Screen tickers
-                self._ticker_screener.process_in_parallel()
+                self._ticker_screener.screen_tickers()
 
                 # Optimize parameters for each strategy
-                self._parameter_optimizer.process_in_parallel()
+                self._parameter_optimizer.optimize_parameters()
 
-                # Generate and dispatch signals
-                self._signal_generator.generate_and_dispatch_signals()
+                # Generate and signals
+                self._signal_generator.generate_signals()
 
                 # Flip controls
                 self._running = False

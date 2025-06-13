@@ -3,6 +3,8 @@ from pandas import to_datetime
 
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
 from apollo.settings import (
+    ALPACA_API_KEY,
+    ALPACA_SECRET_KEY,
     DEFAULT_DATE_FORMAT,
     END_DATE,
     EXCHANGE,
@@ -13,7 +15,6 @@ from apollo.settings import (
     INFLUXDB_ORG,
     INFLUXDB_TOKEN,
     INFLUXDB_URL,
-    MERCURY_URL,
     POSTGRES_URL,
     SCREENING_LIQUIDITY_THRESHOLD,
     SCREENING_WINDOW_SIZE,
@@ -61,8 +62,9 @@ def ensure_environment_is_configured() -> None:
         "END_DATE": END_DATE,
         "FREQUENCY": FREQUENCY,
         "VIX_TICKER": VIX_TICKER,
-        "MERCURY_URL": MERCURY_URL,
         "POSTGRES_URL": POSTGRES_URL,
+        "ALPACA_API_KEY": ALPACA_API_KEY,
+        "ALPACA_SECRET_KEY": ALPACA_SECRET_KEY,
         "INFLUXDB_URL": INFLUXDB_URL,
         "INFLUXDB_ORG": INFLUXDB_ORG,
         "INFLUXDB_TOKEN": INFLUXDB_TOKEN,

@@ -69,7 +69,7 @@ class ParameterOptimizer(MultiprocessingCapable):
         self._price_data_provider = PriceDataProvider()
         self._price_data_enhancer = PriceDataEnhancer()
 
-    def process_in_parallel(self) -> None:
+    def optimize_parameters(self) -> None:
         """Run the optimization process in parallel."""
 
         logger.info("Optimization process started.")

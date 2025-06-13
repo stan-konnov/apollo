@@ -1,18 +1,17 @@
 from logging import getLogger
 
 import pandas as pd
-from requests import post
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.core.order_brackets_calculator import OrderBracketsCalculator
 from apollo.core.strategy_catalogue_map import STRATEGY_CATALOGUE_MAP
-from apollo.errors.dispatching import MercuryTimeoutError
 from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import DispatchableSignal, PositionSignal
+from apollo.events.event_emitter import event_emitter
 from apollo.models.position import Position, PositionStatus
+from apollo.models.signal_notification import SignalNotification
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
 from apollo.providers.price_data_provider import PriceDataProvider
 from apollo.settings import (
@@ -20,10 +19,10 @@ from apollo.settings import (
     FREQUENCY,
     LONG_SIGNAL,
     MAX_PERIOD,
-    MERCURY_URL,
     NO_SIGNAL,
     SHORT_SIGNAL,
     START_DATE,
+    Events,
 )
 from apollo.utils.configuration import Configuration
 
@@ -34,11 +33,10 @@ class SignalGenerator:
     """
     Signal Generator class.
 
-    Produces and dispatches signals
-    for open and optimized positions.
+    Produces signals for open and optimized positions.
 
-    Communicates with the execution module
-    to supply the signals for further market execution.
+    Dispatches intra-system events to notify
+    the execution module about generated signals.
     """
 
     def __init__(self) -> None:
@@ -56,9 +54,9 @@ class SignalGenerator:
         self._price_data_provider = PriceDataProvider()
         self._price_data_enhancer = PriceDataEnhancer()
 
-    def generate_and_dispatch_signals(self) -> None:
+    def generate_signals(self) -> None:
         """
-        Generate and dispatch signals.
+        Generate signals, update positions, and notify execution module.
 
         Handle system invariants related to dispatching step.
         """
@@ -101,85 +99,98 @@ class SignalGenerator:
                 "System invariant violated, position was not opened or optimized.",
             )
 
-        logger.info("Dispatching process started.")
+        logger.info("Generation process started.")
 
-        signal = DispatchableSignal()
+        signal_notification = SignalNotification()
 
-        # At this point, we should manage
-        # either open or optimized position
+        # At this point, manage
+        # open or optimized position
         if existing_open_position:
-            signal.open_position = self._generate_signal_and_brackets(
+            # Generate signal
+            open_position_signal = self._generate_signal(
                 existing_open_position,
             )
 
+            # Flip the flag if we got one
+            if open_position_signal:
+                signal_notification.open_position = True
+
+                # Unpack the signal values
+                direction, stop_loss, take_profit, target_entry_price = (
+                    open_position_signal
+                )
+
+                # Update the position with signal details
+                self._database_connector.update_position_on_signal_generation(
+                    position_id=existing_open_position.id,
+                    direction=direction,
+                    stop_loss=stop_loss,
+                    take_profit=take_profit,
+                    target_entry_price=target_entry_price,
+                )
+
         if existing_optimized_position:
-            signal.dispatched_position = self._generate_signal_and_brackets(
+            # Generate signal
+            dispatched_position_signal = self._generate_signal(
                 existing_optimized_position,
             )
 
-            # If we have optimized position, and we
-            # identified the signal, mark it as dispatched
-            if signal.dispatched_position:
+            # Flip the flag if we got one
+            if dispatched_position_signal:
+                signal_notification.dispatched_position = True
+
+                # Unpack the signal values
+                direction, stop_loss, take_profit, target_entry_price = (
+                    dispatched_position_signal
+                )
+
+                # Update the positions to dispatched status
                 self._database_connector.update_existing_position_by_status(
                     position_id=existing_optimized_position.id,
                     position_status=PositionStatus.DISPATCHED,
                 )
 
-                # Additionally update the
-                # position with dispatching details
-                self._database_connector.update_position_upon_dispatching(
+                # Update the position with signal details
+                self._database_connector.update_position_on_signal_generation(
                     position_id=existing_optimized_position.id,
-                    strategy=signal.dispatched_position.strategy,
-                    direction=signal.dispatched_position.direction,
-                    stop_loss=signal.dispatched_position.stop_loss,
-                    take_profit=signal.dispatched_position.take_profit,
-                    target_entry_price=signal.dispatched_position.target_entry_price,
+                    direction=direction,
+                    stop_loss=stop_loss,
+                    take_profit=take_profit,
+                    target_entry_price=target_entry_price,
                 )
 
-        # Finally, dispatch the signal to Mercury
-        if signal.open_position or signal.dispatched_position:
-            signal_to_dispatch = signal.model_dump(mode="json")
+        logger.info("Generation process complete.")
 
-            try:
-                post(
-                    url=f"{MERCURY_URL}/signals/consume",
-                    json=signal_to_dispatch,
-                    timeout=5,
-                )
+        # Finally, dispatch the signal for execution
+        if signal_notification.open_position or signal_notification.dispatched_position:
+            logger.info("Dispatching signals for execution.")
+            event_emitter.emit(Events.SIGNAL_GENERATED.value, signal_notification)
 
-                logger.info(
-                    f"Dispatched signal: \n\n{signal_to_dispatch}",
-                )
-
-            except TimeoutError as error:
-                raise MercuryTimeoutError(
-                    "Signal dispatching request to Mercury timed out.",
-                ) from error
-
-        logger.info("Dispatching process completed.")
-
-    def _generate_signal_and_brackets(
+    def _generate_signal(
         self,
         position: Position,
-    ) -> PositionSignal | None:
+    ) -> tuple[int, float, float, float] | None:
         """
-        Generate signal, limit entry price, stop loss, and take profit.
+        Generate direction, limit entry price, stop loss, and take profit.
 
         :param position: Position object.
-        :returns: Position Signal object or None.
+        :returns: Tuple containing signal values or None.
         """
 
-        # Initialize position
-        # signal with values to populate
-        position_signal = PositionSignal(
-            position_id=position.id,
-            ticker=position.ticker,
-            direction=NO_SIGNAL,
-            strategy="",
-            stop_loss=0.0,
-            take_profit=0.0,
-            target_entry_price=0.0,
+        # Initialize signal values
+        #
+        # NOTE: use the existing direction
+        # for open position, or default to
+        # NO_SIGNAL for optimized position
+        direction: int = (
+            position.direction
+            if position.direction and position.status == PositionStatus.OPEN.value
+            else NO_SIGNAL
         )
+
+        stop_loss: float = 0.0
+        take_profit: float = 0.0
+        target_entry_price: float = 0.0
 
         # Get price data for the position ticker
         price_dataframe = self._price_data_provider.get_price_data(
@@ -254,11 +265,9 @@ class SignalGenerator:
             # Model the trading signals
             strategy_instance.model_trading_signals()
 
-            # If we got the signal, set
-            # strategy and set the direction
+            # If we got the signal, set the direction
             if clean_price_dataframe.iloc[-1]["signal"] != NO_SIGNAL:
-                position_signal.strategy = strategy_name
-                position_signal.direction = clean_price_dataframe.iloc[-1]["signal"]
+                direction = clean_price_dataframe.iloc[-1]["signal"]
 
             # Get close price
             close_price = clean_price_dataframe.iloc[-1]["close"]
@@ -292,23 +301,26 @@ class SignalGenerator:
             )
 
             # Set brackets based on the direction
-            if position_signal.direction == LONG_SIGNAL:
-                position_signal.stop_loss = long_sl
-                position_signal.take_profit = long_tp
-                position_signal.target_entry_price = long_limit
+            if direction == LONG_SIGNAL:
+                stop_loss = long_sl
+                take_profit = long_tp
+                target_entry_price = long_limit
 
-            elif position_signal.direction == SHORT_SIGNAL:
-                position_signal.stop_loss = short_sl
-                position_signal.take_profit = short_tp
-                position_signal.target_entry_price = short_limit
+            elif direction == SHORT_SIGNAL:
+                stop_loss = short_sl
+                take_profit = short_tp
+                target_entry_price = short_limit
 
             # Break the loop if it is open position
             # or if we got the signal for optimized
             if position.status == PositionStatus.OPEN or (
-                position.status == PositionStatus.OPTIMIZED
-                and position_signal.direction != NO_SIGNAL
+                position.status == PositionStatus.OPTIMIZED and direction != NO_SIGNAL
             ):
                 break
 
         # Return identified signal or None
-        return position_signal if position_signal.direction != NO_SIGNAL else None
+        return (
+            (direction, stop_loss, take_profit, target_entry_price)
+            if direction != NO_SIGNAL
+            else None
+        )

@@ -191,9 +191,8 @@ class PostgresConnector:
         # And return the position if exists
         return (
             Position(
-                id=position.id,
-                ticker=position.ticker,
                 status=PositionStatus(position.status),
+                **position.model_dump(exclude={"status"}),
             )
             if position
             else None
@@ -225,20 +224,18 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def update_position_upon_dispatching(
+    def update_position_on_signal_generation(
         self,
         position_id: str,
-        strategy: str,
         direction: int,
         stop_loss: float,
         take_profit: float,
         target_entry_price: float,
     ) -> None:
         """
-        Update position upon dispatching.
+        Update position on signal generation.
 
         :param position_id: Position id to update.
-        :param strategy: Strategy name.
         :param direction: Signal direction.
         :param stop_loss: Stop loss price.
         :param take_profit: Take profit price.
@@ -253,7 +250,6 @@ class PostgresConnector:
                 "id": position_id,
             },
             data={
-                "strategy": strategy,
                 # NOTE: we map to python int since Prisma
                 # does not yet understand numpy int types
                 "direction": int(direction),
