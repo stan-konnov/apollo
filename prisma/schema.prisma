@@ -61,8 +61,7 @@ model positions {
   status                    String
 
   // At the point of dispatching,
-  // we know strategy, direction, and target
-  strategy                  String?
+  // we know direction, and target
   direction                 Int?
   target_entry_price        Float?
 

@@ -39,7 +39,6 @@ class Position(BaseModel):
     ticker: str
     status: PositionStatus
 
-    strategy: Optional[str] = None
     direction: Optional[int] = None
     target_entry_price: Optional[float] = None
 
