@@ -30,6 +30,8 @@ class SignalGenerationRunner(MarketTimeAware):
         Initialize Parameter Optimizer.
         """
 
+        super().__init__()
+
         self._ticker_screener = TickerScreener()
         self._signal_generator = SignalGenerator()
         self._parameter_optimizer = ParameterOptimizer(
@@ -58,6 +60,13 @@ class SignalGenerationRunner(MarketTimeAware):
                 # once orders are places and state is synchronized
                 self._signal_generator.generate_signals()
 
-            logger.info(
-                "Cannot generate at the moment. Waiting for the market to close.",
-            )
+                # Reset status logged flag
+                self._status_logged = False
+
+            # Log status if not logged yet
+            if not self._status_logged:
+                self._status_logged = True
+
+                logger.info(
+                    "Cannot generate at the moment. Waiting for the market to close.",
+                )

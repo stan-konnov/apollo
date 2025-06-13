@@ -42,6 +42,8 @@ class MarketOrdersManager(MarketTimeAware):
         Initialize Database Connector.
         """
 
+        super().__init__()
+
         self._trading_client = TradingClient(
             api_key=ALPACA_API_KEY,
             secret_key=ALPACA_SECRET_KEY,
@@ -136,10 +138,17 @@ class MarketOrdersManager(MarketTimeAware):
                     f"Placed limit order for dispatched position: {limit_order} ",
                 )
 
+                # Reset status logged flag
+                self._status_logged = False
+
                 # Break after placing an order
                 # and synchronizing the position
                 break
 
-            logger.info(
-                "Cannot execute at the moment. Waiting for the market to open.",
-            )
+            # Log status if not logged yet
+            if not self._status_logged:
+                self._status_logged = True
+
+                logger.info(
+                    "Cannot execute at the moment. Waiting for the market to open.",
+                )

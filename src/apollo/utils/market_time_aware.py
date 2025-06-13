@@ -16,6 +16,11 @@ class MarketTimeAware:
     system can run generation or execution processes.
     """
 
+    def __init__(self) -> None:
+        """Construct Market Time Aware.."""
+
+        self._status_logged = False
+
     def _determine_if_generate_or_execute(self) -> tuple[bool, bool]:
         """
         Determine if the system can generate or execute signals.
