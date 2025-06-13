@@ -84,21 +84,20 @@ class MarketTimeAware:
 
         # System can generate signals
         # on a business day, not a market holiday,
-        # after the market close time but before the market open time
+        # before the market open time, and after the market close time
         can_generate = (
             is_business_day
             and not is_market_holiday
+            and current_datetime_in_exchange < open_datetime_in_exchange
             and current_datetime_in_exchange >= close_datetime_in_exchange
         )
 
         # System can execute signals
-        # on a business day, not a market holiday,
-        # after the market open time, but before the market close time
+        # on a business day, not a market holiday, after the market open time
         can_execute = (
             is_business_day
             and not is_market_holiday
             and current_datetime_in_exchange >= open_datetime_in_exchange
-            and current_datetime_in_exchange < close_datetime_in_exchange
         )
 
         return can_generate, can_execute
