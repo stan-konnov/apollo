@@ -84,11 +84,11 @@ class MarketOrdersManager:
             2,
         )
 
-        # Determine the notional amount to execute
-        # based on account balance and target entry price
+        # Determine order quantity to execute based
+        # on account balance and target entry price
         # NOTE: our account values are represented as strings,
-        # so we need to convert to floats; whereas target entry price is already a float
-        notional_amount = int(
+        # so we convert to floats; target entry price is already a float
+        order_quantity = int(
             float(self._account_client.cash)  # type: ignore  # noqa: PGH003
             / existing_dispatched_position.target_entry_price,
         )
@@ -105,7 +105,7 @@ class MarketOrdersManager:
         limit_order_request = LimitOrderRequest(
             symbol=existing_dispatched_position.ticker,
             limit_price=limit_price,
-            notional=notional_amount,
+            qty=order_quantity,
             side=order_side,
             time_in_force=TimeInForce.IOC,
         )
