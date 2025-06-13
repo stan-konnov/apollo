@@ -36,13 +36,15 @@ TRDS_DIR = Path(f"{ROOT_DIR}/backtesting_trades")
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M"
 
-MERCURY_URL = getenv("MERCURY_URL")
 POSTGRES_URL = getenv("POSTGRES_URL")
 INFLUXDB_URL = getenv("INFLUXDB_URL")
 INFLUXDB_ORG = getenv("INFLUXDB_ORG")
 INFLUXDB_TOKEN = getenv("INFLUXDB_TOKEN")
 INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET")
 INFLUXDB_MEASUREMENT = getenv("INFLUXDB_MEASUREMENT")
+
+ALPACA_API_KEY = getenv("ALPACA_API_KEY")
+ALPACA_SECRET_KEY = getenv("ALPACA_SECRET_KEY")
 
 
 class PriceDataFrequency(Enum):
@@ -76,3 +78,9 @@ EXCHANGE_TIME_ZONE_AND_HOURS = {
         },
     },
 }
+
+
+class Events(str, Enum):
+    """Enum for events used throughout the module."""
+
+    SIGNAL_GENERATED = "signal_generated"

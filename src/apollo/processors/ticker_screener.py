@@ -94,7 +94,7 @@ class TickerScreener(MultiprocessingCapable):
         self._price_data_provider = PriceDataProvider()
         self._sp500_components_scraper = SP500ComponentsScraper()
 
-    def process_in_parallel(self) -> None:
+    def screen_tickers(self) -> None:
         """Run the screening process in parallel."""
 
         # Query the existing screened position

@@ -8,8 +8,8 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.models.dispatchable_signal import PositionSignal
 from apollo.models.position import Position, PositionStatus
+from apollo.models.signal_notification import SignalNotification
 from apollo.models.strategy_parameters import StrategyParameters
 from apollo.processors.signal_generator import SignalGenerator
 from apollo.settings import (
@@ -20,6 +20,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    Events,
 )
 from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE, SameDataframe
 
@@ -44,10 +45,8 @@ def mock_get_existing_position_by_status(
     return None
 
 
-def test__generate_and_dispatch_signals__for_raising_error_if_dispatched_position_exists() -> (  # noqa: E501
-    None
-):
-    """Test generate_and_dispatch_signals for raising error if dispatched position already exists."""  # noqa: E501
+def test__generate_signals__for_raising_error_if_dispatched_position_exists() -> None:
+    """Test generate_signals for raising error if dispatched position already exists."""
 
     signal_generator = SignalGenerator()
 
@@ -72,15 +71,15 @@ def test__generate_and_dispatch_signals__for_raising_error_if_dispatched_positio
         DispatchedPositionAlreadyExistsError,
         match=exception_message,
     ) as exception:
-        signal_generator.generate_and_dispatch_signals()
+        signal_generator.generate_signals()
 
     assert str(exception.value) == exception_message
 
 
-def test__generate_and_dispatch_signals__for_raising_error_if_open_and_optimized_positions_do_not_exist() -> (  # noqa: E501
+def test__generate_signals__for_raising_error_if_open_and_optimized_positions_do_not_exist() -> (  # noqa: E501
     None
 ):
-    """Test generate_and_dispatch_signals for raising error if open and optimized positions do not exist."""  # noqa: E501
+    """Test generate_signals for raising error if open and optimized positions do not exist."""  # noqa: E501
 
     signal_generator = SignalGenerator()
 
@@ -100,19 +99,13 @@ def test__generate_and_dispatch_signals__for_raising_error_if_open_and_optimized
         NeitherOpenNorOptimizedPositionExistsError,
         match=exception_message,
     ) as exception:
-        signal_generator.generate_and_dispatch_signals()
+        signal_generator.generate_signals()
 
     assert str(exception.value) == exception_message
 
 
-@pytest.mark.parametrize(
-    "requests_post_call",
-    ["apollo.processors.signal_generator.post"],
-    indirect=True,
-)
-@pytest.mark.usefixtures("requests_post_call")
-def test__generate_and_dispatch_signals__for_calling_signal_generation_method() -> None:
-    """Test generate_and_dispatch_signals for calling signal generation method."""
+def test__generate_signals__for_calling_signal_generation_method() -> None:
+    """Test generate_signals for calling signal generation method."""
 
     signal_generator = SignalGenerator()
 
@@ -125,11 +118,17 @@ def test__generate_and_dispatch_signals__for_calling_signal_generation_method() 
         mock_get_existing_position_by_status
     )
 
-    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        100.0,
+        101.0,
+        99.0,
+    )
 
-    signal_generator.generate_and_dispatch_signals()
+    signal_generator.generate_signals()
 
-    signal_generator._generate_signal_and_brackets.assert_has_calls(  # noqa: SLF001
+    signal_generator._generate_signal.assert_has_calls(  # noqa: SLF001
         [
             mock.call(
                 Position(
@@ -149,16 +148,8 @@ def test__generate_and_dispatch_signals__for_calling_signal_generation_method() 
     )
 
 
-@pytest.mark.parametrize(
-    "requests_post_call",
-    ["apollo.processors.signal_generator.post"],
-    indirect=True,
-)
-@pytest.mark.usefixtures("requests_post_call")
-def test__generate_and_dispatch_signals__for_updating_optimized_position_to_dispatched() -> (  # noqa: E501
-    None
-):
-    """Test generate_and_dispatch_signals for updating optimized position to dispatched."""  # noqa: E501
+def test__generate_signals__for_updating_optimized_position_to_dispatched() -> None:
+    """Test generate_signals for updating optimized position to dispatched."""
 
     signal_generator = SignalGenerator()
 
@@ -167,29 +158,26 @@ def test__generate_and_dispatch_signals__for_updating_optimized_position_to_disp
     signal_generator._price_data_provider = Mock()  # noqa: SLF001
     signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
 
-    # Ensure optimized position exists
+    # Ensure open and optimized position exist
     signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
         mock_get_existing_position_by_status
     )
 
-    signal_generator._generate_signal_and_brackets = Mock()  # noqa: SLF001
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
 
     stop_loss = 99.9
     take_profit = 100.1
     target_entry_price = 100.0
 
-    # Ensure we generate a signal for optimized position
-    signal_generator._generate_signal_and_brackets.return_value = PositionSignal(  # noqa: SLF001
-        position_id="test",
-        ticker=str(TICKER),
-        direction=LONG_SIGNAL,
-        strategy=str(STRATEGY),
-        stop_loss=stop_loss,
-        take_profit=take_profit,
-        target_entry_price=target_entry_price,
+    # Ensure we generate a signal for open and optimized position
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        stop_loss,
+        take_profit,
+        target_entry_price,
     )
 
-    signal_generator.generate_and_dispatch_signals()
+    signal_generator.generate_signals()
 
     # Ensure optimized position is updated to dispatched
     signal_generator._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
@@ -197,23 +185,33 @@ def test__generate_and_dispatch_signals__for_updating_optimized_position_to_disp
         position_status=PositionStatus.DISPATCHED,
     )
 
-    # Ensure optimized position is updated with correct values
-    signal_generator._database_connector.update_position_upon_dispatching.assert_called_once_with(  # noqa: SLF001
-        position_id="test",
-        strategy=str(STRATEGY),
-        direction=LONG_SIGNAL,
-        stop_loss=stop_loss,
-        take_profit=take_profit,
-        target_entry_price=target_entry_price,
+    # Ensure open and dispatched positions are updated with correct values
+    signal_generator._database_connector.update_position_on_signal_generation.assert_has_calls(  # noqa: SLF001
+        [
+            mock.call(
+                position_id="test",
+                direction=LONG_SIGNAL,
+                stop_loss=stop_loss,
+                take_profit=take_profit,
+                target_entry_price=target_entry_price,
+            ),
+            mock.call(
+                position_id="test",
+                direction=LONG_SIGNAL,
+                stop_loss=stop_loss,
+                take_profit=take_profit,
+                target_entry_price=target_entry_price,
+            ),
+        ],
     )
 
 
 @pytest.mark.usefixtures("dataframe", "enhanced_dataframe")
-def test__generate_signal_and_brackets__for_correct_signal_generation(
+def test__generate_signals__for_correct_signal_generation(
     dataframe: pd.DataFrame,
     enhanced_dataframe: pd.DataFrame,
 ) -> None:
-    """Test generate_signal_and_brackets for correct signal of optimized position."""
+    """Test generate_signals for correct signal of optimized position."""
 
     with patch(
         "apollo.processors.signal_generator.OrderBracketsCalculator",
@@ -306,7 +304,7 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         # To not over-complicate things
         # we know that selected strategy
         # will generate long signal for last entry
-        generated_signal = signal_generator._generate_signal_and_brackets(  # noqa: SLF001
+        generated_signal = signal_generator._generate_signal(  # noqa: SLF001
             optimized_position,
         )
 
@@ -353,12 +351,51 @@ def test__generate_signal_and_brackets__for_correct_signal_generation(
         )
 
         # Assert generated signal
-        assert generated_signal == PositionSignal(
-            position_id="test",
-            ticker=str(TICKER),
-            direction=LONG_SIGNAL,
-            strategy=str(STRATEGY),
-            stop_loss=long_sl,
-            take_profit=long_tp,
-            target_entry_price=long_limit,
+        assert generated_signal == (
+            LONG_SIGNAL,
+            long_sl,
+            long_tp,
+            long_limit,
         )
+
+
+@pytest.mark.parametrize(
+    "event_emitter",
+    ["apollo.processors.signal_generator.event_emitter"],
+    indirect=True,
+)
+def test__generate_signals__for_calling_event_emitter_to_notify_execution_module(
+    event_emitter: Mock,
+) -> None:
+    """Test generate_signals for calling event emitter to notify execution module."""
+
+    signal_generator = SignalGenerator()
+
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
+
+    # Ensure open and optimized position exist
+    signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_existing_position_by_status
+    )
+
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        100.0,
+        101.0,
+        99.0,
+    )
+
+    signal_generator.generate_signals()
+
+    # Ensure event emitter is called to notify execution module
+    event_emitter.emit.assert_called_once_with(
+        Events.SIGNAL_GENERATED.value,
+        SignalNotification(
+            open_position=True,
+            dispatched_position=True,
+        ),
+    )
