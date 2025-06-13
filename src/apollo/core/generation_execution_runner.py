@@ -1,8 +1,8 @@
 from logging import getLogger
 
-from apollo.processors.parameter_optimizer import ParameterOptimizer
-from apollo.processors.signal_generator import SignalGenerator
-from apollo.processors.ticker_screener import TickerScreener
+from apollo.processors.generation.parameter_optimizer import ParameterOptimizer
+from apollo.processors.generation.signal_generator import SignalGenerator
+from apollo.processors.generation.ticker_screener import TickerScreener
 from apollo.settings import (
     ParameterOptimizerMode,
 )
@@ -11,19 +11,19 @@ from apollo.utils.market_time_aware import MarketTimeAware
 logger = getLogger(__name__)
 
 
-class SignalGenerationRunner(MarketTimeAware):
+class GenerationExecutionRunner(MarketTimeAware):
     """
-    Signal Generation Runner class.
+    Generation Execution Runner class.
 
     Time and market calendar aware.
 
-    A meta class that encapsulates the signal generation logic.
-    Orchestrates screening, optimization, and dispatching of signals.
+    A meta class that encapsulates core logic of the system.
+    Orchestrates screening, optimization, generation, and execution of trading signals.
     """
 
     def __init__(self) -> None:
         """
-        Construct Signal Generation Runner.
+        Construct Generation Execution Runner.
 
         Initialize Ticker Screener.
         Initialize Signal Generator.
@@ -38,8 +38,8 @@ class SignalGenerationRunner(MarketTimeAware):
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
 
-    def run_signal_generation(self) -> None:
-        """Run signal generation process."""
+    def run_signal_generation_execution(self) -> None:
+        """Run signal generation-execution process."""
 
         while True:
             # Check if system can generate signals

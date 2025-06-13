@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import timeout_decorator
 from freezegun import freeze_time
 
-from apollo.core.signal_generation_runner import SignalGenerationRunner
+from apollo.core.main_system_runner import GenerationExecutionRunner
 
 
 # Assume today date is Monday, 2024-12-30
@@ -18,7 +18,7 @@ def test__run_signal_generation__for_correctly_kicking_off_the_process() -> None
     Signal Generation Runner must correctly kick off the process.
     """
 
-    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner = GenerationExecutionRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
     signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
@@ -43,7 +43,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process() -> None:
     Signal Generation Runner must correctly skip the process.
     """
 
-    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner = GenerationExecutionRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
     signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
@@ -70,7 +70,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_weekend()
     Signal Generation Runner must correctly skip the process.
     """
 
-    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner = GenerationExecutionRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
     signal_generation_runner._signal_generator = Mock()  # noqa: SLF001
@@ -95,7 +95,7 @@ def test__run_signal_generation__for_correctly_skipping_the_process_on_mh() -> N
     Signal Generation Runner must correctly skip the process.
     """
 
-    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner = GenerationExecutionRunner()
 
     signal_generation_runner._ticker_screener = Mock()  # noqa: SLF001
     signal_generation_runner._signal_generator = Mock()  # noqa: SLF001

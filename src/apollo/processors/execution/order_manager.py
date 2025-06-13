@@ -24,9 +24,9 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 
-class MarketOrdersManager(MarketTimeAware):
+class OrderManager(MarketTimeAware):
     """
-    Market Orders Manager class.
+    Order Manager class.
 
     Time and market calendar aware.
 
@@ -35,7 +35,7 @@ class MarketOrdersManager(MarketTimeAware):
 
     def __init__(self) -> None:
         """
-        Construct Market Orders Manager.
+        Construct Order Manager.
 
         Initialize Trading Client.
         Initialize Account Client.
