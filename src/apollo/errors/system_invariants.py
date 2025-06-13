@@ -12,3 +12,7 @@ class DispatchedPositionAlreadyExistsError(Exception):
 
 class NeitherOpenNorOptimizedPositionExistsError(Exception):
     """Raised if neither open nor optimized position exists during dispatching."""
+
+
+class OpenPositionAlreadyExistsError(Exception):
+    """Raised if an open position already exists during order execution."""

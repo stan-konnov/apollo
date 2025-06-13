@@ -3,6 +3,9 @@ from typing import TYPE_CHECKING, Any
 
 from alpaca.trading.client import TradingClient
 
+from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.errors.system_invariants import OpenPositionAlreadyExistsError
+from apollo.models.position import PositionStatus
 from apollo.settings import ALPACA_API_KEY, ALPACA_SECRET_KEY
 
 if TYPE_CHECKING:
@@ -19,18 +22,24 @@ class MarketOrdersManager:
     """
 
     def __init__(self) -> None:
-        """Construct Market Orders Manager."""
+        """
+        Construct Market Orders Manager.
 
-        # Initialize trading client
+        Initialize Trading Client.
+        Initialize Account Client.
+        Initialize Database Connector.
+        """
+
         self._trading_client = TradingClient(
             api_key=ALPACA_API_KEY,
             secret_key=ALPACA_SECRET_KEY,
         )
 
-        # Fetch account information
-        self._account: TradeAccount | dict[str, Any] = (
+        self._account_client: TradeAccount | dict[str, Any] = (
             self._trading_client.get_account()
         )
+
+        self._database_connector = PostgresConnector()
 
     def handle_dispatched_position(self) -> None:
         """
@@ -39,5 +48,16 @@ class MarketOrdersManager:
         :param dispatched_position: Dispatched position to handle.
         """
 
-        logger.info("Handling dispatched position.")
-        logger.info(f"Account information: {self._account}")
+        # First, check if there is no open
+        # position to maintain system consistency
+        existing_open_position = (
+            self._database_connector.get_existing_position_by_status(
+                PositionStatus.OPEN,
+            )
+        )
+
+        if existing_open_position:
+            raise OpenPositionAlreadyExistsError(
+                "Open position exists while handling dispatched. "
+                "System invariant violated, position was not closed or cancelled.",
+            )
