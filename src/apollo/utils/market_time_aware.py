@@ -81,9 +81,6 @@ class MarketTimeAware:
         # Check if today is market holiday in configured exchange
         is_market_holiday = current_date in market_holidays
 
-        # Check if current day in exchange is a trading day
-        is_trading_day = is_business_day and not is_market_holiday
-
         # Check if current time in exchange
         # is within the market open and close times
         is_trading_hours = (
@@ -93,13 +90,13 @@ class MarketTimeAware:
         )
 
         # System can generate signals
-        # on a trading day, not a market holiday,
+        # on any day that is not a market holiday,
         # and outside of the market open and close times
-        can_generate = is_trading_day and not is_trading_hours
+        can_generate = not is_market_holiday and not is_trading_hours
 
         # System can execute signals
         # on a trading day, not a market holiday,
         # and within of the market open and close times
-        can_execute = is_trading_day and is_trading_hours
+        can_execute = is_business_day and not is_market_holiday and is_trading_hours
 
         return can_generate, can_execute
