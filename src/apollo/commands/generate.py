@@ -1,7 +1,7 @@
 import logging
 
 # NOTE: we require this unused import
-# to be able to register Mercury event handlers
+# to be able to register event handlers
 import apollo.events.event_handlers  # noqa: F401
 from apollo.processors.signal_generator import SignalGenerator
 from apollo.utils.common import (
