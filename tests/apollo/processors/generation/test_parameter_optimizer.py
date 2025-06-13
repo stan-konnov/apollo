@@ -11,7 +11,7 @@ from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.system_invariants import OptimizedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
-from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.processors.generation.parameter_optimizer import ParameterOptimizer
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     END_DATE,
