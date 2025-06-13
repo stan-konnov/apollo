@@ -159,8 +159,11 @@ class SignalGenerator:
                     target_entry_price=target_entry_price,
                 )
 
+        logger.info("Generation process complete.")
+
         # Finally, dispatch the signal for execution
         if signal_notification.open_position or signal_notification.dispatched_position:
+            logger.info("Dispatching signals for execution.")
             emitter.emit(Events.SIGNAL_GENERATED.value, signal_notification)
 
     def _generate_signal(
@@ -179,7 +182,12 @@ class SignalGenerator:
         # NOTE: use the existing direction
         # for open position, or default to
         # NO_SIGNAL for optimized position
-        direction: int = position.direction or NO_SIGNAL
+        direction: int = (
+            position.direction
+            if position.direction and position.status == PositionStatus.OPEN.value
+            else NO_SIGNAL
+        )
+
         stop_loss: float = 0.0
         take_profit: float = 0.0
         target_entry_price: float = 0.0
