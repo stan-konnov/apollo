@@ -126,6 +126,7 @@ class OrderManager(MarketTimeAware):
                     limit_price=limit_price,
                     qty=order_quantity,
                     side=order_side,
+                    # NOTE: experiment with DAY time in force
                     time_in_force=TimeInForce.IOC,
                 )
 
@@ -135,14 +136,17 @@ class OrderManager(MarketTimeAware):
                 )
 
                 logger.info(
-                    f"Placed limit order for dispatched position: {limit_order} ",
+                    f"Order for dispatched position:\n\n"
+                    f"{limit_order.model_dump_json(indent=4)}",  # type: ignore  # noqa: PGH003
                 )
 
                 # Reset status logged flag
                 self._status_logged = False
 
                 # Break after placing an order
-                # and synchronizing the position
+                # and synchronizing the position,
+                # thus, returning the control flow
+                # back to the generation execution runner
                 break
 
             # Log status if not logged yet
