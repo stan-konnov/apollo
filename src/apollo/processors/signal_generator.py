@@ -9,7 +9,7 @@ from apollo.errors.system_invariants import (
     DispatchedPositionAlreadyExistsError,
     NeitherOpenNorOptimizedPositionExistsError,
 )
-from apollo.events.emitter import emitter
+from apollo.events.event_emitter import event_emitter
 from apollo.models.position import Position, PositionStatus
 from apollo.models.signal_notification import SignalNotification
 from apollo.providers.price_data_enhancer import PriceDataEnhancer
@@ -164,7 +164,7 @@ class SignalGenerator:
         # Finally, dispatch the signal for execution
         if signal_notification.open_position or signal_notification.dispatched_position:
             logger.info("Dispatching signals for execution.")
-            emitter.emit(Events.SIGNAL_GENERATED.value, signal_notification)
+            event_emitter.emit(Events.SIGNAL_GENERATED.value, signal_notification)
 
     def _generate_signal(
         self,

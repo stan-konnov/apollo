@@ -9,6 +9,7 @@ from apollo.errors.system_invariants import (
     NeitherOpenNorOptimizedPositionExistsError,
 )
 from apollo.models.position import Position, PositionStatus
+from apollo.models.signal_notification import SignalNotification
 from apollo.models.strategy_parameters import StrategyParameters
 from apollo.processors.signal_generator import SignalGenerator
 from apollo.settings import (
@@ -19,6 +20,7 @@ from apollo.settings import (
     START_DATE,
     STRATEGY,
     TICKER,
+    Events,
 )
 from tests.fixtures.window_size_and_dataframe import WINDOW_SIZE, SameDataframe
 
@@ -167,7 +169,7 @@ def test__generate_signals__for_updating_optimized_position_to_dispatched() -> N
     take_profit = 100.1
     target_entry_price = 100.0
 
-    # Ensure we generate a signal for optimized position
+    # Ensure we generate a signal for open and optimized position
     signal_generator._generate_signal.return_value = (  # noqa: SLF001
         LONG_SIGNAL,
         stop_loss,
@@ -355,3 +357,45 @@ def test__generate_signals__for_correct_signal_generation(
             long_tp,
             long_limit,
         )
+
+
+@pytest.mark.parametrize(
+    "event_emitter",
+    ["apollo.processors.signal_generator.event_emitter"],
+    indirect=True,
+)
+def test__generate_signals__for_calling_event_emitter_to_notify_execution_module(
+    event_emitter: Mock,
+) -> None:
+    """Test generate_signals for calling event emitter to notify execution module."""
+
+    signal_generator = SignalGenerator()
+
+    signal_generator._configuration = Mock()  # noqa: SLF001
+    signal_generator._database_connector = Mock()  # noqa: SLF001
+    signal_generator._price_data_provider = Mock()  # noqa: SLF001
+    signal_generator._price_data_enhancer = Mock()  # noqa: SLF001
+
+    # Ensure open and optimized position exist
+    signal_generator._database_connector.get_existing_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_existing_position_by_status
+    )
+
+    signal_generator._generate_signal = Mock()  # noqa: SLF001
+    signal_generator._generate_signal.return_value = (  # noqa: SLF001
+        LONG_SIGNAL,
+        100.0,
+        101.0,
+        99.0,
+    )
+
+    signal_generator.generate_signals()
+
+    # Ensure event emitter is called to notify execution module
+    event_emitter.emit.assert_called_once_with(
+        Events.SIGNAL_GENERATED.value,
+        SignalNotification(
+            open_position=True,
+            dispatched_position=True,
+        ),
+    )
