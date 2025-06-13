@@ -94,7 +94,7 @@ class MarketOrdersManager:
         # NOTE: our account values are represented as strings,
         # so we convert to floats; target entry price is already a float
         order_quantity = int(
-            float(self._account_client.cash)  # type: ignore  # noqa: PGH003
+            float(self._account_client.non_marginable_buying_power)  # type: ignore  # noqa: PGH003
             / existing_dispatched_position.target_entry_price,
         )
 
