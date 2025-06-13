@@ -18,5 +18,5 @@ def event_emitter(request: pytest.FixtureRequest) -> Generator[Mock, None, None]
     )
     """
 
-    with patch(request.param) as mock_requests_get:
-        yield mock_requests_get
+    with patch(request.param) as mock_event_emitter:
+        yield mock_event_emitter
