@@ -11,7 +11,7 @@ from apollo.errors.system_invariants import (
 from apollo.models.position import Position, PositionStatus
 from apollo.models.signal_notification import SignalNotification
 from apollo.models.strategy_parameters import StrategyParameters
-from apollo.processors.signal_generator import SignalGenerator
+from apollo.processors.generation.signal_generator import SignalGenerator
 from apollo.settings import (
     END_DATE,
     FREQUENCY,
@@ -214,7 +214,7 @@ def test__generate_signals__for_correct_signal_generation(
     """Test generate_signals for correct signal of optimized position."""
 
     with patch(
-        "apollo.processors.signal_generator.OrderBracketsCalculator",
+        "apollo.processors.generation.signal_generator.OrderBracketsCalculator",
         Mock(),
     ) as mocked_order_brackets_calculator:
         signal_generator = SignalGenerator()
@@ -361,7 +361,7 @@ def test__generate_signals__for_correct_signal_generation(
 
 @pytest.mark.parametrize(
     "event_emitter",
-    ["apollo.processors.signal_generator.event_emitter"],
+    ["apollo.processors.generation.signal_generator.event_emitter"],
     indirect=True,
 )
 def test__generate_signals__for_calling_event_emitter_to_notify_execution_module(

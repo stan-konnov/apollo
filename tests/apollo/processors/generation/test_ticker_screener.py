@@ -15,7 +15,7 @@ from apollo.calculators.kaufman_efficiency_ratio import (
 from apollo.errors.api import EmptyApiResponseError
 from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
-from apollo.processors.ticker_screener import TickerScreener
+from apollo.processors.generation.ticker_screener import TickerScreener
 from apollo.settings import (
     END_DATE,
     EXCHANGE,
@@ -363,7 +363,7 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
 @pytest.mark.usefixtures("screened_tickers_dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.processors.ticker_screener.Pool"],
+    ["apollo.processors.generation.ticker_screener.Pool"],
     indirect=True,
 )
 def test__screen_tickers__for_correct_screening_process(

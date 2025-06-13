@@ -343,7 +343,7 @@ def test__output_results__for_correct_result_output(
 @pytest.mark.usefixtures("dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.processors.parameter_optimizer.Pool"],
+    ["apollo.processors.generation.parameter_optimizer.Pool"],
     indirect=True,
 )
 def test__optimize_parameters__for_correct_optimization_process(
@@ -541,7 +541,7 @@ def test__optimize_parameters__for_skipping_process_if_no_screened_position(
 
 
 @patch(
-    "apollo.processors.parameter_optimizer.STRATEGY_CATALOGUE_MAP",
+    "apollo.processors.generation.parameter_optimizer.STRATEGY_CATALOGUE_MAP",
     {
         "Strategy1": "Strategy1",
         "Strategy2": "Strategy2",
