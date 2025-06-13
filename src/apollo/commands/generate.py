@@ -3,7 +3,7 @@ import logging
 # NOTE: we require this unused import
 # to be able to register event handlers
 import apollo.events.event_handlers  # noqa: F401
-from apollo.processors.signal_generator import SignalGenerator
+from apollo.core.signal_generation_runner import SignalGenerationRunner
 from apollo.utils.common import (
     ensure_environment_is_configured,
 )
@@ -21,10 +21,8 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    # signal_generation_runner = SignalGenerationRunner()  # noqa: ERA001
-    # signal_generation_runner.run_signal_generation()  # noqa: ERA001
-    signal_generator = SignalGenerator()
-    signal_generator.generate_signals()
+    signal_generation_runner = SignalGenerationRunner()
+    signal_generation_runner.run_signal_generation()
 
 
 if __name__ == "__main__":

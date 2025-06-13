@@ -1,14 +1,9 @@
-from datetime import datetime
 from logging import getLogger
 from typing import TYPE_CHECKING, Any
 
-import pandas_market_calendars as mcal
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest
-from numpy import is_busday
-from pandas import to_datetime
-from zoneinfo import ZoneInfo
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.system_invariants import (
@@ -19,11 +14,9 @@ from apollo.models.position import PositionStatus
 from apollo.settings import (
     ALPACA_API_KEY,
     ALPACA_SECRET_KEY,
-    DEFAULT_TIME_FORMAT,
-    EXCHANGE,
-    EXCHANGE_TIME_ZONE_AND_HOURS,
     LONG_SIGNAL,
 )
+from apollo.utils.market_time_aware import MarketTimeAware
 
 if TYPE_CHECKING:
     from alpaca.trading.models import TradeAccount
@@ -31,11 +24,13 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 
-class MarketOrdersManager:
+class MarketOrdersManager(MarketTimeAware):
     """
     Market Orders Manager class.
 
-    Exists as abstraction over Alpaca API, time and market calendar aware.
+    Time and market calendar aware.
+
+    Exists as abstraction over Alpaca Trading API to manage market orders.
     """
 
     def __init__(self) -> None:
@@ -95,8 +90,10 @@ class MarketOrdersManager:
             )
 
         while True:
-            # Determine if the execution can run
-            if self._determine_if_can_run():
+            # Check if system can execute signals
+            _, can_execute = self._determine_if_generate_or_execute()
+
+            if can_execute:
                 # Determine limit price based on sub-penny
                 # increment rules (no more than 2 decimal places)
                 limit_price = round(
@@ -146,63 +143,3 @@ class MarketOrdersManager:
             logger.info(
                 "Cannot execute at the moment. Waiting for the market to open.",
             )
-
-    def _determine_if_can_run(self) -> bool:
-        """
-        Determine if the process can run based on time and market calendar.
-
-        :return: True if the process can run, False otherwise.
-        """
-
-        # Get current point in time
-        # in the configured exchange
-        current_datetime_in_exchange = datetime.now(
-            tz=ZoneInfo(
-                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
-            ),
-        )
-
-        # Current date in the exchange time zone
-        current_date = current_datetime_in_exchange.date()
-
-        # Get close point in time
-        # in the configured exchange
-        close_time_in_exchange = datetime.strptime(
-            EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["close"],
-            DEFAULT_TIME_FORMAT,
-        ).time()
-
-        # Get open point in time
-        # in the configured exchange
-        open_time_in_exchange = datetime.strptime(
-            EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["open"],
-            DEFAULT_TIME_FORMAT,
-        ).time()
-
-        # Get NYSE market holidays calendar
-        market_holidays = mcal.get_calendar("NYSE").holidays().holidays  # type: ignore  # noqa: PGH003
-
-        # Transform to regular python datetime objects
-        market_holidays = [to_datetime(str(holiday)) for holiday in market_holidays]
-
-        # And limit to dates of the current year
-        market_holidays = [
-            holiday.date()
-            for holiday in market_holidays
-            if holiday.year == current_datetime_in_exchange.year
-        ]
-
-        # Check if today is a business day in configured exchange
-        is_business_day = bool(is_busday(current_date))
-
-        # Check if today is market holiday in configured exchange
-        is_market_holiday = current_date in market_holidays
-
-        # Can run after market open,
-        # but before close, on a business, non-holiday day
-        return (
-            is_business_day
-            and not is_market_holiday
-            and current_datetime_in_exchange.time() >= open_time_in_exchange
-            and current_datetime_in_exchange.time() < close_time_in_exchange
-        )
