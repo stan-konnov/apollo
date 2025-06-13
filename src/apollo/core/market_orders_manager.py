@@ -148,7 +148,11 @@ class MarketOrdersManager:
             )
 
     def _determine_if_can_run(self) -> bool:
-        """Determine if the process can run based on time and market calendar."""
+        """
+        Determine if the process can run based on time and market calendar.
+
+        :return: True if the process can run, False otherwise.
+        """
 
         # Get current point in time
         # in the configured exchange
