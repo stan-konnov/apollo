@@ -47,7 +47,12 @@ class MarketOrdersManager:
         self._database_connector = PostgresConnector()
 
     def handle_dispatched_position(self) -> None:
-        """Handle incoming dispatched position by placing an order."""
+        """
+        Handle incoming dispatched position by placing an order.
+
+        Communicate with Alpaca API to fetch the status
+        of the order and synchronize it with the position in database.
+        """
 
         # Query existing open position
         existing_open_position = (
