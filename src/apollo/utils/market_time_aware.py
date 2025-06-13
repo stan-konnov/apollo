@@ -30,38 +30,37 @@ class MarketTimeAware:
         :return: Tuple of booleans indicating if the system can generate or execute.
         """
 
+        # Get timezone of the configured exchange
+        exchange_timezone = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]
+
         # Get current point in time
         # in the configured exchange
         current_datetime_in_exchange = datetime.now(
-            tz=ZoneInfo(
-                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
-            ),
+            tz=ZoneInfo(exchange_timezone),
         )
 
-        # Current date in the exchange time zone
+        # Get current date in the configured exchange
         current_date = current_datetime_in_exchange.date()
-
-        # Get close point in time
-        # in the configured exchange
-        close_datetime_in_exchange = datetime.strptime(
-            EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["close"],
-            DEFAULT_TIME_FORMAT,
-        ).astimezone(
-            ZoneInfo(
-                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
-            ),
-        )
 
         # Get open point in time
         # in the configured exchange
-        open_datetime_in_exchange = datetime.strptime(
-            EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["open"],
-            DEFAULT_TIME_FORMAT,
-        ).astimezone(
-            ZoneInfo(
-                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"],
-            ),
-        )
+        open_datetime_in_exchange = datetime.combine(
+            current_date,
+            datetime.strptime(
+                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["open"],
+                DEFAULT_TIME_FORMAT,
+            ).time(),
+        ).replace(tzinfo=ZoneInfo(exchange_timezone))
+
+        # Get close point in time
+        # in the configured exchange
+        close_datetime_in_exchange = datetime.combine(
+            current_date,
+            datetime.strptime(
+                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["close"],
+                DEFAULT_TIME_FORMAT,
+            ).time(),
+        ).replace(tzinfo=ZoneInfo(exchange_timezone))
 
         # Get exchange market holidays calendar
         market_holidays = mcal.get_calendar(str(EXCHANGE)).holidays().holidays  # type: ignore  # noqa: PGH003
@@ -82,22 +81,25 @@ class MarketTimeAware:
         # Check if today is market holiday in configured exchange
         is_market_holiday = current_date in market_holidays
 
-        # System can generate signals
-        # on a business day, not a market holiday,
-        # before the market open time, and after the market close time
-        can_generate = (
-            is_business_day
-            and not is_market_holiday
-            and current_datetime_in_exchange < open_datetime_in_exchange
-            and current_datetime_in_exchange >= close_datetime_in_exchange
+        # Check if current day in exchange is a trading day
+        is_trading_day = is_business_day and not is_market_holiday
+
+        # Check if current time in exchange
+        # is within the market open and close times
+        is_trading_hours = (
+            open_datetime_in_exchange
+            <= current_datetime_in_exchange
+            < close_datetime_in_exchange
         )
 
+        # System can generate signals
+        # on a trading day, not a market holiday,
+        # and outside of the market open and close times
+        can_generate = is_trading_day and not is_trading_hours
+
         # System can execute signals
-        # on a business day, not a market holiday, after the market open time
-        can_execute = (
-            is_business_day
-            and not is_market_holiday
-            and current_datetime_in_exchange >= open_datetime_in_exchange
-        )
+        # on a trading day, not a market holiday,
+        # and within of the market open and close times
+        can_execute = is_trading_day and is_trading_hours
 
         return can_generate, can_execute
