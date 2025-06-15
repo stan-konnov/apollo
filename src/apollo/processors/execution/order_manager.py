@@ -63,6 +63,8 @@ class OrderManager(MarketTimeAware):
         of the order and synchronize it with the position in database.
         """
 
+        logger.info("Handling dispatched position signal.")
+
         # Query existing open position
         existing_open_position = (
             self._database_connector.get_existing_position_by_status(
