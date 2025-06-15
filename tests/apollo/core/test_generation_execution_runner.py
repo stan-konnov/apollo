@@ -34,15 +34,17 @@ def test__run_signal_generation_execution__for_correctly_kicking_off_the_process
     generation_execution_runner._signal_generator.generate_signals.assert_any_call()  # noqa: SLF001
 
 
-# Assume today date is Thursday, 2025-01-02
-# Assume current time is after 09:30 and before 16:00 ET
+# Assume today date is Saturday, 2025-01-04
+# Assume current time is after 16:00 ET >= 20:00 UTC
 @timeout_decorator.timeout(3)
-@freeze_time("2025-01-02 14:30:00")
-def test__run_signal_generation_execution__for_correctly_skipping_the_process() -> None:
+@freeze_time("2025-01-04 21:00:00")
+def test__run_signal_generation_execution__for_correctly_kicking_off_the_process_on_weekend() -> (  # noqa: E501
+    None
+):
     """
-    Test Generation Execution Runner for correctly skipping the process.
+    Test Generation Execution Runner for correctly kicking off the process on weekend.
 
-    Generation Execution Runner must correctly skip the process.
+    Generation Execution Runner must correctly kick off the process on weekend.
     """
 
     generation_execution_runner = GenerationExecutionRunner()
@@ -54,18 +56,16 @@ def test__run_signal_generation_execution__for_correctly_skipping_the_process() 
     with contextlib.suppress(timeout_decorator.TimeoutError):
         generation_execution_runner.run_signal_generation_execution()
 
-    generation_execution_runner._ticker_screener.screen_tickers.assert_not_called()  # noqa: SLF001
-    generation_execution_runner._parameter_optimizer.optimize_parameters.assert_not_called()  # noqa: SLF001
-    generation_execution_runner._signal_generator.generate_signals.assert_not_called()  # noqa: SLF001
+    generation_execution_runner._ticker_screener.screen_tickers.assert_any_call()  # noqa: SLF001
+    generation_execution_runner._parameter_optimizer.optimize_parameters.assert_any_call()  # noqa: SLF001
+    generation_execution_runner._signal_generator.generate_signals.assert_any_call()  # noqa: SLF001
 
 
-# Assume today date is Saturday, 2025-01-04
-# Assume current time is after 16:00 ET >= 20:00 UTC
+# Assume today date is Thursday, 2025-01-02
+# Assume current time is after 09:30 and before 16:00 ET
 @timeout_decorator.timeout(3)
-@freeze_time("2025-01-04 21:00:00")
-def test__run_signal_generation_execution__for_correctly_skipping_the_process_on_weekend() -> (  # noqa: E501
-    None
-):
+@freeze_time("2025-01-02 14:30:00")
+def test__run_signal_generation_execution__for_correctly_skipping_the_process() -> None:
     """
     Test Generation Execution Runner for correctly skipping the process.
 
