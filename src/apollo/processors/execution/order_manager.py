@@ -22,7 +22,7 @@ from apollo.settings import (
 from apollo.utils.market_time_aware import MarketTimeAware
 
 if TYPE_CHECKING:
-    from alpaca.trading.models import TradeAccount
+    from alpaca.trading.models import Position, TradeAccount
 
 logger = getLogger(__name__)
 
@@ -148,9 +148,11 @@ class OrderManager(MarketTimeAware):
                 # While the position is not synchronized
                 while not position_synchronized:
                     # Query the position from the API
-                    position_from_api = self._trading_client.get_open_position(
-                        existing_dispatched_position.ticker,
-                    )
+                    position_from_api: Position = (
+                        self._trading_client.get_open_position(
+                            existing_dispatched_position.ticker,
+                        )
+                    )  # type: ignore  # noqa: PGH003
 
                     # If position is still not opened
                     if not position_from_api:
@@ -195,10 +197,10 @@ class OrderManager(MarketTimeAware):
                         # And update the position with execution details
                         self._database_connector.update_position_on_signal_execution(
                             position_id=existing_dispatched_position.id,
-                            entry_price=float(position_from_api.avg_entry_price),  # type: ignore  # noqa: PGH003
+                            entry_price=float(position_from_api.avg_entry_price),
                             entry_date=datetime.now(tz=ZoneInfo("UTC")),
-                            unit_size=float(position_from_api.qty),  # type: ignore  # noqa: PGH003
-                            cash_size=float(position_from_api.cost_basis),  # type: ignore  # noqa: PGH003
+                            unit_size=float(position_from_api.qty),
+                            cash_size=float(position_from_api.cost_basis),
                         )
 
                         # And exit the loop
