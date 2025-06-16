@@ -1,12 +1,21 @@
 import logging
+from typing import TYPE_CHECKING, Any
+
+from alpaca.trading.client import TradingClient
 
 # NOTE: we require this unused import
 # to be able to register event handlers
 import apollo.events.event_handlers  # noqa: F401
-from apollo.core.generation_execution_runner import GenerationExecutionRunner
+from apollo.settings import (
+    ALPACA_API_KEY,
+    ALPACA_SECRET_KEY,
+)
 from apollo.utils.common import (
     ensure_environment_is_configured,
 )
+
+if TYPE_CHECKING:
+    from alpaca.trading.models import TradeAccount
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,12 +26,16 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """Run signal generation-execution process."""
+    """Run isolated logic for development purposes."""
 
     ensure_environment_is_configured()
 
-    generation_execution_runner = GenerationExecutionRunner()
-    generation_execution_runner.run_signal_generation_execution()
+    trading_client = TradingClient(
+        api_key=ALPACA_API_KEY,
+        secret_key=ALPACA_SECRET_KEY,
+    )
+
+    _account_client: TradeAccount | dict[str, Any] = trading_client.get_account()
 
 
 if __name__ == "__main__":
