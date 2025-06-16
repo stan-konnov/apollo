@@ -143,6 +143,8 @@ class OrderManager(MarketTimeAware):
                     f"{limit_order.model_dump_json(indent=4)}",  # type: ignore  # noqa: PGH003
                 )
 
+                # Flag to control
+                # synchronization of position
                 position_synchronized = False
 
                 # While the position is not synchronized
