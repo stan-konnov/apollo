@@ -1,6 +1,6 @@
 import logging
 
-from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.processors.generation.parameter_optimizer import ParameterOptimizer
 from apollo.settings import ParameterOptimizerMode
 from apollo.utils.common import ensure_environment_is_configured
 
@@ -20,7 +20,7 @@ def main() -> None:
     parameter_optimizer = ParameterOptimizer(
         ParameterOptimizerMode.SINGLE_STRATEGY,
     )
-    parameter_optimizer.process_in_parallel()
+    parameter_optimizer.optimize_parameters()
 
 
 if __name__ == "__main__":
