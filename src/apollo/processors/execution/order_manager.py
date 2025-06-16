@@ -163,7 +163,7 @@ class OrderManager(MarketTimeAware):
                         # Yet, if market is about to close
                         if self._determine_if_market_is_closing():
                             logger.info(
-                                "Market is about to close,"
+                                "Market is about to close, "
                                 "updating dispatched position status to CANCELLED.",
                             )
 
