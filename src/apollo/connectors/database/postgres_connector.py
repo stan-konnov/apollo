@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 from prisma import Prisma
 
@@ -256,6 +258,41 @@ class PostgresConnector:
                 "stop_loss": stop_loss,
                 "take_profit": take_profit,
                 "target_entry_price": target_entry_price,
+            },
+        )
+
+        self._database_client.disconnect()
+
+    def update_position_on_signal_execution(
+        self,
+        position_id: str,
+        entry_price: float,
+        entry_date: datetime,
+        unit_size: float,
+        cash_size: float,
+    ) -> None:
+        """
+        Update position on signal generation.
+
+        :param position_id: Position id to update.
+        :param entry_price: Entry price of the position.
+        :param entry_date: Entry date of the position.
+        :param unit_size: Size of the position in units.
+        :param cash_size: Size of the position in cash.
+        """
+
+        self._database_client.connect()
+
+        # Update the position with dispatching details
+        self._database_client.positions.update(
+            where={
+                "id": position_id,
+            },
+            data={
+                "entry_price": entry_price,
+                "entry_date": entry_date,
+                "unit_size": unit_size,
+                "cash_size": cash_size,
             },
         )
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging import getLogger
 from time import sleep
 from typing import TYPE_CHECKING, Any
@@ -5,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest
+from zoneinfo import ZoneInfo
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.system_invariants import (
@@ -190,7 +192,14 @@ class OrderManager(MarketTimeAware):
                             PositionStatus.OPEN,
                         )
 
-                        # TODO: Update with trading values  # noqa: TD002, TD003, FIX002
+                        # And update the position with execution details
+                        self._database_connector.update_position_on_signal_execution(
+                            position_id=existing_dispatched_position.id,
+                            entry_price=float(position_from_api.avg_entry_price),  # type: ignore  # noqa: PGH003
+                            entry_date=datetime.now(tz=ZoneInfo("UTC")),
+                            unit_size=float(position_from_api.qty),  # type: ignore  # noqa: PGH003
+                            cash_size=float(position_from_api.cost_basis),  # type: ignore  # noqa: PGH003
+                        )
 
                         # And exit the loop
                         position_synchronized = True
