@@ -100,3 +100,65 @@ class MarketTimeAware:
         can_execute = is_business_day and not is_market_holiday and is_trading_hours
 
         return can_generate, can_execute
+
+    def _determine_if_market_is_closing(self) -> bool:
+        """
+        Determine if the market is closing soon.
+
+        Where soon is 15 minutes before the market close time.
+
+        :return: Boolean indicating if the market is closing soon.
+        """
+
+        # Get timezone of the configured exchange
+        exchange_timezone = EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]
+
+        # Get current point in time
+        # in the configured exchange
+        current_datetime_in_exchange = datetime.now(
+            tz=ZoneInfo(exchange_timezone),
+        )
+
+        # Get current date in the configured exchange
+        current_date = current_datetime_in_exchange.date()
+
+        # Get exchange market holidays calendar
+        market_holidays = mcal.get_calendar(str(EXCHANGE)).holidays().holidays  # type: ignore  # noqa: PGH003
+
+        # Transform to regular python datetime objects
+        market_holidays = [to_datetime(str(holiday)) for holiday in market_holidays]
+
+        # And limit to dates of the current year
+        market_holidays = [
+            holiday.date()
+            for holiday in market_holidays
+            if holiday.year == current_datetime_in_exchange.year
+        ]
+
+        # Check if today is a business day in configured exchange
+        is_business_day = bool(is_busday(current_date))
+
+        # Check if today is market holiday in configured exchange
+        is_market_holiday = current_date in market_holidays
+
+        # Get close point in time
+        # in the configured exchange
+        close_datetime_in_exchange = datetime.combine(
+            current_datetime_in_exchange.date(),
+            datetime.strptime(
+                EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["hours"]["close"],
+                DEFAULT_TIME_FORMAT,
+            ).time(),
+        ).replace(tzinfo=ZoneInfo(exchange_timezone))
+
+        exchange_is_open = is_business_day and not is_market_holiday
+
+        # Check if the current time in (open) exchange
+        # is within 15 minutes of the market close time
+        return (
+            exchange_is_open
+            and (
+                close_datetime_in_exchange - current_datetime_in_exchange
+            ).total_seconds()
+            <= 15 * 60
+        )
