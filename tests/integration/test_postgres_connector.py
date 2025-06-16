@@ -519,12 +519,12 @@ def test__create_position_on_screening__for_creating_position(
         PositionStatus.DISPATCHED,
     ],
 )
-def test__get_existing_position_by_status__for_returning_position_by_status(
+def test__get_position_by_status__for_returning_position_by_status(
     prisma_client: Prisma,
     position_status: PositionStatus,
 ) -> None:
     """
-    Test get_existing_position_by_status for returning position by status.
+    Test get_position_by_status for returning position by status.
 
     PostgresConnector should return position by status if it exists.
     """
@@ -542,7 +542,7 @@ def test__get_existing_position_by_status__for_returning_position_by_status(
         ),  # type: ignore  # noqa: PGH003
     )
 
-    position = postgres_connector.get_existing_position_by_status(
+    position = postgres_connector.get_position_by_status(
         position_status=position_status,
     )
 
@@ -565,12 +565,12 @@ def test__get_existing_position_by_status__for_returning_position_by_status(
         PositionStatus.DISPATCHED,
     ],
 )
-def test__update_existing_position_by_status__for_updating_position(
+def test__update_position_by_status__for_updating_position(
     prisma_client: Prisma,
     position_status: PositionStatus,
 ) -> None:
     """
-    Test update_existing_position_by_status for updating position.
+    Test update_position_by_status for updating position.
 
     PostgresConnector should update position by status.
     """
@@ -588,7 +588,7 @@ def test__update_existing_position_by_status__for_updating_position(
         ),  # type: ignore  # noqa: PGH003
     )
 
-    postgres_connector.update_existing_position_by_status(
+    postgres_connector.update_position_by_status(
         position_id=control_position.id,
         position_status=position_status,
     )

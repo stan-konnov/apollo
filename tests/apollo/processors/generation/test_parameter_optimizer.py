@@ -488,9 +488,11 @@ def test__optimize_parameters__for_raising_error_if_position_exists() -> None:
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: E501, SLF001
-        ticker=str(TICKER),
-        status=PositionStatus.OPTIMIZED,
+    parameter_optimizer._database_connector.get_position_by_status.return_value = (  # noqa: SLF001
+        Position(
+            ticker=str(TICKER),
+            status=PositionStatus.OPTIMIZED,
+        )
     )
 
     exception_message = (
@@ -525,7 +527,7 @@ def test__optimize_parameters__for_skipping_process_if_no_screened_position(
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_position_by_status.return_value = None  # noqa: SLF001
 
     parameter_optimizer.optimize_parameters()
 
@@ -559,11 +561,11 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
         ParameterOptimizerMode.MULTIPLE_STRATEGIES,
     )
 
-    def mock_get_existing_position_by_status(
+    def mock_get_position_by_status(
         position_status: PositionStatus,
     ) -> Position | None:
         """
-        Conditional mock for get_existing_position_by_status.
+        Conditional mock for get_position_by_status.
 
         :param position_status: Position status to mock.
         :returns: Position if status is SCREENED, None otherwise.
@@ -579,8 +581,8 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
         return None
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status = (  # noqa: SLF001
-        mock_get_existing_position_by_status
+    parameter_optimizer._database_connector.get_position_by_status = (  # noqa: SLF001
+        mock_get_position_by_status
     )
 
     with patch.object(
@@ -602,7 +604,7 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
             ],
         )
 
-        parameter_optimizer._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
+        parameter_optimizer._database_connector.update_position_by_status.assert_called_once_with(  # noqa: SLF001
             "test",
             PositionStatus.OPTIMIZED,
         )

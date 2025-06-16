@@ -78,10 +78,8 @@ class ParameterOptimizer(MultiprocessingCapable):
         # it means this process is part of larger signal generation process
         if self._operation_mode == ParameterOptimizerMode.MULTIPLE_STRATEGIES:
             # Query the screened position to optimize
-            screened_position = (
-                self._database_connector.get_existing_position_by_status(
-                    PositionStatus.SCREENED,
-                )
+            screened_position = self._database_connector.get_position_by_status(
+                PositionStatus.SCREENED,
             )
 
             # Skip the optimization process
@@ -100,7 +98,7 @@ class ParameterOptimizer(MultiprocessingCapable):
 
             # Query the existing optimized position
             existing_optimized_position = (
-                self._database_connector.get_existing_position_by_status(
+                self._database_connector.get_position_by_status(
                     PositionStatus.OPTIMIZED,
                 )
             )
@@ -123,7 +121,7 @@ class ParameterOptimizer(MultiprocessingCapable):
                 )
 
             # Update the screened position to optimized
-            self._database_connector.update_existing_position_by_status(
+            self._database_connector.update_position_by_status(
                 screened_position.id,
                 PositionStatus.OPTIMIZED,
             )

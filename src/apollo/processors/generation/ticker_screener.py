@@ -98,10 +98,8 @@ class TickerScreener(MultiprocessingCapable):
         """Run the screening process in parallel."""
 
         # Query the existing screened position
-        existing_screened_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.SCREENED,
-            )
+        existing_screened_position = self._database_connector.get_position_by_status(
+            PositionStatus.SCREENED,
         )
 
         # Raise an error if the

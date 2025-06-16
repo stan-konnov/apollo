@@ -67,10 +67,8 @@ class OrderManager(MarketTimeAware):
         logger.info("Handling dispatched position signal.")
 
         # Query existing open position
-        existing_open_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.OPEN,
-            )
+        existing_open_position = self._database_connector.get_position_by_status(
+            PositionStatus.OPEN,
         )
 
         # Raise error if open position already exists
@@ -81,10 +79,8 @@ class OrderManager(MarketTimeAware):
             )
 
         # Query existing dispatched position
-        existing_dispatched_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.DISPATCHED,
-            )
+        existing_dispatched_position = self._database_connector.get_position_by_status(
+            PositionStatus.DISPATCHED,
         )
 
         # Raise error if no dispatched position exists
@@ -168,7 +164,7 @@ class OrderManager(MarketTimeAware):
                             )
 
                             # Update dispatched position status to CANCELLED
-                            self._database_connector.update_existing_position_by_status(
+                            self._database_connector.update_position_by_status(
                                 existing_dispatched_position.id,
                                 PositionStatus.CANCELLED,
                             )
@@ -189,7 +185,7 @@ class OrderManager(MarketTimeAware):
                         )
 
                         # Update dispatched position status to OPEN
-                        self._database_connector.update_existing_position_by_status(
+                        self._database_connector.update_position_by_status(
                             existing_dispatched_position.id,
                             PositionStatus.OPEN,
                         )

@@ -166,12 +166,12 @@ class PostgresConnector:
 
         self._database_client.disconnect()
 
-    def get_existing_position_by_status(
+    def get_position_by_status(
         self,
         position_status: PositionStatus,
     ) -> Position | None:
         """
-        Get existing position by status.
+        Get position by status.
 
         :param position_status: Position status to query.
         :returns: Position if exists.
@@ -198,7 +198,7 @@ class PostgresConnector:
             else None
         )
 
-    def update_existing_position_by_status(
+    def update_position_by_status(
         self,
         position_id: str,
         position_status: PositionStatus,
