@@ -160,14 +160,14 @@ class OrderManager(MarketTimeAware):
                             "Position not opened, waiting for it to be created.",
                         )
 
-                        # And if market is about to close
+                        # Yet if market is about to close
                         if not self.is_market_open():  # type: ignore  # noqa: PGH003
                             logger.info(
                                 "Market is about to close,"
                                 "updating dispatched position status to CANCELLED.",
                             )
 
-                            # Update dispatched position status to CANCELLED``
+                            # Update dispatched position status to CANCELLED
                             self._database_connector.update_existing_position_by_status(
                                 existing_dispatched_position.id,
                                 PositionStatus.CANCELLED,
