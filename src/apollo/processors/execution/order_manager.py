@@ -194,6 +194,8 @@ class OrderManager(MarketTimeAware):
                             PositionStatus.OPEN,
                         )
 
+                        # TODO: Update with trading values  # noqa: TD002, TD003, FIX002
+
                         # And exit the loop
                         position_synchronized = True
 

@@ -29,7 +29,7 @@ def main() -> None:
     )
 
     position = trading_client.get_open_position("CRWD")
-    logger.info(position)
+    logger.info(position.model_dump_json(indent=4))  # type: ignore  # noqa: PGH003
 
 
 if __name__ == "__main__":
