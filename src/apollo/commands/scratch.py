@@ -37,6 +37,9 @@ def main() -> None:
 
     _account_client: TradeAccount | dict[str, Any] = trading_client.get_account()
 
+    position = trading_client.get_open_position("CRWD")
+    logger.info(f"Positions: {position}")
+
 
 if __name__ == "__main__":
     main()

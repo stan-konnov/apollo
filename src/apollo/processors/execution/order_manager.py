@@ -1,4 +1,5 @@
 from logging import getLogger
+from time import sleep
 from typing import TYPE_CHECKING, Any
 
 from alpaca.trading.client import TradingClient
@@ -141,6 +142,25 @@ class OrderManager(MarketTimeAware):
                     f"Order for dispatched position:\n\n"
                     f"{limit_order.model_dump_json(indent=4)}",  # type: ignore  # noqa: PGH003
                 )
+
+                position_synchronized = False
+
+                while not position_synchronized:
+                    # Look up the position from the Alpaca API
+                    position_from_api = self._trading_client.get_open_position(
+                        existing_dispatched_position.ticker,
+                    )
+
+                    # If position is not found,
+                    # it means the order was not filled yet,
+                    # thus, we wait for a while for it to be created
+                    if not position_from_api:
+                        logger.info(
+                            "Position not opened, waiting for it to be created.",
+                        )
+
+                        sleep(5)
+                        continue
 
                 # Reset status logged flag
                 self._status_logged = False
