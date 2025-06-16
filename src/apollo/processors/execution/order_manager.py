@@ -145,22 +145,55 @@ class OrderManager(MarketTimeAware):
 
                 position_synchronized = False
 
+                # While the position is not synchronized
                 while not position_synchronized:
-                    # Look up the position from the Alpaca API
+                    # Query the position from the API
                     position_from_api = self._trading_client.get_open_position(
                         existing_dispatched_position.ticker,
                     )
 
-                    # If position is not found,
-                    # it means the order was not filled yet,
-                    # thus, we wait for a while for it to be created
+                    # If position is still not opened
                     if not position_from_api:
                         logger.info(
                             "Position not opened, waiting for it to be created.",
                         )
 
-                        sleep(5)
-                        continue
+                        # And if market is about to close
+                        if not self.is_market_open():  # type: ignore  # noqa: PGH003
+                            logger.info(
+                                "Market is about to close,"
+                                "updating dispatched position status to CANCELLED.",
+                            )
+
+                            # Update dispatched position status to CANCELLED``
+                            self._database_connector.update_existing_position_by_status(
+                                existing_dispatched_position.id,
+                                PositionStatus.CANCELLED,
+                            )
+
+                            # And exit the loop
+                            position_synchronized = True
+                        else:
+                            # Wait otherwise
+                            sleep(5)
+                            continue
+
+                    # Otherwise,
+                    # if position is opened
+                    else:
+                        logger.info(
+                            "Position opened: "
+                            "updating dispatched position status to OPEN.",
+                        )
+
+                        # Update dispatched position status to OPEN
+                        self._database_connector.update_existing_position_by_status(
+                            existing_dispatched_position.id,
+                            PositionStatus.OPEN,
+                        )
+
+                        # And exit the loop
+                        position_synchronized = True
 
                 # Reset status logged flag
                 self._status_logged = False
