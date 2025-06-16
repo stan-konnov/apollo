@@ -13,8 +13,8 @@ class MarketTimeAware:
     """
     Marker Time Aware class.
 
-    Is used throughout the system to identify if the
-    system can run generation or execution processes.
+    Is used throughout the system to identify if the system can run
+    generation or execution processes, or if the market is closing soon.
     """
 
     def __init__(self) -> None:
@@ -28,7 +28,7 @@ class MarketTimeAware:
         """
         Get market time metrics.
 
-        :return: Named tuple with market time metrics.
+        :returns: Object containing market time metrics in the configured exchange.
         """
 
         # Get timezone of the configured exchange
