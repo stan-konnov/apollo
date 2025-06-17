@@ -129,7 +129,6 @@ class OrderManager(MarketTimeAware):
                     limit_price=limit_price,
                     qty=order_quantity,
                     side=order_side,
-                    # NOTE: experiment with DAY time in force
                     time_in_force=TimeInForce.IOC,
                 )
 
