@@ -90,7 +90,7 @@ class OrderManager(MarketTimeAware):
         # Raise error if no dispatched position exists
         if not existing_dispatched_position:
             raise DispatchedPositionDoesNotExistError(
-                "Dispatched position does not exists while handling dispatched signal. "
+                "Dispatched position does not exist while handling dispatched signal. "
                 "System invariant violated, position was not dispatched.",
             )
 
