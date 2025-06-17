@@ -4,7 +4,7 @@ import pandas as pd
 from yfinance import Ticker, download
 
 from apollo.connectors.api.base_api_connector import BaseApiConnector
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import EmptyYahooApiResponseError
 
 
 class YahooApiConnector(BaseApiConnector):
@@ -32,7 +32,7 @@ class YahooApiConnector(BaseApiConnector):
         :param max_period: Flag to request the maximum available period of price data.
         :returns: Dataframe with price data.
 
-        :raises EmptyApiResponseError: If API response is empty.
+        :raises EmptyYahooApiResponseError: If API response is empty.
         """
 
         price_data: pd.DataFrame | None
@@ -60,7 +60,7 @@ class YahooApiConnector(BaseApiConnector):
 
         # Make sure we have data to work with
         if price_data is None or price_data.empty:
-            raise EmptyApiResponseError(
+            raise EmptyYahooApiResponseError(
                 "API response returned empty dataframe.",
             )
 

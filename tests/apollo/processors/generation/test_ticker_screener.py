@@ -12,7 +12,7 @@ from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import EmptyYahooApiResponseError
 from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
 from apollo.processors.generation.ticker_screener import TickerScreener
@@ -150,7 +150,7 @@ def test__calculate_measures__for_skipping_ticker_if_api_returned_empty_response
 
     # Mimic the exception raised by Price Data Provider
     ticker_screener._price_data_provider.get_price_data.side_effect = (  # noqa: SLF001
-        EmptyApiResponseError
+        EmptyYahooApiResponseError
     )
 
     screened_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001

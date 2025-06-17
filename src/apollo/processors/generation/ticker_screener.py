@@ -11,7 +11,7 @@ from apollo.calculators.kaufman_efficiency_ratio import (
 )
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.connectors.database.postgres_connector import PostgresConnector
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import EmptyYahooApiResponseError
 from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.models.position import PositionStatus
 from apollo.providers.price_data_provider import PriceDataProvider
@@ -223,7 +223,7 @@ class TickerScreener(MultiprocessingCapable):
                     [results_dataframe, relevant_result],
                 )
 
-            except EmptyApiResponseError:  # noqa: PERF203
+            except EmptyYahooApiResponseError:  # noqa: PERF203
                 logger.warning(
                     f"API returned empty response for {ticker}, skipping ticker.",
                 )

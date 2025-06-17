@@ -10,6 +10,7 @@ from alpaca.trading.requests import LimitOrderRequest
 from zoneinfo import ZoneInfo
 
 from apollo.connectors.database.postgres_connector import PostgresConnector
+from apollo.errors.api import AlpacaAPIErrorMessages, RequestToAlpacaAPIFailedError
 from apollo.errors.system_invariants import (
     DispatchedPositionDoesNotExistError,
     OpenPositionAlreadyExistsError,
@@ -186,31 +187,44 @@ class OrderManager(MarketTimeAware):
                         # Log the error
                         # so we can further
                         # scrutinize this logic
+                        # NOTE: remove me later please
                         logger.info(error)
 
-                        logger.info(
-                            "Position not opened, waiting for it to be created.",
-                        )
-
-                        # Yet, if market is about to close
-                        if self._determine_if_market_is_closing():
+                        # Ensure that exception is about position
+                        if (
+                            error.message
+                            == AlpacaAPIErrorMessages.POSITION_DOES_NOT_EXIST.value
+                        ):
                             logger.info(
-                                "Market is about to close, "
-                                "updating dispatched position status to CANCELLED.",
+                                "Position not opened, waiting for it to be created.",
                             )
 
-                            # Update dispatched position status to CANCELLED
-                            self._database_connector.update_position_by_status(
-                                existing_dispatched_position.id,
-                                PositionStatus.CANCELLED,
-                            )
+                            # Yet, if market is about to close
+                            if self._determine_if_market_is_closing():
+                                logger.info(
+                                    "Market is about to close, "
+                                    "updating dispatched position status to CANCELLED.",
+                                )
 
-                            # And exit the loop
-                            position_synchronized = True
-                        else:
-                            # Wait otherwise
-                            sleep(5)
-                            continue
+                                # Update dispatched position status to CANCELLED
+                                self._database_connector.update_position_by_status(
+                                    existing_dispatched_position.id,
+                                    PositionStatus.CANCELLED,
+                                )
+
+                                # And exit the loop
+                                position_synchronized = True
+                            else:
+                                # Wait otherwise
+                                sleep(5)
+                                continue
+
+                        # Otherwise, exception is not about
+                        # position and something else went wrong
+                        raise RequestToAlpacaAPIFailedError(
+                            "Failed to synchronize position with Alpaca API. "
+                            "Please check the logs for more details.",
+                        ) from error
 
                 # Reset status logged flag
                 self._status_logged = False
