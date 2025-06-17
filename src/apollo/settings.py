@@ -47,7 +47,7 @@ ALPACA_API_KEY = getenv("ALPACA_API_KEY")
 ALPACA_SECRET_KEY = getenv("ALPACA_SECRET_KEY")
 
 
-class PriceDataFrequency(Enum, str):
+class PriceDataFrequency(str, Enum):
     """
     Frequency of the price data.
 
@@ -57,7 +57,7 @@ class PriceDataFrequency(Enum, str):
     ONE_DAY = "1d"
 
 
-class ParameterOptimizerMode(Enum, str):
+class ParameterOptimizerMode(str, Enum):
     """
     Parameter Optimizer mode of operation.
 
