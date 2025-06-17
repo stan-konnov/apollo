@@ -3,6 +3,7 @@ from logging import getLogger
 from time import sleep
 from typing import TYPE_CHECKING, Any
 
+from alpaca.common.exceptions import APIError
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest
@@ -147,15 +148,46 @@ class OrderManager(MarketTimeAware):
 
                 # While the position is not synchronized
                 while not position_synchronized:
-                    # Query the position from the API
-                    position_from_api: Position = (
-                        self._trading_client.get_open_position(
-                            existing_dispatched_position.ticker,
-                        )
-                    )  # type: ignore  # noqa: PGH003
+                    try:
+                        # Query the position from the API
+                        position_from_api: Position = (
+                            self._trading_client.get_open_position(
+                                existing_dispatched_position.ticker,
+                            )
+                        )  # type: ignore  # noqa: PGH003
 
-                    # If position is still not opened
-                    if not position_from_api:
+                        # Assume position is opened
+                        logger.info(
+                            "Position opened: "
+                            "updating dispatched position status to OPEN.",
+                        )
+
+                        # Update dispatched position status to OPEN
+                        self._database_connector.update_position_by_status(
+                            existing_dispatched_position.id,
+                            PositionStatus.OPEN,
+                        )
+
+                        # Update the position with execution details
+                        self._database_connector.update_position_on_signal_execution(
+                            position_id=existing_dispatched_position.id,
+                            entry_price=float(position_from_api.avg_entry_price),
+                            entry_date=datetime.now(tz=ZoneInfo("UTC")),
+                            unit_size=float(position_from_api.qty),
+                            cash_size=float(position_from_api.cost_basis),
+                        )
+
+                        # And exit the loop
+                        position_synchronized = True
+
+                    # Otherwise, if position is still
+                    # not opened, API will raise an exception
+                    except APIError as error:  # noqa: PERF203
+                        # Log the error
+                        # so we can further
+                        # scrutinize this logic
+                        logger.info(error)
+
                         logger.info(
                             "Position not opened, waiting for it to be created.",
                         )
@@ -179,32 +211,6 @@ class OrderManager(MarketTimeAware):
                             # Wait otherwise
                             sleep(5)
                             continue
-
-                    # Otherwise,
-                    # if position is opened
-                    else:
-                        logger.info(
-                            "Position opened: "
-                            "updating dispatched position status to OPEN.",
-                        )
-
-                        # Update dispatched position status to OPEN
-                        self._database_connector.update_position_by_status(
-                            existing_dispatched_position.id,
-                            PositionStatus.OPEN,
-                        )
-
-                        # And update the position with execution details
-                        self._database_connector.update_position_on_signal_execution(
-                            position_id=existing_dispatched_position.id,
-                            entry_price=float(position_from_api.avg_entry_price),
-                            entry_date=datetime.now(tz=ZoneInfo("UTC")),
-                            unit_size=float(position_from_api.qty),
-                            cash_size=float(position_from_api.cost_basis),
-                        )
-
-                        # And exit the loop
-                        position_synchronized = True
 
                 # Reset status logged flag
                 self._status_logged = False
