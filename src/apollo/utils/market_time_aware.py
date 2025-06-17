@@ -17,13 +17,6 @@ class MarketTimeAware:
     generation or execution processes, or if the market is closing soon.
     """
 
-    def __init__(self) -> None:
-        """Construct Market Time Aware.."""
-
-        # Declare a boolean to
-        # control logs in child classes
-        self._status_logged = False
-
     def _get_market_time_metrics(self) -> MarketTimeMetrics:
         """
         Get market time metrics.

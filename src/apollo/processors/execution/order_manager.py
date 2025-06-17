@@ -21,6 +21,7 @@ from apollo.settings import (
     ALPACA_SECRET_KEY,
     LONG_SIGNAL,
 )
+from apollo.utils.log_controllable import LogControllable
 from apollo.utils.market_time_aware import MarketTimeAware
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 
-class OrderManager(MarketTimeAware):
+class OrderManager(MarketTimeAware, LogControllable):
     """
     Order Manager class.
 
@@ -225,8 +226,8 @@ class OrderManager(MarketTimeAware):
                             "Please check the logs for more details.",
                         ) from error
 
-                # Reset status logged flag
-                self._status_logged = False
+                # Reset message logged flag
+                self._message_logged = False
 
                 # Break after placing an order
                 # and synchronizing the position,
@@ -235,8 +236,8 @@ class OrderManager(MarketTimeAware):
                 break
 
             # Log status if not logged yet
-            if not self._status_logged:
-                self._status_logged = True
+            if not self._message_logged:
+                self._message_logged = True
 
                 logger.info(
                     "Cannot execute at the moment. Waiting for the market to open.",

@@ -6,12 +6,13 @@ from apollo.processors.generation.ticker_screener import TickerScreener
 from apollo.settings import (
     ParameterOptimizerMode,
 )
+from apollo.utils.log_controllable import LogControllable
 from apollo.utils.market_time_aware import MarketTimeAware
 
 logger = getLogger(__name__)
 
 
-class GenerationExecutionRunner(MarketTimeAware):
+class GenerationExecutionRunner(MarketTimeAware, LogControllable):
     """
     Generation Execution Runner class.
 
@@ -60,12 +61,12 @@ class GenerationExecutionRunner(MarketTimeAware):
                 # once orders are places and state is synchronized
                 self._signal_generator.generate_signals()
 
-                # Reset status logged flag
-                self._status_logged = False
+                # Reset message logged flag
+                self._message_logged = False
 
             # Log status if not logged yet
-            if not self._status_logged:
-                self._status_logged = True
+            if not self._message_logged:
+                self._message_logged = True
 
                 logger.info(
                     "Cannot generate at the moment. "
