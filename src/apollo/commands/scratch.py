@@ -1,11 +1,9 @@
 import logging
 
-from alpaca.trading.client import TradingClient
-
-from apollo.settings import (
-    ALPACA_API_KEY,
-    ALPACA_SECRET_KEY,
-)
+# NOTE: we require this unused import
+# to be able to register event handlers
+import apollo.events.event_handlers  # noqa: F401
+from apollo.processors.generation.signal_generator import SignalGenerator
 from apollo.utils.common import (
     ensure_environment_is_configured,
 )
@@ -23,13 +21,8 @@ def main() -> None:
 
     ensure_environment_is_configured()
 
-    trading_client = TradingClient(
-        api_key=ALPACA_API_KEY,
-        secret_key=ALPACA_SECRET_KEY,
-    )
-
-    position = trading_client.get_open_position("CRWD")
-    logger.info(position.model_dump_json(indent=4))  # type: ignore  # noqa: PGH003
+    signal_generator = SignalGenerator()
+    signal_generator.generate_signals()
 
 
 if __name__ == "__main__":
