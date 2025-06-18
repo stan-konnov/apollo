@@ -159,8 +159,11 @@ class OrderManager(MarketTimeAware, LogControllable):
 
                         # Assume position is opened
                         logger.info(
-                            "Position opened: "
-                            "updating dispatched position status to OPEN.",
+                            f"Position opened:\n\n"
+                            f"{position_from_api.model_dump_json(indent=4)}",
+                        )
+                        logger.info(
+                            "Updating dispatched position status to OPEN.",
                         )
 
                         # Update dispatched position status to OPEN
