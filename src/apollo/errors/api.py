@@ -9,7 +9,7 @@ class RequestToAlpacaAPIFailedError(Exception):
     """Raised when a request to the Alpaca API fails."""
 
 
-class AlpacaAPIErrorMessages(str, Enum):
-    """Enum for Alpaca API error messages."""
+class AlpacaAPIErrorCodes(int, Enum):
+    """Enum for Alpaca API error codes."""
 
-    POSITION_DOES_NOT_EXIST = "Position does not exist."
+    POSITION_DOES_NOT_EXIST = 40410000
