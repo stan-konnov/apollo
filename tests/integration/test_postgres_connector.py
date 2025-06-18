@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 from prisma import Prisma
 from pytz import timezone
+from zoneinfo import ZoneInfo
 
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector
@@ -652,6 +653,60 @@ def test__update_position_on_signal_generation__for_updating_position(
     assert position.stop_loss == stop_loss
     assert position.take_profit == take_profit
     assert position.target_entry_price == target_entry_price
+
+
+@pytest.mark.usefixtures(
+    "prisma_client",
+    "flush_postgres_database",
+)
+def test__update_position_on_signal_execution__for_updating_position(
+    prisma_client: Prisma,
+) -> None:
+    """
+    Test update_position_on_signal_execution for updating position.
+
+    PostgresConnector should update position upon execution.
+    """
+
+    postgres_connector = PostgresConnector()
+
+    control_position = Position(
+        ticker=str(TICKER),
+        status=PositionStatus.OPEN,
+    )
+
+    control_position = prisma_client.positions.create(
+        data=control_position.model_dump(
+            exclude_defaults=True,
+        ),  # type: ignore  # noqa: PGH003
+    )
+
+    control_entry_price = 100.0
+    control_entry_date = datetime.now(tz=ZoneInfo("UTC"))
+    control_unit_size = 10.0
+    control_cash_size = 1000.0
+
+    postgres_connector.update_position_on_signal_execution(
+        position_id=control_position.id,
+        entry_price=control_entry_price,
+        entry_date=control_entry_date,
+        unit_size=control_unit_size,
+        cash_size=control_cash_size,
+    )
+
+    position = prisma_client.positions.find_first(
+        where={
+            "id": control_position.id,
+        },
+    )
+
+    assert position is not None
+    assert position.unit_size == control_unit_size
+    assert position.cash_size == control_cash_size
+    assert position.entry_price == control_entry_price
+    assert position.entry_date.strftime(  # type: ignore  # noqa: PGH003
+        DEFAULT_DATE_FORMAT,
+    ) == control_entry_date.strftime(DEFAULT_DATE_FORMAT)
 
 
 @pytest.mark.usefixtures(
