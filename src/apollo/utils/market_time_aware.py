@@ -103,10 +103,12 @@ class MarketTimeAware:
         )
 
         # System can generate signals
-        # on any day that is not a market holiday,
+        # on business day that is not a market holiday,
         # and outside of the market open and close times
         can_generate = (
-            not market_time_metrics.is_market_holiday and not is_trading_hours
+            market_time_metrics.is_business_day
+            and not market_time_metrics.is_market_holiday
+            and not is_trading_hours
         )
 
         # System can execute signals
