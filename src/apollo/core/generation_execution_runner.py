@@ -39,14 +39,23 @@ class GenerationExecutionRunner(MarketTimeAware, LogControllable):
             ParameterOptimizerMode.MULTIPLE_STRATEGIES,
         )
 
-    def run_signal_generation_execution(self) -> None:
-        """Run signal generation-execution process."""
+    def run_signal_generation_execution(
+        self,
+        override_market_timing: bool = False,
+    ) -> None:
+        """
+        Run signal generation-execution process.
+
+        :param override_market_timing: If True, will override market timing checks.
+        """
 
         while True:
             # Check if system can generate signals
             can_generate, _ = self._determine_if_generate_or_execute()
 
-            if can_generate:
+            # Run if system can generate
+            # or if market timing is overridden
+            if can_generate or override_market_timing:
                 # Screen tickers
                 self._ticker_screener.screen_tickers()
 
