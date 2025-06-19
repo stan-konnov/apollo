@@ -79,5 +79,5 @@ class GenerationExecutionRunner(MarketTimeAware, LogControllable):
 
                 logger.info(
                     "Cannot generate at the moment. "
-                    "Market is still open or it is a holiday.",
+                    "Market is still open, or it is a weekend, or it is a holiday.",
                 )
