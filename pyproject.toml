@@ -48,7 +48,7 @@ test = ["migrate_test", "run_test_suite"]
 scratch = "python3 src/apollo/commands/scratch.py"
 backtest = "python3 src/apollo/commands/backtest.py"
 optimize = "python3 src/apollo/commands/optimize.py"
-generate_execute = "python3 src/apollo/commands/generate_execute.py"
+generate = "python3 src/apollo/commands/generate.py"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
