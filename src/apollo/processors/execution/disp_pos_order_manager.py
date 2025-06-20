@@ -1,65 +1,42 @@
 from datetime import datetime
 from logging import getLogger
 from time import sleep
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from alpaca.common.exceptions import APIError
-from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest
 from zoneinfo import ZoneInfo
 
-from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.api import AlpacaAPIErrorCodes, RequestToAlpacaAPIFailedError
 from apollo.errors.system_invariants import (
     DispatchedPositionDoesNotExistError,
     OpenPositionAlreadyExistsError,
 )
 from apollo.models.position import PositionStatus
+from apollo.processors.execution.base_order_manager import BaseOrderManager
 from apollo.settings import (
-    ALPACA_API_KEY,
-    ALPACA_SECRET_KEY,
     LONG_SIGNAL,
 )
-from apollo.utils.log_controllable import LogControllable
-from apollo.utils.market_time_aware import MarketTimeAware
 
 if TYPE_CHECKING:
-    from alpaca.trading.models import Position, TradeAccount
+    from alpaca.trading.models import Position
 
 logger = getLogger(__name__)
 
 
-class OrderManager(MarketTimeAware, LogControllable):
+class DispatchedPositionOrderManager(BaseOrderManager):
     """
-    Order Manager class.
+    Dispatched Position Order Manager class.
 
-    Time and market calendar aware.
-
-    Exists as abstraction over Alpaca Trading API to manage market orders.
+    Manages dispatched positions by placing order
+    and synchronizing it with the position in database.
     """
 
     def __init__(self) -> None:
-        """
-        Construct Order Manager.
-
-        Initialize Trading Client.
-        Initialize Account Client.
-        Initialize Database Connector.
-        """
+        """Construct Dispatched Position Order Manager."""
 
         super().__init__()
-
-        self._trading_client = TradingClient(
-            api_key=ALPACA_API_KEY,
-            secret_key=ALPACA_SECRET_KEY,
-        )
-
-        self._account_client: TradeAccount | dict[str, Any] = (
-            self._trading_client.get_account()
-        )
-
-        self._database_connector = PostgresConnector()
 
     def handle_dispatched_position(self) -> None:
         """
