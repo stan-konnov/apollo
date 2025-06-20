@@ -248,8 +248,18 @@ def test__determine_if_market_is_closing__to_to_be_falsy_during_market_hours() -
     assert is_closing is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 22:30:00")
+# Assume today date is Monday, 2025-06-23, 16:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        16,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_market_is_closing__to_be_falsy_after_market_close() -> None:
     """Test _determine_if_market_is_closing method to be falsy after MH."""
 
@@ -260,8 +270,18 @@ def test__determine_if_market_is_closing__to_be_falsy_after_market_close() -> No
     assert is_closing is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 19:45:01")
+# Assume today date is Monday, 2025-06-23, 15:45:01
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        15,
+        45,
+        1,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_market_is_closing__to_be_truthy_soon_before_market_close() -> (
     None
 ):
