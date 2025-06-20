@@ -140,3 +140,15 @@ def test__determine_if_generate_or_execute__to_not_generate_during_market_hours(
     can_generate, _ = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
 
     assert can_generate is False
+
+
+# Assume today date is Monday, 2025-06-23
+@freeze_time("2025-06-23 23:00:00")
+def test__determine_if_generate_or_execute__to_generate_after_market_hours() -> None:
+    """Test _determine_if_generate_or_execute method to generate after MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    can_generate, _ = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
+
+    assert can_generate is True
