@@ -102,3 +102,41 @@ def test__get_market_time_metrics__for_correctly_calculating_brackets_during_tra
         market_time_metrics.current_datetime_in_exchange
         == control_current_datetime_in_exchange
     )
+
+
+# Assume today date is Saturday, 2025-06-21
+@freeze_time("2025-06-21 16:00:00")
+def test__determine_if_generate_or_execute__to_not_generate_on_the_weekend() -> None:
+    """Test _determine_if_generate_or_execute method to not generate on the weekend."""
+
+    market_time_aware = MarketTimeAware()
+
+    can_generate, _ = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
+
+    assert can_generate is False
+
+
+# Assume today date is Thursday, 2025-06-19
+@freeze_time("2025-06-19 16:00:00")
+def test__determine_if_generate_or_execute__to_not_generate_on_market_holiday() -> None:
+    """Test _determine_if_generate_or_execute method to not generate on MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    can_generate, _ = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
+
+    assert can_generate is False
+
+
+# Assume today date is Monday, 2025-06-23
+@freeze_time("2025-06-23 16:00:00")
+def test__determine_if_generate_or_execute__to_not_generate_during_market_hours() -> (
+    None
+):
+    """Test _determine_if_generate_or_execute method to not generate during MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    can_generate, _ = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
+
+    assert can_generate is False
