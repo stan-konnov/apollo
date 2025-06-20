@@ -7,8 +7,18 @@ from apollo.settings import DEFAULT_TIME_FORMAT, EXCHANGE, EXCHANGE_TIME_ZONE_AN
 from apollo.utils.market_time_aware import MarketTimeAware
 
 
-# Assume today date is Friday, 2025-06-20
-@freeze_time("2025-06-20 16:00:00")
+# Assume today date is Friday, 2025-06-20, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        20,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__get_market_time_metrics__for_correctly_calculating_metrics_on_trading_day() -> (  # noqa: E501
     None
 ):
@@ -22,8 +32,18 @@ def test__get_market_time_metrics__for_correctly_calculating_metrics_on_trading_
     assert market_time_metrics.is_market_holiday is False
 
 
-# Assume today date is Thursday, 2025-06-19
-@freeze_time("2025-06-19 16:00:00")
+# Assume today date is Thursday, 2025-06-19, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        19,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__get_market_time_metrics__for_correctly_calculating_metrics_on_non_trading_day() -> (  # noqa: E501
     None
 ):
@@ -37,8 +57,18 @@ def test__get_market_time_metrics__for_correctly_calculating_metrics_on_non_trad
     assert market_time_metrics.is_market_holiday is True
 
 
-# Assume today date is Saturday, 2025-06-21
-@freeze_time("2025-06-21 16:00:00")
+# Assume today date is Saturday, 2025-06-21, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        21,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__get_market_time_metrics__for_correctly_calculating_metrics_non_weekend() -> (
     None
 ):
@@ -52,8 +82,18 @@ def test__get_market_time_metrics__for_correctly_calculating_metrics_non_weekend
     assert market_time_metrics.is_market_holiday is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 16:00:00")
+# Assume today date is Monday, 2025-06-23, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__get_market_time_metrics__for_correctly_calculating_brackets_during_trading_hours() -> (  # noqa: E501
     None
 ):
@@ -104,8 +144,18 @@ def test__get_market_time_metrics__for_correctly_calculating_brackets_during_tra
     )
 
 
-# Assume today date is Saturday, 2025-06-21
-@freeze_time("2025-06-21 16:00:00")
+# Assume today date is Saturday, 2025-06-21, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        21,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_generate_on_the_weekend() -> None:
     """Test _determine_if_generate_or_execute method to not generate on the weekend."""
 
@@ -116,8 +166,18 @@ def test__determine_if_generate_or_execute__to_not_generate_on_the_weekend() -> 
     assert can_generate is False
 
 
-# Assume today date is Thursday, 2025-06-19
-@freeze_time("2025-06-19 16:00:00")
+# Assume today date is Thursday, 2025-06-19, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        19,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_generate_on_market_holiday() -> None:
     """Test _determine_if_generate_or_execute method to not generate on MH."""
 
@@ -128,8 +188,18 @@ def test__determine_if_generate_or_execute__to_not_generate_on_market_holiday() 
     assert can_generate is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 16:00:00")
+# Assume today date is Monday, 2025-06-23, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_generate_during_market_hours() -> (
     None
 ):
@@ -142,8 +212,18 @@ def test__determine_if_generate_or_execute__to_not_generate_during_market_hours(
     assert can_generate is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 23:00:00")
+# Assume today date is Monday, 2025-06-23, 16:01
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        16,
+        1,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_generate_after_market_hours() -> None:
     """Test _determine_if_generate_or_execute method to generate after MH."""
 
@@ -154,8 +234,18 @@ def test__determine_if_generate_or_execute__to_generate_after_market_hours() -> 
     assert can_generate is True
 
 
-# Assume today date is Saturday, 2025-06-21
-@freeze_time("2025-06-21 16:00:00")
+# Assume today date is Saturday, 2025-06-21, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        21,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_execute_on_the_weekend() -> None:
     """Test _determine_if_generate_or_execute method to not execute on the weekend."""
 
@@ -166,8 +256,18 @@ def test__determine_if_generate_or_execute__to_not_execute_on_the_weekend() -> N
     assert can_execute is False
 
 
-# Assume today date is Thursday, 2025-06-19
-@freeze_time("2025-06-19 16:00:00")
+# Assume today date is Thursday, 2025-06-19, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        19,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_execute_on_market_holiday() -> None:
     """Test _determine_if_generate_or_execute method to not execute on MH."""
 
@@ -178,8 +278,18 @@ def test__determine_if_generate_or_execute__to_not_execute_on_market_holiday() -
     assert can_execute is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 23:00:00")
+# Assume today date is Monday, 2025-06-23, 17:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        17,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_not_execute_after_market_hours() -> None:
     """Test _determine_if_generate_or_execute method to not execute after MH."""
 
@@ -190,8 +300,18 @@ def test__determine_if_generate_or_execute__to_not_execute_after_market_hours() 
     assert can_execute is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 16:00:00")
+# Assume today date is Monday, 2025-06-23, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_generate_or_execute__to_execute_during_market_hours() -> None:
     """Test _determine_if_generate_or_execute method to execute during MH."""
 
@@ -202,8 +322,18 @@ def test__determine_if_generate_or_execute__to_execute_during_market_hours() -> 
     assert can_execute is True
 
 
-# Assume today date is Saturday, 2025-06-21
-@freeze_time("2025-06-21 16:00:00")
+# Assume today date is Saturday, 2025-06-21, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        21,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_market_is_closing__to_be_falsy_on_weekend() -> None:
     """Test _determine_if_market_is_closing method to be falsy on the weekend."""
 
@@ -214,8 +344,18 @@ def test__determine_if_market_is_closing__to_be_falsy_on_weekend() -> None:
     assert is_closing is False
 
 
-# Assume today date is Thursday, 2025-06-19
-@freeze_time("2025-06-19 16:00:00")
+# Assume today date is Thursday, 2025-06-19, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        19,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_market_is_closing__to_to_be_falsy_on_market_holiday() -> None:
     """Test _determine_if_market_is_closing method to be falsy on MH."""
 
