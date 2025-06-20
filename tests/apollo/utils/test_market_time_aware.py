@@ -200,3 +200,65 @@ def test__determine_if_generate_or_execute__to_execute_during_market_hours() -> 
     _, can_execute = market_time_aware._determine_if_generate_or_execute()  # noqa: SLF001
 
     assert can_execute is True
+
+
+# Assume today date is Saturday, 2025-06-21
+@freeze_time("2025-06-21 16:00:00")
+def test__determine_if_market_is_closing__to_be_falsy_on_weekend() -> None:
+    """Test _determine_if_market_is_closing method to be falsy on the weekend."""
+
+    market_time_aware = MarketTimeAware()
+
+    is_closing = market_time_aware._determine_if_market_is_closing()  # noqa: SLF001
+
+    assert is_closing is False
+
+
+# Assume today date is Thursday, 2025-06-19
+@freeze_time("2025-06-19 16:00:00")
+def test__determine_if_market_is_closing__to_to_be_falsy_on_market_holiday() -> None:
+    """Test _determine_if_market_is_closing method to be falsy on MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    is_closing = market_time_aware._determine_if_market_is_closing()  # noqa: SLF001
+
+    assert is_closing is False
+
+
+# Assume today date is Monday, 2025-06-23
+@freeze_time("2025-06-23 16:00:00")
+def test__determine_if_market_is_closing__to_to_be_falsy_during_market_hours() -> None:
+    """Test _determine_if_market_is_closing method to be falsy during MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    is_closing = market_time_aware._determine_if_market_is_closing()  # noqa: SLF001
+
+    assert is_closing is False
+
+
+# Assume today date is Monday, 2025-06-23
+@freeze_time("2025-06-23 22:30:00")
+def test__determine_if_market_is_closing__to_be_falsy_after_market_close() -> None:
+    """Test _determine_if_market_is_closing method to be falsy after MH."""
+
+    market_time_aware = MarketTimeAware()
+
+    is_closing = market_time_aware._determine_if_market_is_closing()  # noqa: SLF001
+
+    assert is_closing is False
+
+
+# Assume today date is Monday, 2025-06-23
+@freeze_time("2025-06-23 19:45:01")
+def test__determine_if_market_is_closing__to_be_truthy_soon_before_market_close() -> (
+    None
+):
+    """Test _determine_if_market_is_closing method to be truthy soon."""
+
+    market_time_aware = MarketTimeAware()
+
+    is_closing = market_time_aware._determine_if_market_is_closing()  # noqa: SLF001
+
+    assert is_closing is True

@@ -134,8 +134,18 @@ class MarketTimeAware:
         # Get market time metrics
         market_time_metrics = self._get_market_time_metrics()
 
+        # Check if current time in exchange
+        # is within the market open and close times
+        is_trading_hours = (
+            market_time_metrics.open_datetime_in_exchange
+            <= market_time_metrics.current_datetime_in_exchange
+            < market_time_metrics.close_datetime_in_exchange
+        )
+
+        # Check if the exchange is open
         exchange_is_open = (
-            market_time_metrics.is_business_day
+            is_trading_hours
+            and market_time_metrics.is_business_day
             and not market_time_metrics.is_market_holiday
         )
 
