@@ -226,8 +226,18 @@ def test__determine_if_market_is_closing__to_to_be_falsy_on_market_holiday() -> 
     assert is_closing is False
 
 
-# Assume today date is Monday, 2025-06-23
-@freeze_time("2025-06-23 16:00:00")
+# Assume today date is Monday, 2025-06-23, 10:00
+@freeze_time(
+    datetime(
+        2025,
+        6,
+        23,
+        10,
+        0,
+        0,
+        tzinfo=ZoneInfo(EXCHANGE_TIME_ZONE_AND_HOURS[str(EXCHANGE)]["timezone"]),
+    ),
+)
 def test__determine_if_market_is_closing__to_to_be_falsy_during_market_hours() -> None:
     """Test _determine_if_market_is_closing method to be falsy during MH."""
 
