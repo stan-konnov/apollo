@@ -172,6 +172,7 @@ def test__handle_dispatched_position__for_placing_limit_order(
         )
     )
 
+    # Mock the database connector to return a dispatched position
     disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
     disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
         mock_get_position_by_status
