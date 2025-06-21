@@ -13,7 +13,31 @@ from apollo.models.position import Position, PositionStatus
 from apollo.processors.execution.disp_pos_order_manager import (
     DispatchedPositionOrderManager,
 )
-from apollo.settings import TICKER
+from apollo.settings import LONG_SIGNAL, TICKER
+
+
+def mock_get_position_by_status(
+    position_status: PositionStatus,
+) -> Position | None:
+    """
+    Conditional mock for get_position_by_status.
+
+    :param position_status: Position status to mock.
+    :returns: Position if status is DISPATCHED, None otherwise.
+    """
+
+    if position_status == PositionStatus.DISPATCHED:
+        return Position(
+            id="test",
+            ticker=str(TICKER),
+            status=position_status,
+            direction=LONG_SIGNAL,
+            stop_loss=100.0,
+            take_profit=150.0,
+            target_entry_price=125.0,
+        )
+
+    return None
 
 
 @pytest.mark.parametrize(
@@ -108,20 +132,9 @@ def test__handle_dispatched_position__for_placing_limit_order() -> None:
     disp_pos_order_manager = DispatchedPositionOrderManager()
     disp_pos_order_manager._trading_client = Mock()  # noqa: SLF001
 
-    control_stop_loss = 100.0
-    control_take_profit = 150.0
-    control_target_entry_price = 120.0
-
     disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
-    disp_pos_order_manager._database_connector.get_position_by_status.return_value = (  # noqa: SLF001
-        Position(
-            id="test",
-            ticker=str(TICKER),
-            status=PositionStatus.DISPATCHED,
-            stop_loss=control_stop_loss,
-            take_profit=control_take_profit,
-            target_entry_price=control_target_entry_price,
-        )
+    disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_position_by_status
     )
 
     with contextlib.suppress(timeout_decorator.TimeoutError):
