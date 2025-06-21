@@ -1,8 +1,11 @@
 import contextlib
 from unittest.mock import Mock
+from uuid import uuid4
 
 import pytest
 import timeout_decorator
+from alpaca.trading.enums import AssetClass, AssetExchange, PositionSide
+from alpaca.trading.models import Position as AlpacaPosition
 from freezegun import freeze_time
 
 from apollo.errors.system_invariants import (
@@ -126,11 +129,26 @@ def test__handle_dispatched_position__for_raising_error_if_dispatched_position_d
     indirect=True,
 )
 @pytest.mark.usefixtures("trading_client")
-def test__handle_dispatched_position__for_placing_limit_order() -> None:
+def test__handle_dispatched_position__for_placing_limit_order(
+    trading_client: Mock,
+) -> None:
     """Test handle_dispatched_position method for placing limit order."""
 
     disp_pos_order_manager = DispatchedPositionOrderManager()
-    disp_pos_order_manager._trading_client = Mock()  # noqa: SLF001
+
+    disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+    disp_pos_order_manager._trading_client.get_open_position.return_value = (  # noqa: SLF001
+        AlpacaPosition(
+            qty="10",
+            asset_id=uuid4(),
+            cost_basis="1250",
+            symbol=str(TICKER),
+            avg_entry_price="125",
+            side=PositionSide.LONG,
+            exchange=AssetExchange.NYSE,
+            asset_class=AssetClass.US_EQUITY,
+        )
+    )
 
     disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
     disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
@@ -140,6 +158,4 @@ def test__handle_dispatched_position__for_placing_limit_order() -> None:
     with contextlib.suppress(timeout_decorator.TimeoutError):
         disp_pos_order_manager.handle_dispatched_position()
 
-    # Need a fixture for get position by status reused
-    # assert call with specific arguments
-    disp_pos_order_manager._trading_client.submit_order.assert_any_call()  # noqa: SLF001
+    disp_pos_order_manager._trading_client.submit_order.assert_called_once()  # noqa: SLF001
