@@ -4,8 +4,17 @@ from uuid import uuid4
 
 import pytest
 import timeout_decorator
-from alpaca.trading.enums import AssetClass, AssetExchange, PositionSide
+from alpaca.trading.enums import (
+    AccountStatus,
+    AssetClass,
+    AssetExchange,
+    OrderSide,
+    PositionSide,
+    TimeInForce,
+)
 from alpaca.trading.models import Position as AlpacaPosition
+from alpaca.trading.models import TradeAccount
+from alpaca.trading.requests import LimitOrderRequest
 from freezegun import freeze_time
 
 from apollo.errors.system_invariants import (
@@ -137,6 +146,19 @@ def test__handle_dispatched_position__for_placing_limit_order(
     disp_pos_order_manager = DispatchedPositionOrderManager()
 
     disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+
+    # Mock the account client such that
+    # we can properly test quantity calculation
+    control_trade_account = TradeAccount(
+        id=uuid4(),
+        account_number="test_account",
+        status=AccountStatus.ACTIVE,
+        non_marginable_buying_power="10000",
+    )
+    disp_pos_order_manager._account_client = control_trade_account  # noqa: SLF001
+
+    # Mock the trading client to return an open position
+    # so that we can test the successful placement of the order
     disp_pos_order_manager._trading_client.get_open_position.return_value = (  # noqa: SLF001
         AlpacaPosition(
             qty="10",
@@ -158,4 +180,33 @@ def test__handle_dispatched_position__for_placing_limit_order(
     with contextlib.suppress(timeout_decorator.TimeoutError):
         disp_pos_order_manager.handle_dispatched_position()
 
-    disp_pos_order_manager._trading_client.submit_order.assert_called_once()  # noqa: SLF001
+    # Control values that must
+    # result from computation between
+    # position from the mock and the account client
+    control_ticker = str(TICKER)
+
+    control_limit_price = 125.0
+
+    control_order_quantity = int(
+        float(control_trade_account.non_marginable_buying_power)  # type: ignore  # noqa: PGH003
+        / control_limit_price,
+    )
+
+    control_order_side = (
+        OrderSide.BUY
+        if disp_pos_order_manager._database_connector.get_position_by_status(  # noqa: SLF001
+            PositionStatus.DISPATCHED,
+        ).direction
+        == LONG_SIGNAL
+        else OrderSide.SELL
+    )
+
+    disp_pos_order_manager._trading_client.submit_order.assert_called_once_with(  # noqa: SLF001
+        order_data=LimitOrderRequest(
+            symbol=control_ticker,
+            limit_price=control_limit_price,
+            qty=control_order_quantity,
+            side=control_order_side,
+            time_in_force=TimeInForce.IOC,
+        ),
+    )
