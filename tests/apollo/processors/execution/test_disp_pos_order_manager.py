@@ -135,7 +135,6 @@ def test__handle_dispatched_position__for_raising_error_if_dispatched_position_d
 
 # Assume today date is Monday
 # 2025-06-23 10:00 ET = 14:00 UTC (trading hours)
-@timeout_decorator.timeout(3)
 @freeze_time("2025-06-23 14:00:00")
 @pytest.mark.parametrize(
     "trading_client",
@@ -183,8 +182,7 @@ def test__handle_dispatched_position__for_placing_limit_order(
         mock_get_position_by_status
     )
 
-    with contextlib.suppress(timeout_decorator.TimeoutError):
-        disp_pos_order_manager.handle_dispatched_position()
+    disp_pos_order_manager.handle_dispatched_position()
 
     # Control values that must
     # result from computation between
@@ -360,7 +358,7 @@ def test__handle_dispatched_position__for_synchronizing_position_if_position_not
     indirect=True,
 )
 @pytest.mark.usefixtures("trading_client")
-def test__handle_dispatched_position__for_rasing_error_if_communication_with_trading_api_failed(  # noqa: E501
+def test__handle_dispatched_position__for_rasing_error_if_communication_with_api_failed(
     trading_client: Mock,
 ) -> None:
     """Test handle_dispatched_position method for synchronizing position."""
