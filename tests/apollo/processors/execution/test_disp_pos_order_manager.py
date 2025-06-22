@@ -211,3 +211,33 @@ def test__handle_dispatched_position__for_placing_limit_order(
             time_in_force=TimeInForce.IOC,
         ),
     )
+
+
+# Assume today date is Monday
+# 2025-06-23 09:00 ET = 13:00 UTC (before trading hours)
+@timeout_decorator.timeout(3)
+@freeze_time("2025-06-23 13:00:00")
+@pytest.mark.parametrize(
+    "trading_client",
+    ["apollo.processors.execution.base_order_manager.TradingClient"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("trading_client")
+def test__handle_dispatched_position__for_not_placing_order_outside_of_market_hours(
+    trading_client: Mock,
+) -> None:
+    """Test handle_dispatched_position method for placing limit order."""
+
+    disp_pos_order_manager = DispatchedPositionOrderManager()
+    disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+
+    # Mock the database connector to return a dispatched position
+    disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
+    disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_position_by_status
+    )
+
+    with contextlib.suppress(timeout_decorator.TimeoutError):
+        disp_pos_order_manager.handle_dispatched_position()
+
+    disp_pos_order_manager._trading_client.submit_order.assert_not_called()  # noqa: SLF001
