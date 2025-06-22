@@ -1,10 +1,12 @@
 import contextlib
 from datetime import datetime
+from json import dumps
 from unittest.mock import Mock
 from uuid import uuid4
 
 import pytest
 import timeout_decorator
+from alpaca.common.exceptions import APIError
 from alpaca.trading.enums import (
     AccountStatus,
     AssetClass,
@@ -19,6 +21,7 @@ from alpaca.trading.requests import LimitOrderRequest
 from freezegun import freeze_time
 from zoneinfo import ZoneInfo
 
+from apollo.errors.api import AlpacaAPIErrorCodes, RequestToAlpacaAPIFailedError
 from apollo.errors.system_invariants import (
     DispatchedPositionDoesNotExistError,
     OpenPositionAlreadyExistsError,
@@ -299,3 +302,96 @@ def test__handle_dispatched_position__for_synchronizing_position_after_placing_o
         unit_size=10.0,
         cash_size=1250.0,
     )
+
+
+# Assume today date is Monday
+# 2025-06-23 15:50 ET = 19:50 UTC (market about to close)
+@freeze_time("2025-06-23 19:50:00")
+@pytest.mark.parametrize(
+    "trading_client",
+    ["apollo.processors.execution.base_order_manager.TradingClient"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("trading_client")
+def test__handle_dispatched_position__for_synchronizing_position_if_position_not_opened(
+    trading_client: Mock,
+) -> None:
+    """Test handle_dispatched_position method for synchronizing position."""
+
+    disp_pos_order_manager = DispatchedPositionOrderManager()
+    disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+
+    # Mock the database connector to return a dispatched position
+    disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
+    disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_position_by_status
+    )
+
+    # Mock the trading client to raise an error
+    disp_pos_order_manager._trading_client.get_open_position.side_effect = APIError(  # noqa: SLF001
+        error=dumps(
+            {
+                "code": AlpacaAPIErrorCodes.POSITION_DOES_NOT_EXIST.value,
+            },
+        ),
+    )
+
+    # NOTE: we suppress our
+    # internal error here since
+    # due to the nature of the execution
+    # during tests, it would always be raised
+    # even though we have conditions to handle it
+    with contextlib.suppress(RequestToAlpacaAPIFailedError):
+        disp_pos_order_manager.handle_dispatched_position()
+
+    disp_pos_order_manager._database_connector.update_position_by_status.assert_called_once_with(  # noqa: SLF001
+        "test",
+        PositionStatus.CANCELLED,
+    )
+
+
+# Assume today date is Monday
+# 2025-06-23 10:00 ET = 14:00 UTC
+@timeout_decorator.timeout(3)
+@freeze_time("2025-06-23 14:00:00")
+@pytest.mark.parametrize(
+    "trading_client",
+    ["apollo.processors.execution.base_order_manager.TradingClient"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("trading_client")
+def test__handle_dispatched_position__for_rasing_error_if_communication_with_trading_api_failed(  # noqa: E501
+    trading_client: Mock,
+) -> None:
+    """Test handle_dispatched_position method for synchronizing position."""
+
+    disp_pos_order_manager = DispatchedPositionOrderManager()
+    disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+
+    # Mock the database connector to return a dispatched position
+    disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
+    disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_position_by_status
+    )
+
+    # Mock the trading client to raise an error
+    disp_pos_order_manager._trading_client.get_open_position.side_effect = APIError(  # noqa: SLF001
+        error=dumps(
+            {
+                "code": 12345,
+            },
+        ),
+    )
+
+    exception_message = (
+        "Failed to synchronize position with Alpaca API. "
+        "Please check the logs for more details."
+    )
+
+    with contextlib.suppress(timeout_decorator.TimeoutError), pytest.raises(
+        RequestToAlpacaAPIFailedError,
+        match=exception_message,
+    ) as exception:
+        disp_pos_order_manager.handle_dispatched_position()
+
+    assert str(exception.value) == exception_message
