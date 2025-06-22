@@ -1,4 +1,5 @@
 import contextlib
+from datetime import datetime
 from unittest.mock import Mock
 from uuid import uuid4
 
@@ -16,6 +17,7 @@ from alpaca.trading.models import Position as AlpacaPosition
 from alpaca.trading.models import TradeAccount
 from alpaca.trading.requests import LimitOrderRequest
 from freezegun import freeze_time
+from zoneinfo import ZoneInfo
 
 from apollo.errors.system_invariants import (
     DispatchedPositionDoesNotExistError,
@@ -226,7 +228,7 @@ def test__handle_dispatched_position__for_placing_limit_order(
 def test__handle_dispatched_position__for_not_placing_order_outside_of_market_hours(
     trading_client: Mock,
 ) -> None:
-    """Test handle_dispatched_position method for placing limit order."""
+    """Test handle_dispatched_position method for not placing order."""
 
     disp_pos_order_manager = DispatchedPositionOrderManager()
     disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
@@ -241,3 +243,59 @@ def test__handle_dispatched_position__for_not_placing_order_outside_of_market_ho
         disp_pos_order_manager.handle_dispatched_position()
 
     disp_pos_order_manager._trading_client.submit_order.assert_not_called()  # noqa: SLF001
+
+
+# Assume today date is Monday
+# 2025-06-23 10:00 ET = 14:00 UTC
+@timeout_decorator.timeout(3)
+@freeze_time("2025-06-23 14:00:00")
+@pytest.mark.parametrize(
+    "trading_client",
+    ["apollo.processors.execution.base_order_manager.TradingClient"],
+    indirect=True,
+)
+@pytest.mark.usefixtures("trading_client")
+def test__handle_dispatched_position__for_synchronizing_position_after_placing_order(
+    trading_client: Mock,
+) -> None:
+    """Test handle_dispatched_position method for synchronizing position."""
+
+    disp_pos_order_manager = DispatchedPositionOrderManager()
+    disp_pos_order_manager._trading_client = trading_client  # noqa: SLF001
+
+    # Mock the database connector to return a dispatched position
+    disp_pos_order_manager._database_connector = Mock()  # noqa: SLF001
+    disp_pos_order_manager._database_connector.get_position_by_status.side_effect = (  # noqa: SLF001
+        mock_get_position_by_status
+    )
+
+    # Mock the trading client to return an open position
+    # so that we can test the successful placement of the order
+    disp_pos_order_manager._trading_client.get_open_position.return_value = (  # noqa: SLF001
+        AlpacaPosition(
+            qty="10",
+            asset_id=uuid4(),
+            cost_basis="1250",
+            symbol=str(TICKER),
+            avg_entry_price="125",
+            side=PositionSide.LONG,
+            exchange=AssetExchange.NYSE,
+            asset_class=AssetClass.US_EQUITY,
+        )
+    )
+
+    with contextlib.suppress(timeout_decorator.TimeoutError):
+        disp_pos_order_manager.handle_dispatched_position()
+
+    disp_pos_order_manager._database_connector.update_position_by_status.assert_called_once_with(  # noqa: SLF001
+        "test",
+        PositionStatus.OPEN,
+    )
+
+    disp_pos_order_manager._database_connector.update_position_on_signal_execution.assert_called_once_with(  # noqa: SLF001
+        position_id="test",
+        entry_price=125.0,
+        entry_date=datetime.now(tz=ZoneInfo("UTC")),
+        unit_size=10.0,
+        cash_size=1250.0,
+    )
