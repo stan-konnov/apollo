@@ -248,7 +248,6 @@ def test__handle_dispatched_position__for_not_placing_order_outside_of_market_ho
 
 # Assume today date is Monday
 # 2025-06-23 10:00 ET = 14:00 UTC
-@timeout_decorator.timeout(3)
 @freeze_time("2025-06-23 14:00:00")
 @pytest.mark.parametrize(
     "trading_client",
@@ -285,8 +284,7 @@ def test__handle_dispatched_position__for_synchronizing_position_after_placing_o
         )
     )
 
-    with contextlib.suppress(timeout_decorator.TimeoutError):
-        disp_pos_order_manager.handle_dispatched_position()
+    disp_pos_order_manager.handle_dispatched_position()
 
     disp_pos_order_manager._database_connector.update_position_by_status.assert_called_once_with(  # noqa: SLF001
         "test",
@@ -350,7 +348,6 @@ def test__handle_dispatched_position__for_synchronizing_position_if_position_not
 
 # Assume today date is Monday
 # 2025-06-23 10:00 ET = 14:00 UTC
-@timeout_decorator.timeout(3)
 @freeze_time("2025-06-23 14:00:00")
 @pytest.mark.parametrize(
     "trading_client",
@@ -386,7 +383,7 @@ def test__handle_dispatched_position__for_rasing_error_if_communication_with_api
         "Please check the logs for more details."
     )
 
-    with contextlib.suppress(timeout_decorator.TimeoutError), pytest.raises(
+    with pytest.raises(
         RequestToAlpacaAPIFailedError,
         match=exception_message,
     ) as exception:
