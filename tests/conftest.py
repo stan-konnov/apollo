@@ -1,6 +1,7 @@
 pytest_plugins = [
     "tests.fixtures.api_response",
     "tests.fixtures.event_emitter",
+    "tests.fixtures.trading_client",
     "tests.fixtures.database_client",
     "tests.fixtures.external_requests",
     "tests.fixtures.multiprocessing_pool",
