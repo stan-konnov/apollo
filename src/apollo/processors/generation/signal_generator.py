@@ -62,10 +62,8 @@ class SignalGenerator:
         """
 
         # Query existing dispatched position
-        existing_dispatched_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.DISPATCHED,
-            )
+        existing_dispatched_position = self._database_connector.get_position_by_status(
+            PositionStatus.DISPATCHED,
         )
 
         # Raise an error if the
@@ -78,17 +76,13 @@ class SignalGenerator:
             )
 
         # Query existing open position
-        existing_open_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.OPEN,
-            )
+        existing_open_position = self._database_connector.get_position_by_status(
+            PositionStatus.OPEN,
         )
 
         # Query existing optimized position
-        existing_optimized_position = (
-            self._database_connector.get_existing_position_by_status(
-                PositionStatus.OPTIMIZED,
-            )
+        existing_optimized_position = self._database_connector.get_position_by_status(
+            PositionStatus.OPTIMIZED,
         )
 
         # Raise an error if neither
@@ -145,7 +139,7 @@ class SignalGenerator:
                 )
 
                 # Update the positions to dispatched status
-                self._database_connector.update_existing_position_by_status(
+                self._database_connector.update_position_by_status(
                     position_id=existing_optimized_position.id,
                     position_status=PositionStatus.DISPATCHED,
                 )

@@ -29,5 +29,5 @@ class BaseApiConnector(ABC):
         :param max_period: Flag to request the maximum available period of price data.
         :returns: Dataframe with price data.
 
-        :raises EmptyApiResponseError: If API response is empty.
+        :raises EmptyYahooApiResponseError: If API response is empty.
         """

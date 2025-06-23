@@ -11,7 +11,7 @@ from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.connectors.database.postgres_connector import PostgresConnector
 from apollo.errors.system_invariants import OptimizedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
-from apollo.processors.parameter_optimizer import ParameterOptimizer
+from apollo.processors.generation.parameter_optimizer import ParameterOptimizer
 from apollo.settings import (
     BACKTESTING_CASH_SIZE,
     END_DATE,
@@ -343,7 +343,7 @@ def test__output_results__for_correct_result_output(
 @pytest.mark.usefixtures("dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.processors.parameter_optimizer.Pool"],
+    ["apollo.processors.generation.parameter_optimizer.Pool"],
     indirect=True,
 )
 def test__optimize_parameters__for_correct_optimization_process(
@@ -488,9 +488,11 @@ def test__optimize_parameters__for_raising_error_if_position_exists() -> None:
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = Position(  # noqa: E501, SLF001
-        ticker=str(TICKER),
-        status=PositionStatus.OPTIMIZED,
+    parameter_optimizer._database_connector.get_position_by_status.return_value = (  # noqa: SLF001
+        Position(
+            ticker=str(TICKER),
+            status=PositionStatus.OPTIMIZED,
+        )
     )
 
     exception_message = (
@@ -525,7 +527,7 @@ def test__optimize_parameters__for_skipping_process_if_no_screened_position(
     )
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status.return_value = None  # noqa: E501, SLF001
+    parameter_optimizer._database_connector.get_position_by_status.return_value = None  # noqa: SLF001
 
     parameter_optimizer.optimize_parameters()
 
@@ -541,7 +543,7 @@ def test__optimize_parameters__for_skipping_process_if_no_screened_position(
 
 
 @patch(
-    "apollo.processors.parameter_optimizer.STRATEGY_CATALOGUE_MAP",
+    "apollo.processors.generation.parameter_optimizer.STRATEGY_CATALOGUE_MAP",
     {
         "Strategy1": "Strategy1",
         "Strategy2": "Strategy2",
@@ -559,11 +561,11 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
         ParameterOptimizerMode.MULTIPLE_STRATEGIES,
     )
 
-    def mock_get_existing_position_by_status(
+    def mock_get_position_by_status(
         position_status: PositionStatus,
     ) -> Position | None:
         """
-        Conditional mock for get_existing_position_by_status.
+        Conditional mock for get_position_by_status.
 
         :param position_status: Position status to mock.
         :returns: Position if status is SCREENED, None otherwise.
@@ -579,8 +581,8 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
         return None
 
     parameter_optimizer._database_connector = Mock()  # noqa: SLF001
-    parameter_optimizer._database_connector.get_existing_position_by_status = (  # noqa: SLF001
-        mock_get_existing_position_by_status
+    parameter_optimizer._database_connector.get_position_by_status = (  # noqa: SLF001
+        mock_get_position_by_status
     )
 
     with patch.object(
@@ -602,7 +604,7 @@ def test__optimize_parameters__for_multiple_strategies() -> None:
             ],
         )
 
-        parameter_optimizer._database_connector.update_existing_position_by_status.assert_called_once_with(  # noqa: SLF001
+        parameter_optimizer._database_connector.update_position_by_status.assert_called_once_with(  # noqa: SLF001
             "test",
             PositionStatus.OPTIMIZED,
         )

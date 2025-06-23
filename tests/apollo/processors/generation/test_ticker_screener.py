@@ -12,10 +12,10 @@ from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.calculators.kaufman_efficiency_ratio import (
     KaufmanEfficiencyRatioCalculator,
 )
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import EmptyYahooApiResponseError
 from apollo.errors.system_invariants import ScreenedPositionAlreadyExistsError
 from apollo.models.position import Position, PositionStatus
-from apollo.processors.ticker_screener import TickerScreener
+from apollo.processors.generation.ticker_screener import TickerScreener
 from apollo.settings import (
     END_DATE,
     EXCHANGE,
@@ -150,7 +150,7 @@ def test__calculate_measures__for_skipping_ticker_if_api_returned_empty_response
 
     # Mimic the exception raised by Price Data Provider
     ticker_screener._price_data_provider.get_price_data.side_effect = (  # noqa: SLF001
-        EmptyApiResponseError
+        EmptyYahooApiResponseError
     )
 
     screened_dataframe = ticker_screener._calculate_measures(tickers)  # noqa: SLF001
@@ -363,7 +363,7 @@ def test__initialize_position__for_not_creating_position_if_position_exists(
 @pytest.mark.usefixtures("screened_tickers_dataframe")
 @pytest.mark.parametrize(
     "multiprocessing_pool",
-    ["apollo.processors.ticker_screener.Pool"],
+    ["apollo.processors.generation.ticker_screener.Pool"],
     indirect=True,
 )
 def test__screen_tickers__for_correct_screening_process(
@@ -387,7 +387,7 @@ def test__screen_tickers__for_correct_screening_process(
     ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
 
     # Mock the return value of the database connector
-    ticker_screener._database_connector.get_existing_position_by_status.return_value = (  # noqa: SLF001
+    ticker_screener._database_connector.get_position_by_status.return_value = (  # noqa: SLF001
         None
     )
 
@@ -458,7 +458,7 @@ def test__screen_tickers__for_raising_error_if_screened_position_exists() -> Non
     ticker_screener._sp500_components_scraper = Mock()  # noqa: SLF001
 
     # Mock the return value of the database connector
-    ticker_screener._database_connector.get_existing_position_by_status.return_value = (  # noqa: SLF001
+    ticker_screener._database_connector.get_position_by_status.return_value = (  # noqa: SLF001
         Position(
             ticker=str(TICKER),
             status=PositionStatus.SCREENED,

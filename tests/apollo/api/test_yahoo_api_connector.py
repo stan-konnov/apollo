@@ -6,7 +6,7 @@ import pytest
 from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
-from apollo.errors.api import EmptyApiResponseError
+from apollo.errors.api import EmptyYahooApiResponseError
 from apollo.settings import END_DATE, FREQUENCY, MAX_PERIOD, START_DATE, TICKER
 
 
@@ -16,7 +16,7 @@ def test__request_price_data__with_empty_api_response(yahoo_api_call: Mock) -> N
     Test request_price_data method with empty yahoo API response.
 
     API Connector must call Yahoo API to request price data.
-    API Connector must raise EmptyApiResponseError when API response is empty.
+    API Connector must raise EmptyYahooApiResponseError when API response is empty.
     """
 
     api_connector = YahooApiConnector()
@@ -24,7 +24,7 @@ def test__request_price_data__with_empty_api_response(yahoo_api_call: Mock) -> N
     exception_message = "API response returned empty dataframe."
 
     with pytest.raises(
-        EmptyApiResponseError,
+        EmptyYahooApiResponseError,
         match=exception_message,
     ) as exception:
         api_connector.request_price_data(
