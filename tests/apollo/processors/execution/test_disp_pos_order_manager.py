@@ -103,7 +103,7 @@ def test__handle_dispatched_position__for_raising_error_if_open_position_exists(
     indirect=True,
 )
 @pytest.mark.usefixtures("trading_client")
-def test__handle_dispatched_position__for_raising_error_if_dispatched_position_does_not_exist() -> (  # noqa: E501
+def test__handle_dispatched_position__for_raising_error_if_disp_position_does_not_exist() -> (  # noqa: E501
     None
 ):
     """

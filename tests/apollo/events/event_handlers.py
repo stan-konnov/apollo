@@ -60,7 +60,7 @@ def test__handle_signal_generated_event__for_handling_open_and_dispatched_positi
     handle_signal_generated_event(
         SignalNotification(
             open_position=True,
-            dispatched_position=False,
+            dispatched_position=True,
         ),
     )
 
