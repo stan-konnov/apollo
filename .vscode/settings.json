@@ -3,12 +3,14 @@
     "editor.defaultFormatter": "charliermarsh.ruff",
 
     "files.exclude": {
-        "**/.pytest_cache": true,
-        "**/__pycache__": true,
-        "**/.coverage": true,
         "**/venv": true,
+        "**/.coverage": true,
+        "**/__pycache__": true,
         "**/__init__.py": true,
         "**/.ruff_cache": true,
+        "**/.coverage.**": true,
+        "**/.pytest_cache": true,
+        "**/apollo.egg-info": true,
     },
 
     "python.analysis.autoImportCompletions": true,
