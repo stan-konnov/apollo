@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    name: Lint & Test
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 📦 Install uv
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -U uv
+
+      - name: 📦 Install dependencies with uv
+        run: |
+          source venv/bin/activate
+          uv pip install -r requirements.txt -e .
+
+      - name: 🔍 Run Ruff linter
+        run: |
+          source venv/bin/activate
+          venv/bin/ruff check .
+
+      - name: 🧪 Run tests with Poe
+        run: |
+          source venv/bin/activate
+          venv/bin/poe test | tee /tmp/test_output.log
+          COVERAGE=$(awk '/TOTAL/ {print $(NF-1)}' /tmp/test_output.log | tr -d '%')
+          echo "Coverage: $COVERAGE%"
+          if [ "$COVERAGE" -lt 95 ]; then
+            echo "❌ Test coverage ($COVERAGE%) is below 95%."
+            exit 1
+          fi
