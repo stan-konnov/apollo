@@ -9,3 +9,5 @@
 !.coveragerc
 
 **/.DS_Store
+
+*.egg-info/

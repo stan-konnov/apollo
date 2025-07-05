@@ -1,54 +1,49 @@
-## Local Application Setup
+# 🚀 Apollo — Local Development Guide
 
-1. Create virtual environment:
+1️⃣ Create and initialize the virtual environment & install dependencies:
+```bash
+make install
+```
+This will:
+- create a virtual environment in `venv/` (if not already there)
+- install all dependencies (including editable `apollo` and `poethepoet`) using `uv`
 
-```
-python3 -m venv venv
-```
-2. Activate virtual environment:
-```
+2️⃣ Activate the virtual environment:
+```bash
 source venv/bin/activate
 ```
-3. Install poetry:
-```
-pip install poetry
-```
-4. Install dependencies:
-```
-poetry install
-```
-5. Install pre-commit hooks:
-```
+
+3️⃣ Install pre-commit hooks:
+```bash
 pre-commit install
 ```
-6. Configure environment
-```
-cat .env.default > .env
-```
-7. Add ruff linter extension:
-```
-https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
+
+4️⃣ Configure environment variables:
+```bash
+cp .env.default .env
 ```
 
-<br></br>
+5️⃣ Install the Ruff linter extension for VSCode:
+👉 [Ruff VSCode extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 
-## Local Database Access
+6️⃣ Install `psql` (PostgreSQL client):
+```bash
+<package_manager> <install_command> postgresql
+```
+*(replace `<package_manager>` and `<install_command>` with your OS-specific command, e.g. `brew install postgresql` on Mac)*
 
-1. Install psql:
-```
-<package_manager> <action> psql
-```
-
-2. Log into locally running Postgres instance:
-```
+7️⃣ Log into the locally running Postgres instance:
+```bash
 psql -h localhost -p 5432 -U apollo apollo
 ```
-3. Create readonly user:
-```
+
+8️⃣ Create a readonly user:
+```sql
 CREATE USER <your_user> WITH PASSWORD '<your_password>';
-GRANT pg_read_all_data to <your_user>;
+GRANT pg_read_all_data TO <your_user>;
 ```
-4. Log out and log in back with readonly user:
-```
+
+9️⃣ Log out and log back in as the readonly user:
+```bash
 psql -h localhost -p 5432 -U <your_user> apollo
 ```
