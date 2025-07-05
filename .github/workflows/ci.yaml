@@ -73,7 +73,6 @@ jobs:
           # since it also handles generating
           # ORM client (for integration tests),
           # database migrations and coverage reporting
-
           venv/bin/poe test | tee /tmp/test_output.log
 
           # Check coverage only if tests passed
