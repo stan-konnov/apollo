@@ -2,11 +2,11 @@ from datetime import datetime
 from logging import getLogger
 from time import sleep
 from typing import TYPE_CHECKING
+from zoneinfo import ZoneInfo
 
 from alpaca.common.exceptions import APIError
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest
-from zoneinfo import ZoneInfo
 
 from apollo.errors.api import AlpacaAPIErrorCodes, RequestToAlpacaAPIFailedError
 from apollo.errors.system_invariants import (

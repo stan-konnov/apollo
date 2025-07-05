@@ -1,6 +1,6 @@
 import logging
+import sys
 from re import sub
-from sys import exit
 
 from bs4 import BeautifulSoup, Tag
 from requests import RequestException, get
@@ -43,7 +43,7 @@ class SP500ComponentsScraper:
 
             # At this point, we should exit
             # as we cannot proceed without the page
-            exit(1)
+            sys.exit(1)
 
     def scrape_sp500_components(self) -> list[str]:
         """
@@ -71,7 +71,7 @@ class SP500ComponentsScraper:
 
         # Find all the rows in the table
         if isinstance(sp500_components_table, Tag):
-            sp500_components_rows = sp500_components_table.find_all("tr")
+            sp500_components_rows = sp500_components_table.find_all("tr")  # type: ignore  # noqa: PGH003
 
         # And raise if rows are not found
         if not sp500_components_rows:

@@ -1,8 +1,8 @@
+import sys
 from itertools import product
 from json import dumps
 from logging import getLogger
 from multiprocessing import Pool
-from sys import exit
 
 import pandas as pd
 from numpy import arange
@@ -282,7 +282,7 @@ class ParameterOptimizer(MultiprocessingCapable):
             except (ValueError, TypeError):
                 # Of course, we want to exit if parameters are misconfigured
                 logger.exception("Parameters misconfigured, see traceback")
-                exit(1)
+                sys.exit(1)
 
             # Model the trading signals
             strategy_instance.model_trading_signals()

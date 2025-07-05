@@ -1,5 +1,5 @@
+from collections.abc import Generator
 from datetime import datetime
-from typing import Generator
 from unittest.mock import patch
 
 import pandas as pd

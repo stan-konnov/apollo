@@ -1,7 +1,7 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from freezegun import freeze_time
-from zoneinfo import ZoneInfo
 
 from apollo.utils.price_data_availability_helper import PriceDataAvailabilityHelper
 

@@ -1,9 +1,9 @@
 from datetime import datetime
 from logging import getLogger
 from multiprocessing import Pool
+from zoneinfo import ZoneInfo
 
 import pandas as pd
-from zoneinfo import ZoneInfo
 
 from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.calculators.kaufman_efficiency_ratio import (

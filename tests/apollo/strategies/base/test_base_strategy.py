@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any
 
 import pandas as pd
 import pytest
@@ -37,7 +37,7 @@ def test__base_strategy__with_missing_parameters(
     )
 
     parameter_name = "missing_parameter"
-    parameters: list[tuple[str, Any, Type]] = [(parameter_name, None, float)]
+    parameters: list[tuple[str, Any, type]] = [(parameter_name, None, float)]
     exception_message = f"Parameter {parameter_name} is missing"
 
     with pytest.raises(
@@ -70,7 +70,7 @@ def test__base_strategy__with_invalid_parameters(
         f"Parameter {parameter_name} is not of expected type {float.__name__}",
     )
 
-    parameters: list[tuple[str, Any, Type]] = [(parameter_name, "", float)]
+    parameters: list[tuple[str, Any, type]] = [(parameter_name, "", float)]
 
     with pytest.raises(
         TypeError,

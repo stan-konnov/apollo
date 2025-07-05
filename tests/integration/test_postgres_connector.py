@@ -1,11 +1,11 @@
 from datetime import datetime
 from json import dumps, loads
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
 from prisma import Prisma
 from pytz import timezone
-from zoneinfo import ZoneInfo
 
 from apollo.backtesters.backtesting_runner import BacktestingRunner
 from apollo.connectors.database.postgres_connector import PostgresConnector

@@ -1,5 +1,6 @@
+from collections.abc import Iterable
 from multiprocessing import cpu_count
-from typing import Iterable, TypeVar
+from typing import TypeVar
 
 # Declare a generic type for inputs
 # collection item since different tasks

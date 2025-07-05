@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any
 
 from pandas import DataFrame
 
@@ -39,7 +39,7 @@ class BaseStrategy:
 
         raise NotImplementedError("Method model_trading_signals is not implemented.")
 
-    def _validate_parameters(self, parameters: list[tuple[str, Any, Type]]) -> None:
+    def _validate_parameters(self, parameters: list[tuple[str, Any, type]]) -> None:
         """
         Validate that all parameters are provided and of type specified by the caller.
 

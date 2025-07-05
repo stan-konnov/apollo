@@ -87,10 +87,9 @@ class SwingEventsCalculator(BaseCalculator):
 
         # If we are in downswing
         if self._in_downswing:
-            # Test if downswing continues
-            if current_low < self._swing_l:
-                # Treat current low as new swing low
-                self._swing_l = current_low
+            # Treat current low as new low
+            # or keep the previous swing low
+            self._swing_l = min(self._swing_l, current_low)
 
             # Test if downswing reverses
             if current_high - self._swing_l > current_swing_filter:
@@ -117,10 +116,9 @@ class SwingEventsCalculator(BaseCalculator):
 
         # Otherwise, we are in upswing
 
-        # Test if upswing continues
-        if current_high > self._swing_h:
-            # Treat current high as new swing high
-            self._swing_h = current_high
+        # Treat current high as new high
+        # or keep the previous swing high
+        self._swing_h = max(self._swing_h, current_high)
 
         # Test if upswing reverses
         if self._swing_h - current_low > current_swing_filter:

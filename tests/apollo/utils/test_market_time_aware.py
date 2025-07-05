@@ -1,7 +1,7 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from freezegun import freeze_time
-from zoneinfo import ZoneInfo
 
 from apollo.settings import DEFAULT_TIME_FORMAT, EXCHANGE, EXCHANGE_TIME_ZONE_AND_HOURS
 from apollo.utils.market_time_aware import MarketTimeAware

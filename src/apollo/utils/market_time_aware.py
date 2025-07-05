@@ -1,9 +1,9 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from numpy import is_busday
 from pandas import to_datetime
-from zoneinfo import ZoneInfo
 
 from apollo.models.market_time_metrics import MarketTimeMetrics
 from apollo.settings import DEFAULT_TIME_FORMAT, EXCHANGE, EXCHANGE_TIME_ZONE_AND_HOURS

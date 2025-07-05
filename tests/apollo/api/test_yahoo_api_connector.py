@@ -1,9 +1,9 @@
 from datetime import datetime
 from unittest.mock import Mock
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
-from zoneinfo import ZoneInfo
 
 from apollo.connectors.api.yahoo_api_connector import YahooApiConnector
 from apollo.errors.api import EmptyYahooApiResponseError

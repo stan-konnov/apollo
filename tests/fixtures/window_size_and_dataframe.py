@@ -63,7 +63,7 @@ def get_window_size() -> int:
     return WINDOW_SIZE
 
 
-class SameDataframe:
+class SameDataframe:  # noqa: PLW1641
     """
     SameDataframe class.
 
@@ -85,7 +85,7 @@ class SameDataframe:
         return isinstance(other, pd.DataFrame) and other.equals(self.dataframe)
 
 
-class SameSeries:
+class SameSeries:  # noqa: PLW1641
     """
     SameSeries class.
 
