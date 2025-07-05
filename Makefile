@@ -20,3 +20,7 @@ install: venv
 	@echo "📦 Installing dependencies with uv…"
 	. $(VENV)/bin/activate && pip install -U uv && uv pip install -r requirements.txt -e .
 	@echo "✅ Installed."
+
+	@echo "🔗 Installing git hooks (pre-commit)…"
+	. $(VENV)/bin/activate && pre-commit install
+	@echo "✅ Git hooks installed."
