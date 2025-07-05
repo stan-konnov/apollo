@@ -7,6 +7,9 @@ on:
 
 jobs:
   lint-and-test:
+
+    # ubuntu-latest includes
+    # docker-compose pre-installed
     runs-on: ubuntu-latest
 
     name: Lint & Test
@@ -14,6 +17,27 @@ jobs:
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Start Docker Compose stack
+        run: |
+          docker-compose -f docker-compose.yaml up -d
+
+      - name: ⏳ Wait for Postgres & InfluxDB
+        run: |
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' apollo_postgres)" == "healthy" ]; do
+            echo "Waiting for Postgres…"
+            sleep 2
+          done
+          echo "✅ Postgres is healthy."
+
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' apollo_influxdb)" == "healthy" ]; do
+            echo "Waiting for InfluxDB…"
+            sleep 2
+          done
+          echo "✅ InfluxDB is healthy."
 
       - name: 🐍 Set up Python 3.13
         uses: actions/setup-python@v5
@@ -36,13 +60,20 @@ jobs:
           source venv/bin/activate
           venv/bin/ruff check .
 
-      - name: 🧪 Run tests with Poe
+      - name: 🧪 Run tests with coverage
         run: |
           source venv/bin/activate
-          venv/bin/poe test | tee /tmp/test_output.log
+
+          venv/bin/pytest -v --cov=src --cov-report=term-missing | tee /tmp/test_output.log
           COVERAGE=$(awk '/TOTAL/ {print $(NF-1)}' /tmp/test_output.log | tr -d '%')
+
           echo "Coverage: $COVERAGE%"
           if [ "$COVERAGE" -lt 95 ]; then
             echo "❌ Test coverage ($COVERAGE%) is below 95%."
             exit 1
           fi
+
+      - name: 🧹 Tear down Docker Compose stack
+        if: always()
+        run: |
+          docker-compose -f docker-compose.yaml down -v
