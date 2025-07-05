@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   lint-and-test:
@@ -23,7 +24,7 @@ jobs:
 
       - name: 🐳 Start Docker Compose stack
         run: |
-          docker-compose -f docker-compose.yaml up -d
+          docker compose -f docker compose.yaml up -d
 
       - name: ⏳ Wait for Postgres & InfluxDB
         run: |
@@ -76,4 +77,4 @@ jobs:
       - name: 🧹 Tear down Docker Compose stack
         if: always()
         run: |
-          docker-compose -f docker-compose.yaml down -v
+          docker compose -f docker compose.yaml down -v
