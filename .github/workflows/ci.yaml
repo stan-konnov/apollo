@@ -64,7 +64,12 @@ jobs:
         run: |
           source venv/bin/activate
 
-          venv/bin/pytest -v --cov=src --cov-report=term-missing | tee /tmp/test_output.log
+          # We run tests via poe script
+          # since it also handles generating
+          # ORM client (for integration tests),
+          # database migrations and coverage reporting
+
+          venv/bin/poe test | tee /tmp/test_output.log
           COVERAGE=$(awk '/TOTAL/ {print $(NF-1)}' /tmp/test_output.log | tr -d '%')
 
           echo "Coverage: $COVERAGE%"
