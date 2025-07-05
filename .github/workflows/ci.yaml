@@ -76,7 +76,7 @@ jobs:
           venv/bin/poe test | tee /tmp/test_output.log
 
           # Check coverage only if tests passed
-          COVERAGE=$(awk '/TOTAL/ {print $(NF-1)}' /tmp/test_output.log | tr -d '%')
+          COVERAGE=$(awk '/TOTAL/ {print $NF}' /tmp/test_output.log | tr -d '%')
 
           echo "Coverage: $COVERAGE%"
           if [ "$COVERAGE" -lt 95 ]; then
