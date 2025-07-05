@@ -63,7 +63,7 @@ jobs:
       - name: 🧪 Run tests with coverage
         run: |
 
-          # M ake sure the whole pipeline
+          # Make sure the whole pipeline
           # exits if the first command fails
           set -euo pipefail
 
