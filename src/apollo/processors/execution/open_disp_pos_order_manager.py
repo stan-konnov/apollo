@@ -38,7 +38,7 @@ class OpenDispatchedPositionOrderManager(BaseOrderManager):
             PositionStatus.OPEN,
         )
 
-        # Raise error if open position does not exist
+        # Raise error if no open position exists
         if not existing_open_position:
             raise OpenPositionDoesNotExistError(
                 "Open position does not exist while handling OD signal. "
