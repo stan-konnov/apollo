@@ -62,6 +62,11 @@ jobs:
 
       - name: 🧪 Run tests with coverage
         run: |
+
+          # M ake sure the whole pipeline
+          # exits if the first command fails
+          set -euo pipefail
+
           source venv/bin/activate
 
           # We run tests via poe script
@@ -70,6 +75,8 @@ jobs:
           # database migrations and coverage reporting
 
           venv/bin/poe test | tee /tmp/test_output.log
+
+          # Check coverage only if tests passed
           COVERAGE=$(awk '/TOTAL/ {print $(NF-1)}' /tmp/test_output.log | tr -d '%')
 
           echo "Coverage: $COVERAGE%"
