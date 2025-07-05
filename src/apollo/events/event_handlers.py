@@ -3,6 +3,9 @@ from apollo.models.signal_notification import SignalNotification
 from apollo.processors.execution.disp_pos_order_manager import (
     DispatchedPositionOrderManager,
 )
+from apollo.processors.execution.open_disp_pos_order_manager import (
+    OpenDispatchedPositionOrderManager,
+)
 from apollo.settings import Events
 
 
@@ -15,7 +18,8 @@ def handle_signal_generated_event(signal: SignalNotification) -> None:
         dispatched_position_order_manager.handle_dispatched_position()
 
     if signal.open_position and not signal.dispatched_position:
-        pass
+        open_dispatched_position_order_manager = OpenDispatchedPositionOrderManager()
+        open_dispatched_position_order_manager.handle_open_dispatched_position()
 
     if signal.open_position and signal.dispatched_position:
         pass
