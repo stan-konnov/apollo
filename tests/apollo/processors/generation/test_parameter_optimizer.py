@@ -1,5 +1,5 @@
 import logging
-from typing import cast
+from typing import TYPE_CHECKING, cast
 from unittest import mock
 from unittest.mock import Mock, patch
 
@@ -24,9 +24,11 @@ from apollo.settings import (
     TICKER,
     ParameterOptimizerMode,
 )
-from apollo.utils.types import ParameterKeysAndCombinations, ParameterSet
 from tests.fixtures.window_size_and_dataframe import SameDataframe, SameSeries
 from tests.utils.precalculate_shared_values import precalculate_shared_values
+
+if TYPE_CHECKING:
+    from apollo.utils.types import ParameterKeysAndCombinations, ParameterSet
 
 RANGE_MIN = 1.0
 RANGE_MAX = 2.0
@@ -87,7 +89,7 @@ def test__construct_parameter_combinations__for_correct_parameter_combinations()
     ]
 
     keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
-        cast(ParameterSet, parameters),
+        cast("ParameterSet", parameters),
     )
 
     assert keys == (list(parameters.keys()))
@@ -110,7 +112,7 @@ def test__parameter_optimizer__for_correct_error_handling(
     )
 
     parameter_set = cast(
-        ParameterSet,
+        "ParameterSet",
         {
             "window_size": {
                 "step": 5,
@@ -191,14 +193,14 @@ def test__optimize_parameters__for_correctly_optimizing_parameters(
     }
 
     keys, combinations = parameter_optimizer._construct_parameter_combinations(  # noqa: SLF001
-        cast(ParameterSet, parameters),
+        cast("ParameterSet", parameters),
     )
 
     backtested_dataframe = parameter_optimizer._optimize_parameters(  # noqa: SLF001
         strategy_name=str(STRATEGY),
         combinations=combinations,
         price_dataframe=enhanced_dataframe,
-        parameter_set=cast(ParameterSet, parameters),
+        parameter_set=cast("ParameterSet", parameters),
         keys=keys,
     )
 
@@ -389,13 +391,16 @@ def test__optimize_parameters__for_correct_optimization_process(
 
     # Mock Parameter Optimizer private methods
     # to assert they have been called after the process
-    with patch.object(
-        ParameterOptimizer,
-        "_construct_parameter_combinations",
-    ) as construct_parameter_combinations, patch.object(
-        ParameterOptimizer,
-        "_output_results",
-    ) as output_results:
+    with (
+        patch.object(
+            ParameterOptimizer,
+            "_construct_parameter_combinations",
+        ) as construct_parameter_combinations,
+        patch.object(
+            ParameterOptimizer,
+            "_output_results",
+        ) as output_results,
+    ):
         # Mock the return value of the map method as
         # list of dataframes with backtesting results
         backtesting_results = [
@@ -418,7 +423,7 @@ def test__optimize_parameters__for_correct_optimization_process(
 
         # Mock the return value of _construct_parameter_combinations
         keys, combinations = cast(
-            ParameterKeysAndCombinations,
+            "ParameterKeysAndCombinations",
             (
                 ["sl_volatility_multiplier", "tp_volatility_multiplier"],
                 [

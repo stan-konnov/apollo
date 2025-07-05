@@ -1,7 +1,7 @@
+from collections.abc import Generator
 from os import curdir
 from pathlib import Path
 from shutil import rmtree
-from typing import Generator
 
 import pytest
 

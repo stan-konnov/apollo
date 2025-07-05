@@ -1,7 +1,7 @@
 import logging
+import sys
 from json import load
 from pathlib import Path
-from sys import exit
 
 from apollo.settings import (
     PARM_DIR,
@@ -43,6 +43,6 @@ class Configuration:
 
             # At this point, we should exit
             # as parameters are required to proceed
-            exit(1)
+            sys.exit(1)
 
         return parameter_set

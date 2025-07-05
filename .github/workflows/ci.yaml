@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+
+    # ubuntu-latest includes
+    # docker-compose pre-installed
+    runs-on: ubuntu-latest
+
+    name: Lint & Test
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Start Docker Compose stack
+        run: |
+          docker compose -f docker-compose.yaml --profile test up -d
+
+      - name: ⏳ Wait for Postgres & InfluxDB
+        run: |
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' apollo_postgres_test)" == "healthy" ]; do
+            echo "Waiting for Postgres…"
+            sleep 2
+          done
+          echo "✅ Postgres is healthy."
+
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' apollo_influxdb_test)" == "healthy" ]; do
+            echo "Waiting for InfluxDB…"
+            sleep 2
+          done
+          echo "✅ InfluxDB is healthy."
+
+      - name: 🐍 Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 📦 Install uv
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -U uv
+
+      - name: 📦 Install dependencies with uv
+        run: |
+          source venv/bin/activate
+          uv pip install -r requirements.txt -e .
+
+      - name: 🔍 Run Ruff linter
+        run: |
+          source venv/bin/activate
+          venv/bin/ruff check .
+
+      - name: 🧪 Run tests with coverage
+        run: |
+
+          # Make sure the whole pipeline
+          # exits if the first command fails
+          set -euo pipefail
+
+          source venv/bin/activate
+
+          # We run tests via poe script
+          # since it also handles generating
+          # ORM client (for integration tests),
+          # database migrations and coverage reporting
+          venv/bin/poe test | tee /tmp/test_output.log
+
+          # Check coverage only if tests passed
+          COVERAGE=$(awk '/TOTAL/ {print $NF}' /tmp/test_output.log | tr -d '%')
+
+          echo "Coverage: $COVERAGE%"
+          if [ "$COVERAGE" -lt 95 ]; then
+            echo "❌ Test coverage ($COVERAGE%) is below 95%."
+            exit 1
+          fi
+
+      - name: 🧹 Tear down Docker Compose stack
+        if: always()
+        run: |
+          docker compose -f docker-compose.yaml down -v

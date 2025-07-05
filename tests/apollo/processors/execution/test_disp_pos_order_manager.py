@@ -3,6 +3,7 @@ from datetime import datetime
 from json import dumps
 from unittest.mock import Mock
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 import pytest
 import timeout_decorator
@@ -19,7 +20,6 @@ from alpaca.trading.models import Position as AlpacaPosition
 from alpaca.trading.models import TradeAccount
 from alpaca.trading.requests import LimitOrderRequest
 from freezegun import freeze_time
-from zoneinfo import ZoneInfo
 
 from apollo.errors.api import AlpacaAPIErrorCodes, RequestToAlpacaAPIFailedError
 from apollo.errors.system_invariants import (

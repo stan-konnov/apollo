@@ -2,11 +2,11 @@ import logging
 from datetime import datetime
 from unittest import mock
 from unittest.mock import Mock, patch
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
 from freezegun import freeze_time
-from zoneinfo import ZoneInfo
 
 from apollo.calculators.average_true_range import AverageTrueRangeCalculator
 from apollo.calculators.kaufman_efficiency_ratio import (
@@ -399,13 +399,16 @@ def test__screen_tickers__for_correct_screening_process(
 
     # Mock Ticker Screener private methods
     # to assert they have been called after the process
-    with patch.object(
-        TickerScreener,
-        "_select_suitable_ticker",
-    ) as select_suitable_ticker, patch.object(
-        TickerScreener,
-        "_initialize_position",
-    ) as initialize_position:
+    with (
+        patch.object(
+            TickerScreener,
+            "_select_suitable_ticker",
+        ) as select_suitable_ticker,
+        patch.object(
+            TickerScreener,
+            "_initialize_position",
+        ) as initialize_position,
+    ):
         # Mock the return value of the map method as
         # list of dataframes, each for each scraped ticker
         screened_results = [

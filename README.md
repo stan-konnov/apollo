@@ -6,44 +6,40 @@ make install
 ```
 This will:
 - create a virtual environment in `venv/` (if not already there)
-- install all dependencies (including editable `apollo` and `poethepoet`) using `uv`
+- install all dependencies (including editable `apollo`) using `uv`
+- install and configure git hooks (pre-commit)
 
 2️⃣ Activate the virtual environment:
 ```bash
 source venv/bin/activate
 ```
 
-3️⃣ Install pre-commit hooks:
-```bash
-pre-commit install
-```
-
-4️⃣ Configure environment variables:
+3️⃣ Configure environment variables:
 ```bash
 cp .env.default .env
 ```
 
-5️⃣ Install the Ruff linter extension for VSCode:
+4️⃣ Install the Ruff linter extension for VSCode:
 👉 [Ruff VSCode extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 
-6️⃣ Install `psql` (PostgreSQL client):
+5️⃣ Install `psql` (PostgreSQL client):
 ```bash
 <package_manager> <install_command> postgresql
 ```
 *(replace `<package_manager>` and `<install_command>` with your OS-specific command, e.g. `brew install postgresql` on Mac)*
 
-7️⃣ Log into the locally running Postgres instance:
+6️⃣ Log into the locally running Postgres instance:
 ```bash
 psql -h localhost -p 5432 -U apollo apollo
 ```
 
-8️⃣ Create a readonly user:
+7️⃣ Create a readonly user:
 ```sql
 CREATE USER <your_user> WITH PASSWORD '<your_password>';
 GRANT pg_read_all_data TO <your_user>;
 ```
 
-9️⃣ Log out and log back in as the readonly user:
+8️⃣ Log out and log back in as the readonly user:
 ```bash
 psql -h localhost -p 5432 -U <your_user> apollo
 ```

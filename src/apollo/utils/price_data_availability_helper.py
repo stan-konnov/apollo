@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from numpy import is_busday
-from zoneinfo import ZoneInfo
 
 from apollo.settings import (
     DEFAULT_TIME_FORMAT,
