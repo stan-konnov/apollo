@@ -4,6 +4,7 @@
 
     "files.exclude": {
         "**/venv": true,
+        "**/.coverage": true,
         "**/__pycache__": true,
         "**/__init__.py": true,
         "**/.ruff_cache": true,
