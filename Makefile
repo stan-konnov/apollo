@@ -8,7 +8,7 @@ help:
 	@echo ""
 	@echo "Common tasks:"
 	@echo "  make venv       - create a virtual environment"
-	@echo "  make install    - install dependencies (including editable apollo & poe)"
+	@echo "  make install    - install dependencies"
 	@echo ""
 
 venv:
