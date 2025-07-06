@@ -6,7 +6,7 @@ make install
 ```
 This will:
 - create a virtual environment in `venv/` (if not already there)
-- install all dependencies (including editable `apollo`) using `uv`
+- install all dependencies using `uv`
 - install and configure git hooks (pre-commit)
 
 2️⃣ Activate the virtual environment:
